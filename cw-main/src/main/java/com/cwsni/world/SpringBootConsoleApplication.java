@@ -26,6 +26,8 @@ public class SpringBootConsoleApplication implements CommandLineRunner {
         app.setWebApplicationType(WebApplicationType.NONE);
         app.setBannerMode(Banner.Mode.LOG);
         app.run(args);
+        // test change
+        // git@github.com:ignatovsni/cw-main.git
 
     }
 
