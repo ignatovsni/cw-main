@@ -1,3 +1,2 @@
 Copyright © 2018 Sergei Ignatov. All rights reserved.
 //https://habr.com/post/243091/
-//test of remote chanhing
