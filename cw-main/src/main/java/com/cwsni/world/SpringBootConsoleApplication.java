@@ -9,7 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.cwsni.world.client.desktop.GraphicsScalingScrollingApp;
+import com.cwsni.world.client.desktop.MainWindow;
 
 @SpringBootApplication
 //@ComponentScan
@@ -20,22 +20,17 @@ public class SpringBootConsoleApplication implements CommandLineRunner {
 	private static final Log logger = LogFactory.getLog(SpringBootConsoleApplication.class);
 
     public static void main(String[] args) throws Exception {
-
         SpringApplication app = new SpringApplication(SpringBootConsoleApplication.class);
         //app.setAddCommandLineProperties(false);
         app.setWebApplicationType(WebApplicationType.NONE);
         app.setBannerMode(Banner.Mode.LOG);
         app.run(args);
-        // test change - 6
-        // git@github.com:ignatovsni/cw-main.git
-
     }
 
     @Override
     public void run(String... args) throws Exception {
-    	logger.info("my info log, yeah!");
-    	GraphicsScalingScrollingApp mainWindow = new GraphicsScalingScrollingApp();
+    	logger.info("run...");
+    	MainWindow mainWindow = new MainWindow();
     	mainWindow.main(args);
-    	logger.info("Memory: " + Runtime.getRuntime().totalMemory());
     }
 }
