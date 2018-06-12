@@ -8,6 +8,8 @@ import com.cwsni.world.model.Province;
 import com.cwsni.world.model.WorldMap;
 
 import javafx.scene.Group;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 public class DWorldMap {
 	
@@ -15,6 +17,7 @@ public class DWorldMap {
 	private WorldMap map;
 	private double provinceRadius;
 	private Group mapGroup;
+	private DProvince selectedProvince;
 	
 	private DWorldMap(WorldMap map, double provinceRadius) {
 		this.map = map;
@@ -36,6 +39,22 @@ public class DWorldMap {
 	
 	public Group getMapGroup() {
 		return mapGroup;
+	}
+
+	public void mouseClickOnProvince(DProvince dProvince, MouseEvent e) {
+		if (e.getButton() == MouseButton.PRIMARY) {
+			selectProvince(dProvince);
+		}
+	}
+
+	private void selectProvince(DProvince dProvince) {
+		if (selectedProvince != null) {
+			selectedProvince.selectProvince(false);
+		}
+		this.selectedProvince = dProvince;
+		if (selectedProvince != null) {
+			selectedProvince.selectProvince(true);
+		}
 	}
 
 }

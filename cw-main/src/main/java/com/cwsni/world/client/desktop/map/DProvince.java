@@ -35,11 +35,12 @@ public class DProvince extends Group {
     private Point2D center;
     private double radius;
     private Polygon polygon;
+    private Timeline timeline;
     
     private final DWorldMap map;
     private final Province province;
 
-    private boolean selected = false;
+    private boolean isSelected = false;
 	
     
     private DProvince(DWorldMap map, Province province, double provinceRadius) {
@@ -65,22 +66,7 @@ public class DProvince extends Group {
 		
 		getChildren().add(polygon);		
 		
-		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), evt -> polygon.setStroke(STROKE_SELECTED_1_COLOR)),
-                new KeyFrame(Duration.seconds(1), evt -> polygon.setStroke(STROKE_SELECTED_2_COLOR)));
-		timeline.setCycleCount(Animation.INDEFINITE);
-		polygon.setOnMouseClicked(e -> {
-			//e.consume();
-			if (e.getButton() == MouseButton.PRIMARY) {
-				DProvince.this.toFront();
-				selected = !selected;
-				if (selected) {
-					timeline.play();
-				} else {
-					timeline.stop();
-					polygon.setStroke(STROKE_DEFAULT_COLOR);				
-				}
-			}
-		});
+		polygon.setOnMouseClicked(e -> map.mouseClickOnProvince(this, e) );
 	}
 
     protected void updatePoints() {
@@ -93,6 +79,24 @@ public class DProvince extends Group {
 
 	public static DProvince createDProvince(DWorldMap map, Province p, double provinceRadius) {
 		return new DProvince(map, p, provinceRadius);
+	}
+
+	public void selectProvince(boolean isSelected) {
+		this.isSelected = isSelected;		
+		if (isSelected) {
+			DProvince.this.toFront();
+			if (timeline == null) {
+				timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), evt -> polygon.setStroke(STROKE_SELECTED_1_COLOR)),
+		                new KeyFrame(Duration.seconds(1), evt -> polygon.setStroke(STROKE_SELECTED_2_COLOR)));
+				timeline.setCycleCount(Animation.INDEFINITE);
+			}
+			timeline.play();
+		} else {
+			if (timeline != null) {
+				timeline.stop();
+			}
+			polygon.setStroke(STROKE_DEFAULT_COLOR);				
+		}
 	}
 
 }
