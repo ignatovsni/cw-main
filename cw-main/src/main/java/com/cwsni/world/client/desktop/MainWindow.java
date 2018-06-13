@@ -1,81 +1,61 @@
 package com.cwsni.world.client.desktop;
 
-import com.cwsni.world.client.desktop.map.DWorldMap;
-import com.cwsni.world.model.WorldMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+
+import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Group;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class MainWindow extends Application {
+@SpringBootApplication
+public class MainWindow extends Application  {
 	
+	private static final Log logger = LogFactory.getLog(MainWindow.class);
+	
+	private ConfigurableApplicationContext springContext;
+    private Parent root;
+    
+    static private String[] args;
+    
 	public static void main(String[] args) {
-		launch(args);
-	}
+		MainWindow.args = args;
+        launch(MainWindow.class, args);
+    }
 
 	@Override
+    public void init() throws Exception {
+        springContext = SpringApplication.run(MainWindow.class, args);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/main.fxml"));
+        fxmlLoader.setControllerFactory(springContext::getBean);	
+        root = fxmlLoader.load();
+    }
+	
+	@Override
+    public void stop() throws Exception {
+        springContext.stop();
+    }
+	
+	@Override
 	public void start(final Stage stage) {		
-		DWorldMap worldMap = createTestMap(30, 30, 30);
-		
-		Parent zoomPane = new ZoomableScrollPane(worldMap.getMapGroup());		
-
-		VBox layout = new VBox();
-		layout.getChildren().setAll(createMenuBar(stage, worldMap.getMapGroup()), zoomPane);
-
-		VBox.setVgrow(zoomPane, Priority.ALWAYS);
-
-		Scene scene = new Scene(layout);
-
-		stage.setTitle("World Map");
-		stage.setScene(scene);
+		stage.setTitle(getMessage("main.window.title"));
+		stage.setScene(getGameScene().createScene(stage));
 		stage.setHeight(600);
-		stage.setWidth(800);
-		
+		stage.setWidth(800);		
 		stage.show();
 	}
 	
-	private DWorldMap createTestMap(int rows, int columns, int provinceRadius) {
-		WorldMap map = WorldMap.createMap(rows, columns, provinceRadius);
-		DWorldMap dMap = DWorldMap.createDMap(map, provinceRadius); 
-		return dMap;
+	private String getMessage(String code) {
+		return springContext.getBean(LocaleMessageSource.class).getMessage(code);
 	}
-
-
-	private MenuBar createMenuBar(final Stage stage, final Group group) {
-		Menu fileMenu = new Menu("_File");
-		MenuItem exitMenuItem = new MenuItem("E_xit");
-		exitMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				stage.close();
-			}
-		});
-		fileMenu.getItems().setAll(exitMenuItem);
-		Menu zoomMenu = new Menu("_Zoom");
-		MenuItem zoomResetMenuItem = new MenuItem("Zoom _Reset");
-		zoomResetMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.ESCAPE));
-		zoomResetMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				group.setScaleX(1);
-				group.setScaleY(1);
-			}
-		});
-		zoomMenu.getItems().setAll(zoomResetMenuItem);
-		MenuBar menuBar = new MenuBar();
-		menuBar.getMenus().setAll(fileMenu, zoomMenu);
-		return menuBar;
+	
+	private GameScene getGameScene() {
+		return springContext.getBean(GameScene.class);
 	}
 
 }

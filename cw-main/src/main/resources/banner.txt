@@ -1,4 +1,0 @@
-...
-application.title=${application.title}
-application.version=${application.version}
-spring-boot.version=${spring-boot.version}

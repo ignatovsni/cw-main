@@ -85,6 +85,7 @@ public class DProvince extends Group {
 		this.isSelected = isSelected;		
 		if (isSelected) {
 			DProvince.this.toFront();
+			polygon.setStroke(STROKE_SELECTED_2_COLOR);
 			if (timeline == null) {
 				timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), evt -> polygon.setStroke(STROKE_SELECTED_1_COLOR)),
 		                new KeyFrame(Duration.seconds(1), evt -> polygon.setStroke(STROKE_SELECTED_2_COLOR)));
