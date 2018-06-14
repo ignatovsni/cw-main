@@ -1,4 +1,4 @@
-package com.cwsni.world.client.desktop.map;
+package com.cwsni.world.client.desktop.game.map;
 
 import java.util.ArrayList;
 import java.util.List;

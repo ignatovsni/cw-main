@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.game.map.DWorldMap;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
-import com.cwsni.world.client.desktop.map.DWorldMap;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
 import com.cwsni.world.model.WorldMap;
 

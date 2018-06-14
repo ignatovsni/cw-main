@@ -1,4 +1,4 @@
-package com.cwsni.world.client.desktop.map;
+package com.cwsni.world.client.desktop.game.map;
 
 import java.io.InputStream;
 import java.util.stream.Stream;
