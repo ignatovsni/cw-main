@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import com.cwsni.world.client.desktop.game.GameSceneFactory;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 
 import javafx.application.Application;
@@ -76,8 +77,8 @@ public class MainWindow extends Application  {
 		return springContext.getBean(LocaleMessageSource.class).getMessage(code);
 	}
 	
-	private GameScene getGameScene() {
-		return springContext.getBean(GameScene.class);
+	private GameSceneFactory getGameScene() {
+		return springContext.getBean(GameSceneFactory.class);
 	}
 	
 	private UserProperties getUserProperties() {

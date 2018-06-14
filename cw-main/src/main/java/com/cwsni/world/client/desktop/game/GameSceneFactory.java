@@ -1,24 +1,16 @@
-package com.cwsni.world.client.desktop;
+package com.cwsni.world.client.desktop.game;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
-import com.cwsni.world.client.desktop.map.DWorldMap;
-import com.cwsni.world.model.WorldMap;
+import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
@@ -27,38 +19,28 @@ import javafx.stage.Stage;
  *
  */
 @Component
-public class GameScene {
+public class GameSceneFactory {
 	
 	@Autowired
 	private LocaleMessageSource messageSource; 
 	
 	public Scene createScene(Stage stage) {
-		DWorldMap worldMap = createTestMap(30, 30, 30);
-		
-		Parent zoomPane = new ZoomableScrollPane(worldMap.getMapGroup());		
-
-		VBox layout = new VBox();
-		layout.getChildren().setAll(createMenuBar(stage, worldMap.getMapGroup()), zoomPane);
-
-		VBox.setVgrow(zoomPane, Priority.ALWAYS);
-
-		Scene scene = new Scene(layout);
+		ZoomableScrollPane zoomPane = new ZoomableScrollPane();		
+		BorderPane layout = new BorderPane();
+		layout.setTop(createMenuBar(stage));
+		layout.setCenter(zoomPane);
+		GameScene scene = new GameScene(layout, zoomPane);
+		scene.createTestMap();
 		return scene;
 	}
-	
-	private DWorldMap createTestMap(int rows, int columns, int provinceRadius) {
-		WorldMap map = WorldMap.createMap(rows, columns, provinceRadius);
-		DWorldMap dMap = DWorldMap.createDMap(map, provinceRadius); 
-		return dMap;
-	}
 
-
-	private MenuBar createMenuBar(final Stage stage, final Group group) {
+	private MenuBar createMenuBar(final Stage stage) {
 		Menu fileMenu = new Menu(getMessage("menu.file"));
 		MenuItem exitMenuItem = new MenuItem(getMessage("menu.exit"));
 		exitMenuItem.setOnAction( event -> stage.close());
 		fileMenu.getItems().setAll(exitMenuItem);
 		
+		/*
 		Menu zoomMenu = new Menu("_Zoom");
 		MenuItem zoomResetMenuItem = new MenuItem("Zoom _Reset");
 		zoomResetMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.ESCAPE));
@@ -67,8 +49,11 @@ public class GameScene {
 				group.setScaleY(1);
 		});
 		zoomMenu.getItems().setAll(zoomResetMenuItem);
-		MenuBar menuBar = new MenuBar();
 		menuBar.getMenus().setAll(fileMenu, zoomMenu);
+		*/
+		
+		MenuBar menuBar = new MenuBar();
+		menuBar.getMenus().setAll(fileMenu);
 		return menuBar;
 	}
 	
