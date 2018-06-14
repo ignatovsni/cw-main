@@ -20,6 +20,7 @@ public class MainWindow extends Application  {
 	
 	private ConfigurableApplicationContext springContext;
     private Parent root;
+	private Stage stage;
     
     static private String[] args;
     
@@ -38,16 +39,37 @@ public class MainWindow extends Application  {
 	
 	@Override
     public void stop() throws Exception {
+		setUserPreferences();
+		getUserProperties().saveUserProperties();
         springContext.stop();
     }
 	
+	private void setUserPreferences() {
+		if (stage == null) {
+			return;
+		}
+		UserProperties userProp = getUserProperties();
+		userProp.setMainWindowHeight(stage.getHeight());
+		userProp.setMainWindowWidth(stage.getWidth());
+		userProp.setMainWindowPositionX(stage.getX());
+		userProp.setMainWindowPositionY(stage.getY());
+	}
+
 	@Override
-	public void start(final Stage stage) {		
+	public void start(final Stage stage) {
+		this.stage = stage;
 		stage.setTitle(getMessage("main.window.title"));
 		stage.setScene(getGameScene().createScene(stage));
-		stage.setHeight(600);
-		stage.setWidth(800);		
+		applyUserPreferences(stage);
 		stage.show();
+	}
+
+	private void applyUserPreferences(Stage stage) {
+		UserProperties userProp = getUserProperties();
+		stage.setWidth(userProp.getMainWindowWidth());
+		stage.setHeight(userProp.getMainWindowHeight());
+		stage.setX(userProp.getMainWindowPosX());
+		stage.setY(userProp.getMainWindowPosY());
 	}
 	
 	private String getMessage(String code) {
@@ -56,6 +78,10 @@ public class MainWindow extends Application  {
 	
 	private GameScene getGameScene() {
 		return springContext.getBean(GameScene.class);
+	}
+	
+	private UserProperties getUserProperties() {
+		return springContext.getBean(UserProperties.class);
 	}
 
 }

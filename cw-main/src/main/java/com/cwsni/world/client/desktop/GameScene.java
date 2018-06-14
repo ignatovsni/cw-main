@@ -56,22 +56,15 @@ public class GameScene {
 	private MenuBar createMenuBar(final Stage stage, final Group group) {
 		Menu fileMenu = new Menu(getMessage("menu.file"));
 		MenuItem exitMenuItem = new MenuItem(getMessage("menu.exit"));
-		exitMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				stage.close();
-			}
-		});
+		exitMenuItem.setOnAction( event -> stage.close());
 		fileMenu.getItems().setAll(exitMenuItem);
+		
 		Menu zoomMenu = new Menu("_Zoom");
 		MenuItem zoomResetMenuItem = new MenuItem("Zoom _Reset");
 		zoomResetMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.ESCAPE));
-		zoomResetMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
+		zoomResetMenuItem.setOnAction( event -> {
 				group.setScaleX(1);
 				group.setScaleY(1);
-			}
 		});
 		zoomMenu.getItems().setAll(zoomResetMenuItem);
 		MenuBar menuBar = new MenuBar();
