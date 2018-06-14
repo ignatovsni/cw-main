@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.WorldMap;
 
@@ -18,6 +19,7 @@ public class DWorldMap {
 	private double provinceRadius;
 	private Group mapGroup;
 	private DProvince selectedProvince;
+	private GameScene gameScene;
 	
 	private DWorldMap(WorldMap map, double provinceRadius) {
 		this.map = map;
@@ -55,6 +57,11 @@ public class DWorldMap {
 		if (selectedProvince != null) {
 			selectedProvince.selectProvince(true);
 		}
+		gameScene.selectProvince(dProvince.getProvince());
+	}
+
+	public void setGameScene(GameScene gameScene) {
+		this.gameScene = gameScene;
 	}
 
 }

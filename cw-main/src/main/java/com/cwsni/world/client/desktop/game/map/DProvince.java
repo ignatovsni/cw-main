@@ -11,7 +11,6 @@ import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Polygon;
@@ -22,7 +21,7 @@ import javafx.util.Duration;
  * @author sni
  *
  */
-public class DProvince extends Group {
+class DProvince extends Group {
 	// https://www.redblobgames.com/grids/hexagons/  - how to calculate hex
 	
     private static final Color STROKE_SELECTED_2_COLOR = Color.YELLOW;
@@ -98,6 +97,10 @@ public class DProvince extends Group {
 			}
 			polygon.setStroke(STROKE_DEFAULT_COLOR);				
 		}
+	}
+	
+	public Province getProvince() {
+		return province;
 	}
 
 }

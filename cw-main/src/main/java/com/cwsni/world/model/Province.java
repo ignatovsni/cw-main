@@ -2,9 +2,11 @@ package com.cwsni.world.model;
 
 public class Province {
 	
+	final private int id;
 	private Point center;	
 	
-	public Province(double x, double y) {
+	public Province(int id, double x, double y) {
+		this.id = id;
 		this.center = new Point(x, y);
 	}
 	
@@ -12,4 +14,8 @@ public class Province {
 		return center;
 	}
 
+	public int getId() {
+		return id;
+	}
+	
 }
