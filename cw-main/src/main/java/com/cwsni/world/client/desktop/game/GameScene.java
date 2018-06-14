@@ -1,31 +1,72 @@
 package com.cwsni.world.client.desktop.game;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.map.DWorldMap;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
 import com.cwsni.world.model.WorldMap;
 
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
+@Component
+@Scope("prototype")
 public class GameScene extends Scene {
 
+	@Autowired
+	private LocaleMessageSource messageSource;
+
+	private Stage stage;
 	private ZoomableScrollPane mapPane;
 
-	public GameScene(Parent root, ZoomableScrollPane mapPane) {
-		super(root);
-		this.mapPane = mapPane;
+	public GameScene() {
+		super(new BorderPane());
 	}
 
-	public void createTestMap() {
+	private String getMessage(String code) {
+		return messageSource.getMessage(code);
+	}
+
+	public void setStage(Stage stage) {
+		this.stage = stage;
+	}
+
+	public void initialize() {
+		mapPane = new ZoomableScrollPane();
+		BorderPane layout = (BorderPane) getRoot();
+		layout.setTop(createMenuBar(stage));
+		layout.setCenter(mapPane);
+		createTestMap();
+	}
+
+	private MenuBar createMenuBar(final Stage stage) {
+		Menu fileMenu = new Menu(getMessage("menu.file"));
+		MenuItem exitMenuItem = new MenuItem(getMessage("menu.exit"));
+		exitMenuItem.setOnAction(event -> stage.close());
+		fileMenu.getItems().setAll(exitMenuItem);
+
+		MenuBar menuBar = new MenuBar();
+		menuBar.getMenus().setAll(fileMenu);
+		return menuBar;
+	}
+
+
+	private void createTestMap() {
 		DWorldMap worldMap = createTestMap(30, 30, 30);
 		mapPane.setTarget(worldMap.getMapGroup());
 	}
-	
-	
+
 	private DWorldMap createTestMap(int rows, int columns, int provinceRadius) {
 		WorldMap map = WorldMap.createMap(rows, columns, provinceRadius);
-		DWorldMap dMap = DWorldMap.createDMap(map, provinceRadius); 
+		DWorldMap dMap = DWorldMap.createDMap(map, provinceRadius);
 		return dMap;
 	}
-
+	
 }

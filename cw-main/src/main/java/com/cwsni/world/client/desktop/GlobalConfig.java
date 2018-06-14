@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties("app")
-public class GlobalCongiguration {
+public class GlobalConfig {
 	
 	private String locale;
 

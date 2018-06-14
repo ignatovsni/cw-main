@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.GlobalCongiguration;
+import com.cwsni.world.client.desktop.GlobalConfig;
 
 @Component
 public class DefaultLocaleMessageSource implements LocaleMessageSource {
@@ -15,7 +15,7 @@ public class DefaultLocaleMessageSource implements LocaleMessageSource {
 	private MessageSource messageSource;
 	
 	@Autowired
-	private GlobalCongiguration globalConfig; 
+	private GlobalConfig globalConfig; 
 
 	@Override
 	public String getMessage(String code) {
