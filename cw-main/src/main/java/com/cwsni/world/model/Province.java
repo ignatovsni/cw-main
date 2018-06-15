@@ -9,7 +9,7 @@ public class Province {
 		this(-1, 0, 0);
 	}
 	
-	public Province(int id, double x, double y) {
+	public Province(int id, int x, int y) {
 		this.id = id;
 		this.center = new Point(x, y);
 	}

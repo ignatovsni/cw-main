@@ -43,7 +43,7 @@ public class WorldMap {
 		for (int row = 0; row < rows; row++) {
 			x = provinceRadius * xStep / 2 * (row % 2);
 			for (int column = 0; column < columns; column++) {
-				Province province = new Province(idx++, x, y);
+				Province province = new Province(idx++, (int)x, (int)y);
 				map.provinces.add(province);
 				x += provinceRadius * xStep;
 			}
