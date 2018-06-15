@@ -2,9 +2,9 @@ package com.cwsni.world.client.desktop.game.map;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import com.cwsni.world.client.desktop.game.GameScene;
+import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.WorldMap;
 
@@ -15,28 +15,26 @@ import javafx.scene.input.MouseEvent;
 public class DWorldMap {
 	
 	private List<DProvince> provinces;
-	private WorldMap map;
-	private double provinceRadius;
+	private Game game;
 	private Group mapGroup;
 	private DProvince selectedProvince;
 	private GameScene gameScene;
 	
-	private DWorldMap(WorldMap map, double provinceRadius) {
-		this.map = map;
-		this.provinceRadius = provinceRadius;
-		fillMap(map);
+	private DWorldMap(Game game) {
+		this.game = game;
+		fillMap(game.getMap());
 	}
 
 	private void fillMap(WorldMap map) {
-		Stream<Province> pvs = map.getProvinces();
-		provinces = new ArrayList<>(map.getNumberOfProvinces());
-		pvs.forEach(p -> provinces.add(DProvince.createDProvince(this, p, provinceRadius)));
+		List<Province> pvs = map.getProvinces();
+		provinces = new ArrayList<>(pvs.size());
+		pvs.forEach(p -> provinces.add(DProvince.createDProvince(this, p, game.getMap().getProvinceRadius())));
 		mapGroup = new Group();
 		mapGroup.getChildren().addAll(provinces);
 	}
 
-	public static DWorldMap createDMap(WorldMap map, double provinceRadius) {
-		return new DWorldMap(map, provinceRadius);
+	public static DWorldMap createDMap(Game game) {
+		return new DWorldMap(game);
 	}
 	
 	public Group getMapGroup() {
@@ -62,6 +60,10 @@ public class DWorldMap {
 
 	public void setGameScene(GameScene gameScene) {
 		this.gameScene = gameScene;
+	}
+	
+	public Game getGame() {
+		return game;
 	}
 
 }
