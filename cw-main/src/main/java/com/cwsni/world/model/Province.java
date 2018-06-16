@@ -9,7 +9,9 @@ public class Province {
 	
 	private int id;
 	private String name;
-	private Point center;	
+	private Point center;
+	private int soilFertility;
+	private int soilAmount;
 	private List<Population> population;
 	
 	public Province() {
@@ -53,6 +55,22 @@ public class Province {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public int getSoilFertility() {
+		return soilFertility;
+	}
+
+	public void setSoilFertility(int soilFertility) {
+		this.soilFertility = soilFertility;
+	}
+
+	public int getSoilAmount() {
+		return soilAmount;
+	}
+
+	public void setSoilAmount(int soilAmount) {
+		this.soilAmount = soilAmount;
 	}
 
 	@JsonIgnore

@@ -1,10 +1,8 @@
 package com.cwsni.world.client.desktop.game;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 import com.cwsni.world.model.Province;
 
@@ -16,18 +14,12 @@ import javafx.scene.layout.Pane;
 @Scope("prototype")
 public class GsProvInfoPane extends InternalInfoPane {
 
-	@Autowired
-	private LocaleMessageSource messageSource;
-
 	private GameScene gameScene;
 
 	private Label valuesNameLabel;
-
 	private Label valuesPopsLabel;
-
-	private String getMessage(String code) {
-		return messageSource.getMessage(code);
-	}
+	private Label valuesSoilAmountLabel;
+	private Label valuesSoilFertilityLabel;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -38,13 +30,10 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private Pane createUI() {
 		GridPane grid = createDefaultGrid();
 
-		grid.add(createGridNameColumn(getMessage("info.pane.prov.name")), 0, 0);
-		valuesNameLabel = createGridValueColumn(0);
-		grid.add(valuesNameLabel, 1, 0);
-		
-		grid.add(createGridNameColumn(getMessage("info.pane.prov.population")), 0, 1);
-		valuesPopsLabel = createGridValueColumn(0);
-		grid.add(valuesPopsLabel, 1, 1);
+		valuesNameLabel = addRow("info.pane.prov.name", grid, 0);
+		valuesPopsLabel = addRow("info.pane.prov.population", grid, 1);
+		valuesSoilAmountLabel = addRow("info.pane.prov.soil.amount", grid, 2);
+		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, 3);
 
 		return grid;
 	}
@@ -54,9 +43,13 @@ public class GsProvInfoPane extends InternalInfoPane {
 		if (prov != null) {
 			valuesNameLabel.setText(prov.getName());
 			valuesPopsLabel.setText(toInt(prov.getPopulationAmount()));
+			valuesSoilAmountLabel.setText(toInt(prov.getSoilAmount()));
+			valuesSoilFertilityLabel.setText(toInt(prov.getSoilFertility()));
 		} else {
 			valuesNameLabel.setText("");
 			valuesPopsLabel.setText("");
+			valuesSoilAmountLabel.setText("");
+			valuesSoilFertilityLabel.setText("");
 		}
 	}
 

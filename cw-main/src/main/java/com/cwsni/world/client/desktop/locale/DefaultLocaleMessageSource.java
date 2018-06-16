@@ -19,7 +19,7 @@ public class DefaultLocaleMessageSource implements LocaleMessageSource {
 
 	@Override
 	public String getMessage(String code) {
-		return messageSource.getMessage(code, null, getLocale());
+		return messageSource.getMessage(code, null, code, getLocale());
 	}
 
 	private Locale getLocale() {

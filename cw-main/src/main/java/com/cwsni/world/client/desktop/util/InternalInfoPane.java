@@ -1,5 +1,9 @@
 package com.cwsni.world.client.desktop.util;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
+
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -11,16 +15,23 @@ import javafx.scene.layout.Pane;
 
 public class InternalInfoPane extends BorderPane {
 
+	@Autowired
+	private LocaleMessageSource messageSource;
+
+	protected String getMessage(String code) {
+		return messageSource.getMessage(code);
+	}
+
 	public void init(String title, Pane internalPane) {
 		BorderPane titleBar = new BorderPane();
-        titleBar.setStyle("-fx-background-color: #999999; -fx-padding: 3");
-        Label label = new Label(title);
-        titleBar.setLeft(label);
-        setStyle("-fx-border-width: 1; -fx-border-color: black");
-        setTop(titleBar);
-        setCenter(internalPane);
+		titleBar.setStyle("-fx-background-color: #999999; -fx-padding: 3");
+		Label label = new Label(title);
+		titleBar.setLeft(label);
+		setStyle("-fx-border-width: 1; -fx-border-color: black");
+		setTop(titleBar);
+		setCenter(internalPane);
 	}
-	
+
 	protected GridPane createDefaultGrid() {
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
@@ -34,7 +45,14 @@ public class InternalInfoPane extends BorderPane {
 		grid.getColumnConstraints().add(column2);
 		return grid;
 	}
-	
+
+	protected Label addRow(String msgCode, GridPane grid, int row) {
+		grid.add(createGridNameColumn(getMessage(msgCode)), 0, row);
+		Label label = createGridValueColumn(0);
+		grid.add(label, 1, row);
+		return label;
+	}
+
 	protected Node createGridNameColumn(Object title) {
 		String txt = String.valueOf(title);
 		return new Label(txt);
@@ -44,13 +62,13 @@ public class InternalInfoPane extends BorderPane {
 		String txt = String.valueOf(value);
 		return new Label(txt);
 	}
-	
+
 	protected String toString(Object o) {
 		return String.valueOf(o);
 	}
-	
+
 	protected String toInt(int i) {
 		return DataFormatter.formatIntNumber(i);
 	}
-	
+
 }

@@ -24,6 +24,11 @@ public class MainWindow extends Application {
 	private ConfigurableApplicationContext springContext;
 	private Parent root;
 	private Stage stage;
+	
+	/**
+	 * Use it to prevent savings of user preferences if application didn't start successfully
+	 */
+	private boolean successfulStart;
 
 	static private String[] args;
 
@@ -48,7 +53,7 @@ public class MainWindow extends Application {
 	}
 
 	private void setUserPreferences() {
-		if (stage == null) {
+		if (stage == null || !successfulStart) {
 			return;
 		}
 		UserProperties userProp = getUserProperties();
@@ -65,6 +70,7 @@ public class MainWindow extends Application {
 		createGameScene(stage);
 		applyUserPreferences(stage);
 		stage.show();
+		successfulStart = true;
 	}
 
 	private void createGameScene(Stage stage) {
