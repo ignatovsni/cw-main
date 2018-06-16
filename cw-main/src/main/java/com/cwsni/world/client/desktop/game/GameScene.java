@@ -36,6 +36,9 @@ public class GameScene extends Scene {
 	@Autowired
 	private GsMenuBar menuBar;
 
+	@Autowired
+	private GsGlobalInfoPane globalInfoPane;
+	
 	private Stage stage;
 	private ZoomableScrollPane mapPane;
 	private Text statusBarText;
@@ -58,14 +61,21 @@ public class GameScene extends Scene {
 		mapPane = new ZoomableScrollPane();
 		toolBar.init(this);
 		menuBar.init(this);
+		globalInfoPane.init(this);
+		
 		VBox topSection = new VBox();
 		topSection.getChildren().addAll(menuBar, toolBar);
+
+		VBox rightSection = new VBox();
+		rightSection.getChildren().addAll(globalInfoPane);
+		rightSection.setMaxWidth(200);
 		
 		BorderPane layout = (BorderPane) getRoot();
 		layout.setTop(topSection);
 		layout.setBottom(createStatusBar());
+		layout.setRight(rightSection);
 		layout.setCenter(mapPane);
-		
+			
 		createTestGame();
 	}
 
@@ -91,6 +101,7 @@ public class GameScene extends Scene {
 		this.game = worldMap.getGame();
 		this.worldMap = worldMap;
 		worldMap.setGameScene(this);
+		refreshAllVisibleInfo();
 	}
 
 	private Pane createStatusBar() {
@@ -103,6 +114,7 @@ public class GameScene extends Scene {
 	private void createTestGame() {
 		Game game = gameGenerator.createTestGame(20, 20, 30);
 		setupGame(game);
+		refreshAllVisibleInfo();
 	}
 
 	// Event listener can be a good idea instead of direct invocation
@@ -125,5 +137,14 @@ public class GameScene extends Scene {
 	public void exitApp() {
 		stage.close();
 	}
+	
+	public Game getGame() {
+		return game;
+	}
+
+	private void refreshAllVisibleInfo() {
+		globalInfoPane.refreshInfo();
+	}
+
 
 }

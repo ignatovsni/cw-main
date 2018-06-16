@@ -3,6 +3,8 @@ package com.cwsni.world.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Province {
 	
 	private int id;
@@ -53,6 +55,7 @@ public class Province {
 		this.name = name;
 	}
 
+	@JsonIgnore
 	public int getPopulationAmount() {
 		return getPopulation().stream()
 				.mapToInt(p -> p.getAmount())
