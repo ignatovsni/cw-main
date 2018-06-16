@@ -13,81 +13,111 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
 import javafx.util.Duration;
 
 /**
  * Hexagon province
+ * 
  * @author sni
  *
  */
 class DProvince extends Group {
-	// https://www.redblobgames.com/grids/hexagons/  - how to calculate hex
-	
-    private static final Color STROKE_SELECTED_2_COLOR = Color.YELLOW;
+	// https://www.redblobgames.com/grids/hexagons/ - how to calculate hex
+
+	private static final Color STROKE_SELECTED_2_COLOR = Color.YELLOW;
 	private static final Color STROKE_SELECTED_1_COLOR = Color.RED;
 	private static final Color STROKE_DEFAULT_COLOR = Color.GRAY;
 
 	public static final int SIDES = 6;
 
-    private Point2D[] points = new Point2D[SIDES];
-    private Point2D center;
-    private double radius;
-    private Polygon polygon;
-    private Timeline timeline;
-    
-    private final DWorldMap map;
-    private final Province province;
+	private Point2D[] points = new Point2D[SIDES];
+	private Point2D center;
+	private double radius;
+	private Polygon polygon;
+	private Timeline timeline;
 
-    private boolean isSelected = false;
-	
-    
-    private DProvince(DWorldMap map, Province province, double provinceRadius) {
-    	this.map = map;
-    	this.province = province;
-        this.center = new Point2D(province.getCenter().getX(), province.getCenter().getY());
-        this.radius = provinceRadius;
-        updatePoints();        
-        createVisualElements();
-    }
+	private final DWorldMap map;
+	private final Province province;
+
+	private boolean isSelected = false;
+
+	private DProvince(DWorldMap map, Province province, double provinceRadius) {
+		this.map = map;
+		this.province = province;
+		this.center = new Point2D(province.getCenter().getX(), province.getCenter().getY());
+		this.radius = provinceRadius;
+		updatePoints();
+		createVisualElements();
+	}
 
 	private void createVisualElements() {
 		polygon = new Polygon();
 		Stream.of(points).forEach(p -> polygon.getPoints().addAll(p.getX(), p.getY()));
 		polygon.setStroke(STROKE_DEFAULT_COLOR);
 		polygon.setStrokeWidth(2);
-		
+		reDraw();
+		getChildren().add(polygon);
+		polygon.setOnMouseClicked(e -> map.mouseClickOnProvince(this, e));
+	}
+
+	public void reDraw() {
+		MapMode mapMode = map.getMapMode();
+		switch (mapMode) {
+		case POPULATION:
+			drawPopulationMode(polygon);
+			break;
+		case GEO:
+		default:
+			drawGeoMode(polygon);
+			break;
+		}
+	}
+
+	private void drawGeoMode(Polygon polygon) {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 		InputStream is = classloader.getResourceAsStream("desktop/map/green.png");
 		Image texture = new Image(is);
-
 		polygon.setFill(new ImagePattern(texture, 0, 0, 1, 1, true));
-		
-		getChildren().add(polygon);		
-		
-		polygon.setOnMouseClicked(e -> map.mouseClickOnProvince(this, e) );
 	}
 
-    protected void updatePoints() {
-        for (int i = 0; i < SIDES; i++) {
-        	int angle_deg = 60 * i + 30;
-        	double angle_rad = Math.PI / 180 * angle_deg;
-        	points[i] = new Point2D(center.getX() + radius * Math.cos(angle_rad), center.getY() + radius * Math.sin(angle_rad));
-        }
-    }
+	private void drawPopulationMode(Polygon polygon) {
+		int maxPops = map.getGame().getGameStats().getMaxPopulation();
+		double fraction = maxPops != 0 ? (double) province.getPopulationAmount() / maxPops : 1;
+		//fraction = Math.sqrt(fraction);
+		//fraction = fraction * fraction;
+		Paint pValue;
+		if (fraction < 0.5) {
+			pValue = new Color(fraction * 2, fraction * 2, 0, 1);
+		} else {
+			pValue = new Color(1, 1 - (fraction - 0.5) * 2, 0, 1);
+		}
+		polygon.setFill(pValue);
+	}
+
+	protected void updatePoints() {
+		for (int i = 0; i < SIDES; i++) {
+			int angle_deg = 60 * i + 30;
+			double angle_rad = Math.PI / 180 * angle_deg;
+			points[i] = new Point2D(center.getX() + radius * Math.cos(angle_rad),
+					center.getY() + radius * Math.sin(angle_rad));
+		}
+	}
 
 	public static DProvince createDProvince(DWorldMap map, Province p, double provinceRadius) {
 		return new DProvince(map, p, provinceRadius);
 	}
 
 	public void selectProvince(boolean isSelected) {
-		this.isSelected = isSelected;		
+		this.isSelected = isSelected;
 		if (isSelected) {
 			DProvince.this.toFront();
 			polygon.setStroke(STROKE_SELECTED_2_COLOR);
 			if (timeline == null) {
-				timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), evt -> polygon.setStroke(STROKE_SELECTED_1_COLOR)),
-		                new KeyFrame(Duration.seconds(1), evt -> polygon.setStroke(STROKE_SELECTED_2_COLOR)));
+				timeline = new Timeline(
+						new KeyFrame(Duration.seconds(0.5), evt -> polygon.setStroke(STROKE_SELECTED_1_COLOR)),
+						new KeyFrame(Duration.seconds(1), evt -> polygon.setStroke(STROKE_SELECTED_2_COLOR)));
 				timeline.setCycleCount(Animation.INDEFINITE);
 			}
 			timeline.play();
@@ -95,10 +125,10 @@ class DProvince extends Group {
 			if (timeline != null) {
 				timeline.stop();
 			}
-			polygon.setStroke(STROKE_DEFAULT_COLOR);				
+			polygon.setStroke(STROKE_DEFAULT_COLOR);
 		}
 	}
-	
+
 	public Province getProvince() {
 		return province;
 	}

@@ -1,4 +1,4 @@
-package com.cwsni.world.client.desktop.repository;
+package com.cwsni.world.common;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +49,7 @@ public class GameRepository {
 			e.printStackTrace();
 			logger.info("quick load is failed ", e);
 		}
+		game.postConstruct();
 		return game;
 	}
 

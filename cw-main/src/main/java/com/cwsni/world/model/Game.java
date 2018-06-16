@@ -10,6 +10,9 @@ public class Game {
 
 	private String version = CURRENT_VERSION;
 	private WorldMap map;
+	
+	@JsonIgnore
+	private GameStats gameStats;
 
 	public WorldMap getMap() {
 		return map;
@@ -26,13 +29,15 @@ public class Game {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-
-	public static Game createTestGame(int rows, int columns, int provinceRadius) {
-		Game game = new Game();
-		WorldMap map = WorldMap.createMap(rows, columns, provinceRadius);
-		game.setMap(map);
-		return game;
+	
+	public GameStats getGameStats() {
+		return gameStats;
 	}
+
+	public void setGameStats(GameStats gameStats) {
+		this.gameStats = gameStats;
+	}
+
 
 	@JsonIgnore
 	public boolean isCorrect() {
@@ -49,6 +54,21 @@ public class Game {
 		StringBuilder sb = new StringBuilder();
 		sb.append("version=" + version);
 		return sb.toString();
+	}
+	
+	private void calcGameStats() {
+		GameStats stats = new GameStats();
+		getMap().getProvinces().forEach(p -> {
+			int pop = p.getPopulationAmount();
+			if (stats.getMaxPopulation() < pop) {
+				stats.setMaxPopulation(pop);
+			}
+		});		
+		setGameStats(stats);
+	}
+
+	public void postConstruct() {
+		calcGameStats();
 	}
 
 }

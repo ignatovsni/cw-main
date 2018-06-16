@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
@@ -15,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 @SpringBootApplication
+@ComponentScan("com.cwsni.world")
 public class MainWindow extends Application {
 
 	private static final Log logger = LogFactory.getLog(MainWindow.class);

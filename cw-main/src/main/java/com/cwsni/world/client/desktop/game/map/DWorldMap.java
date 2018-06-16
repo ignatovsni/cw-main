@@ -19,9 +19,11 @@ public class DWorldMap {
 	private Group mapGroup;
 	private DProvince selectedProvince;
 	private GameScene gameScene;
+	private MapMode mapMode = MapMode.GEO;
 	
-	private DWorldMap(Game game) {
+	private DWorldMap(Game game, MapMode mapMode) {
 		this.game = game;
+		this.mapMode = mapMode;
 		fillMap(game.getMap());
 	}
 
@@ -33,8 +35,8 @@ public class DWorldMap {
 		mapGroup.getChildren().addAll(provinces);
 	}
 
-	public static DWorldMap createDMap(Game game) {
-		return new DWorldMap(game);
+	public static DWorldMap createDMap(Game game, MapMode mapMode) {
+		return new DWorldMap(game, mapMode);
 	}
 	
 	public Group getMapGroup() {
@@ -65,5 +67,15 @@ public class DWorldMap {
 	public Game getGame() {
 		return game;
 	}
+
+	public MapMode getMapMode() {
+		return mapMode;
+	}
+
+	public void setMapModeAndRedraw(MapMode mapMode) {
+		this.mapMode = mapMode;
+		provinces.forEach(p -> p.reDraw());
+	}
+	
 
 }
