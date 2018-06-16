@@ -39,6 +39,9 @@ public class GameScene extends Scene {
 	@Autowired
 	private GsGlobalInfoPane globalInfoPane;
 	
+	@Autowired
+	private GsProvInfoPane provInfoPane;
+	
 	private Stage stage;
 	private ZoomableScrollPane mapPane;
 	private Text statusBarText;
@@ -62,12 +65,13 @@ public class GameScene extends Scene {
 		toolBar.init(this);
 		menuBar.init(this);
 		globalInfoPane.init(this);
+		provInfoPane.init(this);
 		
 		VBox topSection = new VBox();
 		topSection.getChildren().addAll(menuBar, toolBar);
 
 		VBox rightSection = new VBox();
-		rightSection.getChildren().addAll(globalInfoPane);
+		rightSection.getChildren().addAll(globalInfoPane, provInfoPane);
 		rightSection.setMaxWidth(200);
 		
 		BorderPane layout = (BorderPane) getRoot();
@@ -124,6 +128,7 @@ public class GameScene extends Scene {
 			statusBarText.setText("Selected province with id = " + selectedProvince.getId() + "; population = "
 					+ selectedProvince.getPopulationAmount());
 		}
+		provInfoPane.refreshInfo();
 	}
 
 	public DWorldMap getWorldMap() {
@@ -144,7 +149,11 @@ public class GameScene extends Scene {
 
 	private void refreshAllVisibleInfo() {
 		globalInfoPane.refreshInfo();
+		provInfoPane.refreshInfo();
 	}
 
+	public Province getSelectedProvince() {
+		return selectedProvince;
+	}
 
 }

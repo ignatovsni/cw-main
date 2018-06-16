@@ -57,9 +57,6 @@ public class GsToolBar extends ToolBar {
 				mapMode = MapMode.POPULATION_2;
 				break;
 			case POPULATION_2:
-				mapMode = MapMode.POPULATION_3;
-				break;
-			case POPULATION_3:
 				mapMode = MapMode.POPULATION;
 				break;
 			default:

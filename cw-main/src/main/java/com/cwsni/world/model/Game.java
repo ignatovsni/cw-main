@@ -60,9 +60,10 @@ public class Game {
 		GameStats stats = new GameStats();
 		getMap().getProvinces().forEach(p -> {
 			int pop = p.getPopulationAmount();
-			if (stats.getMaxPopulation() < pop) {
-				stats.setMaxPopulation(pop);
+			if (stats.getMaxPopulationInProvince() < pop) {
+				stats.setMaxPopulationInProvince(pop);
 			}
+			stats.setTotalPopulation(stats.getTotalPopulation() + pop);
 		});		
 		setGameStats(stats);
 	}

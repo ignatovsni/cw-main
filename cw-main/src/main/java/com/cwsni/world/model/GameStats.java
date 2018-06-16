@@ -2,14 +2,23 @@ package com.cwsni.world.model;
 
 public class GameStats {
 	
-	private int maxPopulation;
+	private int maxPopulationInProvince;
+	private int totalPopulation;	
 
-	public int getMaxPopulation() {
-		return maxPopulation;
+	public int getTotalPopulation() {
+		return totalPopulation;
 	}
 
-	public void setMaxPopulation(int maxPopulation) {
-		this.maxPopulation = maxPopulation;
+	public void setTotalPopulation(int totalPopulation) {
+		this.totalPopulation = totalPopulation;
+	}
+
+	public int getMaxPopulationInProvince() {
+		return maxPopulationInProvince;
+	}
+
+	public void setMaxPopulationInProvince(int maxPopulation) {
+		this.maxPopulationInProvince = maxPopulation;
 	}
 
 }
