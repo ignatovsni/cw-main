@@ -70,7 +70,7 @@ public class MainWindow extends Application {
 	private void createGameScene(Stage stage) {
 		GameScene gameScene = getGameScene();
 		gameScene.setStage(stage);
-		gameScene.initialize();
+		gameScene.init();
 		stage.setScene(gameScene);
 	}
 
