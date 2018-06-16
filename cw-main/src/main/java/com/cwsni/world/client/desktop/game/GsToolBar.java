@@ -18,17 +18,17 @@ import javafx.scene.effect.Lighting;
 @Component
 @Scope("prototype")
 public class GsToolBar extends ToolBar {
-	
+
 	@Autowired
 	private LocaleMessageSource messageSource;
-	
+
 	private GameScene gameScene;
 	private List<Button> toolBarMapModes;
-	
+
 	private String getMessage(String code) {
 		return messageSource.getMessage(code);
 	}
-	
+
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
 		Button toolBarMapGeoMode = new Button(getMessage("toolbar.map.mode.geo.button.text"));
@@ -49,12 +49,27 @@ public class GsToolBar extends ToolBar {
 		toolBarMapModes.add(toolBarMapPopsMode);
 		getItems().addAll(toolBarMapModes);
 	}
-	
+
 	private void enableMapModeButton(Button buttonMode, MapMode mapMode) {
+		if (MapMode.POPULATION.equals(mapMode)) {
+			switch (gameScene.getWorldMap().getMapMode()) {
+			case POPULATION:
+				mapMode = MapMode.POPULATION_2;
+				break;
+			case POPULATION_2:
+				mapMode = MapMode.POPULATION_3;
+				break;
+			case POPULATION_3:
+				mapMode = MapMode.POPULATION;
+				break;
+			default:
+				break;
+			}
+		}
 		gameScene.getWorldMap().setMapModeAndRedraw(mapMode);
-		gameScene.setMapMode(mapMode); 
+		gameScene.setMapMode(mapMode);
 		toolBarMapModes.forEach(b -> b.setEffect(null));
 		buttonMode.setEffect(new Lighting());
 	}
-	
+
 }

@@ -56,14 +56,16 @@ public class GameScene extends Scene {
 
 	public void init() {
 		mapPane = new ZoomableScrollPane();
-		BorderPane layout = (BorderPane) getRoot();
 		toolBar.init(this);
 		menuBar.init(this);
-		VBox hbox = new VBox();
-		hbox.getChildren().addAll(menuBar, toolBar);
-		layout.setTop(hbox);
+		VBox topSection = new VBox();
+		topSection.getChildren().addAll(menuBar, toolBar);
+		
+		BorderPane layout = (BorderPane) getRoot();
+		layout.setTop(topSection);
 		layout.setBottom(createStatusBar());
 		layout.setCenter(mapPane);
+		
 		createTestGame();
 	}
 

@@ -66,6 +66,8 @@ class DProvince extends Group {
 		MapMode mapMode = map.getMapMode();
 		switch (mapMode) {
 		case POPULATION:
+		case POPULATION_2:
+		case POPULATION_3:
 			drawPopulationMode(polygon);
 			break;
 		case GEO:
@@ -85,8 +87,16 @@ class DProvince extends Group {
 	private void drawPopulationMode(Polygon polygon) {
 		int maxPops = map.getGame().getGameStats().getMaxPopulation();
 		double fraction = maxPops != 0 ? (double) province.getPopulationAmount() / maxPops : 1;
-		//fraction = Math.sqrt(fraction);
-		//fraction = fraction * fraction;
+		switch (map.getMapMode()) {
+		case POPULATION_2:
+			fraction = Math.sqrt(fraction);
+			break;
+		case POPULATION_3:
+			fraction = fraction * fraction;
+			break;
+		}
+		// fraction = Math.sqrt(fraction);
+		// fraction = fraction * fraction;
 		Paint pValue;
 		if (fraction < 0.5) {
 			pValue = new Color(fraction * 2, fraction * 2, 0, 1);
