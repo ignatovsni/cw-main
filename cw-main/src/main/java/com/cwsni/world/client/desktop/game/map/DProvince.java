@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.stream.Stream;
 
 import com.cwsni.world.model.Province;
+import com.cwsni.world.model.TerrainType;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -61,6 +62,10 @@ class DProvince extends Group {
 	}
 
 	public void reDraw() {
+		if (getProvince().getTerrainType() == TerrainType.OCEAN) {
+			drawGeoMode(polygon);
+			return;
+		}
 		MapMode mapMode = map.getMapMode();
 		switch (mapMode) {
 		case POPULATION:
