@@ -41,8 +41,6 @@ class DProvince extends Group {
 	private final DWorldMap map;
 	private final Province province;
 
-	private boolean isSelected = false;
-
 	private DProvince(DWorldMap map, Province province, double provinceRadius) {
 		this.map = map;
 		this.province = province;
@@ -69,39 +67,55 @@ class DProvince extends Group {
 		case POPULATION_2:
 			drawPopulationMode(polygon);
 			break;
+		case SOIL:
+		case SOIL_2:
+			drawSoilMode(polygon);
+			break;
 		case GEO:
-		default:
 			drawGeoMode(polygon);
+			break;
+		default:
 			break;
 		}
 	}
 
 	private void drawGeoMode(Polygon polygon) {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream is = classloader.getResourceAsStream("desktop/map/" + getProvince().getTerrainType().toString().toLowerCase() + ".png");
+		InputStream is = classloader
+				.getResourceAsStream("desktop/map/" + getProvince().getTerrainType().toString().toLowerCase() + ".png");
 		Image texture = new Image(is);
 		polygon.setFill(new ImagePattern(texture, 0, 0, 1, 1, true));
 	}
 
 	private void drawPopulationMode(Polygon polygon) {
-		int maxPops = map.getGame().getGameStats().getMaxPopulationInProvince();
-		double fraction = maxPops != 0 ? (double) province.getPopulationAmount() / maxPops : 1;
+		drawGradientMode(polygon, map.getGame().getGameStats().getMaxPopulationInProvince(),
+				province.getPopulationAmount(), MapMode.POPULATION_2.equals(map.getMapMode()));
+	}
+
+	private void drawSoilMode(Polygon polygon) {
+		drawGradientMode(polygon, map.getGame().getGameStats().getMaxSoilQuality(), province.getSoilQuality(),
+				MapMode.SOIL_2.equals(map.getMapMode()));
+	}
+
+	private void drawGradientMode(Polygon polygon, int maxMapValue, int provinceValue, boolean mode2) {
+		int maxPops = maxMapValue;
+		double fraction = maxPops != 0 ? (double) provinceValue / maxPops : 1;
 		Paint pValue;
 		if (fraction < 0.5) {
-			if (MapMode.POPULATION.equals(map.getMapMode())) {
-				fraction = Math.sqrt(fraction);
+			if (mode2) {
+				fraction = fraction * fraction;
 			}
 			pValue = new Color(Math.min(fraction * 2, 1), Math.min(fraction * 2, 1), 0, 1);
 		} else {
-			if (MapMode.POPULATION.equals(map.getMapMode())) {
-				fraction = fraction * fraction;
-			}			
+			if (mode2) {
+				fraction = Math.sqrt(fraction);
+			}
 			pValue = new Color(1, Math.min(1 - (fraction - 0.5) * 2, 1), 0, 1);
 		}
 		polygon.setFill(pValue);
 	}
 
-	protected void updatePoints() {
+	private void updatePoints() {
 		for (int i = 0; i < SIDES; i++) {
 			int angle_deg = 60 * i + 30;
 			double angle_rad = Math.PI / 180 * angle_deg;
@@ -115,7 +129,6 @@ class DProvince extends Group {
 	}
 
 	public void selectProvince(boolean isSelected) {
-		this.isSelected = isSelected;
 		if (isSelected) {
 			DProvince.this.toFront();
 			polygon.setStroke(STROKE_SELECTED_2_COLOR);

@@ -21,7 +21,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesNameLabel;
 	private RowValue valuesTerrainTypeLabel;
 	private RowValue valuesPopsLabel;
-	private RowValue valuesSoilAmountLabel;
+	private RowValue valuesSoilAreaLabel;
 	private RowValue valuesSoilFertilityLabel;
 	private List<RowValue> allRows;
 
@@ -39,7 +39,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 		valuesNameLabel = addRow("info.pane.prov.name", grid, allRows, idx++);
 		valuesTerrainTypeLabel = addRow("info.pane.prov.terrain-type", grid, allRows, idx++);
 		valuesPopsLabel = addRow("info.pane.prov.population", grid, allRows, idx++);
-		valuesSoilAmountLabel = addRow("info.pane.prov.soil.amount", grid, allRows, idx++);
+		valuesSoilAreaLabel = addRow("info.pane.prov.soil.area", grid, allRows, idx++);
 		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, allRows, idx++);
 
 		return grid;
@@ -60,8 +60,8 @@ public class GsProvInfoPane extends InternalInfoPane {
 			switch (prov.getTerrainType()) {
 			case GRASSLAND:
 				setLabelText(valuesPopsLabel, toInt(prov.getPopulationAmount()));
-				setLabelText(valuesSoilAmountLabel, toInt(prov.getSoilAmount()));
-				setLabelText(valuesSoilFertilityLabel, toInt(prov.getSoilFertility()));
+				setLabelText(valuesSoilAreaLabel, toInt(prov.getSoilArea()));
+				setLabelText(valuesSoilFertilityLabel, toFraction(prov.getSoilFertility()));
 				break;
 			case OCEAN:
 				break;

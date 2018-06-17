@@ -10,6 +10,7 @@ public class Province {
 	private int id;
 	private String name;
 	private Point center;
+
 	/**
 	 * It is used only for save/load Primary list of neighbors is stored in list
 	 * 'neighbors'
@@ -19,10 +20,13 @@ public class Province {
 
 	private TerrainType terrainType;
 
-	private int soilFertility;
-	private int soilAmount;
+	private double soilFertility;
+	private int soilArea;
 
 	private List<Population> population;
+
+	@JsonIgnore
+	private transient Point coordAsHex;
 
 	public Province() {
 		this(-1, 0, 0);
@@ -87,20 +91,20 @@ public class Province {
 		this.name = name;
 	}
 
-	public int getSoilFertility() {
+	public double getSoilFertility() {
 		return soilFertility;
 	}
 
-	public void setSoilFertility(int soilFertility) {
+	public void setSoilFertility(double soilFertility) {
 		this.soilFertility = soilFertility;
 	}
 
-	public int getSoilAmount() {
-		return soilAmount;
+	public int getSoilArea() {
+		return soilArea;
 	}
 
-	public void setSoilAmount(int soilAmount) {
-		this.soilAmount = soilAmount;
+	public void setSoilArea(int soilArea) {
+		this.soilArea = soilArea;
 	}
 
 	public TerrainType getTerrainType() {
@@ -129,11 +133,11 @@ public class Province {
 	public void postGenerate() {
 	}
 
-	public void checkCorrect() {
+	public void checkCorrectness() {
 		switch (getTerrainType()) {
 		case OCEAN:
 			internalAssert(getPopulation().size() == 0, "ocean province can not have population");
-			internalAssert(getSoilAmount() == 0, "ocean province must have soil amount = 0");
+			internalAssert(getSoilArea() == 0, "ocean province must have soil amount = 0");
 			internalAssert(getSoilFertility() == 0, "ocean province must have soil fertility = 0");
 			break;
 		case GRASSLAND:
@@ -145,6 +149,19 @@ public class Province {
 		if (!c) {
 			throw new RuntimeException("Failed to check province " + getId() + ": " + errorText);
 		}
+	}
+
+	@JsonIgnore
+	public int getSoilQuality() {
+		return (int) (getSoilArea() * getSoilFertility());
+	}
+
+	public Point getCoordAsHex() {
+		return coordAsHex;
+	}
+
+	public void setCoordAsHex(int row, int column) {
+		coordAsHex = new Point(row, column);
 	}
 
 }

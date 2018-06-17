@@ -3,16 +3,26 @@ package com.cwsni.world.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "version", "map" })
+@JsonPropertyOrder({ "version", "gameParams", "map" })
 public class Game {
 
 	final static String CURRENT_VERSION = "0.1";
 
 	private String version = CURRENT_VERSION;
+
+	private GameParams gameParams;
+
 	private WorldMap map;
 
 	@JsonIgnore
 	private GameStats gameStats;
+
+	public Game() {
+	}
+
+	public Game(GameParams gameParams) {
+		this.gameParams = gameParams;
+	}
 
 	public WorldMap getMap() {
 		return map;
@@ -38,6 +48,14 @@ public class Game {
 		this.gameStats = gameStats;
 	}
 
+	public GameParams getGameParams() {
+		return gameParams;
+	}
+
+	public void setGameParams(GameParams gameParams) {
+		this.gameParams = gameParams;
+	}
+
 	@JsonIgnore
 	public boolean isCorrect() {
 		return true;
@@ -58,11 +76,18 @@ public class Game {
 	private void calcGameStats() {
 		GameStats stats = new GameStats();
 		getMap().getProvinces().forEach(p -> {
+			// max population
 			int pop = p.getPopulationAmount();
 			if (stats.getMaxPopulationInProvince() < pop) {
 				stats.setMaxPopulationInProvince(pop);
 			}
+			// total population
 			stats.setTotalPopulation(stats.getTotalPopulation() + pop);
+			// max soil quality
+			int soilQuality = p.getSoilQuality();
+			if (stats.getMaxSoilQuality() < soilQuality) {
+				stats.setMaxSoilQuality(soilQuality);
+			}
 		});
 		setGameStats(stats);
 	}

@@ -3,7 +3,16 @@ package com.cwsni.world.model;
 public class GameStats {
 	
 	private int maxPopulationInProvince;
-	private int totalPopulation;	
+	private int totalPopulation;
+	private int maxSoilQuality;
+
+	public int getMaxSoilQuality() {
+		return maxSoilQuality;
+	}
+
+	public void setMaxSoilQuality(int maxSoilQuality) {
+		this.maxSoilQuality = maxSoilQuality;
+	}
 
 	public int getTotalPopulation() {
 		return totalPopulation;

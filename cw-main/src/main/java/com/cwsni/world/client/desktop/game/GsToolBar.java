@@ -44,9 +44,16 @@ public class GsToolBar extends ToolBar {
 			enableMapModeButton(toolBarMapPopsMode, MapMode.POPULATION);
 		});
 
+		Button toolBarMapSoilMode = new Button(getMessage("toolbar.map.mode.soil.button.text"));
+		toolBarMapSoilMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.soil.button.tooltip")));
+		toolBarMapSoilMode.setOnAction(e -> {
+			enableMapModeButton(toolBarMapSoilMode, MapMode.SOIL);
+		});
+
 		toolBarMapModes = new ArrayList<>();
 		toolBarMapModes.add(toolBarMapGeoMode);
 		toolBarMapModes.add(toolBarMapPopsMode);
+		toolBarMapModes.add(toolBarMapSoilMode);
 		getItems().addAll(toolBarMapModes);
 	}
 
@@ -58,6 +65,17 @@ public class GsToolBar extends ToolBar {
 				break;
 			case POPULATION_2:
 				mapMode = MapMode.POPULATION;
+				break;
+			default:
+				break;
+			}
+		} else if (MapMode.SOIL.equals(mapMode)) {
+			switch (gameScene.getWorldMap().getMapMode()) {
+			case SOIL:
+				mapMode = MapMode.SOIL_2;
+				break;
+			case SOIL_2:
+				mapMode = MapMode.SOIL;
 				break;
 			default:
 				break;

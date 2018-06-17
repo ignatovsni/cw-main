@@ -10,14 +10,8 @@ public class WorldMap {
 
 	private List<Province> provinces = new ArrayList<>();
 	private Map<Integer, Province> mapProvById;
-	private double provinceRadius;
 
 	public WorldMap() {
-		this(0);
-	}
-
-	public WorldMap(double provinceRadius) {
-		this.provinceRadius = provinceRadius;
 		provinces = new ArrayList<>();
 		mapProvById = new HashMap<>();
 	}
@@ -28,14 +22,6 @@ public class WorldMap {
 
 	public void setProvinces(List<Province> provinces) {
 		this.provinces = provinces;
-	}
-
-	public double getProvinceRadius() {
-		return provinceRadius;
-	}
-
-	public void setProvinceRadius(double provinceRadius) {
-		this.provinceRadius = provinceRadius;
 	}
 
 	public Province findProvById(Integer id) {
@@ -61,7 +47,7 @@ public class WorldMap {
 	}
 
 	public void checkCorrect() {
-		getProvinces().forEach(p -> p.checkCorrect());
+		getProvinces().forEach(p -> p.checkCorrectness());
 	}
 
 }

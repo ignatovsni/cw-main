@@ -15,4 +15,12 @@ public enum TerrainType {
 	TerrainType(String code) {
 		this.codeMsg = code;
 	}
+
+	public boolean isSoilPossible() {
+		return !OCEAN.equals(this);
+	}
+
+	public boolean isPopulationPossible() {
+		return !OCEAN.equals(this);
+	}
 }

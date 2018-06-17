@@ -13,14 +13,14 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
 public class DWorldMap {
-	
+
 	private List<DProvince> provinces;
 	private Game game;
 	private Group mapGroup;
 	private DProvince selectedProvince;
 	private GameScene gameScene;
 	private MapMode mapMode = MapMode.GEO;
-	
+
 	private DWorldMap(Game game, MapMode mapMode) {
 		this.game = game;
 		this.mapMode = mapMode;
@@ -30,7 +30,7 @@ public class DWorldMap {
 	private void fillMap(WorldMap map) {
 		List<Province> pvs = map.getProvinces();
 		provinces = new ArrayList<>(pvs.size());
-		pvs.forEach(p -> provinces.add(DProvince.createDProvince(this, p, game.getMap().getProvinceRadius())));
+		pvs.forEach(p -> provinces.add(DProvince.createDProvince(this, p, game.getGameParams().getProvinceRadius())));
 		mapGroup = new Group();
 		mapGroup.getChildren().addAll(provinces);
 	}
@@ -38,7 +38,7 @@ public class DWorldMap {
 	public static DWorldMap createDMap(Game game, MapMode mapMode) {
 		return new DWorldMap(game, mapMode);
 	}
-	
+
 	public Group getMapGroup() {
 		return mapGroup;
 	}
@@ -63,7 +63,7 @@ public class DWorldMap {
 	public void setGameScene(GameScene gameScene) {
 		this.gameScene = gameScene;
 	}
-	
+
 	public Game getGame() {
 		return game;
 	}
@@ -76,6 +76,5 @@ public class DWorldMap {
 		this.mapMode = mapMode;
 		provinces.forEach(p -> p.reDraw());
 	}
-	
 
 }

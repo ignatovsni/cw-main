@@ -3,12 +3,15 @@ package com.cwsni.world.common;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.Game;
+import com.cwsni.world.model.GameParams;
 import com.cwsni.world.model.Population;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.TerrainType;
@@ -18,39 +21,47 @@ import com.cwsni.world.model.WorldMap;
 public class GameGenerator {
 
 	public Game createTestGame() {
-		return createTestGame(30, 30, 30);
+		GameParams gameParams = new GameParams();
+		gameParams.setSeed(System.currentTimeMillis());
+		gameParams.setRows(30);
+		gameParams.setColumns(30);
+		// gameParams.setSoilAreaCorePointsPerProvinces(0.03);
+		// gameParams.setSoilFertilityCorePointsPerProvinces(0.1);
+		return createTestGame(gameParams);
 	}
 
-	public Game createTestGame(int rows, int columns, int provinceRadius) {
-		Game game = new Game();
-		createMap(rows, columns, provinceRadius, game);
-		createTerrain(game, System.currentTimeMillis(), 10, 0.4);
+	public Game createTestGame(GameParams gameParams) {
+		Game game = new Game(gameParams);
+		createMap(game);
+		createTerrain(game);
+		fillSoil(game);
 		fillPopulation(game);
 		game.postGenerate();
 		return game;
 	}
 
-	private void createMap(int rows, int columns, int provinceRadius, Game game) {
-		WorldMap map = createMap(rows, columns, provinceRadius);
+	private void createMap(Game game) {
+		WorldMap map = createMap(game.getGameParams());
 		game.setMap(map);
 	}
 
-	private WorldMap createMap(int rows, int columns, double provinceRadius) {
+	private WorldMap createMap(GameParams gParams) {
 		double xStep = 1.75;
 		double yStep = 1.51;
-		WorldMap map = new WorldMap(provinceRadius);
-		double x = provinceRadius;
-		double y = provinceRadius;
+		WorldMap map = new WorldMap();
+		double x = gParams.getProvinceRadius();
+		double y = gParams.getProvinceRadius();
 		int idx = 0;
-		for (int row = 0; row < rows; row++) {
-			x = provinceRadius * xStep / 2 * (row % 2);
-			for (int column = 0; column < columns; column++) {
+		for (int row = 0; row < gParams.getRows(); row++) {
+			x = gParams.getProvinceRadius() * xStep / 2 * (row % 2);
+			for (int column = 0; column < gParams.getColumns(); column++) {
 				Province province = new Province(idx++, (int) x, (int) y);
+				province.setCoordAsHex(column, row);
 				map.addProvince(province);
-				setLinks(province, map, row, column, columns);
-				x += provinceRadius * xStep;
+				setLinks(province, map, row, column, gParams.getColumns());
+				x += gParams.getProvinceRadius() * xStep;
 			}
-			y += provinceRadius * yStep;
+			y += gParams.getProvinceRadius() * yStep;
 		}
 		return map;
 	}
@@ -85,17 +96,17 @@ public class GameGenerator {
 		}
 	}
 
-	private void createTerrain(Game game, long seed, long corePoints, double oceanProcent) {
-		assert (oceanProcent < 1 && oceanProcent >= 0);
+	private void createTerrain(Game game) {
+		GameParams gParams = game.getGameParams();
+		assert (gParams.getOceanProcent() < 1 && gParams.getOceanProcent() >= 0);
 		WorldMap map = game.getMap();
-		int needTerrainProvs = (int) (map.getProvinces().size() * (1 - oceanProcent));
+		int needTerrainProvs = (int) (map.getProvinces().size() * (1 - gParams.getOceanProcent()));
 		List<Province> terrain = new ArrayList<>(needTerrainProvs);
 		Set<Integer> terrainIds = new HashSet<>(needTerrainProvs);
-		Random random = new Random(seed);
 		Province prov = null;
-		corePoints = Math.min(corePoints, map.getProvinces().size());
+		int corePoints = Math.min(gParams.getTerrainCorePoints(), map.getProvinces().size());
 		while (terrain.size() < corePoints) {
-			prov = map.getProvinces().get(random.nextInt(map.getProvinces().size()));
+			prov = map.getProvinces().get(gParams.getRandom().nextInt(map.getProvinces().size()));
 			if (!terrainIds.contains(prov.getId())) {
 				setTerrainType(terrain, terrainIds, prov, TerrainType.GRASSLAND);
 			}
@@ -106,9 +117,9 @@ public class GameGenerator {
 				// It is possible to remove provinces which have all non-ocean neighbors. It
 				// will make generation faster.
 			}
-			int idx = random.nextInt(terrain.size());
+			int idx = gParams.getRandom().nextInt(terrain.size());
 			Province nProv = terrain.get(idx);
-			int neighborIdx = random.nextInt(nProv.getNeighbors().size());
+			int neighborIdx = gParams.getRandom().nextInt(nProv.getNeighbors().size());
 			prov = nProv.getNeighbors().get(neighborIdx);
 		}
 	}
@@ -120,19 +131,110 @@ public class GameGenerator {
 		terrainIds.add(prov.getId());
 	}
 
+	private void fillSoil(Game game) {
+		GameParams gParams = game.getGameParams();
+		WorldMap map = game.getMap();
+		List<Province> terrain = new ArrayList<>();
+		// setup min soil attributes and find all terrain provinces
+		map.getProvinces().stream().filter(p -> p.getTerrainType().isSoilPossible()).forEach(p -> {
+			p.setSoilArea(gParams.getMinSoilArea());
+			p.setSoilFertility(gParams.getMinSoilFertility());
+			terrain.add(p);
+		});
+		fillSoilArea(game, terrain);
+		fillSoilFertility(game, terrain);
+	}
+
+	private void fillSoilArea(Game game, List<Province> terrain) {
+		GameParams gParams = game.getGameParams();
+		// setup core provs
+		int corePoints = Math.min(gParams.getSoilAreaCorePoints(), terrain.size());
+		Set<Integer> increasedIds = new HashSet<>(corePoints);
+		while (increasedIds.size() < corePoints) {
+			Province p = terrain.get(gParams.getRandom().nextInt(terrain.size()));
+			if (!increasedIds.contains(p.getId())) {
+				double maxSA = gParams.getMinSoilArea()
+						+ (gParams.getMaxSoilArea() - gParams.getMinSoilArea()) * (gParams.getRandom().nextDouble());
+				p.setSoilArea((int) maxSA);
+				increasedIds.add(p.getId());
+			}
+		}
+		// increase soil quality for neighbors
+		Queue<Province> queueProvs = new LinkedBlockingQueue<Province>();
+		increasedIds.forEach(id -> queueProvs.add(game.getMap().findProvById(id)));
+		while (!queueProvs.isEmpty()) {
+			Province p = queueProvs.poll();
+			p.getNeighbors().stream()
+					.filter(n -> n.getTerrainType().isSoilPossible() && !increasedIds.contains(n.getId()))
+					.forEach(n -> {
+						n.setSoilArea((p.getSoilArea() * gParams.getFractionOfMaxSoilArea() + n.getSoilArea())
+								/ (gParams.getFractionOfMaxSoilArea() + 1));
+						queueProvs.add(n);
+						increasedIds.add(n.getId());
+					});
+		}
+	}
+
+	private void fillSoilFertility(Game game, List<Province> terrain) {
+		GameParams gParams = game.getGameParams();
+		// setup core provs
+		int corePoints = Math.min(gParams.getSoilFertilityCorePoints(), terrain.size());
+		Set<Integer> increasedIds = new HashSet<>(corePoints);
+		while (increasedIds.size() < corePoints) {
+			Province p = terrain.get(gParams.getRandom().nextInt(terrain.size()));
+			if (!increasedIds.contains(p.getId())) {
+				double maxSF = gParams.getMinSoilFertility()
+						+ (gParams.getMaxSoilFertility() - gParams.getMinSoilFertility())
+								* (gParams.getRandom().nextDouble());
+				p.setSoilFertility(DataFormatter.doubleWith3points(maxSF));
+				increasedIds.add(p.getId());
+			}
+		}
+		// increase soil quality for neighbors
+		Queue<Province> queueProvs = new LinkedBlockingQueue<Province>();
+		increasedIds.forEach(id -> queueProvs.add(game.getMap().findProvById(id)));
+		while (!queueProvs.isEmpty()) {
+			Province p = queueProvs.poll();
+			p.getNeighbors().stream()
+					.filter(n -> n.getTerrainType().isSoilPossible() && !increasedIds.contains(n.getId()))
+					.forEach(n -> {
+						double fertility = (p.getSoilFertility() * gParams.getFractionOfMaxSoilFertility()
+								+ n.getSoilFertility()) / (gParams.getFractionOfMaxSoilFertility() + 1);
+						n.setSoilFertility(DataFormatter.doubleWith3points(fertility));
+						queueProvs.add(n);
+						increasedIds.add(n.getId());
+					});
+		}
+		// process poles
+		terrain.forEach(p -> {
+			double distanceToPole = Math.min(p.getCoordAsHex().getY() + 1, gParams.getRows() - p.getCoordAsHex().getY())
+					/ (double) gParams.getRows();
+			if (distanceToPole < gParams.getDecreaseSoilFertilityAtPoles()) {
+				double fertilityDecrease = 1 - (gParams.getDecreaseSoilFertilityAtPoles() - distanceToPole)
+						/ gParams.getDecreaseSoilFertilityAtPoles();
+				p.setSoilFertility(p.getSoilFertility() * fertilityDecrease);
+			}
+		});
+	}
+
 	private void fillPopulation(Game game) {
-		game.getMap().getProvinces().stream().filter(p -> !TerrainType.OCEAN.equals(p.getTerrainType())).forEach(p -> {
-			Population pop = new Population();
-			// pop.setAmount(new Random().nextInt(1000));
-			pop.setAmount(p.getId() * 100);
-			p.getPopulation().clear();
-			p.getPopulation().add(pop);
+		GameParams gParams = game.getGameParams();
+		game.getMap().getProvinces().stream().filter(p -> (p.getTerrainType().isPopulationPossible())).forEach(p -> {
+			if (p.getSoilFertility() >= 1) {
+				Population pop = new Population();
+				pop.setAmount((int) (p.getSoilQuality() * gParams.getMapPopulationAtStart()));
+				p.getPopulation().clear();
+				p.getPopulation().add(pop);
+			}
 		});
 	}
 
 	public Game createEmptyGame() {
-		Game game = new Game();
-		createMap(0, 0, 30, game);
+		GameParams gParams = new GameParams();
+		gParams.setRows(0);
+		gParams.setColumns(0);
+		Game game = new Game(gParams);
+		createMap(game);
 		game.postGenerate();
 		return game;
 	}

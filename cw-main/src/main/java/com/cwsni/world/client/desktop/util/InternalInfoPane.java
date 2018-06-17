@@ -94,8 +94,12 @@ public class InternalInfoPane extends BorderPane {
 		return String.valueOf(o);
 	}
 
-	protected String toInt(int i) {
-		return DataFormatter.formatIntNumber(i);
+	protected String toInt(int v) {
+		return DataFormatter.formatIntNumber(v);
+	}
+	
+	protected String toFraction(double v) {
+		return DataFormatter.formatFractionNumber(v);
 	}
 
 }
