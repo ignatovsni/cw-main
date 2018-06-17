@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class GameParams {
 
+	// ------------Map generation section--------
+	@JsonIgnore
+	private Random random;
+
 	private long seed = System.currentTimeMillis();
 	private int rows = 10;
 	private int columns = 10;
@@ -25,9 +29,19 @@ public class GameParams {
 	private double decreaseSoilFertilityAtPoles = 0.15;
 
 	private double mapPopulationAtStart = 0.1;
+	// ------------End of Map generation section--------
 
-	@JsonIgnore
-	private Random random;
+	// ------------Turn procession section--------
+	private double populationBaseGrowth = 1.01;
+	// ------------End of turn procession section--------
+
+	public double getPopulationBaseGrowth() {
+		return populationBaseGrowth;
+	}
+
+	public void setPopulationBaseGrowth(double populationBaseGrowthPercent) {
+		this.populationBaseGrowth = populationBaseGrowthPercent;
+	}
 
 	public double getSoilAreaCorePointsPerProvinces() {
 		return soilAreaCorePointsPerProvinces;

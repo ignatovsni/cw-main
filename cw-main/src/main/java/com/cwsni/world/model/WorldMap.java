@@ -6,10 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class WorldMap {
 
 	private List<Province> provinces = new ArrayList<>();
 	private Map<Integer, Province> mapProvById;
+	private Game game;
 
 	public WorldMap() {
 		provinces = new ArrayList<>();
@@ -33,14 +36,16 @@ public class WorldMap {
 		mapProvById.put(p.getId(), p);
 	}
 
-	public void postGenerate() {
-		getProvinces().forEach(p -> p.postGenerate());
+	public void postGenerate(Game game) {
+		this.game = game;
+		getProvinces().forEach(p -> p.postGenerate(this));
 	}
 
 	/**
 	 * Finishes game preparing after loading
 	 */
-	public void postLoad() {
+	public void postLoad(Game game) {
+		this.game = game;
 		mapProvById.clear();
 		getProvinces().forEach(p -> mapProvById.put(p.getId(), p));
 		getProvinces().forEach(p -> p.postLoad(this));
@@ -48,6 +53,11 @@ public class WorldMap {
 
 	public void checkCorrect() {
 		getProvinces().forEach(p -> p.checkCorrectness());
+	}
+
+	@JsonIgnore
+	public Game getGame() {
+		return game;
 	}
 
 }

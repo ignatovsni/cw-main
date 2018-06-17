@@ -16,6 +16,7 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 
 	private RowValue valuesProvsLabel;
 	private RowValue valuesTotalPopsLabel;
+	private RowValue valuesTurnLabel;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -26,16 +27,19 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 	private Pane createUI() {
 		GridPane grid = createDefaultGrid();
 
-		valuesProvsLabel = addRow("Provinces", grid, 0);
-		valuesTotalPopsLabel = addRow("Total population", grid, 1);
+		int idx = 0;
+		valuesTurnLabel = addRow("info.pane.global.turn", grid, idx++);
+		valuesProvsLabel = addRow("Provinces", grid, idx++);
+		valuesTotalPopsLabel = addRow("Total population", grid, idx++);
 
 		return grid;
 	}
 
 	public void refreshInfo() {
 		if (gameScene.getGame() != null) {
+			valuesTurnLabel.setValue(toString(gameScene.getGame().getTurn().getTurnTexToDisplay()));
 			valuesProvsLabel.setValue(toString(gameScene.getGame().getMap().getProvinces().size()));
-			valuesTotalPopsLabel.setValue(toInt(gameScene.getGame().getGameStats().getTotalPopulation()));
+			valuesTotalPopsLabel.setValue(toLong(gameScene.getGame().getGameStats().getTotalPopulation()));
 		}
 	}
 

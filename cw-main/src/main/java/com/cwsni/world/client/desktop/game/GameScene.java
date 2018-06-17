@@ -1,5 +1,7 @@
 package com.cwsni.world.client.desktop.game;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -12,7 +14,10 @@ import com.cwsni.world.common.GameRepository;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -23,6 +28,8 @@ import javafx.stage.Stage;
 @Component
 @Scope("prototype")
 public class GameScene extends Scene {
+
+	private static final Log logger = LogFactory.getLog(GameScene.class);
 
 	@Autowired
 	private GameRepository gameRepository;
@@ -42,6 +49,9 @@ public class GameScene extends Scene {
 	@Autowired
 	private GsProvInfoPane provInfoPane;
 
+	@Autowired
+	private GsTimeControl timeControl;
+
 	private Stage stage;
 	private ZoomableScrollPane mapPane;
 	private Text statusBarText;
@@ -51,6 +61,7 @@ public class GameScene extends Scene {
 	private Integer selectedProvinceId;
 
 	private MapMode mapMode = MapMode.GEO;
+	private GsTimeMode timeMode = GsTimeMode.PAUSE;
 
 	public GameScene() {
 		super(new BorderPane());
@@ -66,12 +77,13 @@ public class GameScene extends Scene {
 		menuBar.init(this);
 		globalInfoPane.init(this);
 		provInfoPane.init(this);
+		timeControl.init(this);
 
 		VBox topSection = new VBox();
 		topSection.getChildren().addAll(menuBar, toolBar);
 
 		VBox rightSection = new VBox();
-		rightSection.getChildren().addAll(globalInfoPane, provInfoPane);
+		rightSection.getChildren().addAll(timeControl, globalInfoPane, provInfoPane);
 		rightSection.setMaxWidth(200);
 
 		BorderPane layout = (BorderPane) getRoot();
@@ -105,7 +117,7 @@ public class GameScene extends Scene {
 		this.game = worldMap.getGame();
 		this.worldMap = worldMap;
 		worldMap.setGameScene(this);
-		refreshAllVisibleInfo();
+		refreshAllVisibleInfoAndResetSelections();
 	}
 
 	private Pane createStatusBar() {
@@ -147,14 +159,76 @@ public class GameScene extends Scene {
 		return game;
 	}
 
-	private void refreshAllVisibleInfo() {
+	public GsTimeMode getTimeMode() {
+		return timeMode;
+	}
+
+	private void refreshAllVisibleInfoAndResetSelections() {
 		selectedProvinceId = null;
+		refreshAllVisibleInfo();
+	}
+
+	private void refreshAllVisibleInfo() {
 		globalInfoPane.refreshInfo();
 		provInfoPane.refreshInfo();
 	}
 
 	public Province getSelectedProvince() {
 		return game.getMap().findProvById(selectedProvinceId);
+	}
+
+	public void setTimeModeAndRun(GsTimeMode newMode) {
+		GsTimeMode oldMode = timeMode;
+		this.timeMode = newMode;
+		if (newMode != GsTimeMode.PAUSE && oldMode == GsTimeMode.PAUSE) {
+			startProcessingNewTurn();
+		}
+	}
+
+	private void startProcessingNewTurn() {
+		if (timeMode == GsTimeMode.PAUSE) {
+			return;
+		}
+		Task<Integer> task = new Task<Integer>() {
+			@Override
+			protected Integer call() throws Exception {
+				processNewTurn();
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							refreshViewAndStartNewTurn();
+						} catch (Exception e) {
+							if (logger.isTraceEnabled()) {
+								logger.error("Failed to run javafx thread from own thread", e);
+							} else {
+								logger.warn("Failed to run javafx thread from own thread: " + e.getMessage());
+							}
+						}
+					}
+				});
+				return null;
+			}
+		};
+		Thread th = new Thread(task);
+		th.setName("turn processing");
+		th.start();
+	}
+
+	private void refreshViewAndStartNewTurn() {
+		refreshAllVisibleInfo();
+		getWorldMap().setMapModeAndRedraw(mapMode);
+		startProcessingNewTurn();
+	}
+
+	private void processNewTurn() throws InterruptedException {
+		for (int i = 0; i < timeMode.getTurnPerTime(); i++) {
+			game.processNewTurn();
+		}
+	}
+
+	public void putHotKey(KeyCodeCombination keyCombination, Runnable runnable) {
+		getAccelerators().put(keyCombination, runnable);
 	}
 
 }

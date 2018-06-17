@@ -6,7 +6,16 @@ import java.util.Locale;
 
 public class DataFormatter {
 
-	public static String formatIntNumber(Integer v) {
+	public static String formatLongNumber(Long v) {
+		if (v > 1000000000) {
+			return internalFormatLongNumber(v / 1000000) + " m";
+		} else if (v > 1000000) {
+			return internalFormatLongNumber(v / 1000) + " k";
+		}
+		return internalFormatLongNumber(v);
+	}
+
+	private static String internalFormatLongNumber(Long v) {
 		Locale currentLocale = new Locale("en", "US");
 		DecimalFormatSymbols dfs = new DecimalFormatSymbols(currentLocale);
 		DecimalFormat df = new DecimalFormat("#,###,###,##0", dfs);
@@ -20,8 +29,8 @@ public class DataFormatter {
 		return df.format(v);
 	}
 
-	public static double doubleWith3points(double d) {
-		return ((int) (d * 1000)) / 1000.0;
+	public static double doubleWith2points(double d) {
+		return ((int) (d * 100)) / 100.0;
 	}
 
 }

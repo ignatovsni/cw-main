@@ -28,6 +28,8 @@ public class Province {
 	@JsonIgnore
 	private transient Point coordAsHex;
 
+	private WorldMap worldMap;
+
 	public Province() {
 		this(-1, 0, 0);
 	}
@@ -124,13 +126,15 @@ public class Province {
 	 * Finishes game preparing after loading
 	 */
 	public void postLoad(WorldMap map) {
+		this.worldMap = map;
 		getNeighbors().clear();
 		for (int id : neighborsById) {
 			getNeighbors().add(map.findProvById(id));
 		}
 	}
 
-	public void postGenerate() {
+	public void postGenerate(WorldMap map) {
+		this.worldMap = map;
 	}
 
 	public void checkCorrectness() {
@@ -162,6 +166,12 @@ public class Province {
 
 	public void setCoordAsHex(int row, int column) {
 		coordAsHex = new Point(row, column);
+	}
+
+	public void processNewTurn() {
+		getPopulation().forEach(p -> {
+			p.setAmount((int) (p.getAmount() * worldMap.getGame().getGameParams().getPopulationBaseGrowth()));
+		});
 	}
 
 }

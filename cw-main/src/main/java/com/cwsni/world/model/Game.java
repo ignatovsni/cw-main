@@ -3,16 +3,15 @@ package com.cwsni.world.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "version", "gameParams", "map" })
+@JsonPropertyOrder({ "version", "turn", "gameParams", "map" })
 public class Game {
 
 	final static String CURRENT_VERSION = "0.1";
 
 	private String version = CURRENT_VERSION;
-
 	private GameParams gameParams;
-
 	private WorldMap map;
+	private Turn turn;
 
 	@JsonIgnore
 	private GameStats gameStats;
@@ -56,6 +55,14 @@ public class Game {
 		this.gameParams = gameParams;
 	}
 
+	public Turn getTurn() {
+		return turn;
+	}
+
+	public void setTurn(Turn turn) {
+		this.turn = turn;
+	}
+
 	@JsonIgnore
 	public boolean isCorrect() {
 		return true;
@@ -96,7 +103,7 @@ public class Game {
 	 * Finishes game preparing after generation
 	 */
 	public void postGenerate() {
-		map.postGenerate();
+		map.postGenerate(this);
 		map.checkCorrect();
 		calcGameStats();
 	}
@@ -105,8 +112,14 @@ public class Game {
 	 * Finishes game preparing after loading
 	 */
 	public void postLoad() {
-		map.postLoad();
+		map.postLoad(this);
 		map.checkCorrect();
+		calcGameStats();
+	}
+
+	public void processNewTurn(){
+		getTurn().increment();
+		map.getProvinces().forEach(p -> p.processNewTurn());
 		calcGameStats();
 	}
 

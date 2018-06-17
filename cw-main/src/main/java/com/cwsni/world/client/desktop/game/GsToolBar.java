@@ -34,20 +34,20 @@ public class GsToolBar extends ToolBar {
 		Button toolBarMapGeoMode = new Button(getMessage("toolbar.map.mode.geo.button.text"));
 		toolBarMapGeoMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.geo.button.tooltip")));
 		toolBarMapGeoMode.setOnAction(e -> {
-			enableMapModeButton(toolBarMapGeoMode, MapMode.GEO);
+			pressMapModeButton(toolBarMapGeoMode, MapMode.GEO);
 		});
 		toolBarMapGeoMode.setEffect(new Lighting());
 
 		Button toolBarMapPopsMode = new Button(getMessage("toolbar.map.mode.population.button.text"));
 		toolBarMapPopsMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.population.button.tooltip")));
 		toolBarMapPopsMode.setOnAction(e -> {
-			enableMapModeButton(toolBarMapPopsMode, MapMode.POPULATION);
+			pressMapModeButton(toolBarMapPopsMode, MapMode.POPULATION);
 		});
 
 		Button toolBarMapSoilMode = new Button(getMessage("toolbar.map.mode.soil.button.text"));
 		toolBarMapSoilMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.soil.button.tooltip")));
 		toolBarMapSoilMode.setOnAction(e -> {
-			enableMapModeButton(toolBarMapSoilMode, MapMode.SOIL);
+			pressMapModeButton(toolBarMapSoilMode, MapMode.SOIL);
 		});
 
 		toolBarMapModes = new ArrayList<>();
@@ -57,7 +57,7 @@ public class GsToolBar extends ToolBar {
 		getItems().addAll(toolBarMapModes);
 	}
 
-	private void enableMapModeButton(Button buttonMode, MapMode mapMode) {
+	private void pressMapModeButton(Button buttonMode, MapMode mapMode) {
 		if (MapMode.POPULATION.equals(mapMode)) {
 			switch (gameScene.getWorldMap().getMapMode()) {
 			case POPULATION:

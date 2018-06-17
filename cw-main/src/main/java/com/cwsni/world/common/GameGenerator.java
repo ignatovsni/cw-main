@@ -15,6 +15,7 @@ import com.cwsni.world.model.GameParams;
 import com.cwsni.world.model.Population;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.TerrainType;
+import com.cwsni.world.model.Turn;
 import com.cwsni.world.model.WorldMap;
 
 @Component
@@ -25,13 +26,12 @@ public class GameGenerator {
 		gameParams.setSeed(System.currentTimeMillis());
 		gameParams.setRows(30);
 		gameParams.setColumns(30);
-		// gameParams.setSoilAreaCorePointsPerProvinces(0.03);
-		// gameParams.setSoilFertilityCorePointsPerProvinces(0.1);
-		return createTestGame(gameParams);
+		return createGame(gameParams);
 	}
 
-	public Game createTestGame(GameParams gameParams) {
+	public Game createGame(GameParams gameParams) {
 		Game game = new Game(gameParams);
+		game.setTurn(new Turn(0));
 		createMap(game);
 		createTerrain(game);
 		fillSoil(game);
@@ -186,7 +186,7 @@ public class GameGenerator {
 				double maxSF = gParams.getMinSoilFertility()
 						+ (gParams.getMaxSoilFertility() - gParams.getMinSoilFertility())
 								* (gParams.getRandom().nextDouble());
-				p.setSoilFertility(DataFormatter.doubleWith3points(maxSF));
+				p.setSoilFertility(DataFormatter.doubleWith2points(maxSF));
 				increasedIds.add(p.getId());
 			}
 		}
@@ -200,7 +200,7 @@ public class GameGenerator {
 					.forEach(n -> {
 						double fertility = (p.getSoilFertility() * gParams.getFractionOfMaxSoilFertility()
 								+ n.getSoilFertility()) / (gParams.getFractionOfMaxSoilFertility() + 1);
-						n.setSoilFertility(DataFormatter.doubleWith3points(fertility));
+						n.setSoilFertility(DataFormatter.doubleWith2points(fertility));
 						queueProvs.add(n);
 						increasedIds.add(n.getId());
 					});
@@ -211,8 +211,8 @@ public class GameGenerator {
 					/ (double) gParams.getRows();
 			if (distanceToPole < gParams.getDecreaseSoilFertilityAtPoles()) {
 				double fertilityDecrease = 1 - (gParams.getDecreaseSoilFertilityAtPoles() - distanceToPole)
-						/ gParams.getDecreaseSoilFertilityAtPoles();
-				p.setSoilFertility(p.getSoilFertility() * fertilityDecrease);
+						/ gParams.getDecreaseSoilFertilityAtPoles() / 2;
+				p.setSoilFertility(DataFormatter.doubleWith2points(p.getSoilFertility() * fertilityDecrease));
 			}
 		});
 	}
@@ -230,13 +230,11 @@ public class GameGenerator {
 	}
 
 	public Game createEmptyGame() {
-		GameParams gParams = new GameParams();
-		gParams.setRows(0);
-		gParams.setColumns(0);
-		Game game = new Game(gParams);
-		createMap(game);
-		game.postGenerate();
-		return game;
+		GameParams gameParams = new GameParams();
+		gameParams.setSeed(System.currentTimeMillis());
+		gameParams.setRows(0);
+		gameParams.setColumns(0);
+		return createGame(gameParams);
 	}
 
 }
