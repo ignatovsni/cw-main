@@ -26,7 +26,7 @@ public class GameParams {
 	private double maxSoilFertility = 1.3;
 	private double soilFertilityCorePointsPerProvinces = 0.01;
 	private int fractionOfMaxSoilFertility = 5;
-	private double decreaseSoilFertilityAtPoles = 0.15;
+	private double decreaseSoilFertilityAtPoles = 0.1;
 
 	private double populationAtStartFromMax = 0.1;
 	private double minSoilFertilityToStartPopulation = 1.1;	

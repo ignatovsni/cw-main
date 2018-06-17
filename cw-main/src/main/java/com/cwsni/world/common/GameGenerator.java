@@ -56,7 +56,6 @@ public class GameGenerator {
 			x = gParams.getProvinceRadius() * xStep / 2 * (row % 2);
 			for (int column = 0; column < gParams.getColumns(); column++) {
 				Province province = new Province(idx++, (int) x, (int) y);
-				province.setCoordAsHex(column, row);
 				map.addProvince(province);
 				setLinks(province, map, row, column, gParams.getColumns());
 				x += gParams.getProvinceRadius() * xStep;
@@ -210,15 +209,19 @@ public class GameGenerator {
 					});
 		}
 		// process poles
-		terrain.stream().filter(p -> !coreTerrainIds.contains(p.getId())).forEach(p -> {
-			double distanceToPole = Math.min(p.getCoordAsHex().getY() + 1, gParams.getRows() - p.getCoordAsHex().getY())
-					/ (double) gParams.getRows();
-			if (distanceToPole < gParams.getDecreaseSoilFertilityAtPoles()) {
-				double fertilityDecrease = 1 - (gParams.getDecreaseSoilFertilityAtPoles() - distanceToPole)
-						/ gParams.getDecreaseSoilFertilityAtPoles() / 2;
-				p.setSoilFertility(DataFormatter.doubleWith2points(p.getSoilFertility() * fertilityDecrease));
-			}
-		});
+		if (!terrain.isEmpty()) {
+			int minY = terrain.stream().mapToInt(p -> p.getCenter().getY()).min().getAsInt();
+			int maxY = terrain.stream().mapToInt(p -> p.getCenter().getY()).max().getAsInt();
+			terrain.stream().filter(p -> !coreTerrainIds.contains(p.getId())).forEach(p -> {
+				double distanceToPole = (double) (1
+						+ Math.min(p.getCenter().getY() - minY, maxY - p.getCenter().getY())) / (maxY - minY);
+				if (distanceToPole < gParams.getDecreaseSoilFertilityAtPoles()) {
+					double fertilityDecrease = 1 - (gParams.getDecreaseSoilFertilityAtPoles() - distanceToPole)
+							/ gParams.getDecreaseSoilFertilityAtPoles() / 2;
+					p.setSoilFertility(DataFormatter.doubleWith2points(p.getSoilFertility() * fertilityDecrease));
+				}
+			});
+		}
 	}
 
 	private void addSoilFertility(GameParams gParams, Set<Integer> increasedIds, Province p) {
