@@ -2,7 +2,9 @@ package com.cwsni.world.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.cwsni.world.CwException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Province {
@@ -26,7 +28,7 @@ public class Province {
 	private List<Population> population;
 
 	@JsonIgnore
-	private transient Point coordAsHex;
+	private transient ProvinceTransientProps tp;
 
 	private WorldMap worldMap;
 
@@ -35,6 +37,7 @@ public class Province {
 	}
 
 	public Province(int id, int x, int y) {
+		this.tp = new ProvinceTransientProps();
 		this.id = id;
 		this.name = String.valueOf(id);
 		this.center = new Point(x, y);
@@ -160,18 +163,79 @@ public class Province {
 		return (int) (getSoilArea() * getSoilFertility());
 	}
 
+	@JsonIgnore
 	public Point getCoordAsHex() {
-		return coordAsHex;
+		return tp.coordAsHex;
 	}
 
 	public void setCoordAsHex(int row, int column) {
-		coordAsHex = new Point(row, column);
+		tp.coordAsHex = new Point(row, column);
+	}
+
+	@JsonIgnore
+	private int getMaxPopulation() {
+		return (int) (getSoilArea() * getSoilFertility());
+	}
+
+	@JsonIgnore
+	public double getPopulationExcess() {
+		return (double) getPopulationAmount() / Math.max(getMaxPopulation(), 1);
 	}
 
 	public void processNewTurn() {
-		getPopulation().forEach(p -> {
-			p.setAmount((int) (p.getAmount() * worldMap.getGame().getGameParams().getPopulationBaseGrowth()));
-		});
+		if (!getTerrainType().isPopulationPossible() || getPopulationAmount() == 0) {
+			return;
+		}
+		GameParams gParams = worldMap.getGame().getGameParams();
+		int maxPopulation = Math.max(getMaxPopulation(), 1);
+		if (getPopulationAmount() > maxPopulation || getSoilFertility() < 1) {
+			List<Province> prov = getNeighbors().stream()
+					.filter(n -> n.getTerrainType().isPopulationPossible() && n.getPopulationExcess() < 1)
+					.collect(Collectors.toList());
+			if (prov.size() > 0) {
+				int mPops = (int) (getPopulationAmount() * (gParams.getPopulationMaxExcess() - 1) / 2);
+				int mPopsToEachNeighbor = mPops / prov.size();
+				prov.forEach(p -> migrateTo(mPopsToEachNeighbor, p));
+			}
+		}
+		if (getSoilFertility() >= 1) {
+			getPopulation().forEach(p -> {
+				p.setAmount((int) (p.getAmount() * gParams.getPopulationBaseGrowth()));
+			});
+		} else {
+			getPopulation().forEach(p -> {
+				p.setAmount((int) (p.getAmount() * getSoilFertility()));
+			});
+		}
+		if (getPopulationAmount() > maxPopulation * gParams.getPopulationMaxExcess()) {
+			double needDivideTo = (double) getPopulationAmount() / maxPopulation / gParams.getPopulationMaxExcess();
+			getPopulation().forEach(p -> {
+				p.setAmount((int) (p.getAmount() / needDivideTo));
+			});
+		}
+		tp.populationExcess = getPopulationAmount() / getMaxPopulation();
+	}
+
+	private void migrateTo(int popAmount, Province p) {
+		Population newPop = extractNewPop(popAmount, getPopulation());
+		if (p.getPopulation().size() == 0) {
+			p.getPopulation().add(newPop);
+		} else {
+			Population pop = p.getPopulation().get(0);
+			pop.setAmount(pop.getAmount() + newPop.getAmount());
+		}
+	}
+
+	private Population extractNewPop(int popAmount, List<Population> list) {
+		int totalAmount = list.stream().mapToInt(p -> p.getAmount()).sum();
+		if (popAmount > totalAmount) {
+			throw new CwException("popAmount > totalAmount : prov.id = " + getId());
+		}
+		double needMultiplyTo = 1 - (double) popAmount / totalAmount;
+		list.forEach(p -> p.setAmount((int) (p.getAmount() * needMultiplyTo)));
+		Population pop = new Population();
+		pop.setAmount(popAmount);
+		return pop;
 	}
 
 }

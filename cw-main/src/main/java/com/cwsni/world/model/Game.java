@@ -1,5 +1,8 @@
 package com.cwsni.world.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -14,7 +17,10 @@ public class Game {
 	private Turn turn;
 
 	@JsonIgnore
-	private GameStats gameStats;
+	private transient GameStats gameStats;
+
+	@JsonIgnore
+	private transient Map<String, Object> tempParams = new HashMap<>();
 
 	public Game() {
 	}
@@ -23,6 +29,10 @@ public class Game {
 		this.gameParams = gameParams;
 	}
 
+	public Map<String, Object> getTempParams() {
+		return tempParams;
+	}
+	
 	public WorldMap getMap() {
 		return map;
 	}
@@ -117,7 +127,7 @@ public class Game {
 		calcGameStats();
 	}
 
-	public void processNewTurn(){
+	public void processNewTurn() {
 		getTurn().increment();
 		map.getProvinces().forEach(p -> p.processNewTurn());
 		calcGameStats();

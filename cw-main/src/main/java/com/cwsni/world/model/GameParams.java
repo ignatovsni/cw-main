@@ -28,11 +28,13 @@ public class GameParams {
 	private int fractionOfMaxSoilFertility = 5;
 	private double decreaseSoilFertilityAtPoles = 0.15;
 
-	private double mapPopulationAtStart = 0.1;
+	private double populationAtStartFromMax = 0.1;
+	private double minSoilFertilityToStartPopulation = 1.1;	
 	// ------------End of Map generation section--------
 
 	// ------------Turn procession section--------
 	private double populationBaseGrowth = 1.01;
+	private double populationMaxExcess = 1.2;
 	// ------------End of turn procession section--------
 
 	public double getPopulationBaseGrowth() {
@@ -155,12 +157,12 @@ public class GameParams {
 		this.provinceRadius = provinceRadius;
 	}
 
-	public double getMapPopulationAtStart() {
-		return mapPopulationAtStart;
+	public double getPopulationAtStartFromMax() {
+		return populationAtStartFromMax;
 	}
 
-	public void setMapPopulationAtStart(double mapPopulationAtStart) {
-		this.mapPopulationAtStart = mapPopulationAtStart;
+	public void setPopulationAtStartFromMax(double populationAtStartFromMax) {
+		this.populationAtStartFromMax = populationAtStartFromMax;
 	}
 
 	public double getDecreaseSoilFertilityAtPoles() {
@@ -186,6 +188,22 @@ public class GameParams {
 			random = new Random(getSeed());
 		}
 		return random;
+	}
+
+	public double getPopulationMaxExcess() {
+		return populationMaxExcess;
+	}
+
+	public void setPopulationMaxExcess(double populationMaxExcess) {
+		this.populationMaxExcess = populationMaxExcess;
+	}
+
+	public double getMinSoilFertilityToStartPopulation() {
+		return minSoilFertilityToStartPopulation;
+	}
+
+	public void setMinSoilFertilityToStartPopulation(double minSoilFertilityToStartPopulation) {
+		this.minSoilFertilityToStartPopulation = minSoilFertilityToStartPopulation;
 	}
 
 }

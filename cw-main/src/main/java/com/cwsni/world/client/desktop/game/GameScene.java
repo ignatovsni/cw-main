@@ -163,6 +163,10 @@ public class GameScene extends Scene {
 		return timeMode;
 	}
 
+	public void putHotKey(KeyCodeCombination keyCombination, Runnable runnable) {
+		getAccelerators().put(keyCombination, runnable);
+	}
+
 	private void refreshAllVisibleInfoAndResetSelections() {
 		selectedProvinceId = null;
 		refreshAllVisibleInfo();
@@ -199,11 +203,7 @@ public class GameScene extends Scene {
 						try {
 							refreshViewAndStartNewTurn();
 						} catch (Exception e) {
-							if (logger.isTraceEnabled()) {
-								logger.error("Failed to run javafx thread from own thread", e);
-							} else {
-								logger.warn("Failed to run javafx thread from own thread: " + e.getMessage());
-							}
+							logError(e);
 						}
 					}
 				});
@@ -222,13 +222,18 @@ public class GameScene extends Scene {
 	}
 
 	private void processNewTurn() throws InterruptedException {
-		for (int i = 0; i < timeMode.getTurnPerTime(); i++) {
-			game.processNewTurn();
+		try {
+			for (int i = 0; i < timeMode.getTurnPerTime(); i++) {
+				game.processNewTurn();
+			}
+		} catch (Exception e) {
+			logError(e);
 		}
+		Thread.sleep(50 * (10 - timeMode.getTurnPerTime()));
 	}
 
-	public void putHotKey(KeyCodeCombination keyCombination, Runnable runnable) {
-		getAccelerators().put(keyCombination, runnable);
+	private void logError(Exception e) {
+		logger.error(e);
 	}
 
 }
