@@ -78,7 +78,7 @@ class DProvince extends Group {
 
 	private void drawGeoMode(Polygon polygon) {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream is = classloader.getResourceAsStream("desktop/map/green.png");
+		InputStream is = classloader.getResourceAsStream("desktop/map/" + getProvince().getTerrainType().toString().toLowerCase() + ".png");
 		Image texture = new Image(is);
 		polygon.setFill(new ImagePattern(texture, 0, 0, 1, 1, true));
 	}

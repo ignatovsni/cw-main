@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
@@ -15,8 +14,8 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 
 	private GameScene gameScene;
 
-	private Label valuesProvsLabel;
-	private Label valuesTotalPopsLabel;
+	private RowValue valuesProvsLabel;
+	private RowValue valuesTotalPopsLabel;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -35,8 +34,8 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 
 	public void refreshInfo() {
 		if (gameScene.getGame() != null) {
-			valuesProvsLabel.setText(toString(gameScene.getGame().getMap().getProvinces().size()));
-			valuesTotalPopsLabel.setText(toInt(gameScene.getGame().getGameStats().getTotalPopulation()));
+			valuesProvsLabel.setValue(toString(gameScene.getGame().getMap().getProvinces().size()));
+			valuesTotalPopsLabel.setValue(toInt(gameScene.getGame().getGameStats().getTotalPopulation()));
 		}
 	}
 

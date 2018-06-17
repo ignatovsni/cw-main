@@ -10,7 +10,7 @@ public class Game {
 
 	private String version = CURRENT_VERSION;
 	private WorldMap map;
-	
+
 	@JsonIgnore
 	private GameStats gameStats;
 
@@ -29,7 +29,7 @@ public class Game {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-	
+
 	public GameStats getGameStats() {
 		return gameStats;
 	}
@@ -37,7 +37,6 @@ public class Game {
 	public void setGameStats(GameStats gameStats) {
 		this.gameStats = gameStats;
 	}
-
 
 	@JsonIgnore
 	public boolean isCorrect() {
@@ -55,7 +54,7 @@ public class Game {
 		sb.append("version=" + version);
 		return sb.toString();
 	}
-	
+
 	private void calcGameStats() {
 		GameStats stats = new GameStats();
 		getMap().getProvinces().forEach(p -> {
@@ -64,7 +63,7 @@ public class Game {
 				stats.setMaxPopulationInProvince(pop);
 			}
 			stats.setTotalPopulation(stats.getTotalPopulation() + pop);
-		});		
+		});
 		setGameStats(stats);
 	}
 
@@ -72,6 +71,8 @@ public class Game {
 	 * Finishes game preparing after generation
 	 */
 	public void postGenerate() {
+		map.postGenerate();
+		map.checkCorrect();
 		calcGameStats();
 	}
 
@@ -79,8 +80,9 @@ public class Game {
 	 * Finishes game preparing after loading
 	 */
 	public void postLoad() {
-		map.postLoad();		
-		postGenerate();
+		map.postLoad();
+		map.checkCorrect();
+		calcGameStats();
 	}
 
 }

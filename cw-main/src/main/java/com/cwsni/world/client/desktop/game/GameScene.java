@@ -38,10 +38,10 @@ public class GameScene extends Scene {
 
 	@Autowired
 	private GsGlobalInfoPane globalInfoPane;
-	
+
 	@Autowired
 	private GsProvInfoPane provInfoPane;
-	
+
 	private Stage stage;
 	private ZoomableScrollPane mapPane;
 	private Text statusBarText;
@@ -66,21 +66,21 @@ public class GameScene extends Scene {
 		menuBar.init(this);
 		globalInfoPane.init(this);
 		provInfoPane.init(this);
-		
+
 		VBox topSection = new VBox();
 		topSection.getChildren().addAll(menuBar, toolBar);
 
 		VBox rightSection = new VBox();
 		rightSection.getChildren().addAll(globalInfoPane, provInfoPane);
 		rightSection.setMaxWidth(200);
-		
+
 		BorderPane layout = (BorderPane) getRoot();
 		layout.setTop(topSection);
 		layout.setBottom(createStatusBar());
 		layout.setRight(rightSection);
 		layout.setCenter(mapPane);
-			
-		createTestGame();
+
+		setupGame(gameGenerator.createEmptyGame());
 	}
 
 	public void quickSaveGame() {
@@ -115,8 +115,8 @@ public class GameScene extends Scene {
 		return statusBar;
 	}
 
-	private void createTestGame() {
-		Game game = gameGenerator.createTestGame(20, 20, 30);
+	public void createTestGame() {
+		Game game = gameGenerator.createTestGame();
 		setupGame(game);
 		refreshAllVisibleInfo();
 	}
@@ -142,7 +142,7 @@ public class GameScene extends Scene {
 	public void exitApp() {
 		stage.close();
 	}
-	
+
 	public Game getGame() {
 		return game;
 	}

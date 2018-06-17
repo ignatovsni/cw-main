@@ -15,6 +15,27 @@ import javafx.scene.layout.Pane;
 
 public class InternalInfoPane extends BorderPane {
 
+	protected class RowValue {
+		private Node nameNode;
+		private Label valueNode;
+		
+		public RowValue(Node nameColumn, Label valueColumn) {
+			this.nameNode = nameColumn;
+			this.valueNode = valueColumn;
+		}
+
+		public void setVisible(boolean b) {
+			nameNode.setVisible(b);
+			valueNode.setVisible(b);
+		}
+
+		public void setValue(String v) {
+			valueNode.setText(v);
+		}
+
+
+	}
+
 	@Autowired
 	private LocaleMessageSource messageSource;
 
@@ -46,11 +67,17 @@ public class InternalInfoPane extends BorderPane {
 		return grid;
 	}
 
-	protected Label addRow(String msgCode, GridPane grid, int row) {
-		grid.add(createGridNameColumn(getMessage(msgCode)), 0, row);
+	protected RowValue addRow(String msgCode, GridPane grid, int row, String txt) {
+		Node nameColumn = createGridNameColumn(getMessage(msgCode));
+		grid.add(nameColumn, 0, row);
 		Label label = createGridValueColumn(0);
 		grid.add(label, 1, row);
-		return label;
+		label.setText(txt);
+		return new RowValue(nameColumn, label);
+	}
+
+	protected RowValue addRow(String msgCode, GridPane grid, int row) {
+		return addRow(msgCode, grid, row, "");
 	}
 
 	protected Node createGridNameColumn(Object title) {

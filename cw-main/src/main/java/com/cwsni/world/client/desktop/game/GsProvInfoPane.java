@@ -1,12 +1,14 @@
 package com.cwsni.world.client.desktop.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 import com.cwsni.world.model.Province;
 
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
@@ -16,10 +18,12 @@ public class GsProvInfoPane extends InternalInfoPane {
 
 	private GameScene gameScene;
 
-	private Label valuesNameLabel;
-	private Label valuesPopsLabel;
-	private Label valuesSoilAmountLabel;
-	private Label valuesSoilFertilityLabel;
+	private RowValue valuesNameLabel;
+	private RowValue valuesTerrainTypeLabel;
+	private RowValue valuesPopsLabel;
+	private RowValue valuesSoilAmountLabel;
+	private RowValue valuesSoilFertilityLabel;
+	private List<RowValue> allRows;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -29,28 +33,47 @@ public class GsProvInfoPane extends InternalInfoPane {
 
 	private Pane createUI() {
 		GridPane grid = createDefaultGrid();
+		allRows = new ArrayList<>();
 
-		valuesNameLabel = addRow("info.pane.prov.name", grid, 0);
-		valuesPopsLabel = addRow("info.pane.prov.population", grid, 1);
-		valuesSoilAmountLabel = addRow("info.pane.prov.soil.amount", grid, 2);
-		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, 3);
+		int idx = 0;
+		valuesNameLabel = addRow("info.pane.prov.name", grid, allRows, idx++);
+		valuesTerrainTypeLabel = addRow("info.pane.prov.terrain-type", grid, allRows, idx++);
+		valuesPopsLabel = addRow("info.pane.prov.population", grid, allRows, idx++);
+		valuesSoilAmountLabel = addRow("info.pane.prov.soil.amount", grid, allRows, idx++);
+		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, allRows, idx++);
 
 		return grid;
 	}
 
+	private RowValue addRow(String msgCode, GridPane grid, List<RowValue> rows, int row) {
+		RowValue newRowValue = addRow(msgCode, grid, row, "");
+		rows.add(newRowValue);
+		return newRowValue;
+	}
+
 	public void refreshInfo() {
 		Province prov = gameScene.getSelectedProvince();
+		allRows.forEach(l -> l.setVisible(false));
 		if (prov != null) {
-			valuesNameLabel.setText(prov.getName());
-			valuesPopsLabel.setText(toInt(prov.getPopulationAmount()));
-			valuesSoilAmountLabel.setText(toInt(prov.getSoilAmount()));
-			valuesSoilFertilityLabel.setText(toInt(prov.getSoilFertility()));
+			setLabelText(valuesNameLabel, prov.getName());
+			setLabelText(valuesTerrainTypeLabel, getMessage(prov.getTerrainType().getCodeMsg()));
+			switch (prov.getTerrainType()) {
+			case GRASSLAND:
+				setLabelText(valuesPopsLabel, toInt(prov.getPopulationAmount()));
+				setLabelText(valuesSoilAmountLabel, toInt(prov.getSoilAmount()));
+				setLabelText(valuesSoilFertilityLabel, toInt(prov.getSoilFertility()));
+				break;
+			case OCEAN:
+				break;
+			}
 		} else {
-			valuesNameLabel.setText("");
-			valuesPopsLabel.setText("");
-			valuesSoilAmountLabel.setText("");
-			valuesSoilFertilityLabel.setText("");
+			allRows.forEach(l -> l.setValue(""));
 		}
+	}
+
+	private void setLabelText(RowValue l, String txt) {
+		l.setValue(txt);
+		l.setVisible(true);
 	}
 
 }

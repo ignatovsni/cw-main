@@ -11,20 +11,21 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 @Component
 @Scope("prototype")
 public class GsMenuBar extends MenuBar {
-	
+
 	@Autowired
 	private LocaleMessageSource messageSource;
-	
+
 	private GameScene gameScene;
-	
+
 	private String getMessage(String code) {
 		return messageSource.getMessage(code);
 	}
-	
+
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
 		Menu fileMenu = new Menu(getMessage("menu.file"));
@@ -40,7 +41,11 @@ public class GsMenuBar extends MenuBar {
 		quickLoadMenuItem.setOnAction(event -> gameScene.quickLoadGame());
 		quickLoadMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
 
-		fileMenu.getItems().setAll(exitMenuItem, quickSaveMenuItem, quickLoadMenuItem);
+		MenuItem createTestGameMenuItem = new MenuItem(getMessage("menu.game.create.test"));
+		createTestGameMenuItem.setOnAction(event -> gameScene.createTestGame());
+		createTestGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
+
+		fileMenu.getItems().setAll(createTestGameMenuItem, quickSaveMenuItem, quickLoadMenuItem, exitMenuItem);
 
 		getMenus().setAll(fileMenu);
 	}

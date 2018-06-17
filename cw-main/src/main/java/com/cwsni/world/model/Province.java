@@ -16,8 +16,12 @@ public class Province {
 	 */
 	private int[] neighborsById;
 	private List<Province> neighbors;
+
+	private TerrainType terrainType;
+
 	private int soilFertility;
 	private int soilAmount;
+
 	private List<Population> population;
 
 	public Province() {
@@ -31,6 +35,7 @@ public class Province {
 		this.population = new ArrayList<>(1);
 		this.neighbors = new ArrayList<>();
 		this.neighborsById = new int[0];
+		this.terrainType = TerrainType.OCEAN;
 	}
 
 	@JsonIgnore
@@ -45,7 +50,7 @@ public class Province {
 		}
 		return neighborsById;
 	}
-	
+
 	public void setNeighborsById(int[] neighborsById) {
 		this.neighborsById = neighborsById;
 	}
@@ -98,6 +103,14 @@ public class Province {
 		this.soilAmount = soilAmount;
 	}
 
+	public TerrainType getTerrainType() {
+		return terrainType;
+	}
+
+	public void setTerrainType(TerrainType terrainType) {
+		this.terrainType = terrainType;
+	}
+
 	@JsonIgnore
 	public int getPopulationAmount() {
 		return getPopulation().stream().mapToInt(p -> p.getAmount()).sum();
@@ -110,6 +123,27 @@ public class Province {
 		getNeighbors().clear();
 		for (int id : neighborsById) {
 			getNeighbors().add(map.findProvById(id));
+		}
+	}
+
+	public void postGenerate() {
+	}
+
+	public void checkCorrect() {
+		switch (getTerrainType()) {
+		case OCEAN:
+			internalAssert(getPopulation().size() == 0, "ocean province can not have population");
+			internalAssert(getSoilAmount() == 0, "ocean province must have soil amount = 0");
+			internalAssert(getSoilFertility() == 0, "ocean province must have soil fertility = 0");
+			break;
+		case GRASSLAND:
+			break;
+		}
+	}
+
+	private void internalAssert(boolean c, String errorText) {
+		if (!c) {
+			throw new RuntimeException("Failed to check province " + getId() + ": " + errorText);
 		}
 	}
 
