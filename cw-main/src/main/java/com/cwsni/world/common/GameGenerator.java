@@ -1,7 +1,5 @@
 package com.cwsni.world.common;
 
-import java.util.Random;
-
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.model.Game;
@@ -15,7 +13,7 @@ public class GameGenerator {
 		Game game = new Game();
 		createMap(rows, columns, provinceRadius, game);
 		fillPopulation(game);
-		game.postConstruct();
+		game.postGenerate();
 		return game;
 	}
 
@@ -27,7 +25,7 @@ public class GameGenerator {
 	private void fillPopulation(Game game) {
 		game.getMap().getProvinces().forEach(p -> {
 			Population pop = new Population();
-			//pop.setAmount(new Random().nextInt(1000));
+			// pop.setAmount(new Random().nextInt(1000));
 			pop.setAmount(p.getId() * 100);
 			p.getPopulation().clear();
 			p.getPopulation().add(pop);

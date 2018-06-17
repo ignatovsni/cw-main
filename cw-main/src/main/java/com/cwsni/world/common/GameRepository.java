@@ -45,7 +45,7 @@ public class GameRepository {
 		try {
 			game = objectMapper.readValue(new File(QUICK_SAVE_FILE_NAME), Game.class);
 			logger.info("quick load is successful : " + game.logDescription());
-			game.postConstruct();
+			game.postLoad();
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.info("quick load is failed ", e);

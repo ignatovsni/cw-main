@@ -68,8 +68,19 @@ public class Game {
 		setGameStats(stats);
 	}
 
-	public void postConstruct() {
+	/**
+	 * Finishes game preparing after generation
+	 */
+	public void postGenerate() {
 		calcGameStats();
+	}
+
+	/**
+	 * Finishes game preparing after loading
+	 */
+	public void postLoad() {
+		map.postLoad();		
+		postGenerate();
 	}
 
 }
