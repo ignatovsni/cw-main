@@ -24,7 +24,7 @@ public class GameGenerator {
 	public Game createTestGame(int rows, int columns, int provinceRadius) {
 		Game game = new Game();
 		createMap(rows, columns, provinceRadius, game);
-		createTerrain(game, System.currentTimeMillis(), 4, 0.4);
+		createTerrain(game, System.currentTimeMillis(), 10, 0.4);
 		fillPopulation(game);
 		game.postGenerate();
 		return game;
@@ -86,12 +86,14 @@ public class GameGenerator {
 	}
 
 	private void createTerrain(Game game, long seed, long corePoints, double oceanProcent) {
+		assert (oceanProcent < 1 && oceanProcent >= 0);
 		WorldMap map = game.getMap();
 		int needTerrainProvs = (int) (map.getProvinces().size() * (1 - oceanProcent));
 		List<Province> terrain = new ArrayList<>(needTerrainProvs);
 		Set<Integer> terrainIds = new HashSet<>(needTerrainProvs);
 		Random random = new Random(seed);
 		Province prov = null;
+		corePoints = Math.min(corePoints, map.getProvinces().size());
 		while (terrain.size() < corePoints) {
 			prov = map.getProvinces().get(random.nextInt(map.getProvinces().size()));
 			if (!terrainIds.contains(prov.getId())) {

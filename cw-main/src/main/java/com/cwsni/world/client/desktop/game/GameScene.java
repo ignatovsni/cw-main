@@ -48,7 +48,7 @@ public class GameScene extends Scene {
 
 	private Game game;
 	private DWorldMap worldMap;
-	private Province selectedProvince;
+	private Integer selectedProvinceId;
 
 	private MapMode mapMode = MapMode.GEO;
 
@@ -123,10 +123,10 @@ public class GameScene extends Scene {
 
 	// Event listener can be a good idea instead of direct invocation
 	public void selectProvince(Province province) {
-		this.selectedProvince = province;
-		if (selectedProvince != null) {
-			statusBarText.setText("Selected province with id = " + selectedProvince.getId() + "; population = "
-					+ selectedProvince.getPopulationAmount());
+		this.selectedProvinceId = province != null ? province.getId() : null;
+		if (province != null) {
+			statusBarText.setText("Selected province with id = " + province.getId() + "; population = "
+					+ province.getPopulationAmount());
 		}
 		provInfoPane.refreshInfo();
 	}
@@ -148,12 +148,13 @@ public class GameScene extends Scene {
 	}
 
 	private void refreshAllVisibleInfo() {
+		selectedProvinceId = null;
 		globalInfoPane.refreshInfo();
 		provInfoPane.refreshInfo();
 	}
 
 	public Province getSelectedProvince() {
-		return selectedProvince;
+		return game.getMap().findProvById(selectedProvinceId);
 	}
 
 }
