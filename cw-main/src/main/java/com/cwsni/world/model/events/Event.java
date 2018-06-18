@@ -5,11 +5,14 @@ import java.util.stream.Collectors;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.Game;
+import com.cwsni.world.model.Province;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Event {
 
 	public static final String EVENT_GLOBAL_CLIMATE_CHANGE = "event.global.climate.change";
+	public static final String EVENT_EPIDEMIC = "event.epidemic";
+	public static final String EVENT_EPIDEMIC_PROTECTED = "event.epidemic.protected";
 
 	private String type;
 	private int id;
@@ -103,7 +106,7 @@ public class Event {
 	}
 
 	@JsonIgnore
-	private boolean isFinished(Game game) {
+	public boolean isFinished(Game game) {
 		return game.getTurn().getTurn() > getStartTurn() + getDuration();
 	}
 
@@ -112,6 +115,7 @@ public class Event {
 	public static void processEvents(Game game, LocaleMessageSource messageSource) {
 		deactivateFinishedEvents(game, messageSource);
 		EventGlobalClimateChange.processNewEvent(game, messageSource);
+		EventEpidemic.processNewEvent(game, messageSource);
 	}
 
 	private static void deactivateFinishedEvents(Game game, LocaleMessageSource messageSource) {
@@ -124,8 +128,21 @@ public class Event {
 	}
 
 	protected static void finish(Game game, Event e, LocaleMessageSource messageSource) {
-		if (e.getType().equals(EVENT_GLOBAL_CLIMATE_CHANGE)) {
+		switch (e.getType()) {
+		case EVENT_GLOBAL_CLIMATE_CHANGE:
 			EventGlobalClimateChange.finishEvent(game, e, messageSource);
+			break;
+		case EVENT_EPIDEMIC:
+			// made in processEvent
+			break;
+		}
+	}
+
+	public static void processEvent(Game game, Province p, Event e) {
+		switch (e.getType()) {
+		case EVENT_EPIDEMIC:
+			EventEpidemic.processEpidemicEvent(game, p, e);
+			break;
 		}
 	}
 

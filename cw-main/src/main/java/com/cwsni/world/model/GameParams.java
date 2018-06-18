@@ -8,8 +8,8 @@ public class GameParams {
 
 	@JsonIgnore
 	private Random random;
-	
-	// ------------Map generation section--------	
+
+	// ------------Map generation section--------
 	private long seed = System.currentTimeMillis();
 	private int rows = 10;
 	private int columns = 10;
@@ -35,12 +35,18 @@ public class GameParams {
 	// ------------Turn procession section--------
 	private double populationBaseGrowth = 1.01;
 	private double populationMaxExcess = 1.2;
-	
+
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
 	private double eventGlobalClimateChangeBadProbability = 0.7;
 	private double eventGlobalClimateChangeMultiplicator = 0.01;
 	private int eventGlobalClimateChangeDuration = 10;
+
+	private double eventEpidemicProbability = 0.02;
+	private double eventEpidemicContagiousness = 0.5;
+	private double eventEpidemicDeathRate = 0.2;
+	private int eventEpidemicDuration = 5;
+	private int eventEpidemicProtectionDuration = 20;
 	// ------------End of turn procession section--------
 
 	public double getEventGlobalClimateChangeProbability() {
@@ -250,6 +256,46 @@ public class GameParams {
 
 	public void setEventGlobalClimateChangeBadProbability(double eventGlobalClimateChangeBadProbability) {
 		this.eventGlobalClimateChangeBadProbability = eventGlobalClimateChangeBadProbability;
+	}
+
+	public double getEventEpidemicProbability() {
+		return eventEpidemicProbability;
+	}
+
+	public void setEventEpidemicProbability(double eventEpidemicProbability) {
+		this.eventEpidemicProbability = eventEpidemicProbability;
+	}
+
+	public double getEventEpidemicContagiousness() {
+		return eventEpidemicContagiousness;
+	}
+
+	public void setEventEpidemicContagiousness(double eventEpidemicContagiousness) {
+		this.eventEpidemicContagiousness = eventEpidemicContagiousness;
+	}
+
+	public double getEventEpidemicDeathRate() {
+		return eventEpidemicDeathRate;
+	}
+
+	public void setEventEpidemicDeathRate(double eventEpidemicDeathRate) {
+		this.eventEpidemicDeathRate = eventEpidemicDeathRate;
+	}
+
+	public int getEventEpidemicDuration() {
+		return eventEpidemicDuration;
+	}
+
+	public void setEventEpidemicDuration(int eventEpidemicDuration) {
+		this.eventEpidemicDuration = eventEpidemicDuration;
+	}
+
+	public int getEventEpidemicProtectionDuration() {
+		return eventEpidemicProtectionDuration;
+	}
+
+	public void setEventEpidemicProtectionDuration(int eventEpidemicProtectionDuration) {
+		this.eventEpidemicProtectionDuration = eventEpidemicProtectionDuration;
 	}
 
 }

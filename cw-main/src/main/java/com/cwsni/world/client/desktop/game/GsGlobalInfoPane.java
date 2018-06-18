@@ -39,7 +39,7 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 		if (gameScene.getGame() != null) {
 			valuesTurnLabel.setValue(toString(gameScene.getGame().getTurn().getTurnTexToDisplay()));
 			valuesProvsLabel.setValue(toString(gameScene.getGame().getMap().getProvinces().size()));
-			valuesTotalPopsLabel.setValue(toLong(gameScene.getGame().getGameStats().getTotalPopulation()));
+			valuesTotalPopsLabel.setValue(toLong(gameScene.getGame().getGameTransientStats().getTotalPopulation()));
 		}
 	}
 

@@ -24,8 +24,8 @@ public class GameGenerator {
 	public Game createTestGame() {
 		GameParams gameParams = new GameParams();
 		gameParams.setSeed(System.currentTimeMillis());
-		gameParams.setRows(30);
-		gameParams.setColumns(30);
+		gameParams.setRows(50);
+		gameParams.setColumns(50);
 		return createGame(gameParams);
 	}
 

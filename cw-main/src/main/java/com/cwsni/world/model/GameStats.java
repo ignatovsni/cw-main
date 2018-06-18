@@ -1,33 +1,49 @@
 package com.cwsni.world.model;
 
 public class GameStats {
+
+	private long maxPopulationForAllTime;
+	private long diedFromDisease;
+	private long diedFromHunger;
+
+	public long getDiedFromDisease() {
+		return diedFromDisease;
+	}
+
+	public void setDiedFromDisease(long diedFromDisease) {
+		this.diedFromDisease = diedFromDisease;
+	}
+
+	public long getDiedFromHunger() {
+		return diedFromHunger;
+	}
+
+	public void setDiedFromHunger(long diedFromHunger) {
+		this.diedFromHunger = diedFromHunger;
+	}
+
+	public long getMaxPopulationForAllTime() {
+		return maxPopulationForAllTime;
+	}
+
+	public void setMaxPopulationForAllTime(long maxPopulationForAllTime) {
+		this.maxPopulationForAllTime = maxPopulationForAllTime;
+	}
 	
-	private int maxPopulationInProvince;
-	private long totalPopulation;
-	private int maxSoilQuality;
-
-	public int getMaxSoilQuality() {
-		return maxSoilQuality;
+	public void addDiedFromDisease(long diedFromDisease) {
+		this.diedFromDisease += diedFromDisease;
+	}
+	
+	public void addDiedFromHunger(long diedFromHunger) {
+		this.diedFromHunger += diedFromHunger;
 	}
 
-	public void setMaxSoilQuality(int maxSoilQuality) {
-		this.maxSoilQuality = maxSoilQuality;
+	public void addDiedFromDisease(double d) {
+		addDiedFromDisease((long)d);
 	}
 
-	public long getTotalPopulation() {
-		return totalPopulation;
-	}
-
-	public void setTotalPopulation(long totalPopulation) {
-		this.totalPopulation = totalPopulation;
-	}
-
-	public int getMaxPopulationInProvince() {
-		return maxPopulationInProvince;
-	}
-
-	public void setMaxPopulationInProvince(int maxPopulation) {
-		this.maxPopulationInProvince = maxPopulation;
+	public void addDiedFromHunger(double d) {
+		addDiedFromHunger((long)d);
 	}
 
 }

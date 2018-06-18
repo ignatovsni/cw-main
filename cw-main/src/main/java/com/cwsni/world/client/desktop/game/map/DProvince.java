@@ -93,12 +93,12 @@ class DProvince extends Group {
 	}
 
 	private void drawPopulationMode(Polygon polygon) {
-		drawGradientMode(polygon, map.getGame().getGameStats().getMaxPopulationInProvince(),
+		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxPopulationInProvince(),
 				province.getPopulationAmount(), MapMode.POPULATION_2.equals(map.getMapMode()));
 	}
 
 	private void drawSoilMode(Polygon polygon) {
-		drawGradientMode(polygon, map.getGame().getGameStats().getMaxSoilQuality(), province.getSoilQuality(),
+		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxSoilQuality(), province.getSoilQuality(),
 				MapMode.SOIL_2.equals(map.getMapMode()));
 	}
 

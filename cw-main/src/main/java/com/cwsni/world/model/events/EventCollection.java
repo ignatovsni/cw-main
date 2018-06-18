@@ -28,7 +28,7 @@ public class EventCollection {
 		}
 		return eventIds;
 	}
-	
+
 	public List<Event> getEvents() {
 		return events;
 	}
@@ -47,6 +47,15 @@ public class EventCollection {
 
 	public void postGenerate(Game game) {
 		this.game = game;
+	}
+
+	public boolean hasEventWithType(String type) {
+		for (Event e : events) {
+			if (e.getType().equals(type)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

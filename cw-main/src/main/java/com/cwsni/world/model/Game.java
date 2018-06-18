@@ -11,7 +11,7 @@ import com.cwsni.world.model.events.EventTarget;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "version", "turn", "gameParams", "map" })
+@JsonPropertyOrder({ "version", "turn", "gameParams", "gameStats", "map" })
 public class Game implements EventTarget {
 
 	final static String CURRENT_VERSION = "0.1";
@@ -27,8 +27,10 @@ public class Game implements EventTarget {
 	private Map<Integer, Event> eventsById = new HashMap<>();
 	private Map<String, List<Event>> eventsByType = new HashMap<>();
 
+	private GameStats gameStats = new GameStats();
+
 	@JsonIgnore
-	private transient GameStats gameStats;
+	private transient GameTransientStats gameTransientStats;
 
 	@JsonIgnore
 	private transient Map<String, Object> tempParams = new HashMap<>();
@@ -88,12 +90,12 @@ public class Game implements EventTarget {
 		this.version = version;
 	}
 
-	public GameStats getGameStats() {
-		return gameStats;
+	public GameTransientStats getGameTransientStats() {
+		return gameTransientStats;
 	}
 
-	public void setGameStats(GameStats gameStats) {
-		this.gameStats = gameStats;
+	public void setGameTransientStats(GameTransientStats gameStats) {
+		this.gameTransientStats = gameStats;
 	}
 
 	public GameParams getGameParams() {
@@ -154,7 +156,8 @@ public class Game implements EventTarget {
 		if (listByType != null) {
 			listByType.remove(e);
 		}
-		getOldEvents().add(e);
+		// too many
+		// getOldEvents().add(e);
 	}
 
 	public Event findEventById(Integer id) {
@@ -167,7 +170,7 @@ public class Game implements EventTarget {
 	}
 
 	private void calcGameStats() {
-		GameStats stats = new GameStats();
+		GameTransientStats stats = new GameTransientStats();
 		getMap().getProvinces().forEach(p -> {
 			// max population
 			int pop = p.getPopulationAmount();
@@ -182,7 +185,11 @@ public class Game implements EventTarget {
 				stats.setMaxSoilQuality(soilQuality);
 			}
 		});
-		setGameStats(stats);
+		setGameTransientStats(stats);
+		if (stats.getTotalPopulation() > getGameStats().getMaxPopulationForAllTime()) {
+			getGameStats().setMaxPopulationForAllTime(stats.getTotalPopulation());
+		}
+
 	}
 
 	/**
@@ -212,6 +219,14 @@ public class Game implements EventTarget {
 		map.getProvinces().forEach(p -> p.processNewTurn());
 		Event.processEvents(this, messageSource);
 		calcGameStats();
+	}
+
+	public GameStats getGameStats() {
+		return gameStats;
+	}
+
+	public void setGameStats(GameStats gameStats) {
+		this.gameStats = gameStats;
 	}
 
 }

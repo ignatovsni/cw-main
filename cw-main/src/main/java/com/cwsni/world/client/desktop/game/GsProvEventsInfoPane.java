@@ -1,10 +1,14 @@
 package com.cwsni.world.client.desktop.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 import com.cwsni.world.model.Province;
+import com.cwsni.world.model.events.Event;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -35,7 +39,8 @@ public class GsProvEventsInfoPane extends InternalInfoPane {
 		if (prov == null || prov.getEvents().getEvents().isEmpty()) {
 			return;
 		}
-		prov.getEvents().getEvents().forEach(e -> {
+		List<Event> events = new ArrayList<Event>(prov.getEvents().getEvents());
+		events.forEach(e -> {
 			pane.getChildren().add(createWithAl(e.getTitle(), true));
 			pane.getChildren().add(createWithAl(e.getDescription(), false));
 		});

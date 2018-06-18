@@ -1,9 +1,11 @@
 package com.cwsni.world.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.cwsni.world.CwException;
+import com.cwsni.world.model.events.Event;
 
 public class Population {
 
@@ -53,12 +55,14 @@ public class Population {
 		return pop;
 	}
 
-	static public void growPopulation(Province from, GameParams gParams) {
+	static public void growPopulation(Province from, Game game) {
+		GameParams gParams = game.getGameParams();
 		if (from.getSoilFertilityEff() >= 1) {
 			from.getPopulation().forEach(p -> {
 				p.setAmount((int) (p.getAmount() * gParams.getPopulationBaseGrowth()));
 			});
 		} else {
+			game.getGameStats().addDiedFromHunger(from.getPopulationAmount() * (1-from.getSoilFertilityEff()));
 			from.getPopulation().forEach(p -> {
 				p.setAmount((int) (p.getAmount() * from.getSoilFertilityEff()));
 			});
@@ -67,9 +71,23 @@ public class Population {
 		if (from.getPopulationAmount() > maxPopulation * gParams.getPopulationMaxExcess()) {
 			double needDivideTo = (double) from.getPopulationAmount() / maxPopulation
 					/ gParams.getPopulationMaxExcess();
+			double multi = 1 / needDivideTo;
+			game.getGameStats().addDiedFromHunger(from.getPopulationAmount() * (1-multi));
 			from.getPopulation().forEach(p -> {
-				p.setAmount((int) (p.getAmount() / needDivideTo));
+				p.setAmount((int) (p.getAmount() * multi));
 			});
 		}
+	}
+
+	public static void processEvents(Game game, Province p) {
+		List<Event> provEvents = new ArrayList<>(p.getEvents().getEvents());
+		provEvents.forEach(e -> Event.processEvent(game, p, e));
+	}
+
+	public static void dieFromDisease(Game game, Province from, double deathRate) {
+		game.getGameStats().addDiedFromDisease(from.getPopulationAmount() * deathRate);
+		from.getPopulation().forEach(p -> {
+			p.setAmount((int) (p.getAmount() * (1 - deathRate)));
+		});
 	}
 }

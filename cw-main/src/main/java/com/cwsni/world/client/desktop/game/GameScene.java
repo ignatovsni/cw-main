@@ -201,6 +201,9 @@ public class GameScene extends Scene {
 	}
 
 	private void startProcessingNewTurn() {
+		if(getGame().getMap().getProvinces().isEmpty()) {
+			return;
+		}
 		if (timeMode == GsTimeMode.PAUSE) {
 			return;
 		}
