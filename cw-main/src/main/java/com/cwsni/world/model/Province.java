@@ -3,9 +3,12 @@ package com.cwsni.world.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cwsni.world.model.events.Event;
+import com.cwsni.world.model.events.EventCollection;
+import com.cwsni.world.model.events.EventTarget;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Province {
+public class Province implements EventTarget {
 
 	private int id;
 	private String name;
@@ -16,6 +19,7 @@ public class Province {
 	 * 'neighbors'
 	 */
 	private int[] neighborsById;
+	@JsonIgnore
 	private List<Province> neighbors;
 
 	private TerrainType terrainType;
@@ -24,6 +28,8 @@ public class Province {
 	private int soilArea;
 
 	private List<Population> population;
+
+	private EventCollection events = new EventCollection();
 
 	@JsonIgnore
 	private transient ProvinceTransientProps tp;
@@ -45,7 +51,6 @@ public class Province {
 		this.terrainType = TerrainType.OCEAN;
 	}
 
-	@JsonIgnore
 	public List<Province> getNeighbors() {
 		return neighbors;
 	}
@@ -94,12 +99,28 @@ public class Province {
 		this.name = name;
 	}
 
+	@JsonIgnore
+	public double getSoilFertilityEff() {
+		double v = getSoilFertility();
+		for (Event e : events.getEvents()) {
+			if (Event.EVENT_GLOBAL_CLIMATE_CHANGE.equals(e.getType())) {
+				v *= e.getEffectDouble1();
+			}
+		}
+		return v;
+	}
+
 	public double getSoilFertility() {
 		return soilFertility;
 	}
 
 	public void setSoilFertility(double soilFertility) {
 		this.soilFertility = soilFertility;
+	}
+
+	@JsonIgnore
+	public int getSoilAreaEff() {
+		return getSoilArea();
 	}
 
 	public int getSoilArea() {
@@ -118,6 +139,14 @@ public class Province {
 		this.terrainType = terrainType;
 	}
 
+	public EventCollection getEvents() {
+		return events;
+	}
+
+	public void setEvents(EventCollection events) {
+		this.events = events;
+	}
+
 	@JsonIgnore
 	public int getPopulationAmount() {
 		return getPopulation().stream().mapToInt(p -> p.getAmount()).sum();
@@ -132,10 +161,14 @@ public class Province {
 		for (int id : neighborsById) {
 			getNeighbors().add(map.findProvById(id));
 		}
+		if (getTerrainType() != TerrainType.OCEAN) {
+			events.postLoad(map.getGame());
+		}
 	}
 
 	public void postGenerate(WorldMap map) {
 		this.worldMap = map;
+		events.postGenerate(map.getGame());
 	}
 
 	public void checkCorrectness() {
@@ -158,12 +191,12 @@ public class Province {
 
 	@JsonIgnore
 	public int getSoilQuality() {
-		return (int) (getSoilArea() * getSoilFertility());
+		return (int) (getSoilAreaEff() * getSoilFertilityEff());
 	}
 
 	@JsonIgnore
 	public int getMaxPopulation() {
-		return (int) (getSoilArea() * getSoilFertility());
+		return (int) (getSoilAreaEff() * getSoilFertilityEff());
 	}
 
 	@JsonIgnore
@@ -179,6 +212,16 @@ public class Province {
 		Population.migrateIfHaveTo(this, gParams);
 		Population.growPopulation(this, gParams);
 		tp.populationExcess = getPopulationAmount() / getMaxPopulation();
+	}
+
+	@Override
+	public void addEvent(Event e) {
+		events.add(e);
+	}
+
+	@Override
+	public void removeEvent(Event e) {
+		events.removeEvent(e);
 	}
 
 }

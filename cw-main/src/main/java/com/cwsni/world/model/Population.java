@@ -19,7 +19,7 @@ public class Population {
 
 	static public void migrateIfHaveTo(Province from, GameParams gParams) {
 		int maxPopulation = Math.max(from.getMaxPopulation(), 1);
-		if (from.getPopulationAmount() > maxPopulation || from.getSoilFertility() < 1) {
+		if (from.getPopulationAmount() > maxPopulation || from.getSoilFertilityEff() < 1) {
 			List<Province> prov = from.getNeighbors().stream()
 					.filter(n -> n.getTerrainType().isPopulationPossible() && n.getPopulationExcess() < 1)
 					.collect(Collectors.toList());
@@ -54,13 +54,13 @@ public class Population {
 	}
 
 	static public void growPopulation(Province from, GameParams gParams) {
-		if (from.getSoilFertility() >= 1) {
+		if (from.getSoilFertilityEff() >= 1) {
 			from.getPopulation().forEach(p -> {
 				p.setAmount((int) (p.getAmount() * gParams.getPopulationBaseGrowth()));
 			});
 		} else {
 			from.getPopulation().forEach(p -> {
-				p.setAmount((int) (p.getAmount() * from.getSoilFertility()));
+				p.setAmount((int) (p.getAmount() * from.getSoilFertilityEff()));
 			});
 		}
 		int maxPopulation = Math.max(from.getMaxPopulation(), 1);

@@ -60,8 +60,8 @@ public class GsProvInfoPane extends InternalInfoPane {
 			switch (prov.getTerrainType()) {
 			case GRASSLAND:
 				setLabelText(valuesPopsLabel, toLong(prov.getPopulationAmount()));
-				setLabelText(valuesSoilAreaLabel, toLong(prov.getSoilArea()));
-				setLabelText(valuesSoilFertilityLabel, toFraction(prov.getSoilFertility()));
+				setLabelText(valuesSoilAreaLabel, toLong(prov.getSoilAreaEff()));
+				setLabelText(valuesSoilFertilityLabel, toFraction(prov.getSoilFertilityEff()));
 				break;
 			case OCEAN:
 				break;

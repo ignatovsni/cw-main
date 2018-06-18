@@ -9,12 +9,15 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Lighting;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 @Component
 @Scope("prototype")
@@ -23,6 +26,7 @@ public class GsTimeControl extends InternalInfoPane {
 	private GameScene gameScene;
 
 	private List<Button> buttons;
+	private Button pauseButton;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -31,7 +35,7 @@ public class GsTimeControl extends InternalInfoPane {
 	}
 
 	private Pane createUI() {
-		Button pauseButton = new Button(getMessage("||"));
+		pauseButton = new Button(getMessage("||"));
 		pauseButton.setTooltip(new Tooltip(getMessage("info.pane.time.button.pause")));
 		pauseButton.setOnAction(e -> {
 			pressButton(pauseButton, GsTimeMode.PAUSE);
@@ -76,7 +80,14 @@ public class GsTimeControl extends InternalInfoPane {
 
 		HBox hbox = new HBox();
 		hbox.getChildren().addAll(buttons);
-		return hbox;
+		VBox vbox = new VBox();
+		RadioButton rb = new RadioButton();
+		rb.setSelected(true);
+		rb.setOnAction(e -> {
+			gameScene.setAutoTurn(rb.isSelected());
+		});
+		vbox.getChildren().addAll(hbox, new HBox(rb, new Label(getMessage("info.pane.time.rb.title"))));
+		return vbox;
 	}
 
 	private void pressButton(Button buttonMode, GsTimeMode timeMode) {
@@ -84,4 +95,11 @@ public class GsTimeControl extends InternalInfoPane {
 		buttonMode.setEffect(new Lighting());
 		gameScene.setTimeModeAndRun(timeMode);
 	}
+
+	public void enablePauseButton() {
+		buttons.forEach(b -> b.setEffect(null));
+		pauseButton.setEffect(new Lighting());
+		gameScene.setTimeModeAndRun(GsTimeMode.PAUSE);
+	}
+
 }

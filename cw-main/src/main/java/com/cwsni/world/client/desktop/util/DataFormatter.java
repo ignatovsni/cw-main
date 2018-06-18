@@ -32,5 +32,9 @@ public class DataFormatter {
 	public static double doubleWith2points(double d) {
 		return ((int) (d * 100)) / 100.0;
 	}
+	
+	public static double doubleWith3points(double d) {
+		return ((int) (d * 1000)) / 1000.0;
+	}
 
 }

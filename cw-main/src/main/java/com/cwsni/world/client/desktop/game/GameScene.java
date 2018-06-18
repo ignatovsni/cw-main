@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.game.map.DWorldMap;
 import com.cwsni.world.client.desktop.game.map.MapMode;
+import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
 import com.cwsni.world.common.GameGenerator;
 import com.cwsni.world.common.GameRepository;
@@ -32,6 +33,9 @@ public class GameScene extends Scene {
 	private static final Log logger = LogFactory.getLog(GameScene.class);
 
 	@Autowired
+	private LocaleMessageSource messageSource;
+
+	@Autowired
 	private GameRepository gameRepository;
 
 	@Autowired
@@ -50,6 +54,9 @@ public class GameScene extends Scene {
 	private GsProvInfoPane provInfoPane;
 
 	@Autowired
+	private GsProvEventsInfoPane provEventsInfoPane;
+
+	@Autowired
 	private GsTimeControl timeControl;
 
 	private Stage stage;
@@ -62,6 +69,7 @@ public class GameScene extends Scene {
 
 	private MapMode mapMode = MapMode.GEO;
 	private GsTimeMode timeMode = GsTimeMode.PAUSE;
+	private boolean autoTurn = true;
 
 	public GameScene() {
 		super(new BorderPane());
@@ -77,13 +85,14 @@ public class GameScene extends Scene {
 		menuBar.init(this);
 		globalInfoPane.init(this);
 		provInfoPane.init(this);
+		provEventsInfoPane.init(this);
 		timeControl.init(this);
 
 		VBox topSection = new VBox();
 		topSection.getChildren().addAll(menuBar, toolBar);
 
 		VBox rightSection = new VBox();
-		rightSection.getChildren().addAll(timeControl, globalInfoPane, provInfoPane);
+		rightSection.getChildren().addAll(timeControl, globalInfoPane, provInfoPane, provEventsInfoPane);
 		rightSection.setMaxWidth(200);
 
 		BorderPane layout = (BorderPane) getRoot();
@@ -141,6 +150,7 @@ public class GameScene extends Scene {
 					+ province.getPopulationAmount());
 		}
 		provInfoPane.refreshInfo();
+		provEventsInfoPane.refreshInfo();
 	}
 
 	public DWorldMap getWorldMap() {
@@ -175,6 +185,7 @@ public class GameScene extends Scene {
 	private void refreshAllVisibleInfo() {
 		globalInfoPane.refreshInfo();
 		provInfoPane.refreshInfo();
+		provEventsInfoPane.refreshInfo();
 	}
 
 	public Province getSelectedProvince() {
@@ -218,22 +229,32 @@ public class GameScene extends Scene {
 	private void refreshViewAndStartNewTurn() {
 		refreshAllVisibleInfo();
 		getWorldMap().setMapModeAndRedraw(mapMode);
-		startProcessingNewTurn();
+		if (autoTurn) {
+			startProcessingNewTurn();
+		} else {
+			timeControl.enablePauseButton();
+		}
 	}
 
 	private void processNewTurn() throws InterruptedException {
 		try {
 			for (int i = 0; i < timeMode.getTurnPerTime(); i++) {
-				game.processNewTurn();
+				game.processNewTurn(messageSource);
 			}
 		} catch (Exception e) {
 			logError(e);
 		}
-		Thread.sleep(50 * (10 - timeMode.getTurnPerTime()));
+		if (autoTurn) {
+			Thread.sleep(50 * (10 - timeMode.getTurnPerTime()));
+		}
 	}
 
 	private void logError(Exception e) {
 		logger.error(e);
+	}
+
+	public void setAutoTurn(boolean autoTurn) {
+		this.autoTurn = autoTurn;
 	}
 
 }

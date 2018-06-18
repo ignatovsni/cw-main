@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.cwsni.world.model.events.Event;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class WorldMap {
@@ -58,6 +59,10 @@ public class WorldMap {
 	@JsonIgnore
 	public Game getGame() {
 		return game;
+	}
+
+	public void remove(Event e) {
+		getProvinces().forEach(p -> p.removeEvent(e));
 	}
 
 }

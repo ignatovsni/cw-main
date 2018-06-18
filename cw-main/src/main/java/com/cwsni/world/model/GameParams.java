@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class GameParams {
 
-	// ------------Map generation section--------
 	@JsonIgnore
 	private Random random;
-
+	
+	// ------------Map generation section--------	
 	private long seed = System.currentTimeMillis();
 	private int rows = 10;
 	private int columns = 10;
@@ -22,20 +22,34 @@ public class GameParams {
 	private double soilAreaCorePointsPerProvinces = 0.01;
 	private int fractionOfMaxSoilArea = 2;
 
-	private double minSoilFertility = 1;
-	private double maxSoilFertility = 1.3;
+	private double minSoilFertility = 1.2;
+	private double maxSoilFertility = 1.4;
 	private double soilFertilityCorePointsPerProvinces = 0.01;
 	private int fractionOfMaxSoilFertility = 5;
 	private double decreaseSoilFertilityAtPoles = 0.1;
 
 	private double populationAtStartFromMax = 0.1;
-	private double minSoilFertilityToStartPopulation = 1.1;	
+	private double minSoilFertilityToStartPopulation = 1.1;
 	// ------------End of Map generation section--------
 
 	// ------------Turn procession section--------
 	private double populationBaseGrowth = 1.01;
 	private double populationMaxExcess = 1.2;
+	
+	private double eventGlobalClimateChangeProbability = 0.01;
+	private double eventGlobalClimateChangeContinueProbability = 0.8;
+	private double eventGlobalClimateChangeBadProbability = 0.7;
+	private double eventGlobalClimateChangeMultiplicator = 0.01;
+	private int eventGlobalClimateChangeDuration = 10;
 	// ------------End of turn procession section--------
+
+	public double getEventGlobalClimateChangeProbability() {
+		return eventGlobalClimateChangeProbability;
+	}
+
+	public void setEventGlobalClimateChangeProbability(double eventGlobalClimateChangeProbability) {
+		this.eventGlobalClimateChangeProbability = eventGlobalClimateChangeProbability;
+	}
 
 	public double getPopulationBaseGrowth() {
 		return populationBaseGrowth;
@@ -204,6 +218,38 @@ public class GameParams {
 
 	public void setMinSoilFertilityToStartPopulation(double minSoilFertilityToStartPopulation) {
 		this.minSoilFertilityToStartPopulation = minSoilFertilityToStartPopulation;
+	}
+
+	public double getEventGlobalClimateChangeContinueProbability() {
+		return eventGlobalClimateChangeContinueProbability;
+	}
+
+	public void setEventGlobalClimateChangeContinueProbability(double eventGlobalClimateChangeContinueProbability) {
+		this.eventGlobalClimateChangeContinueProbability = eventGlobalClimateChangeContinueProbability;
+	}
+
+	public int getEventGlobalClimateChangeDuration() {
+		return eventGlobalClimateChangeDuration;
+	}
+
+	public void setEventGlobalClimateChangeDuration(int eventGlobalClimateChangeDuration) {
+		this.eventGlobalClimateChangeDuration = eventGlobalClimateChangeDuration;
+	}
+
+	public double getEventGlobalClimateChangeMultiplicator() {
+		return eventGlobalClimateChangeMultiplicator;
+	}
+
+	public void setEventGlobalClimateChangeMultiplicator(double eventGlobalClimateChangeMultiplicator) {
+		this.eventGlobalClimateChangeMultiplicator = eventGlobalClimateChangeMultiplicator;
+	}
+
+	public double getEventGlobalClimateChangeBadProbability() {
+		return eventGlobalClimateChangeBadProbability;
+	}
+
+	public void setEventGlobalClimateChangeBadProbability(double eventGlobalClimateChangeBadProbability) {
+		this.eventGlobalClimateChangeBadProbability = eventGlobalClimateChangeBadProbability;
 	}
 
 }
