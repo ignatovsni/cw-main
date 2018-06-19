@@ -17,8 +17,8 @@ public class GameParams {
 	private int terrainCorePoints = 10;
 	private double oceanProcent = 0.4;
 
-	private int minSoilArea = 10000;
-	private int maxSoilArea = 20000;
+	private int minSoilArea = 50000;
+	private int maxSoilArea = 100000;
 	private double soilAreaCorePointsPerProvinces = 0.01;
 	private int fractionOfMaxSoilArea = 2;
 
@@ -28,24 +28,26 @@ public class GameParams {
 	private int fractionOfMaxSoilFertility = 5;
 	private double decreaseSoilFertilityAtPoles = 0.1;
 
-	private double populationAtStartFromMax = 0.1;
-	private double minSoilFertilityToStartPopulation = 1.1;
+	private double populationAtStartFromMax = 0.05;
+	private double minSoilFertilityToStartPopulation = (maxSoilFertility + minSoilFertility*9) / 10;
 	// ------------End of Map generation section--------
 
 	// ------------Turn procession section--------
 	private double populationBaseGrowth = 1.01;
 	private double populationMaxExcess = 1.2;
+	private double populationMinMigration = 0.01;
 
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
 	private double eventGlobalClimateChangeBadProbability = 0.7;
-	private double eventGlobalClimateChangeMultiplicator = 0.01;
+	private double eventGlobalClimateChangeMultiplicator = 0.02;
+	private double eventGlobalClimateMaxChange = 0.2;
 	private int eventGlobalClimateChangeDuration = 10;
 
 	private double eventEpidemicProbability = 0.02;
 	private double eventEpidemicContagiousness = 0.5;
 	private double eventEpidemicDeathRate = 0.2;
-	private int eventEpidemicDuration = 5;
+	private int eventEpidemicDuration = 10;
 	private int eventEpidemicProtectionDuration = 20;
 	// ------------End of turn procession section--------
 
@@ -297,5 +299,23 @@ public class GameParams {
 	public void setEventEpidemicProtectionDuration(int eventEpidemicProtectionDuration) {
 		this.eventEpidemicProtectionDuration = eventEpidemicProtectionDuration;
 	}
+
+	public double getEventGlobalClimateMaxChange() {
+		return eventGlobalClimateMaxChange;
+	}
+
+	public void setEventGlobalClimateMaxChange(double eventGlobalClimateMaxChange) {
+		this.eventGlobalClimateMaxChange = eventGlobalClimateMaxChange;
+	}
+
+	public double getPopulationMinMigration() {
+		return populationMinMigration;
+	}
+
+	public void setPopulationMinMigration(double populationMinMigration) {
+		this.populationMinMigration = populationMinMigration;
+	}
+	
+	
 
 }

@@ -1,47 +1,35 @@
 package com.cwsni.world.model.events;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.cwsni.world.model.Game;
+import com.cwsni.world.model.util.ObjectStorage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class EventCollection {
+public class EventCollection extends ObjectStorage<Event, Integer, String> {
 
-	private int[] eventIds = new int[0];
-	@JsonIgnore
-	private List<Event> events = new ArrayList<>();
 	private Game game;
 
 	public void add(Event e) {
-		events.add(e);
+		add(e, e.getId(), e.getType());
 	}
 
 	public void removeEvent(Event e) {
-		events.remove(e);
+		remove(e, e.getId(), e.getType());
 	}
 
-	public int[] getEventIds() {
-		eventIds = new int[events.size()];
-		for (int i = 0; i < events.size(); i++) {
-			eventIds[i] = events.get(i).getId();
-		}
-		return eventIds;
-	}
-
+	@JsonIgnore
 	public List<Event> getEvents() {
-		return events;
-	}
-
-	public void setEventIds(int[] eventIds) {
-		this.eventIds = eventIds;
+		return getObjects();
 	}
 
 	public void postLoad(Game game) {
 		this.game = game;
 		getEvents().clear();
-		for (int id : eventIds) {
-			getEvents().add(game.findEventById(id));
+		for (int id : getKeys()) {
+			Event e = game.findEventById(id);
+			add(e, e.getId(), e.getType());
 		}
 	}
 
@@ -50,12 +38,8 @@ public class EventCollection {
 	}
 
 	public boolean hasEventWithType(String type) {
-		for (Event e : events) {
-			if (e.getType().equals(type)) {
-				return true;
-			}
-		}
-		return false;
+		Map<Integer, Event> events = getObjectsByType().get(type);
+		return !(events == null || events.isEmpty());
 	}
 
 }

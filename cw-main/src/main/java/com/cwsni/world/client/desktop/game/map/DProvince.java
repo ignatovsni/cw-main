@@ -3,8 +3,10 @@ package com.cwsni.world.client.desktop.game.map;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
+import com.cwsni.world.model.GameTransientStats;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.TerrainType;
+import com.cwsni.world.model.events.Event;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -73,8 +75,13 @@ class DProvince extends Group {
 			drawPopulationMode(polygon);
 			break;
 		case SOIL:
-		case SOIL_2:
 			drawSoilMode(polygon);
+			break;
+		case SOIL_2:
+			drawSoilMode2(polygon);
+			break;
+		case DISEASE:
+			drawDesiaseMode(polygon);
 			break;
 		case GEO:
 			drawGeoMode(polygon);
@@ -98,27 +105,42 @@ class DProvince extends Group {
 	}
 
 	private void drawSoilMode(Polygon polygon) {
-		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxSoilQuality(), province.getSoilQuality(),
-				MapMode.SOIL_2.equals(map.getMapMode()));
+		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxSoilQuality(), province.getSoilQuality(), false);
+	}
+	
+	private void drawSoilMode2(Polygon polygon) {
+		GameTransientStats stats = map.getGame().getGameTransientStats();
+		double minF = stats.getMinSoilFertility();
+		drawGradientMode(polygon, stats.getMaxSoilFertility() - minF, province.getSoilFertilityEff() - minF, true);
 	}
 
-	private void drawGradientMode(Polygon polygon, int maxMapValue, int provinceValue, boolean mode2) {
-		int maxPops = maxMapValue;
-		double fraction = maxPops != 0 ? (double) provinceValue / maxPops : 1;
+	private void drawGradientMode(Polygon polygon, double maxValue, double provinceValue, boolean mode2) {
+		double fraction = maxValue != 0 ? provinceValue / maxValue : 1;
 		Paint pValue;
 		if (fraction < 0.5) {
 			if (mode2) {
-				fraction = fraction * fraction;
+				fraction = Math.sqrt(fraction);
 			}
 			pValue = new Color(Math.min(fraction * 2, 1), Math.min(fraction * 2, 1), 0, 1);
 		} else {
-			if (mode2) {
-				fraction = Math.sqrt(fraction);
+			if (mode2) {				
+				fraction = fraction * fraction;
 			}
 			pValue = new Color(1, Math.min(1 - (fraction - 0.5) * 2, 1), 0, 1);
 		}
 		polygon.setFill(pValue);
 	}
+	
+	private void drawDesiaseMode(Polygon polygon) {
+		if ( getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC) ) {
+			polygon.setFill(Color.RED);
+		} else if ( getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC_PROTECTED) ) {
+			polygon.setFill(Color.GREEN);
+		} else {
+			polygon.setFill(Color.GREY);
+		}
+	}
+
 
 	private void updatePoints() {
 		for (int i = 0; i < SIDES; i++) {

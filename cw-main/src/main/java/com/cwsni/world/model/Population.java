@@ -19,17 +19,23 @@ public class Population {
 		this.amount = amount;
 	}
 
-	static public void migrateIfHaveTo(Province from, GameParams gParams) {
-		int maxPopulation = Math.max(from.getMaxPopulation(), 1);
+	static public void migrate(Province from, GameParams gParams) {
+		List<Province> prov = from.getNeighbors().stream()
+				.filter(n -> n.getTerrainType().isPopulationPossible() && n.getPopulationExcess() < 1)
+				.collect(Collectors.toList());
+		if (prov.size() == 0) {
+			return;
+		}
+		int mPops = 0;
+		int maxPopulation = from.getMaxPopulation();
 		if (from.getPopulationAmount() > maxPopulation || from.getSoilFertilityEff() < 1) {
-			List<Province> prov = from.getNeighbors().stream()
-					.filter(n -> n.getTerrainType().isPopulationPossible() && n.getPopulationExcess() < 1)
-					.collect(Collectors.toList());
-			if (prov.size() > 0) {
-				int mPops = (int) (from.getPopulationAmount() * (gParams.getPopulationMaxExcess() - 1) / 2);
-				int mPopsToEachNeighbor = mPops / prov.size();
-				prov.forEach(p -> migrateTo(from, mPopsToEachNeighbor, p));
-			}
+			mPops = (int) (from.getPopulationAmount() * (gParams.getPopulationMaxExcess() - 1) / 2);
+		} else {
+			mPops = (int) (from.getPopulationAmount() * gParams.getPopulationMinMigration());
+		}
+		if (mPops > prov.size()) {
+			int mPopsToEachNeighbor = mPops / prov.size();
+			prov.forEach(p -> migrateTo(from, mPopsToEachNeighbor, p));
 		}
 	}
 
@@ -62,26 +68,28 @@ public class Population {
 				p.setAmount((int) (p.getAmount() * gParams.getPopulationBaseGrowth()));
 			});
 		} else {
-			game.getGameStats().addDiedFromHunger(from.getPopulationAmount() * (1-from.getSoilFertilityEff()));
-			from.getPopulation().forEach(p -> {
-				p.setAmount((int) (p.getAmount() * from.getSoilFertilityEff()));
-			});
+			dieFromHunger(game, from, 1 - from.getSoilFertilityEff());
 		}
 		int maxPopulation = Math.max(from.getMaxPopulation(), 1);
 		if (from.getPopulationAmount() > maxPopulation * gParams.getPopulationMaxExcess()) {
 			double needDivideTo = (double) from.getPopulationAmount() / maxPopulation
 					/ gParams.getPopulationMaxExcess();
 			double multi = 1 / needDivideTo;
-			game.getGameStats().addDiedFromHunger(from.getPopulationAmount() * (1-multi));
-			from.getPopulation().forEach(p -> {
-				p.setAmount((int) (p.getAmount() * multi));
-			});
+			dieFromHunger(game, from, 1 - multi);
 		}
 	}
 
 	public static void processEvents(Game game, Province p) {
 		List<Event> provEvents = new ArrayList<>(p.getEvents().getEvents());
 		provEvents.forEach(e -> Event.processEvent(game, p, e));
+	}
+
+	private static void dieFromHunger(Game game, Province from, double fraction) {
+		double kf = Math.min(fraction / 5, 0.1);
+		game.getGameStats().addDiedFromHunger(from.getPopulationAmount() * kf);
+		from.getPopulation().forEach(p -> {
+			p.setAmount((int) (p.getAmount() * (1 - kf)));
+		});
 	}
 
 	public static void dieFromDisease(Game game, Province from, double deathRate) {

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
+import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.GameParams;
 import com.cwsni.world.model.Population;
@@ -22,8 +23,10 @@ public class EventEpidemic extends Event {
 			core = game.getMap().findProvById(gParams.getRandom().nextInt(game.getMap().getProvinces().size()));
 		} while (core == null || core.getPopulationAmount() == 0);
 		core.addEvent(e);
-		e.setEffectDouble1(gParams.getEventEpidemicContagiousness());
-		e.setEffectDouble2(gParams.getEventEpidemicDeathRate());
+		e.setEffectDouble1(DataFormatter
+				.doubleWith2points(gParams.getEventEpidemicContagiousness() * gParams.getRandom().nextDouble()));
+		e.setEffectDouble2(DataFormatter
+				.doubleWith2points(gParams.getEventEpidemicDeathRate() * gParams.getRandom().nextDouble()));
 		e.setTitle(messageSource.getMessage(EVENT_EPIDEMIC + ".title"));
 		e.setDescription(messageSource.getMessage("event.epidemic.influence") + " " + e.getEffectDouble1() + "/"
 				+ e.getEffectDouble2());

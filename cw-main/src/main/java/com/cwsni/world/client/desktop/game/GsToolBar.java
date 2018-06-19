@@ -49,11 +49,18 @@ public class GsToolBar extends ToolBar {
 		toolBarMapSoilMode.setOnAction(e -> {
 			pressMapModeButton(toolBarMapSoilMode, MapMode.SOIL);
 		});
+		
+		Button toolBarMapDiseaseMode = new Button(getMessage("toolbar.map.mode.disease.button.text"));
+		toolBarMapDiseaseMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.disease.button.tooltip")));
+		toolBarMapDiseaseMode.setOnAction(e -> {
+			pressMapModeButton(toolBarMapDiseaseMode, MapMode.DISEASE);
+		});
 
 		toolBarMapModes = new ArrayList<>();
 		toolBarMapModes.add(toolBarMapGeoMode);
 		toolBarMapModes.add(toolBarMapPopsMode);
 		toolBarMapModes.add(toolBarMapSoilMode);
+		toolBarMapModes.add(toolBarMapDiseaseMode);
 		getItems().addAll(toolBarMapModes);
 	}
 

@@ -51,7 +51,10 @@ public class EventGlobalClimateChange extends Event {
 		} else {
 			e.setEffectDouble1(oldE.getEffectDouble1() / oldE.getEffectDouble2());
 		}
-		e.setEffectDouble1(DataFormatter.doubleWith3points(e.getEffectDouble1()));
+		double climageChange = DataFormatter.doubleWith2points(e.getEffectDouble1());
+		climageChange = Math.max(climageChange, 1 - gParams.getEventGlobalClimateMaxChange());
+		climageChange = Math.min(climageChange, 1 + gParams.getEventGlobalClimateMaxChange());
+		e.setEffectDouble1(climageChange);
 		e.setEffectDouble2(oldE.getEffectDouble2());
 		e.setEffectInt1(oldE.getEffectInt1() + 1);
 		if (e.getEffectInt1() > 0

@@ -146,8 +146,7 @@ public class GameScene extends Scene {
 	public void selectProvince(Province province) {
 		this.selectedProvinceId = province != null ? province.getId() : null;
 		if (province != null) {
-			statusBarText.setText("Selected province with id = " + province.getId() + "; population = "
-					+ province.getPopulationAmount());
+			statusBarText.setText("Selected province with id = " + province.getId());
 		}
 		provInfoPane.refreshInfo();
 		provEventsInfoPane.refreshInfo();
@@ -201,7 +200,7 @@ public class GameScene extends Scene {
 	}
 
 	private void startProcessingNewTurn() {
-		if(getGame().getMap().getProvinces().isEmpty()) {
+		if (getGame().getMap().getProvinces().isEmpty()) {
 			return;
 		}
 		if (timeMode == GsTimeMode.PAUSE) {

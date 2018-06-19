@@ -210,7 +210,7 @@ public class Province implements EventTarget {
 		}
 		GameParams gParams = worldMap.getGame().getGameParams();
 		Population.processEvents(worldMap.getGame(), this);
-		Population.migrateIfHaveTo(this, gParams);
+		Population.migrate(this, gParams);
 		Population.growPopulation(this, worldMap.getGame());
 		tp.populationExcess = getPopulationAmount() / getMaxPopulation();
 	}

@@ -5,5 +5,6 @@ public enum MapMode {
 	POPULATION,
 	POPULATION_2,
 	SOIL,
-	SOIL_2
+	SOIL_2,
+	DISEASE
 }

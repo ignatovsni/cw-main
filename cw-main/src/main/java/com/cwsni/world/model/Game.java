@@ -172,17 +172,31 @@ public class Game implements EventTarget {
 	private void calcGameStats() {
 		GameTransientStats stats = new GameTransientStats();
 		getMap().getProvinces().forEach(p -> {
-			// max population
-			int pop = p.getPopulationAmount();
-			if (stats.getMaxPopulationInProvince() < pop) {
-				stats.setMaxPopulationInProvince(pop);
+			if (p.getTerrainType().isPopulationPossible()) {
+				// max population
+				int pop = p.getPopulationAmount();
+				if (stats.getMaxPopulationInProvince() < pop) {
+					stats.setMaxPopulationInProvince(pop);
+				}
+				// total population
+				stats.setTotalPopulation(stats.getTotalPopulation() + pop);
 			}
-			// total population
-			stats.setTotalPopulation(stats.getTotalPopulation() + pop);
-			// max soil quality
-			int soilQuality = p.getSoilQuality();
-			if (stats.getMaxSoilQuality() < soilQuality) {
-				stats.setMaxSoilQuality(soilQuality);
+			if (p.getTerrainType().isSoilPossible()) {
+				// max soil quality
+				int soilQuality = p.getSoilQuality();
+				if (stats.getMaxSoilQuality() < soilQuality) {
+					stats.setMaxSoilQuality(soilQuality);
+				}
+				// max soil fertility
+				double soilFertility = p.getSoilFertilityEff();
+				if (stats.getMaxSoilFertility() < soilFertility) {
+					stats.setMaxSoilFertility(soilFertility);
+				}
+				// min soil fertility
+				stats.setMinSoilFertility(stats.getMaxSoilFertility());
+				if (stats.getMinSoilFertility() > soilFertility) {
+					stats.setMinSoilFertility(soilFertility);
+				}
 			}
 		});
 		setGameTransientStats(stats);

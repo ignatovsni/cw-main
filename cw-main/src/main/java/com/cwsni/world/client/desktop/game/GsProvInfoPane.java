@@ -15,7 +15,7 @@ import javafx.scene.layout.Pane;
 @Component
 @Scope("prototype")
 public class GsProvInfoPane extends InternalInfoPane {
-
+// TODO схлопывающиеся панели и метка или самая важная информации в заголовке справа. для событий - их количество, к примеру
 	private GameScene gameScene;
 
 	private RowValue valuesNameLabel;
