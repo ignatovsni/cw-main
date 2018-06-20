@@ -100,6 +100,7 @@ class DProvince extends Group {
 	}
 
 	private void drawPopulationMode(Polygon polygon) {
+		// TODO use red color while over population
 		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxPopulationInProvince(),
 				province.getPopulationAmount(), MapMode.POPULATION_2.equals(map.getMapMode()));
 	}
@@ -109,6 +110,7 @@ class DProvince extends Group {
 	}
 	
 	private void drawSoilMode2(Polygon polygon) {
+		// TODO blue color if fertility < 1
 		GameTransientStats stats = map.getGame().getGameTransientStats();
 		double minF = stats.getMinSoilFertility();
 		drawGradientMode(polygon, stats.getMaxSoilFertility() - minF, province.getSoilFertilityEff() - minF, true);

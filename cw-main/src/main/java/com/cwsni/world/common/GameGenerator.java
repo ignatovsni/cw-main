@@ -97,9 +97,9 @@ public class GameGenerator {
 
 	private void createTerrain(Game game) {
 		GameParams gParams = game.getGameParams();
-		assert (gParams.getOceanProcent() < 1 && gParams.getOceanProcent() >= 0);
+		assert (gParams.getOceanPercent() < 1 && gParams.getOceanPercent() >= 0);
 		WorldMap map = game.getMap();
-		int needTerrainProvs = (int) (map.getProvinces().size() * (1 - gParams.getOceanProcent()));
+		int needTerrainProvs = (int) (map.getProvinces().size() * (1 - gParams.getOceanPercent()));
 		List<Province> terrain = new ArrayList<>(needTerrainProvs);
 		Set<Integer> terrainIds = new HashSet<>(needTerrainProvs);
 		Province prov = null;

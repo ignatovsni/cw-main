@@ -15,7 +15,7 @@ public class GameParams {
 	private int columns = 10;
 	private int provinceRadius = 30;
 	private int terrainCorePoints = 10;
-	private double oceanProcent = 0.4;
+	private double oceanPercent = 0.4;
 
 	private int minSoilArea = 50000;
 	private int maxSoilArea = 100000;
@@ -35,7 +35,7 @@ public class GameParams {
 	// ------------Turn procession section--------
 	private double populationBaseGrowth = 1.01;
 	private double populationMaxExcess = 1.2;
-	private double populationMinMigration = 0.01;
+	private double populationBaseMigration = 0.005;
 
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
@@ -131,12 +131,12 @@ public class GameParams {
 		this.maxSoilFertility = maxSoilFertility;
 	}
 
-	public double getOceanProcent() {
-		return oceanProcent;
+	public double getOceanPercent() {
+		return oceanPercent;
 	}
 
-	public void setOceanProcent(double oceanProcent) {
-		this.oceanProcent = oceanProcent;
+	public void setOceanPercent(double oceanPercent) {
+		this.oceanPercent = oceanPercent;
 	}
 
 	public int getTerrainCorePoints() {
@@ -308,12 +308,12 @@ public class GameParams {
 		this.eventGlobalClimateMaxChange = eventGlobalClimateMaxChange;
 	}
 
-	public double getPopulationMinMigration() {
-		return populationMinMigration;
+	public double getPopulationBaseMigration() {
+		return populationBaseMigration;
 	}
 
-	public void setPopulationMinMigration(double populationMinMigration) {
-		this.populationMinMigration = populationMinMigration;
+	public void setPopulationBaseMigration(double populationBaseMigration) {
+		this.populationBaseMigration = populationBaseMigration;
 	}
 	
 	

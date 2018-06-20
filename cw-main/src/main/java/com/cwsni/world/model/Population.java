@@ -31,7 +31,7 @@ public class Population {
 		if (from.getPopulationAmount() > maxPopulation || from.getSoilFertilityEff() < 1) {
 			mPops = (int) (from.getPopulationAmount() * (gParams.getPopulationMaxExcess() - 1) / 2);
 		} else {
-			mPops = (int) (from.getPopulationAmount() * gParams.getPopulationMinMigration());
+			mPops = (int) (from.getPopulationAmount() * gParams.getPopulationBaseMigration());
 		}
 		if (mPops > prov.size()) {
 			int mPopsToEachNeighbor = mPops / prov.size();
