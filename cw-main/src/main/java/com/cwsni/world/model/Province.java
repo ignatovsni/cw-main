@@ -99,14 +99,14 @@ public class Province implements EventTarget {
 	public void buildFrom(WorldMap worldMap, DataProvince dp) {
 		this.map = worldMap;
 		this.data = dp;
-		this.neighbors = new ArrayList<>();
-		data.getNeighbors().forEach(id -> neighbors.add(map.findProvById(id)));
+		this.neighbors = new ArrayList<>();		
 		this.population = new ArrayList<>();
 		data.getPopulation().forEach(dpop -> {
 			Population pop = new Population();
 			pop.buildFrom(this, dpop);
 			population.add(pop);
 		});
+		data.getNeighbors().forEach(id -> neighbors.add(map.findProvById(id)));
 	}
 
 }

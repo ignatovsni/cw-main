@@ -13,6 +13,10 @@ public class Population {
 
 	private DataPopulation data;
 
+	public Population() {
+		data = new DataPopulation();
+	}
+	
 	public int getAmount() {
 		return data.getAmount();
 	}

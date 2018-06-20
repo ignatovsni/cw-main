@@ -40,8 +40,7 @@ public class WorldMap {
 			mapProvById.put(dp.getId(), p);
 		});
 		map.getProvinces().stream().forEach(dp -> {
-			// second step because we need full initialized mapProvById
-			getProvinces().forEach(p -> p.buildFrom(this, dp));
+			mapProvById.get(dp.getId()).buildFrom(this, dp);
 		});
 
 	}
