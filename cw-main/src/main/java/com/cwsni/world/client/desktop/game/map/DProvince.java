@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import com.cwsni.world.model.GameTransientStats;
 import com.cwsni.world.model.Province;
-import com.cwsni.world.model.TerrainType;
+import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.events.Event;
 
 import javafx.animation.Animation;
@@ -113,7 +113,7 @@ class DProvince extends Group {
 		// TODO blue color if fertility < 1
 		GameTransientStats stats = map.getGame().getGameTransientStats();
 		double minF = stats.getMinSoilFertility();
-		drawGradientMode(polygon, stats.getMaxSoilFertility() - minF, province.getSoilFertilityEff() - minF, true);
+		drawGradientMode(polygon, stats.getMaxSoilFertility() - minF, province.getSoilFertility() - minF, true);
 	}
 
 	private void drawGradientMode(Polygon polygon, double maxValue, double provinceValue, boolean mode2) {

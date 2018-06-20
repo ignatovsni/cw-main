@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Repository;
 
 import com.cwsni.world.model.Game;
+import com.cwsni.world.model.data.DataGame;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -25,7 +26,7 @@ public class GameRepository {
 			ObjectMapper objectMapper = new ObjectMapper();
 			// printToConsole(objectMapper);
 			objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-			objectMapper.writeValue(new File(QUICK_SAVE_FILE_NAME), game);
+			objectMapper.writeValue(new File(QUICK_SAVE_FILE_NAME), game.getSaveData());
 			logger.info("quick save is successful : " + game.logDescription());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -43,12 +44,14 @@ public class GameRepository {
 		ObjectMapper objectMapper = new ObjectMapper();
 		Game game = null;
 		try {
-			game = objectMapper.readValue(new File(QUICK_SAVE_FILE_NAME), Game.class);
+			DataGame dataGame = objectMapper.readValue(new File(QUICK_SAVE_FILE_NAME), DataGame.class);			
+			game = new Game();
+			game.buildFrom(dataGame);
 			logger.info("quick load is successful : " + game.logDescription());
-			game.postLoad();
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.info("quick load is failed ", e);
+			game = null;
 		}		
 		return game;
 	}

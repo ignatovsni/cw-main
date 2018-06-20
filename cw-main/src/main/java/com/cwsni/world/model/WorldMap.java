@@ -1,68 +1,49 @@
 package com.cwsni.world.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.cwsni.world.model.data.DataWorldMap;
 import com.cwsni.world.model.events.Event;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class WorldMap {
 
-	private List<Province> provinces = new ArrayList<>();
+	private List<Province> provinces;
 	private Map<Integer, Province> mapProvById;
 	private Game game;
 
-	public WorldMap() {
-		provinces = new ArrayList<>();
-		mapProvById = new HashMap<>();
-	}
-
 	public List<Province> getProvinces() {
-		return Collections.unmodifiableList(provinces);
-	}
-
-	public void setProvinces(List<Province> provinces) {
-		this.provinces = provinces;
+		return provinces;
 	}
 
 	public Province findProvById(Integer id) {
 		return mapProvById.get(id);
 	}
 
-	public void addProvince(Province p) {
-		provinces.add(p);
-		mapProvById.put(p.getId(), p);
-	}
-
-	public void postGenerate(Game game) {
-		this.game = game;
-		getProvinces().forEach(p -> p.postGenerate(this));
-	}
-
-	/**
-	 * Finishes game preparing after loading
-	 */
-	public void postLoad(Game game) {
-		this.game = game;
-		mapProvById.clear();
-		getProvinces().forEach(p -> mapProvById.put(p.getId(), p));
-		getProvinces().forEach(p -> p.postLoad(this));
-	}
-
-	public void checkCorrect() {
-		getProvinces().forEach(p -> p.checkCorrectness());
-	}
-
-	@JsonIgnore
-	public Game getGame() {
+	Game getGame() {
 		return game;
 	}
 
 	public void remove(Event e) {
 		getProvinces().forEach(p -> p.removeEvent(e));
+	}
+
+	public void buildFrom(Game game, DataWorldMap map) {
+		this.game = game;
+		provinces = new ArrayList<>(map.getProvinces().size());
+		mapProvById = new HashMap<>(map.getProvinces().size());
+		map.getProvinces().stream().forEach(dp -> {
+			Province p = new Province();
+			provinces.add(p);
+			mapProvById.put(dp.getId(), p);
+		});
+		map.getProvinces().stream().forEach(dp -> {
+			// second step because we need full initialized mapProvById
+			getProvinces().forEach(p -> p.buildFrom(this, dp));
+		});
+
 	}
 
 }

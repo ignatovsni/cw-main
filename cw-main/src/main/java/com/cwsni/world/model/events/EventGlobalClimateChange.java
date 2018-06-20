@@ -3,7 +3,7 @@ package com.cwsni.world.model.events;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.Game;
-import com.cwsni.world.model.GameParams;
+import com.cwsni.world.model.data.GameParams;
 
 public class EventGlobalClimateChange extends Event {
 

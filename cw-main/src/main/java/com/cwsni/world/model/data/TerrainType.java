@@ -1,4 +1,4 @@
-package com.cwsni.world.model;
+package com.cwsni.world.model.data;
 
 public enum TerrainType {
 	GRASSLAND("model.province.terrain-type.grassland"), OCEAN("model.province.terrain-type.ocean");

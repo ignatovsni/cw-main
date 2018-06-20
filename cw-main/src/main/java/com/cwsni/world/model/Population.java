@@ -5,18 +5,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.cwsni.world.CwException;
+import com.cwsni.world.model.data.DataPopulation;
+import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.events.Event;
 
 public class Population {
 
-	private int amount;
+	private DataPopulation data;
 
 	public int getAmount() {
-		return amount;
+		return data.getAmount();
 	}
 
 	public void setAmount(int amount) {
-		this.amount = amount;
+		data.setAmount(amount);
 	}
 
 	static public void migrate(Province from, GameParams gParams) {
@@ -28,7 +30,7 @@ public class Population {
 		}
 		int mPops = 0;
 		int maxPopulation = from.getMaxPopulation();
-		if (from.getPopulationAmount() > maxPopulation || from.getSoilFertilityEff() < 1) {
+		if (from.getPopulationAmount() > maxPopulation || from.getSoilFertility() < 1) {
 			mPops = (int) (from.getPopulationAmount() * (gParams.getPopulationMaxExcess() - 1) / 2);
 		} else {
 			mPops = (int) (from.getPopulationAmount() * gParams.getPopulationBaseMigration());
@@ -63,12 +65,12 @@ public class Population {
 
 	static public void growPopulation(Province from, Game game) {
 		GameParams gParams = game.getGameParams();
-		if (from.getSoilFertilityEff() >= 1) {
+		if (from.getSoilFertility() >= 1) {
 			from.getPopulation().forEach(p -> {
 				p.setAmount((int) (p.getAmount() * gParams.getPopulationBaseGrowth()));
 			});
 		} else {
-			dieFromHunger(game, from, 1 - from.getSoilFertilityEff());
+			dieFromHunger(game, from, 1 - from.getSoilFertility());
 		}
 		int maxPopulation = Math.max(from.getMaxPopulation(), 1);
 		if (from.getPopulationAmount() > maxPopulation * gParams.getPopulationMaxExcess()) {
@@ -97,5 +99,9 @@ public class Population {
 		from.getPopulation().forEach(p -> {
 			p.setAmount((int) (p.getAmount() * (1 - deathRate)));
 		});
+	}
+
+	public void buildFrom(Province province, DataPopulation dpop) {
+		this.data = dpop;
 	}
 }

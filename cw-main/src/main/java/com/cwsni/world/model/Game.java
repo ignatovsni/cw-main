@@ -6,72 +6,35 @@ import java.util.List;
 import java.util.Map;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
+import com.cwsni.world.model.data.DataGame;
+import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.model.data.GameStats;
+import com.cwsni.world.model.data.Turn;
 import com.cwsni.world.model.events.Event;
 import com.cwsni.world.model.events.EventTarget;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "version", "turn", "gameParams", "gameStats", "map" })
 public class Game implements EventTarget {
 
-	final static String CURRENT_VERSION = "0.1";
-
-	private String version = CURRENT_VERSION;
-	private GameParams gameParams;
+	private DataGame data;
+	private Map<Integer, Event> eventsById;
+	private Map<String, List<Event>> eventsByType;
+	private GameTransientStats gameTransientStats;
 	private WorldMap map;
-	private Turn turn;
-	private List<Event> events = new ArrayList<>();
-	private List<Event> oldEvents = new ArrayList<>();
-	private int lastEventId;
-
-	private Map<Integer, Event> eventsById = new HashMap<>();
-	private Map<String, List<Event>> eventsByType = new HashMap<>();
-
-	private GameStats gameStats = new GameStats();
-
-	@JsonIgnore
-	private transient GameTransientStats gameTransientStats;
-
-	@JsonIgnore
-	private transient Map<String, Object> tempParams = new HashMap<>();
-
-	public Game() {
-	}
-
-	public Game(GameParams gameParams) {
-		this.gameParams = gameParams;
-	}
 
 	public List<Event> getEvents() {
-		return events;
-	}
-
-	public void setEvents(List<Event> events) {
-		this.events = events;
+		return data.getEvents();
 	}
 
 	public void setLastEventId(int lastEventId) {
-		this.lastEventId = lastEventId;
+		data.setLastEventId(lastEventId);
 	}
 
 	public int getLastEventId() {
-		return lastEventId;
+		return data.getLastEventId();
 	}
 
 	public int nextEventId() {
-		return ++lastEventId;
-	}
-
-	public List<Event> getOldEvents() {
-		return oldEvents;
-	}
-
-	public void setOldEvents(List<Event> oldEvents) {
-		this.oldEvents = oldEvents;
-	}
-
-	public Map<String, Object> getTempParams() {
-		return tempParams;
+		return data.nextEventId();
 	}
 
 	public WorldMap getMap() {
@@ -82,53 +45,20 @@ public class Game implements EventTarget {
 		this.map = map;
 	}
 
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
 	public GameTransientStats getGameTransientStats() {
 		return gameTransientStats;
 	}
 
-	public void setGameTransientStats(GameTransientStats gameStats) {
-		this.gameTransientStats = gameStats;
-	}
-
 	public GameParams getGameParams() {
-		return gameParams;
-	}
-
-	public void setGameParams(GameParams gameParams) {
-		this.gameParams = gameParams;
+		return data.getGameParams();
 	}
 
 	public Turn getTurn() {
-		return turn;
-	}
-
-	public void setTurn(Turn turn) {
-		this.turn = turn;
-	}
-
-	@JsonIgnore
-	public boolean isCorrect() {
-		return true;
-	}
-
-	/**
-	 * If we need to clean something
-	 */
-	public void destroy() {
+		return data.getTurn();
 	}
 
 	public String logDescription() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("version=" + version);
-		return sb.toString();
+		return data.logDescription();
 	}
 
 	@Override
@@ -156,8 +86,6 @@ public class Game implements EventTarget {
 		if (listByType != null) {
 			listByType.remove(e);
 		}
-		// too many
-		// getOldEvents().add(e);
 	}
 
 	public Event findEventById(Integer id) {
@@ -188,7 +116,7 @@ public class Game implements EventTarget {
 					stats.setMaxSoilQuality(soilQuality);
 				}
 				// max soil fertility
-				double soilFertility = p.getSoilFertilityEff();
+				double soilFertility = p.getSoilFertility();
 				if (stats.getMaxSoilFertility() < soilFertility) {
 					stats.setMaxSoilFertility(soilFertility);
 				}
@@ -206,26 +134,8 @@ public class Game implements EventTarget {
 
 	}
 
-	/**
-	 * Finishes game preparing after generation
-	 */
-	public void postGenerate() {
-		map.postGenerate(this);
-		map.checkCorrect();
-		calcGameStats();
-	}
-
-	/**
-	 * Finishes game preparing after loading
-	 */
-	public void postLoad() {
-		eventsById.clear();
-		getEvents().forEach(e -> {
-			registerEventByIdAndType(e);
-		});
-		map.postLoad(this);
-		map.checkCorrect();
-		calcGameStats();
+	private void setGameTransientStats(GameTransientStats stats) {
+		this.gameTransientStats = stats;
 	}
 
 	public void processNewTurn(LocaleMessageSource messageSource) {
@@ -236,11 +146,31 @@ public class Game implements EventTarget {
 	}
 
 	public GameStats getGameStats() {
-		return gameStats;
+		return data.getGameStats();
 	}
 
 	public void setGameStats(GameStats gameStats) {
-		this.gameStats = gameStats;
+		data.setGameStats(gameStats);
+	}
+
+	public void setTurn(Turn turn) {
+		data.setTurn(turn);
+	}
+
+	public void buildFrom(DataGame dataGame) {
+		this.data = dataGame;
+		map = new WorldMap();
+		map.buildFrom(this, data.getMap());
+		eventsById = new HashMap<>();
+		eventsByType = new HashMap<>();
+		data.getEvents().forEach(e -> {
+			registerEventByIdAndType(e);
+		});
+		calcGameStats();
+	}
+
+	public DataGame getSaveData() {
+		return data;
 	}
 
 }

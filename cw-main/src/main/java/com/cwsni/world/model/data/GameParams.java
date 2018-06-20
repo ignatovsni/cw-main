@@ -1,4 +1,4 @@
-package com.cwsni.world.model;
+package com.cwsni.world.model.data;
 
 import java.util.Random;
 
@@ -28,7 +28,7 @@ public class GameParams {
 	private int fractionOfMaxSoilFertility = 5;
 	private double decreaseSoilFertilityAtPoles = 0.1;
 
-	private double populationAtStartFromMax = 0.05;
+	private int populationAtStart = 1000;
 	private double minSoilFertilityToStartPopulation = (maxSoilFertility + minSoilFertility*9) / 10;
 	// ------------End of Map generation section--------
 
@@ -179,12 +179,12 @@ public class GameParams {
 		this.provinceRadius = provinceRadius;
 	}
 
-	public double getPopulationAtStartFromMax() {
-		return populationAtStartFromMax;
+	public int getPopulationAtStart() {
+		return populationAtStart;
 	}
 
-	public void setPopulationAtStartFromMax(double populationAtStartFromMax) {
-		this.populationAtStartFromMax = populationAtStartFromMax;
+	public void setPopulationAtStart(int populationAtStart) {
+		this.populationAtStart = populationAtStart;
 	}
 
 	public double getDecreaseSoilFertilityAtPoles() {

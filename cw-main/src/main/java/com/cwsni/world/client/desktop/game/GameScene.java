@@ -112,10 +112,7 @@ public class GameScene extends Scene {
 
 	public void quickLoadGame() {
 		Game newGame = gameRepository.quickLoadGame();
-		if (newGame != null && newGame.isCorrect()) {
-			if (game != null) {
-				game.destroy();
-			}
+		if (newGame != null) {
 			setupGame(newGame);
 		}
 	}
@@ -142,7 +139,6 @@ public class GameScene extends Scene {
 		refreshAllVisibleInfo();
 	}
 
-	// Event listener can be a good idea instead of direct invocation
 	public void selectProvince(Province province) {
 		this.selectedProvinceId = province != null ? province.getId() : null;
 		if (province != null) {
