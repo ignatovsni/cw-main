@@ -41,10 +41,23 @@ public class Province implements EventTarget {
 
 	public double getSoilFertility() {
 		double v = data.getSoilFertility();
+		// climate change
 		for (Event e : getEvents().getEventsWithType(Event.EVENT_GLOBAL_CLIMATE_CHANGE)) {
 			v *= e.getEffectDouble1();
 		}
+		// science
+		v += (double)getScienceAgriculture() / 4000;
 		return v;
+	}
+
+	public long getScienceAgriculture() {
+		if (getPopulationAmount() == 0) {
+			return 0;
+		}
+		long agricultureLevel = getPopulation().stream()
+				.mapToLong(pop -> pop.getAmount() * pop.getScience().getAgriculture().getAmount()).sum()
+				/ getPopulationAmount();
+		return agricultureLevel;
 	}
 
 	public int getSoilArea() {

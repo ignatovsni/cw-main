@@ -1,5 +1,6 @@
 package com.cwsni.world.model;
 
+import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
 
@@ -21,6 +22,10 @@ public class ScienceCollection {
 
 	public void buildFrom(DataScienceCollection science) {
 		this.science = science;
+	}
+	
+	public DataScience getAgriculture() {
+		return science.getAgriculture();
 	}
 
 	public void cloneFrom(ScienceCollection from) {
