@@ -17,8 +17,8 @@ public class GameParams {
 	private int terrainCorePoints = 10;
 	private double oceanPercent = 0.4;
 
-	private int minSoilArea = 50000;
-	private int maxSoilArea = 100000;
+	private int minSoilArea = 10000;
+	private int maxSoilArea = 12000;
 	private double soilAreaCorePointsPerProvinces = 0.01;
 	private int fractionOfMaxSoilArea = 2;
 

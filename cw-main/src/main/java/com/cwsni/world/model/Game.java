@@ -97,7 +97,7 @@ public class Game implements EventTarget {
 				stats.setTotalPopulation(stats.getTotalPopulation() + popTotalAmount);
 				//science
 				if (popTotalAmount > 0) {
-					int scienceA = p.getScienceAgriculture();
+					int scienceA = (int)p.getScienceAgriculture();
 					if (scienceA > stats.getMaxScienceAgricultureInProvince()) {
 						stats.setMaxScienceAgricultureInProvince(scienceA);
 					}

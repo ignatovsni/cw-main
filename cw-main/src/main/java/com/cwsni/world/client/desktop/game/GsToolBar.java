@@ -53,7 +53,7 @@ public class GsToolBar extends ToolBar {
 		Button toolBarMapScienceAgricultureMode = new Button(getMessage("toolbar.map.mode.science.agriculture.button.text"));
 		toolBarMapScienceAgricultureMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.science.agriculture.button.tooltip")));
 		toolBarMapScienceAgricultureMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapSoilMode, MapMode.SCIENCE_AGRICULTURE);
+			pressMapModeButton(toolBarMapScienceAgricultureMode, MapMode.SCIENCE_AGRICULTURE);
 		});
 		
 		Button toolBarMapDiseaseMode = new Button(getMessage("toolbar.map.mode.disease.button.text"));

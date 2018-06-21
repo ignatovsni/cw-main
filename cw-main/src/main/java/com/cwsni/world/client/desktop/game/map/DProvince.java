@@ -96,7 +96,7 @@ class DProvince extends Group {
 
 	private void drawScienceMode(Polygon polygon2) {
 		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxScienceAgricultureInProvince(),
-				province.getScienceAgriculture(), false);
+				province.getScienceAgriculture(), true);
 	}
 
 	private void drawGeoMode(Polygon polygon) {
@@ -127,6 +127,7 @@ class DProvince extends Group {
 
 	private void drawGradientMode(Polygon polygon, double maxValue, double provinceValue, boolean mode2) {
 		double fraction = maxValue != 0 ? provinceValue / maxValue : 1;
+		fraction = Math.min(fraction, 1); // sometimes data can be old
 		Paint pValue;
 		if (fraction < 0.5) {
 			if (mode2) {
