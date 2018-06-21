@@ -1,25 +1,23 @@
 package com.cwsni.world.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
+import com.cwsni.world.model.data.DataProvince;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.GameStats;
 import com.cwsni.world.model.data.Turn;
 import com.cwsni.world.model.events.Event;
+import com.cwsni.world.model.events.EventCollection;
 import com.cwsni.world.model.events.EventTarget;
 
 public class Game implements EventTarget {
 
 	private DataGame data;
-	private Map<Integer, Event> eventsById;
-	private Map<String, List<Event>> eventsByType;
 	private GameTransientStats gameTransientStats;
 	private WorldMap map;
+	private EventCollection events;
 
 	public List<Event> getEvents() {
 		return data.getEvents();
@@ -68,33 +66,22 @@ public class Game implements EventTarget {
 	}
 
 	private void registerEventByIdAndType(Event e) {
-		eventsById.put(e.getId(), e);
-		List<Event> listByType = eventsByType.get(e.getType());
-		if (listByType == null) {
-			listByType = new ArrayList<>(1);
-			eventsByType.put(e.getType(), listByType);
-		}
-		listByType.add(e);
+		events.add(e);
 	}
 
 	@Override
 	public void removeEvent(Event e) {
 		getMap().remove(e);
 		getEvents().remove(e);
-		eventsById.remove(e.getId());
-		List<Event> listByType = eventsByType.get(e.getType());
-		if (listByType != null) {
-			listByType.remove(e);
-		}
+		events.removeEvent(e);
 	}
 
 	public Event findEventById(Integer id) {
-		return eventsById.get(id);
+		return events.getEventById(id);
 	}
 
 	public boolean hasEventWithType(String type) {
-		List<Event> listByType = eventsByType.get(type);
-		return !(listByType == null || listByType.isEmpty());
+		return events.hasEventWithType(type);
 	}
 
 	private void calcGameStats() {
@@ -160,12 +147,13 @@ public class Game implements EventTarget {
 	public void buildFrom(DataGame dataGame) {
 		this.data = dataGame;
 		map = new WorldMap();
-		map.buildFrom(this, data.getMap());
-		eventsById = new HashMap<>();
-		eventsByType = new HashMap<>();
+		events = new EventCollection();
+		// fake province to be able to use EventCollection 
+		events.setDataProvince(new DataProvince());
 		data.getEvents().forEach(e -> {
 			registerEventByIdAndType(e);
 		});
+		map.buildFrom(this, data.getMap());
 		calcGameStats();
 	}
 

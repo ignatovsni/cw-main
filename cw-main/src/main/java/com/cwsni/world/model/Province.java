@@ -17,6 +17,7 @@ public class Province implements EventTarget {
 	private List<Province> neighbors;
 	private List<Population> population;
 	private WorldMap map;
+	private EventCollection events;
 
 	public List<Province> getNeighbors() {
 		return neighbors;
@@ -40,10 +41,8 @@ public class Province implements EventTarget {
 
 	public double getSoilFertility() {
 		double v = data.getSoilFertility();
-		for (Event e : getEvents().getEvents()) {
-			if (Event.EVENT_GLOBAL_CLIMATE_CHANGE.equals(e.getType())) {
-				v *= e.getEffectDouble1();
-			}
+		for (Event e : getEvents().getEventsWithType(Event.EVENT_GLOBAL_CLIMATE_CHANGE)) {
+			v *= e.getEffectDouble1();
 		}
 		return v;
 	}
@@ -57,7 +56,7 @@ public class Province implements EventTarget {
 	}
 
 	public EventCollection getEvents() {
-		return data.getEvents();
+		return events;
 	}
 
 	public int getPopulationAmount() {
@@ -99,7 +98,8 @@ public class Province implements EventTarget {
 	public void buildFrom(WorldMap worldMap, DataProvince dp) {
 		this.map = worldMap;
 		this.data = dp;
-		this.neighbors = new ArrayList<>();		
+		events = new EventCollection();
+		this.neighbors = new ArrayList<>();
 		this.population = new ArrayList<>();
 		data.getPopulation().forEach(dpop -> {
 			Population pop = new Population();
@@ -107,6 +107,7 @@ public class Province implements EventTarget {
 			population.add(pop);
 		});
 		data.getNeighbors().forEach(id -> neighbors.add(map.findProvById(id)));
+		events.buildFrom(dp, worldMap.getGame());
 	}
 
 }

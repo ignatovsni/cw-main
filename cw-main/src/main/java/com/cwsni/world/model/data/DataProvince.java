@@ -1,9 +1,9 @@
 package com.cwsni.world.model.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-import com.cwsni.world.model.events.EventCollection;
+import java.util.Set;
 
 public class DataProvince {
 
@@ -19,7 +19,7 @@ public class DataProvince {
 	private double soilFertility;
 	private int soilArea;
 	private List<DataPopulation> population;
-	private EventCollection events;
+	private Set<Integer> eventsIds;
 
 	public DataProvince() {
 		this(-1, 0, 0);
@@ -32,7 +32,7 @@ public class DataProvince {
 		this.population = new ArrayList<>(1);
 		this.neighbors = new ArrayList<>();
 		this.terrainType = TerrainType.OCEAN;
-		events = new EventCollection();
+		eventsIds = new HashSet<>();
 	}
 
 	public List<Integer> getNeighbors() {
@@ -99,12 +99,12 @@ public class DataProvince {
 		this.terrainType = terrainType;
 	}
 
-	public EventCollection getEvents() {
-		return events;
+	public Set<Integer> getEvents() {
+		return eventsIds;
 	}
-
-	public void setEvents(EventCollection events) {
-		this.events = events;
+	
+	public void setEvents(Set<Integer> eventsIds) {
+		this.eventsIds = eventsIds;
 	}
 
 }

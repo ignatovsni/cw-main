@@ -10,7 +10,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * T : object K : key S : type
+ * O : object K : key T : type
  */
 public class ObjectStorage<O, K, T> {
 
@@ -20,10 +20,13 @@ public class ObjectStorage<O, K, T> {
 	private List<O> objects = new ArrayList<>();
 	@JsonIgnore
 	private Map<T, Map<K, O>> objectsByType = new HashMap<>();
+	@JsonIgnore
+	private Map<K, O> objectsByKey = new HashMap<>();
 
 	protected void add(O o, K key, T type) {
 		keys.add(key);
 		objects.add(o);
+		objectsByKey.put(key, o);
 		Map<K, O> mapForTypeById = objectsByType.get(type);
 		if (mapForTypeById == null) {
 			mapForTypeById = new HashMap<>();
@@ -35,6 +38,7 @@ public class ObjectStorage<O, K, T> {
 	protected void remove(O o, K key, T type) {
 		if (keys.remove(key)) {
 			objects.remove(o);
+			objectsByKey.remove(key);
 			objectsByType.get(type).remove(key);
 		}
 	}
@@ -55,4 +59,8 @@ public class ObjectStorage<O, K, T> {
 		return objectsByType;
 	}
 
+	protected O getObjectByKey(K key) {
+		return objectsByKey.get(key);
+	}
+	
 }
