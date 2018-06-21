@@ -12,11 +12,13 @@ import com.cwsni.world.model.events.Event;
 public class Population {
 
 	private DataPopulation data;
+	private ScienceCollection science;
 
 	public Population() {
 		data = new DataPopulation();
+		science = new ScienceCollection(data.getScience());
 	}
-	
+
 	public int getAmount() {
 		return data.getAmount();
 	}
@@ -25,53 +27,73 @@ public class Population {
 		data.setAmount(amount);
 	}
 
-	static public void migrate(Province from, GameParams gParams) {
-		List<Province> prov = from.getNeighbors().stream()
+	public ScienceCollection getScience() {
+		return science;
+	}
+
+	public void buildFrom(DataPopulation dpop) {
+		this.data = dpop;
+		this.science = new ScienceCollection();
+		science.buildFrom(dpop.getScience());
+	}
+
+	private Population createNewEmigrant(int migrantsCount) {
+		Population newPop = new Population();
+		newPop.setAmount(migrantsCount);
+		setAmount(getAmount() - migrantsCount);
+		newPop.getScience().cloneFrom(getScience());
+		return newPop;
+	}
+
+	private void addPop(Population pop) {
+		getScience().mergeFrom(pop.getScience(), (double) getAmount() / (getAmount() + pop.getAmount()));
+		setAmount(getAmount() + pop.getAmount());
+	}
+
+	// --------------- static section -----------------------
+
+	static public void migrate(Province from, Game game) {
+		GameParams gParams = game.getGameParams();
+		List<Province> provsTo = from.getNeighbors().stream()
 				.filter(n -> n.getTerrainType().isPopulationPossible() && n.getPopulationExcess() < 1)
 				.collect(Collectors.toList());
-		if (prov.size() == 0) {
+		if (provsTo.size() == 0) {
 			return;
 		}
 		int mPops = 0;
 		int maxPopulation = from.getMaxPopulation();
 		if (from.getPopulationAmount() > maxPopulation || from.getSoilFertility() < 1) {
+			// hunger migration
 			mPops = (int) (from.getPopulationAmount() * (gParams.getPopulationMaxExcess() - 1) / 2);
 		} else {
+			// regular migration
 			mPops = (int) (from.getPopulationAmount() * gParams.getPopulationBaseMigration());
 		}
-		if (mPops > prov.size()) {
-			int mPopsToEachNeighbor = mPops / prov.size();
-			prov.forEach(p -> migrateTo(from, mPopsToEachNeighbor, p));
+		if (mPops > provsTo.size()) {
+			int mPopsToEachNeighbor = mPops / provsTo.size();
+			provsTo.forEach(p -> migrateTo(from, mPopsToEachNeighbor, p));
 		}
 	}
 
 	static private void migrateTo(Province from, int popAmount, Province to) {
-		Population newPop = extractNewPop(from, popAmount);
-		if (to.getPopulation().size() == 0) {
-			to.getPopulation().add(newPop);
-		} else {
-			Population pop = to.getPopulation().get(0);
-			pop.setAmount(pop.getAmount() + newPop.getAmount());
-		}
-	}
-
-	static private Population extractNewPop(Province from, int popAmount) {
 		int totalAmount = from.getPopulation().stream().mapToInt(p -> p.getAmount()).sum();
 		if (popAmount > totalAmount) {
 			throw new CwException("popAmount > totalAmount : prov.id = " + from.getId());
 		}
-		double needMultiplyTo = 1 - (double) popAmount / totalAmount;
-		from.getPopulation().forEach(p -> p.setAmount((int) (p.getAmount() * needMultiplyTo)));
-		Population pop = new Population();
-		pop.setAmount(popAmount);
-		return pop;
+		double fractionFromEach = (double) popAmount / from.getPopulationAmount();
+		from.getPopulation().forEach(fromPop -> {
+			int migrantsCount = (int) (fromPop.getAmount() * fractionFromEach);
+			if (migrantsCount > 0 && migrantsCount < fromPop.getAmount()) {
+				to.getImmigrants().add(fromPop.createNewEmigrant(migrantsCount));
+			}
+		});
 	}
 
 	static public void growPopulation(Province from, Game game) {
 		GameParams gParams = game.getGameParams();
 		if (from.getSoilFertility() >= 1) {
 			from.getPopulation().forEach(p -> {
-				p.setAmount((int) (p.getAmount() * gParams.getPopulationBaseGrowth()));
+				p.setAmount((int) (p.getAmount() * (1 + gParams.getPopulationBaseGrowth())));
 			});
 		} else {
 			dieFromHunger(game, from, 1 - from.getSoilFertility());
@@ -85,7 +107,7 @@ public class Population {
 		}
 	}
 
-	public static void processEvents(Game game, Province p) {
+	public static void processEvents(Province p, Game game) {
 		List<Event> provEvents = new ArrayList<>(p.getEvents().getEvents());
 		provEvents.forEach(e -> Event.processEvent(game, p, e));
 	}
@@ -105,7 +127,25 @@ public class Population {
 		});
 	}
 
-	public void buildFrom(Province province, DataPopulation dpop) {
-		this.data = dpop;
+	public static void processImmigrantsAndMergePops(Province p, Game game) {
+		if (!p.getImmigrants().isEmpty()) {
+			p.getPopulation().addAll(p.getImmigrants());
+			p.getImmigrants().clear();
+		}
+		if (p.getPopulation().size() <= 1) {
+			return;
+		}
+		Population toPop = p.getPopulation().get(0);
+		for (int i = 1; i < p.getPopulation().size(); i++) {
+			toPop.addPop(p.getPopulation().get(i));
+		}
+		p.getPopulation().clear();
+		p.getPopulation().add(toPop);
+
 	}
+
+	DataPopulation getPopulationData() {
+		return data;
+	}
+
 }

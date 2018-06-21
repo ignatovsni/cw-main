@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cwsni.world.model.data.DataProvince;
-import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.events.Event;
@@ -18,6 +17,7 @@ public class Province implements EventTarget {
 	private List<Population> population;
 	private WorldMap map;
 	private EventCollection events;
+	private List<Population> immigrants;
 
 	public List<Province> getNeighbors() {
 		return neighbors;
@@ -79,10 +79,11 @@ public class Province implements EventTarget {
 		if (!getTerrainType().isPopulationPossible() || getPopulationAmount() == 0) {
 			return;
 		}
-		GameParams gParams = map.getGame().getGameParams();
-		Population.processEvents(map.getGame(), this);
-		Population.migrate(this, gParams);
+		Population.processEvents(this, map.getGame());
+		Population.migrate(this, map.getGame());
 		Population.growPopulation(this, map.getGame());
+		ScienceCollection.growScience(this, map.getGame());
+
 	}
 
 	@Override
@@ -99,15 +100,30 @@ public class Province implements EventTarget {
 		this.map = worldMap;
 		this.data = dp;
 		events = new EventCollection();
-		this.neighbors = new ArrayList<>();
-		this.population = new ArrayList<>();
+		neighbors = new ArrayList<>();
+		population = new ArrayList<>();
+		immigrants = new ArrayList<>();
 		data.getPopulation().forEach(dpop -> {
 			Population pop = new Population();
-			pop.buildFrom(this, dpop);
+			pop.buildFrom(dpop);
 			population.add(pop);
 		});
 		data.getNeighbors().forEach(id -> neighbors.add(map.findProvById(id)));
 		events.buildFrom(dp, worldMap.getGame());
+
+	}
+
+	public List<Population> getImmigrants() {
+		return immigrants;
+	}
+
+	public void processImmigrantsAndMergePops() {
+		if (!getTerrainType().isPopulationPossible()) {
+			return;
+		}
+		Population.processImmigrantsAndMergePops(this, map.getGame());
+		data.getPopulation().clear();
+		getPopulation().forEach(pop -> data.getPopulation().add(pop.getPopulationData()));
 	}
 
 }

@@ -250,10 +250,15 @@ public class GameGenerator {
 			if (p.getSoilFertility() >= gParams.getMinSoilFertilityToStartPopulation()) {
 				DataPopulation pop = new DataPopulation();
 				pop.setAmount((int) (p.getSoilFertility() * gParams.getPopulationAtStart()));
+				initScience(pop, gParams);
 				p.getPopulation().clear();
 				p.getPopulation().add(pop);
 			}
 		});
+	}
+
+	private void initScience(DataPopulation pop, GameParams gParams) {
+		pop.getScience().getAgriculture().setAmount(gParams.getScienceAgricultureStart());
 	}
 
 	public Game createEmptyGame() {

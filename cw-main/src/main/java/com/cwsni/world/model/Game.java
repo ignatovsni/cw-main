@@ -129,6 +129,7 @@ public class Game implements EventTarget {
 		getTurn().increment();
 		map.getProvinces().forEach(p -> p.processNewTurn());
 		Event.processEvents(this, messageSource);
+		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
 		calcGameStats();
 	}
 
