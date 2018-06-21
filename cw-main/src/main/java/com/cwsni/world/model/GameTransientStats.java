@@ -7,6 +7,7 @@ public class GameTransientStats {
 	private int maxSoilQuality;
 	private double maxSoilFertility;
 	private double minSoilFertility;
+	private int maxScienceAgricultureInProvince;
 
 	public int getMaxSoilQuality() {
 		return maxSoilQuality;
@@ -46,6 +47,14 @@ public class GameTransientStats {
 
 	public void setMinSoilFertility(double minSoilFertility) {
 		this.minSoilFertility = minSoilFertility;
+	}
+
+	public int getMaxScienceAgricultureInProvince() {
+		return maxScienceAgricultureInProvince;
+	}
+
+	public void setMaxScienceAgricultureInProvince(int maxScienceAgricultureInProvince) {
+		this.maxScienceAgricultureInProvince = maxScienceAgricultureInProvince;
 	}
 	
 }

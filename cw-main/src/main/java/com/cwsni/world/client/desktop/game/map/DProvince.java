@@ -80,6 +80,9 @@ class DProvince extends Group {
 		case SOIL_2:
 			drawSoilMode2(polygon);
 			break;
+		case SCIENCE_AGRICULTURE:
+			drawScienceMode(polygon);
+			break;
 		case DISEASE:
 			drawDesiaseMode(polygon);
 			break;
@@ -89,6 +92,11 @@ class DProvince extends Group {
 		default:
 			break;
 		}
+	}
+
+	private void drawScienceMode(Polygon polygon2) {
+		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxScienceAgricultureInProvince(),
+				province.getScienceAgriculture(), false);
 	}
 
 	private void drawGeoMode(Polygon polygon) {
@@ -106,9 +114,10 @@ class DProvince extends Group {
 	}
 
 	private void drawSoilMode(Polygon polygon) {
-		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxSoilQuality(), province.getSoilQuality(), false);
+		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxSoilQuality(), province.getSoilQuality(),
+				false);
 	}
-	
+
 	private void drawSoilMode2(Polygon polygon) {
 		// TODO blue color if fertility < 1
 		GameTransientStats stats = map.getGame().getGameTransientStats();
@@ -125,24 +134,23 @@ class DProvince extends Group {
 			}
 			pValue = new Color(Math.min(fraction * 2, 1), Math.min(fraction * 2, 1), 0, 1);
 		} else {
-			if (mode2) {				
+			if (mode2) {
 				fraction = fraction * fraction;
 			}
 			pValue = new Color(1, Math.min(1 - (fraction - 0.5) * 2, 1), 0, 1);
 		}
 		polygon.setFill(pValue);
 	}
-	
+
 	private void drawDesiaseMode(Polygon polygon) {
-		if ( getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC) ) {
+		if (getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
 			polygon.setFill(Color.RED);
-		} else if ( getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC_PROTECTED) ) {
+		} else if (getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC_PROTECTED)) {
 			polygon.setFill(Color.GREEN);
 		} else {
 			polygon.setFill(Color.GREY);
 		}
 	}
-
 
 	private void updatePoints() {
 		for (int i = 0; i < SIDES; i++) {

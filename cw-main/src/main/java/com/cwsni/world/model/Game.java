@@ -89,12 +89,19 @@ public class Game implements EventTarget {
 		getMap().getProvinces().forEach(p -> {
 			if (p.getTerrainType().isPopulationPossible()) {
 				// max population
-				int pop = p.getPopulationAmount();
-				if (stats.getMaxPopulationInProvince() < pop) {
-					stats.setMaxPopulationInProvince(pop);
+				int popTotalAmount = p.getPopulationAmount();
+				if (stats.getMaxPopulationInProvince() < popTotalAmount) {
+					stats.setMaxPopulationInProvince(popTotalAmount);
 				}
 				// total population
-				stats.setTotalPopulation(stats.getTotalPopulation() + pop);
+				stats.setTotalPopulation(stats.getTotalPopulation() + popTotalAmount);
+				//science
+				if (popTotalAmount > 0) {
+					int scienceA = p.getScienceAgriculture();
+					if (scienceA > stats.getMaxScienceAgricultureInProvince()) {
+						stats.setMaxScienceAgricultureInProvince(scienceA);
+					}
+				}
 			}
 			if (p.getTerrainType().isSoilPossible()) {
 				// max soil quality

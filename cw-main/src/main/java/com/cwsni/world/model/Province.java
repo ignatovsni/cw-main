@@ -50,14 +50,14 @@ public class Province implements EventTarget {
 		return v;
 	}
 
-	public long getScienceAgriculture() {
+	public int getScienceAgriculture() {
 		if (getPopulationAmount() == 0) {
 			return 0;
 		}
 		long agricultureLevel = getPopulation().stream()
 				.mapToLong(pop -> pop.getAmount() * pop.getScience().getAgriculture().getAmount()).sum()
 				/ getPopulationAmount();
-		return agricultureLevel;
+		return (int)agricultureLevel;
 	}
 
 	public int getSoilArea() {
