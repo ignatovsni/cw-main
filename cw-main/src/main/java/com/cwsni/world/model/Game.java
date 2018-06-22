@@ -85,42 +85,7 @@ public class Game implements EventTarget {
 	}
 
 	private void calcGameStats() {
-		GameTransientStats stats = new GameTransientStats();
-		getMap().getProvinces().forEach(p -> {
-			if (p.getTerrainType().isPopulationPossible()) {
-				// max population
-				int popTotalAmount = p.getPopulationAmount();
-				if (stats.getMaxPopulationInProvince() < popTotalAmount) {
-					stats.setMaxPopulationInProvince(popTotalAmount);
-				}
-				// total population
-				stats.setTotalPopulation(stats.getTotalPopulation() + popTotalAmount);
-				//science
-				if (popTotalAmount > 0) {
-					int scienceA = (int)p.getScienceAgriculture();
-					if (scienceA > stats.getMaxScienceAgricultureInProvince()) {
-						stats.setMaxScienceAgricultureInProvince(scienceA);
-					}
-				}
-			}
-			if (p.getTerrainType().isSoilPossible()) {
-				// max soil quality
-				int soilQuality = p.getSoilQuality();
-				if (stats.getMaxSoilQuality() < soilQuality) {
-					stats.setMaxSoilQuality(soilQuality);
-				}
-				// max soil fertility
-				double soilFertility = p.getSoilFertility();
-				if (stats.getMaxSoilFertility() < soilFertility) {
-					stats.setMaxSoilFertility(soilFertility);
-				}
-				// min soil fertility
-				stats.setMinSoilFertility(stats.getMaxSoilFertility());
-				if (stats.getMinSoilFertility() > soilFertility) {
-					stats.setMinSoilFertility(soilFertility);
-				}
-			}
-		});
+		GameTransientStats stats = new GameTransientStats(this);
 		setGameTransientStats(stats);
 		if (stats.getTotalPopulation() > getGameStats().getMaxPopulationForAllTime()) {
 			getGameStats().setMaxPopulationForAllTime(stats.getTotalPopulation());
@@ -156,7 +121,7 @@ public class Game implements EventTarget {
 		this.data = dataGame;
 		map = new WorldMap();
 		events = new EventCollection();
-		// fake province to be able to use EventCollection 
+		// fake province to be able to use EventCollection
 		events.setDataProvince(new DataProvince());
 		data.getEvents().forEach(e -> {
 			registerEventByIdAndType(e);

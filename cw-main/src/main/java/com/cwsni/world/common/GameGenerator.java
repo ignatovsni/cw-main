@@ -143,6 +143,7 @@ public class GameGenerator {
 	}
 
 	private void fillSoil(DataGame game, TempData tData) {
+		// TODO make more fertility and area around equator
 		GameParams gParams = game.getGameParams();
 		DataWorldMap map = game.getMap();
 		List<DataProvince> terrain = new ArrayList<>();
@@ -158,7 +159,7 @@ public class GameGenerator {
 
 	private void fillSoilArea(DataGame game, TempData tData, List<DataProvince> terrain) {
 		GameParams gParams = game.getGameParams();
-		// setup core provs
+		// core provs
 		int corePoints = Math.min(gParams.getSoilAreaCorePoints(), terrain.size());
 		Set<Integer> increasedIds = new HashSet<>(corePoints);
 		while (increasedIds.size() < corePoints) {
