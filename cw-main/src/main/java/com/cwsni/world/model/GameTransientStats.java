@@ -23,6 +23,7 @@ public class GameTransientStats {
 	private InternalFutureTask<Long> populationTotal;
 	private InternalFutureTask<Integer> soilQualityMax;
 	private InternalFutureTask<DoubleSummaryStatistics> soilFertility;
+	private InternalFutureTask<Double> soilFertilityMedian;
 	private InternalFutureTask<Integer> scienceAgricultureMaxInProvince;
 
 	public GameTransientStats(Game game) {
@@ -35,7 +36,7 @@ public class GameTransientStats {
 
 		populationMedianInProvince = new InternalFutureTask<>(() -> {
 			int v = new MedianFinder()
-					.findMedian(getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 0)
+					.findMedianInteger(getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 0)
 							.map(p -> p.getPopulationAmount()).collect(Collectors.toList()));
 			return v;
 		}, 0);
@@ -51,6 +52,12 @@ public class GameTransientStats {
 		soilFertility = new InternalFutureTask<>(() -> {
 			return getSoilPossibleProvinces().mapToDouble(p -> p.getSoilFertility()).summaryStatistics();
 		}, new DoubleSummaryStatistics());
+
+		soilFertilityMedian = new InternalFutureTask<>(() -> {
+			double v = new MedianFinder().findMedianDouble(
+					getSoilPossibleProvinces().map(p -> p.getSoilFertility()).collect(Collectors.toList()));
+			return v;
+		}, 0.0);
 
 		scienceAgricultureMaxInProvince = new InternalFutureTask<>(() -> {
 			return getPopulationPossibleProvinces().mapToInt(p -> p.getScienceAgriculture()).max().getAsInt();
@@ -88,9 +95,13 @@ public class GameTransientStats {
 	public double getSoilFertilityMax() {
 		return soilFertility.get().getMax();
 	}
-
-	public double getSoilFertilityMin() {
-		return soilFertility.get().getMin();
+	
+	public double getSoilFertilityAvg() {
+		return soilFertility.get().getAverage();
+	}
+	
+	public double getSoilFertilityMedian() {
+		return soilFertilityMedian.get();
 	}
 
 	public int getScienceAgricultureMaxInProvince() {

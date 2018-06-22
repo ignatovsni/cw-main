@@ -17,7 +17,14 @@ public class DataProvince {
 	private List<Integer> neighbors;
 	private TerrainType terrainType;
 	private double soilFertility;
+	/**
+	 * current area
+	 */
 	private int soilArea;
+	/**
+	 * nature area
+	 */
+	private int area;
 	private List<DataPopulation> population;
 	private Set<Integer> eventsIds;
 
@@ -102,9 +109,18 @@ public class DataProvince {
 	public Set<Integer> getEvents() {
 		return eventsIds;
 	}
-	
+
 	public void setEvents(Set<Integer> eventsIds) {
 		this.eventsIds = eventsIds;
 	}
+
+	public int getArea() {
+		return area;
+	}
+
+	public void setArea(int area) {
+		this.area = area;
+	}
+
 
 }

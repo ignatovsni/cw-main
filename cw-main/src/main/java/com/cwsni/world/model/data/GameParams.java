@@ -16,22 +16,23 @@ public class GameParams {
 	private int terrainCorePoints = 10;
 	private double oceanPercent = 0.4;
 
-	private int minSoilArea = 10000;
-	private int maxSoilArea = 12000;
+	private int provinceAreaAtStartMax = 100000;
+	private double soilAreaMinPercentFromMaxArea = 0.1;
 	private double soilAreaCorePointsPerProvinces = 0.01;
-	private int fractionOfMaxSoilArea = 2;
 
-	private double minSoilFertility = 1.2;
-	private double maxSoilFertility = 1.4;
+	private double soilFertilityAtStartMin = 1.2;
+	private double soilFertilityAtStartMax = 1.4;
 	private double soilFertilityCorePointsPerProvinces = 0.01;
-	private int fractionOfMaxSoilFertility = 5;
-	private double decreaseSoilFertilityAtPoles = 0.1;
+	private int fractionOfMaxSoilFertility = 3;
+	private double decreaseSoilFertilityAtPoles = 0.4;
 
 	private int populationAtStart = 1000;
-	private double minSoilFertilityToStartPopulation = (maxSoilFertility + minSoilFertility * 9) / 10;
+	// private double minSoilFertilityToStartPopulation = (soilFertilityAtStartMax +
+	// soilFertilityAtStartMin * 9) / 10;
+	private double minSoilFertilityToStartPopulation = Math.min(1.1, soilFertilityAtStartMin);
 
 	private int scienceBaseIncreasePerTurn = 1;
-	private int scienceAgricultureStart = 0;
+	private int scienceValueStart = 0;
 
 	// ------------End of Map generation section--------
 
@@ -40,6 +41,9 @@ public class GameParams {
 	private double populationBaseMigration = 0.005;
 	private double populationMaxExcess = 1.2;
 
+	private double scienceAgricultureMultiplicatorForFertility = (double)1/4000;
+	private double scienceMedicineMultiplicatorForEpidemic = (double)1/10000;
+	
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
 	private double eventGlobalClimateChangeBadProbability = 0.7;
@@ -49,7 +53,7 @@ public class GameParams {
 
 	private double eventEpidemicProbability = 0.02;
 	private double eventEpidemicContagiousness = 0.5;
-	private double eventEpidemicDeathRate = 0.2;
+	private double eventEpidemicDeathRate = 0.4;
 	private int eventEpidemicDuration = 10;
 	private int eventEpidemicProtectionDuration = 20;
 	// ------------End of turn procession section--------
@@ -94,44 +98,28 @@ public class GameParams {
 		this.fractionOfMaxSoilFertility = fractionOfMaxSoilFertility;
 	}
 
-	public int getFractionOfMaxSoilArea() {
-		return fractionOfMaxSoilArea;
+	public int getProvinceAreaAtStartMax() {
+		return provinceAreaAtStartMax;
 	}
 
-	public void setFractionOfMaxSoilArea(int fractionOfMaxSoilArea) {
-		this.fractionOfMaxSoilArea = fractionOfMaxSoilArea;
+	public void setProvinceAreaAtStartMax(int provinceAreAtStartMax) {
+		this.provinceAreaAtStartMax = provinceAreAtStartMax;
 	}
 
-	public int getMinSoilArea() {
-		return minSoilArea;
+	public double getSoilFertilityAtStartMin() {
+		return soilFertilityAtStartMin;
 	}
 
-	public void setMinSoilArea(int minSoilArea) {
-		this.minSoilArea = minSoilArea;
+	public void setSoilFertilityAtStartMin(double soilFertilityAtStartMin) {
+		this.soilFertilityAtStartMin = soilFertilityAtStartMin;
 	}
 
-	public int getMaxSoilArea() {
-		return maxSoilArea;
+	public double getSoilFertilityAtStartMax() {
+		return soilFertilityAtStartMax;
 	}
 
-	public void setMaxSoilArea(int maxSoilArea) {
-		this.maxSoilArea = maxSoilArea;
-	}
-
-	public double getMinSoilFertility() {
-		return minSoilFertility;
-	}
-
-	public void setMinSoilFertility(double minSoilFertility) {
-		this.minSoilFertility = minSoilFertility;
-	}
-
-	public double getMaxSoilFertility() {
-		return maxSoilFertility;
-	}
-
-	public void setMaxSoilFertility(double maxSoilFertility) {
-		this.maxSoilFertility = maxSoilFertility;
+	public void setSoilFertilityAtStartMax(double soilFertilityAtStartMax) {
+		this.soilFertilityAtStartMax = soilFertilityAtStartMax;
 	}
 
 	public double getOceanPercent() {
@@ -319,12 +307,12 @@ public class GameParams {
 		this.populationBaseMigration = populationBaseMigration;
 	}
 
-	public int getScienceAgricultureStart() {
-		return scienceAgricultureStart;
+	public int getScienceValueStart() {
+		return scienceValueStart;
 	}
 
-	public void setScienceAgricultureStart(int scienceAgricultureStart) {
-		this.scienceAgricultureStart = scienceAgricultureStart;
+	public void setScienceValueStart(int scienceAgricultureStart) {
+		this.scienceValueStart = scienceAgricultureStart;
 	}
 
 	public int getScienceBaseIncreasePerTurn() {
@@ -333,6 +321,30 @@ public class GameParams {
 
 	public void setScienceBaseIncreasePerTurn(int scienceBaseIncreasePerTurn) {
 		this.scienceBaseIncreasePerTurn = scienceBaseIncreasePerTurn;
+	}
+
+	public double getSoilAreaMinPercentFromMaxArea() {
+		return soilAreaMinPercentFromMaxArea;
+	}
+
+	public void setSoilAreaMinPercentFromMaxArea(double soilAreaMinPercentFromMaxArea) {
+		this.soilAreaMinPercentFromMaxArea = soilAreaMinPercentFromMaxArea;
+	}
+
+	public double getScienceAgricultureMultiplicatorForFertility() {
+		return scienceAgricultureMultiplicatorForFertility;
+	}
+
+	public void setScienceAgricultureMultiplicatorForFertility(double scienceAgricultureMultiplicatorForFertility) {
+		this.scienceAgricultureMultiplicatorForFertility = scienceAgricultureMultiplicatorForFertility;
+	}
+
+	public double getScienceMedicineMultiplicatorForEpidemic() {
+		return scienceMedicineMultiplicatorForEpidemic;
+	}
+
+	public void setScienceMedicineMultiplicatorForEpidemic(double scienceMedicineMultiplicatorForEpidemic) {
+		this.scienceMedicineMultiplicatorForEpidemic = scienceMedicineMultiplicatorForEpidemic;
 	}
 
 }

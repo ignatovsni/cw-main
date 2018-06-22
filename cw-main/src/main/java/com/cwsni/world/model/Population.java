@@ -13,6 +13,7 @@ public class Population {
 
 	private DataPopulation data;
 	private ScienceCollection science;
+	private Province province;
 
 	public Population() {
 		data = new DataPopulation();
@@ -31,8 +32,9 @@ public class Population {
 		return science;
 	}
 
-	public void buildFrom(DataPopulation dpop) {
+	public void buildFrom(Province province, DataPopulation dpop) {
 		this.data = dpop;
+		this.province = province;
 		this.science = new ScienceCollection();
 		science.buildFrom(dpop.getScience());
 	}
@@ -50,9 +52,22 @@ public class Population {
 		setAmount(getAmount() + pop.getAmount());
 	}
 
+	public double getDiseaseResistance() {
+		return Math.min(0.99, getScience().getMedicine().getAmount()
+				* province.getMap().getGame().getGameParams().getScienceMedicineMultiplicatorForEpidemic());
+	}
+
+	DataPopulation getPopulationData() {
+		return data;
+	}
+
+	public void setProvince(Province province) {
+		this.province = province;
+	}
+
 	// --------------- static section -----------------------
 
-	static public void migrate(Province from, Game game) {
+	static public void migrateNewTurn(Province from, Game game) {
 		GameParams gParams = game.getGameParams();
 		List<Province> provsTo = from.getNeighbors().stream()
 				.filter(n -> n.getTerrainType().isPopulationPossible() && n.getPopulationExcess() < 1)
@@ -89,7 +104,7 @@ public class Population {
 		});
 	}
 
-	static public void growPopulation(Province from, Game game) {
+	static public void growPopulationNewTurn(Province from, Game game) {
 		GameParams gParams = game.getGameParams();
 		if (from.getSoilFertility() >= 1) {
 			from.getPopulation().forEach(p -> {
@@ -107,7 +122,7 @@ public class Population {
 		}
 	}
 
-	public static void processEvents(Province p, Game game) {
+	public static void processEventsNewTurn(Province p, Game game) {
 		List<Event> provEvents = new ArrayList<>(p.getEvents().getEvents());
 		provEvents.forEach(e -> Event.processEvent(game, p, e));
 	}
@@ -123,7 +138,8 @@ public class Population {
 	public static void dieFromDisease(Game game, Province from, double deathRate) {
 		game.getGameStats().addDiedFromDisease(from.getPopulationAmount() * deathRate);
 		from.getPopulation().forEach(p -> {
-			p.setAmount((int) (p.getAmount() * (1 - deathRate)));
+			double effectiveDeathRate = deathRate * (1 - p.getDiseaseResistance());
+			p.setAmount((int) (p.getAmount() * (1 - effectiveDeathRate)));
 		});
 	}
 
@@ -140,12 +156,7 @@ public class Population {
 			toPop.addPop(p.getPopulation().get(i));
 		}
 		p.getPopulation().clear();
-		p.getPopulation().add(toPop);
-
-	}
-
-	DataPopulation getPopulationData() {
-		return data;
+		p.addPopulation(toPop);
 	}
 
 }

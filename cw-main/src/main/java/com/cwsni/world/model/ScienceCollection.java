@@ -1,8 +1,11 @@
 package com.cwsni.world.model;
 
+import java.util.function.Function;
+
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.model.events.Event;
 
 public class ScienceCollection {
 
@@ -23,38 +26,59 @@ public class ScienceCollection {
 	public void buildFrom(DataScienceCollection science) {
 		this.science = science;
 	}
-	
+
 	public DataScience getAgriculture() {
 		return science.getAgriculture();
+	}
+
+	public DataScience getMedicine() {
+		return science.getMedicine();
 	}
 
 	public void cloneFrom(ScienceCollection from) {
 		science.cloneFrom(from.getScience());
 	}
 
-	private void growScience(Game game, DataScienceCollection maxScience) {
-		GameParams gParams = game.getGameParams();
-		int scienceAgricultureInc = gParams.getScienceBaseIncreasePerTurn();
-		science.getAgriculture().setMax(science.getAgriculture().getMax() - scienceAgricultureInc);
-		if (maxScience.getAgriculture().getAmount() > science.getAgriculture().getAmount()) {
-			// if neighbors have more advanced science then science will growth more quicker
-			scienceAgricultureInc *= 2;
+	private void growScience(Game game, DataScienceCollection maxScience, Province p) {
+		growScienceType(game, science, maxScience, ds -> ds.getAgriculture());
+		growScienceType(game, science, maxScience, ds -> ds.getMedicine());
+		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
+			science.getMedicine().setAmount(science.getMedicine().getAmount() + 1);
 		}
-		science.getAgriculture().setAmount(science.getAgriculture().getAmount() + scienceAgricultureInc);
 	}
 
 	public void mergeFrom(ScienceCollection from, double ownFraction) {
-		double avg = (ownFraction * science.getAgriculture().getAmount()
-				+ from.getScience().getAgriculture().getAmount() * (1 - ownFraction));
-		science.getAgriculture().setAmount((int) Math.round(avg));
-		science.getAgriculture()
-				.setMax(Math.max(science.getAgriculture().getMax(), from.getScience().getAgriculture().getMax()));
+		mergeFrom(science, from.getScience(), ownFraction, ds -> ds.getAgriculture());
+		mergeFrom(science, from.getScience(), ownFraction, ds -> ds.getMedicine());
+	}
+
+	private void growScienceType(Game game, DataScienceCollection science, DataScienceCollection maxScience,
+			Function<DataScienceCollection, DataScience> getter4Science) {
+		DataScience scienceType = getter4Science.apply(science);
+		DataScience maxScienceType = getter4Science.apply(maxScience);
+		GameParams gParams = game.getGameParams();
+		int scienceIncrease = gParams.getScienceBaseIncreasePerTurn();
+		scienceType.setMax(scienceType.getMax() - scienceIncrease);
+		if (maxScienceType.getAmount() > scienceType.getAmount()) {
+			// if neighbors have more advanced science then science will growth more quicker
+			scienceIncrease *= 2;
+		}
+		scienceType.setAmount(scienceType.getAmount() + scienceIncrease);
+	}
+
+	private void mergeFrom(DataScienceCollection science, DataScienceCollection fromScience, double ownFraction,
+			Function<DataScienceCollection, DataScience> getter4Science) {
+		DataScience scienceType = getter4Science.apply(science);
+		DataScience fromScienceType = getter4Science.apply(fromScience);
+		double avg = (ownFraction * scienceType.getAmount() + fromScienceType.getAmount() * (1 - ownFraction));
+		scienceType.setAmount((int) Math.round(avg));
+		scienceType.setMax(Math.max(scienceType.getMax(), fromScienceType.getMax()));
 	}
 
 	// --------------------- static ----------------------------------
-	public static void growScience(Province p, Game game) {
+	public static void growScienceNewTurn(Province p, Game game) {
 		DataScienceCollection maxScience = findMaxScienceAmongNeighbors(p);
-		p.getPopulation().forEach(pop -> pop.getScience().growScience(game, maxScience));
+		p.getPopulation().forEach(pop -> pop.getScience().growScience(game, maxScience, p));
 	}
 
 	private static DataScienceCollection findMaxScienceAmongNeighbors(Province p) {

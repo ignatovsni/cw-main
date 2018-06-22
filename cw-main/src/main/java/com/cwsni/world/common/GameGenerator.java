@@ -143,52 +143,24 @@ public class GameGenerator {
 	}
 
 	private void fillSoil(DataGame game, TempData tData) {
-		// TODO make more fertility and area around equator
 		GameParams gParams = game.getGameParams();
 		DataWorldMap map = game.getMap();
 		List<DataProvince> terrain = new ArrayList<>();
-		// setup min soil attributes and find all terrain provinces
+		// initialize area attributes and find all terrain provinces
 		map.getProvinces().stream().filter(p -> p.getTerrainType().isSoilPossible()).forEach(p -> {
-			p.setSoilArea(gParams.getMinSoilArea());
-			p.setSoilFertility(gParams.getMinSoilFertility());
+			p.setArea((int) (gParams.getProvinceAreaAtStartMax()
+					* (gParams.getRandom().nextNormalDouble() * (1 - gParams.getSoilAreaMinPercentFromMaxArea() * 2)
+							+ gParams.getSoilAreaMinPercentFromMaxArea() * 2)));
+			p.setSoilArea((int) (p.getArea() * gParams.getSoilAreaMinPercentFromMaxArea()));
+			p.setSoilFertility(gParams.getSoilFertilityAtStartMin());
 			terrain.add(p);
 		});
-		fillSoilArea(game, tData, terrain);
 		fillSoilFertility(game, tData, terrain);
-	}
-
-	private void fillSoilArea(DataGame game, TempData tData, List<DataProvince> terrain) {
-		GameParams gParams = game.getGameParams();
-		// core provs
-		int corePoints = Math.min(gParams.getSoilAreaCorePoints(), terrain.size());
-		Set<Integer> increasedIds = new HashSet<>(corePoints);
-		while (increasedIds.size() < corePoints) {
-			DataProvince p = terrain.get(gParams.getRandom().nextInt(terrain.size()));
-			if (!increasedIds.contains(p.getId())) {
-				double maxSA = gParams.getMinSoilArea()
-						+ (gParams.getMaxSoilArea() - gParams.getMinSoilArea()) * (gParams.getRandom().nextDouble());
-				p.setSoilArea((int) maxSA);
-				increasedIds.add(p.getId());
-			}
-		}
-		// increase soil quality for neighbors
-		Queue<DataProvince> queueProvs = new LinkedBlockingQueue<DataProvince>();
-		increasedIds.forEach(id -> queueProvs.add(tData.provByIds.get(id)));
-		while (!queueProvs.isEmpty()) {
-			DataProvince p = queueProvs.poll();
-			p.getNeighbors().stream().map(nID -> tData.provByIds.get(nID))
-					.filter(n -> n.getTerrainType().isSoilPossible() && !increasedIds.contains(n.getId()))
-					.forEach(n -> {
-						n.setSoilArea((p.getSoilArea() * gParams.getFractionOfMaxSoilArea() + n.getSoilArea())
-								/ (gParams.getFractionOfMaxSoilArea() + 1));
-						queueProvs.add(n);
-						increasedIds.add(n.getId());
-					});
-		}
 	}
 
 	private void fillSoilFertility(DataGame game, TempData tData, List<DataProvince> terrain) {
 		GameParams gParams = game.getGameParams();
+		fillSoilFertilityAtPoles(tData, terrain, gParams);
 		// setup core provs
 		// use core terrains to support soil and population on all "continents"
 		int corePoints = Math.min(gParams.getSoilFertilityCorePoints(), terrain.size());
@@ -219,7 +191,9 @@ public class GameGenerator {
 						increasedIds.add(n.getId());
 					});
 		}
-		// process poles
+	}
+
+	private void fillSoilFertilityAtPoles(TempData tData, List<DataProvince> terrain, GameParams gParams) {
 		if (!terrain.isEmpty()) {
 			int minY = terrain.stream().mapToInt(p -> p.getCenter().getY()).min().getAsInt();
 			int maxY = terrain.stream().mapToInt(p -> p.getCenter().getY()).max().getAsInt();
@@ -228,7 +202,7 @@ public class GameGenerator {
 						+ Math.min(p.getCenter().getY() - minY, maxY - p.getCenter().getY())) / (maxY - minY);
 				if (distanceToPole < gParams.getDecreaseSoilFertilityAtPoles()) {
 					double fertilityDecrease = 1 - (gParams.getDecreaseSoilFertilityAtPoles() - distanceToPole)
-							/ gParams.getDecreaseSoilFertilityAtPoles() / 2;
+							/ gParams.getDecreaseSoilFertilityAtPoles();
 					p.setSoilFertility(DataFormatter.doubleWith2points(p.getSoilFertility() * fertilityDecrease));
 				}
 			});
@@ -237,9 +211,9 @@ public class GameGenerator {
 
 	private void addSoilFertility(GameParams gParams, Set<Integer> increasedIds, DataProvince p) {
 		if (!increasedIds.contains(p.getId())) {
-			double maxSF = gParams.getMinSoilFertility()
-					+ (gParams.getMaxSoilFertility() - gParams.getMinSoilFertility())
-							* (gParams.getRandom().nextDouble());
+			double maxSF = gParams.getSoilFertilityAtStartMin()
+					+ (gParams.getSoilFertilityAtStartMax() - gParams.getSoilFertilityAtStartMin())
+							* (gParams.getRandom().nextNormalDouble());
 			p.setSoilFertility(DataFormatter.doubleWith2points(maxSF));
 			increasedIds.add(p.getId());
 		}
@@ -259,7 +233,8 @@ public class GameGenerator {
 	}
 
 	private void initScience(DataPopulation pop, GameParams gParams) {
-		pop.getScience().getAgriculture().setAmount(gParams.getScienceAgricultureStart());
+		pop.getScience().getAgriculture().setAmount(gParams.getScienceValueStart());
+		pop.getScience().getMedicine().setAmount(gParams.getScienceValueStart());
 	}
 
 	public Game createEmptyGame() {

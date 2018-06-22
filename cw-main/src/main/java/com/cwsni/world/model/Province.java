@@ -2,8 +2,10 @@ package com.cwsni.world.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import com.cwsni.world.model.data.DataProvince;
+import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.events.Event;
@@ -41,27 +43,50 @@ public class Province implements EventTarget {
 
 	public double getSoilFertility() {
 		double v = data.getSoilFertility();
+		// science
+		v += (double) getScienceAgriculture()
+				* map.getGame().getGameParams().getScienceAgricultureMultiplicatorForFertility();
 		// climate change
 		for (Event e : getEvents().getEventsWithType(Event.EVENT_GLOBAL_CLIMATE_CHANGE)) {
 			v *= e.getEffectDouble1();
 		}
-		// science
-		v += (double)getScienceAgriculture() / 4000;
 		return v;
 	}
 
-	public int getScienceAgriculture() {
+	public int getScienceAgriculture2() {
 		if (getPopulationAmount() == 0) {
 			return 0;
 		}
 		long agricultureLevel = getPopulation().stream()
-				.mapToLong(pop -> (long)pop.getAmount() * pop.getScience().getAgriculture().getAmount()).sum()
+				.mapToLong(pop -> (long) pop.getAmount() * pop.getScience().getAgriculture().getAmount()).sum()
 				/ getPopulationAmount();
-		return (int)agricultureLevel;
+		return (int) agricultureLevel;
 	}
 
-	public long getSoilArea() {
-		return data.getSoilArea() + getScienceAgriculture()*10;
+	public int getScienceAgriculture() {
+		return getScienceTypeValue(ds -> ds.getAgriculture());
+	}
+
+	public int getScienceMedicine() {
+		return getScienceTypeValue(ds -> ds.getMedicine());
+	}
+
+	private int getScienceTypeValue(Function<ScienceCollection, DataScience> getter4Science) {
+		if (getPopulationAmount() == 0) {
+			return 0;
+		}
+		long scienceValue = getPopulation().stream()
+				.mapToLong(pop -> (long) pop.getAmount() * getter4Science.apply(pop.getScience()).getAmount()).sum()
+				/ getPopulationAmount();
+		return (int) scienceValue;
+	}
+
+	public int getSoilArea() {
+		return data.getSoilArea();
+	}
+
+	public int getArea() {
+		return data.getArea();
 	}
 
 	public TerrainType getTerrainType() {
@@ -88,15 +113,17 @@ public class Province implements EventTarget {
 		return (double) getPopulationAmount() / Math.max(getMaxPopulation(), 1);
 	}
 
-	public void processNewTurn() {
-		if (!getTerrainType().isPopulationPossible() || getPopulationAmount() == 0) {
-			return;
-		}
-		Population.processEvents(this, map.getGame());
-		Population.migrate(this, map.getGame());
-		Population.growPopulation(this, map.getGame());
-		ScienceCollection.growScience(this, map.getGame());
+	public List<Population> getImmigrants() {
+		return immigrants;
+	}
 
+	public WorldMap getMap() {
+		return map;
+	}
+
+	public double getDiseaseResistance() {
+		return Math.min(0.99,
+				getScienceMedicine() * getMap().getGame().getGameParams().getScienceMedicineMultiplicatorForEpidemic());
 	}
 
 	@Override
@@ -118,7 +145,7 @@ public class Province implements EventTarget {
 		immigrants = new ArrayList<>();
 		data.getPopulation().forEach(dpop -> {
 			Population pop = new Population();
-			pop.buildFrom(dpop);
+			pop.buildFrom(this, dpop);
 			population.add(pop);
 		});
 		data.getNeighbors().forEach(id -> neighbors.add(map.findProvById(id)));
@@ -126,8 +153,34 @@ public class Province implements EventTarget {
 
 	}
 
-	public List<Population> getImmigrants() {
-		return immigrants;
+	public void processNewTurn() {
+		if (!getTerrainType().isPopulationPossible() || getPopulationAmount() == 0) {
+			return;
+		}
+		Population.processEventsNewTurn(this, map.getGame());
+		Population.migrateNewTurn(this, map.getGame());
+		processProvincePropertiesNewTurn();
+		Population.growPopulationNewTurn(this, map.getGame());
+		ScienceCollection.growScienceNewTurn(this, map.getGame());
+	}
+
+	private void processProvincePropertiesNewTurn() {
+		double neededFieldsArea = (int) (getPopulationAmount() / getSoilFertility());
+		int currentFieldsArea = getSoilArea();
+		if (neededFieldsArea < currentFieldsArea) {
+			// degradation
+			double decreasing = Math.max(neededFieldsArea / currentFieldsArea, 0.98);
+			setSoilArea((int) (decreasing * getSoilArea()));
+		} else {
+			// improving
+			double improving = Math.min(neededFieldsArea / currentFieldsArea, 1.002);
+			setSoilArea((int) (getSoilArea() * improving));
+		}
+	}
+
+	private void setSoilArea(int newSoilArea) {
+		data.setSoilArea((int) Math.min(data.getArea(), Math.max(newSoilArea,
+				data.getArea() * map.getGame().getGameParams().getSoilAreaMinPercentFromMaxArea())));
 	}
 
 	public void processImmigrantsAndMergePops() {
@@ -137,6 +190,11 @@ public class Province implements EventTarget {
 		Population.processImmigrantsAndMergePops(this, map.getGame());
 		data.getPopulation().clear();
 		getPopulation().forEach(pop -> data.getPopulation().add(pop.getPopulationData()));
+	}
+
+	public void addPopulation(Population pop) {
+		getPopulation().add(pop);
+		pop.setProvince(this);
 	}
 
 }

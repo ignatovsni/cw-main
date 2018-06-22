@@ -75,10 +75,10 @@ class DProvince extends Group {
 			drawPopulationMode(polygon);
 			break;
 		case SOIL:
-			drawSoilMode(polygon);
+			drawSoilFertilityMode(polygon);
 			break;
 		case SOIL_2:
-			drawSoilMode2(polygon);
+			drawSoilQualityMode(polygon);
 			break;
 		case SCIENCE_AGRICULTURE:
 			drawScienceMode(polygon);
@@ -119,16 +119,16 @@ class DProvince extends Group {
 		}
 	}
 
-	private void drawSoilMode(Polygon polygon) {
+	private void drawSoilQualityMode(Polygon polygon) {
 		drawGradientMode(polygon, map.getGame().getGameTransientStats().getSoilQualityMax(), province.getSoilQuality(),
 				false);
 	}
 
-	private void drawSoilMode2(Polygon polygon) {
+	private void drawSoilFertilityMode(Polygon polygon) {
 		// TODO blue color if fertility < 1
 		GameTransientStats stats = map.getGame().getGameTransientStats();
-		double minF = stats.getSoilFertilityMin();
-		drawGradientMode(polygon, stats.getSoilFertilityMax() - minF, province.getSoilFertility() - minF, true);
+		drawGradientModeForMedian(polygon, stats.getSoilFertilityMax(), stats.getSoilFertilityAvg(),
+				stats.getSoilFertilityMedian(), province.getSoilFertility());
 	}
 
 	private void drawGradientMode(Polygon polygon, double maxValue, double provinceValue, boolean mode2) {

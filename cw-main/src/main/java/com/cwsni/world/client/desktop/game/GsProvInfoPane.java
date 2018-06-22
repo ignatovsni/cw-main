@@ -18,15 +18,15 @@ public class GsProvInfoPane extends InternalInfoPane {
 // TODO схлопывающиеся панели и метка или самая важная информации в заголовке справа. для событий - их количество, к примеру
 	private GameScene gameScene;
 
+	private List<RowValue> allRows;
 	private RowValue valuesNameLabel;
 	private RowValue valuesTerrainTypeLabel;
 	private RowValue valuesPopsLabel;
 	private RowValue valuesSoilAreaLabel;
 	private RowValue valuesSoilFertilityLabel;
 	private RowValue valuesScienceAgriculture;
-	private List<RowValue> allRows;
-
 	private RowValue valuesScienceLabel;
+	private RowValue valuesScienceMedicine;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -46,7 +46,9 @@ public class GsProvInfoPane extends InternalInfoPane {
 		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, allRows, idx++);
 
 		valuesScienceLabel = addRow("info.pane.prov.science.title", grid, allRows, idx++);
-		valuesScienceAgriculture = addRow("info.pane.prov.science.agriculture", grid, allRows, idx++);
+		valuesScienceAgriculture = addRow("science.agriculture.name", grid, allRows, idx++);
+		valuesScienceMedicine = addRow("science.medicine.name", grid, allRows, idx++);
+		
 
 		return grid;
 	}
@@ -70,6 +72,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 				setLabelText(valuesSoilFertilityLabel, toFraction(prov.getSoilFertility()));
 				setLabelText(valuesScienceLabel, "");
 				setLabelText(valuesScienceAgriculture, toLong(prov.getScienceAgriculture()));
+				setLabelText(valuesScienceMedicine, toLong(prov.getScienceMedicine()));
 				break;
 			case OCEAN:
 				break;

@@ -60,14 +60,16 @@ public class EventEpidemic extends Event {
 		if (neighbors.isEmpty()) {
 			return;
 		}
-		neighbors.stream().filter(n -> gParams.getRandom().nextDouble() < oldE.getEffectDouble1()).forEach(n -> {
-			Event e = createEvent(game, gParams);
-			e.setEffectDouble1(oldE.getEffectDouble1());
-			e.setEffectDouble2(oldE.getEffectDouble2());
-			e.setTitle(oldE.getTitle());
-			e.setDescription(oldE.getDescription());
-			n.addEvent(e);
-		});
+		neighbors.stream().filter(
+				n -> gParams.getRandom().nextDouble() < oldE.getEffectDouble1() * (1 - n.getDiseaseResistance()))
+				.forEach(n -> {
+					Event e = createEvent(game, gParams);
+					e.setEffectDouble1(oldE.getEffectDouble1());
+					e.setEffectDouble2(oldE.getEffectDouble2());
+					e.setTitle(oldE.getTitle());
+					e.setDescription(oldE.getDescription());
+					n.addEvent(e);
+				});
 
 	}
 
