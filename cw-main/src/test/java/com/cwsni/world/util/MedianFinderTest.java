@@ -11,42 +11,49 @@ import org.junit.Test;
 public class MedianFinderTest {
 
 	@Test
-	public void testMedian() {
+	public void testInteger() {
 		Collection<Integer> elements = new ArrayList<>(Arrays.asList());
-		MedianFinder<Integer> mf = new MedianFinder<>(elements.size());
+		MedianFinder mf = new MedianFinder();
 		assertEquals(mf.findMedian(elements), null);
 
 		elements = new ArrayList<>(Arrays.asList(1));
-		mf = new MedianFinder<>(elements.size());
+		mf = new MedianFinder();
 		assertEquals(mf.findMedian(elements), (Integer) 1);
 
 		elements = new ArrayList<>(Arrays.asList(1, 2));
-		mf = new MedianFinder<>(elements.size());
-		assertEquals(mf.findMedian(elements), (Integer) 2);
+		mf = new MedianFinder();
+		assertEquals(mf.findMedian(elements), (Integer) 1);
 
+		elements = new ArrayList<>(Arrays.asList(10, 20));
+		mf = new MedianFinder();
+		assertEquals(mf.findMedian(elements), (Integer) 15);
+		
 		elements = new ArrayList<>(Arrays.asList(1, 2, 3));
-		mf = new MedianFinder<>(elements.size());
+		mf = new MedianFinder();
 		assertEquals(mf.findMedian(elements), (Integer) 2);
 
 		elements = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
-		mf = new MedianFinder<>(elements.size());
+		mf = new MedianFinder();
 		assertEquals(mf.findMedian(elements), (Integer) 3);
 		
 		elements = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 5));
-		mf = new MedianFinder<>(elements.size());
-		assertEquals(mf.findMedian(elements), (Integer) 4);
+		mf = new MedianFinder();
+		assertEquals(mf.findMedian(elements), (Integer) 3);
 		
 		elements = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 5, 5));
-		mf = new MedianFinder<>(elements.size());
+		mf = new MedianFinder();
 		assertEquals(mf.findMedian(elements), (Integer) 4);
 		
 		elements = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 5, 5, 5));
-		mf = new MedianFinder<>(elements.size());
-		assertEquals(mf.findMedian(elements), (Integer) 5);
+		mf = new MedianFinder();
+		assertEquals(mf.findMedian(elements), (Integer) 4);
 		
-		elements = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 5, 5, 5, 5));
-		mf = new MedianFinder<>(elements.size());
+		elements = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5));
+		mf = new MedianFinder();
 		assertEquals(mf.findMedian(elements), (Integer) 5);
+		elements = new ArrayList<>(Arrays.asList(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 4, 5));
+		mf = new MedianFinder();
+		assertEquals(mf.findMedian(elements), (Integer) 1);
 	}
 
 }

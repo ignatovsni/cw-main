@@ -1,36 +1,28 @@
 package com.cwsni.world.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
-public class MedianFinder<T extends Comparable<T>> {
+public class MedianFinder {
 
-	private Heap<T> minHeap;
-	private Heap<T> maxHeap;
-
-	public MedianFinder() {
-		this(1);
-	}
-
-	public MedianFinder(int countOfElements) {
-		minHeap = new Heap<>(countOfElements / 2 + 2, true);
-		maxHeap = new Heap<>(countOfElements / 2 + 2, false);
-	}
-
-	public T findMedian(Collection<T> collection) {
-		collection.forEach(e -> {
-			if (minHeap.size() == 0) {
-				minHeap.put(e);
-			} else if (e.compareTo(minHeap.peek()) > 0) {
-				minHeap.put(e);
-			} else {
-				maxHeap.put(e);
-			}
-			// balance heaps
-			if (minHeap.size() > maxHeap.size() + 1) {
-				maxHeap.put(minHeap.poll());
-			}
-		});
-		return minHeap.peek();
+	public Integer findMedian(Collection<Integer> collection) {
+		if (collection == null || collection.isEmpty()) {
+			return null;
+		}
+		ArrayList<Integer> arrayList;
+		if (collection instanceof ArrayList) {
+			arrayList = (ArrayList<Integer>) collection;
+		} else {
+			arrayList = new ArrayList<>(collection);
+		}
+		Collections.sort(arrayList);
+		if (arrayList.size() % 2 == 1) {
+			return arrayList.get(arrayList.size() / 2);
+		} else {
+			int idx = arrayList.size() / 2;
+			return (arrayList.get(idx) + arrayList.get(idx - 1)) / 2;
+		}
 	}
 
 }

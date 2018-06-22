@@ -24,9 +24,9 @@ public class EventEpidemic extends Event {
 		} while (core == null || core.getPopulationAmount() == 0);
 		core.addEvent(e);
 		e.setEffectDouble1(DataFormatter
-				.doubleWith2points(gParams.getEventEpidemicContagiousness() * gParams.getRandom().nextDouble()));
+				.doubleWith2points(gParams.getEventEpidemicContagiousness() * gParams.getRandom().nextNormalDouble()));
 		e.setEffectDouble2(DataFormatter
-				.doubleWith2points(gParams.getEventEpidemicDeathRate() * gParams.getRandom().nextDouble()));
+				.doubleWith2points(gParams.getEventEpidemicDeathRate() * gParams.getRandom().nextNormalDouble()));
 		e.setTitle(messageSource.getMessage(EVENT_EPIDEMIC + ".title"));
 		e.setDescription(messageSource.getMessage("event.epidemic.influence") + " " + e.getEffectDouble1() + "/"
 				+ e.getEffectDouble2());

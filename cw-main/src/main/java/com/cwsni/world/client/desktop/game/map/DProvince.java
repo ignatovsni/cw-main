@@ -95,7 +95,7 @@ class DProvince extends Group {
 	}
 
 	private void drawScienceMode(Polygon polygon2) {
-		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxScienceAgricultureInProvince(),
+		drawGradientMode(polygon, map.getGame().getGameTransientStats().getScienceAgricultureMaxInProvince(),
 				province.getScienceAgriculture(), true);
 	}
 
@@ -108,21 +108,27 @@ class DProvince extends Group {
 	}
 
 	private void drawPopulationMode(Polygon polygon) {
-		// TODO use red color while over population
-		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxPopulationInProvince(),
-				province.getPopulationAmount(), MapMode.POPULATION_2.equals(map.getMapMode()));
+		if (MapMode.POPULATION_2.equals(map.getMapMode())) {
+			drawGradientMode(polygon, map.getGame().getGameTransientStats().getPopulationMaxInProvince(),
+					province.getPopulationAmount(), false);
+		} else {
+			drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getPopulationMaxInProvince(),
+					map.getGame().getGameTransientStats().getPopulationAvgInProvince(),
+					map.getGame().getGameTransientStats().getPopulationMedianInProvince(),
+					province.getPopulationAmount());
+		}
 	}
 
 	private void drawSoilMode(Polygon polygon) {
-		drawGradientMode(polygon, map.getGame().getGameTransientStats().getMaxSoilQuality(), province.getSoilQuality(),
+		drawGradientMode(polygon, map.getGame().getGameTransientStats().getSoilQualityMax(), province.getSoilQuality(),
 				false);
 	}
 
 	private void drawSoilMode2(Polygon polygon) {
 		// TODO blue color if fertility < 1
 		GameTransientStats stats = map.getGame().getGameTransientStats();
-		double minF = stats.getMinSoilFertility();
-		drawGradientMode(polygon, stats.getMaxSoilFertility() - minF, province.getSoilFertility() - minF, true);
+		double minF = stats.getSoilFertilityMin();
+		drawGradientMode(polygon, stats.getSoilFertilityMax() - minF, province.getSoilFertility() - minF, true);
 	}
 
 	private void drawGradientMode(Polygon polygon, double maxValue, double provinceValue, boolean mode2) {
@@ -139,6 +145,27 @@ class DProvince extends Group {
 				fraction = fraction * fraction;
 			}
 			pValue = new Color(1, Math.min(1 - (fraction - 0.5) * 2, 1), 0, 1);
+		}
+		polygon.setFill(pValue);
+	}
+
+	private void drawGradientModeForMedian(Polygon polygon, double maxValue, double avgValue, double medianValue,
+			double provinceValue) {
+		// double baseValue = Math.max(medianValue, avgValue);
+		double baseValue = medianValue;
+		provinceValue = Math.min(provinceValue, maxValue); // sometimes data can be old
+		Paint pValue;
+		if (provinceValue < baseValue) {
+			double fraction = baseValue != 0 ? provinceValue / baseValue : 1;
+			fraction = Math.sqrt(fraction);
+			// fraction = fraction * fraction;
+			pValue = new Color(Math.min(fraction, 1), Math.min(fraction, 1), 0, 1);
+		} else {
+			provinceValue -= baseValue;
+			maxValue -= baseValue;
+			double fraction = maxValue != 0 ? provinceValue / maxValue : 1;
+			fraction = fraction * fraction;
+			pValue = new Color(1, Math.min(1 - fraction, 1), 0, 1);
 		}
 		polygon.setFill(pValue);
 	}

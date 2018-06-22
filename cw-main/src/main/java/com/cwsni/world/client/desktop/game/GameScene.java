@@ -70,6 +70,7 @@ public class GameScene extends Scene {
 	private MapMode mapMode = MapMode.GEO;
 	private GsTimeMode timeMode = GsTimeMode.PAUSE;
 	private boolean autoTurn = true;
+	private boolean pauseBetweenTurn = true;
 
 	public GameScene() {
 		super(new BorderPane());
@@ -93,7 +94,8 @@ public class GameScene extends Scene {
 
 		VBox rightSection = new VBox();
 		rightSection.getChildren().addAll(timeControl, globalInfoPane, provInfoPane, provEventsInfoPane);
-		rightSection.setMaxWidth(200);
+		rightSection.setMinWidth(220);
+		rightSection.setMaxWidth(220);
 
 		BorderPane layout = (BorderPane) getRoot();
 		layout.setTop(topSection);
@@ -242,8 +244,8 @@ public class GameScene extends Scene {
 		} catch (Exception e) {
 			logError(e);
 		}
-		if (autoTurn) {
-			Thread.sleep(50 * (10 - timeMode.getTurnPerTime()));
+		if (autoTurn && pauseBetweenTurn) {
+			Thread.sleep(50 * Math.max((10 - timeMode.getTurnPerTime()), 0));
 		}
 	}
 
@@ -253,6 +255,10 @@ public class GameScene extends Scene {
 
 	public void setAutoTurn(boolean autoTurn) {
 		this.autoTurn = autoTurn;
+	}
+
+	public void setPauseBetweenTurn(boolean pauseBetweenTurn) {
+		this.pauseBetweenTurn = pauseBetweenTurn;
 	}
 
 }

@@ -1,13 +1,12 @@
 package com.cwsni.world.model.data;
 
-import java.util.Random;
-
+import com.cwsni.world.util.CwRandom;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class GameParams {
 
 	@JsonIgnore
-	private Random random;
+	private CwRandom random;
 
 	// ------------Map generation section--------
 	private long seed = System.currentTimeMillis();
@@ -29,17 +28,17 @@ public class GameParams {
 	private double decreaseSoilFertilityAtPoles = 0.1;
 
 	private int populationAtStart = 1000;
-	private double minSoilFertilityToStartPopulation = (maxSoilFertility + minSoilFertility*9) / 10;
-	
+	private double minSoilFertilityToStartPopulation = (maxSoilFertility + minSoilFertility * 9) / 10;
+
 	private int scienceBaseIncreasePerTurn = 1;
 	private int scienceAgricultureStart = 0;
-	
+
 	// ------------End of Map generation section--------
 
 	// ------------Turn procession section--------
 	private double populationBaseGrowth = 0.01;
 	private double populationBaseMigration = 0.005;
-	private double populationMaxExcess = 1.2;	
+	private double populationMaxExcess = 1.2;
 
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
@@ -209,9 +208,9 @@ public class GameParams {
 		return (int) (getRows() * getColumns() * getSoilFertilityCorePointsPerProvinces());
 	}
 
-	public Random getRandom() {
+	public CwRandom getRandom() {
 		if (random == null) {
-			random = new Random(getSeed());
+			random = new CwRandom(getSeed());
 		}
 		return random;
 	}
@@ -335,7 +334,5 @@ public class GameParams {
 	public void setScienceBaseIncreasePerTurn(int scienceBaseIncreasePerTurn) {
 		this.scienceBaseIncreasePerTurn = scienceBaseIncreasePerTurn;
 	}
-	
-	
 
 }

@@ -1,43 +1,58 @@
 package com.cwsni.world.model;
 
+import java.util.DoubleSummaryStatistics;
+import java.util.IntSummaryStatistics;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.cwsni.world.util.MedianFinder;
 
 public class GameTransientStats {
 
 	private static final Log logger = LogFactory.getLog(GameTransientStats.class);
 
 	private Game game;
-	private InternalFutureTask<Integer> maxPopulationInProvince;
-	private InternalFutureTask<Long> totalPopulation;
-	private InternalFutureTask<Integer> maxSoilQuality;
-	private InternalFutureTask<Double> maxSoilFertility;
-	private InternalFutureTask<Double> minSoilFertility;
-	private InternalFutureTask<Integer> maxScienceAgricultureInProvince;
+	private InternalFutureTask<IntSummaryStatistics> populationInProvince;
+	private InternalFutureTask<Integer> populationMedianInProvince;
+	private InternalFutureTask<Long> populationTotal;
+	private InternalFutureTask<Integer> soilQualityMax;
+	private InternalFutureTask<DoubleSummaryStatistics> soilFertility;
+	private InternalFutureTask<Integer> scienceAgricultureMaxInProvince;
 
 	public GameTransientStats(Game game) {
 		this.game = game;
-		maxPopulationInProvince = new InternalFutureTask<>(() -> {
-			return getPopulationPossibleProvinces().mapToInt(p -> p.getPopulationAmount()).max().getAsInt();
+
+		populationInProvince = new InternalFutureTask<>(() -> {
+			return getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 0)
+					.mapToInt(p -> p.getPopulationAmount()).summaryStatistics();
+		}, new IntSummaryStatistics());
+
+		populationMedianInProvince = new InternalFutureTask<>(() -> {
+			int v = new MedianFinder()
+					.findMedian(getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 0)
+							.map(p -> p.getPopulationAmount()).collect(Collectors.toList()));
+			return v;
 		}, 0);
-		totalPopulation = new InternalFutureTask<>(() -> {
+
+		populationTotal = new InternalFutureTask<>(() -> {
 			return getPopulationPossibleProvinces().mapToLong(p -> p.getPopulationAmount()).sum();
 		}, 0L);
-		maxSoilQuality = new InternalFutureTask<>(() -> {
+
+		soilQualityMax = new InternalFutureTask<>(() -> {
 			return getSoilPossibleProvinces().mapToInt(p -> p.getSoilQuality()).max().getAsInt();
 		}, 0);
-		maxSoilFertility = new InternalFutureTask<>(() -> {
-			return getSoilPossibleProvinces().mapToDouble(p -> p.getSoilFertility()).max().getAsDouble();
-		}, 0.0);
-		minSoilFertility = new InternalFutureTask<>(() -> {
-			return getSoilPossibleProvinces().mapToDouble(p -> p.getSoilFertility()).min().getAsDouble();
-		}, 0.0);
-		maxScienceAgricultureInProvince = new InternalFutureTask<>(() -> {
+
+		soilFertility = new InternalFutureTask<>(() -> {
+			return getSoilPossibleProvinces().mapToDouble(p -> p.getSoilFertility()).summaryStatistics();
+		}, new DoubleSummaryStatistics());
+
+		scienceAgricultureMaxInProvince = new InternalFutureTask<>(() -> {
 			return getPopulationPossibleProvinces().mapToInt(p -> p.getScienceAgriculture()).max().getAsInt();
 		}, 0);
 	}
@@ -50,28 +65,36 @@ public class GameTransientStats {
 		return game.getMap().getProvinces().stream().filter(p -> p.getTerrainType().isSoilPossible());
 	}
 
-	public int getMaxSoilQuality() {
-		return maxSoilQuality.get();
+	public int getSoilQualityMax() {
+		return soilQualityMax.get();
 	}
 
-	public long getTotalPopulation() {
-		return totalPopulation.get();
+	public long getPopulationTotal() {
+		return populationTotal.get();
 	}
 
-	public int getMaxPopulationInProvince() {
-		return maxPopulationInProvince.get();
+	public int getPopulationMaxInProvince() {
+		return populationInProvince.get().getMax();
 	}
 
-	public double getMaxSoilFertility() {
-		return maxSoilFertility.get();
+	public double getPopulationAvgInProvince() {
+		return populationInProvince.get().getAverage();
 	}
 
-	public double getMinSoilFertility() {
-		return minSoilFertility.get();
+	public int getPopulationMedianInProvince() {
+		return populationMedianInProvince.get();
 	}
 
-	public int getMaxScienceAgricultureInProvince() {
-		return maxScienceAgricultureInProvince.get();
+	public double getSoilFertilityMax() {
+		return soilFertility.get().getMax();
+	}
+
+	public double getSoilFertilityMin() {
+		return soilFertility.get().getMin();
+	}
+
+	public int getScienceAgricultureMaxInProvince() {
+		return scienceAgricultureMaxInProvince.get();
 	}
 
 	private class InternalFutureTask<V> extends FutureTask<V> {
@@ -88,6 +111,7 @@ public class GameTransientStats {
 				return super.get();
 			} catch (InterruptedException | ExecutionException e) {
 				logger.trace(e.getMessage(), e);
+				e.printStackTrace();
 				return defaultValue;
 			}
 		}

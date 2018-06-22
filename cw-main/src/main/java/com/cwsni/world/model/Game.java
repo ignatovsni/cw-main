@@ -87,8 +87,8 @@ public class Game implements EventTarget {
 	private void calcGameStats() {
 		GameTransientStats stats = new GameTransientStats(this);
 		setGameTransientStats(stats);
-		if (stats.getTotalPopulation() > getGameStats().getMaxPopulationForAllTime()) {
-			getGameStats().setMaxPopulationForAllTime(stats.getTotalPopulation());
+		if (stats.getPopulationTotal() > getGameStats().getMaxPopulationForAllTime()) {
+			getGameStats().setMaxPopulationForAllTime(stats.getPopulationTotal());
 		}
 
 	}

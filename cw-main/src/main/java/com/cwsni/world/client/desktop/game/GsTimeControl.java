@@ -81,12 +81,24 @@ public class GsTimeControl extends InternalInfoPane {
 		HBox hbox = new HBox();
 		hbox.getChildren().addAll(buttons);
 		VBox vbox = new VBox();
-		RadioButton rb = new RadioButton();
-		rb.setSelected(true);
-		rb.setOnAction(e -> {
-			gameScene.setAutoTurn(rb.isSelected());
+
+		RadioButton rbAutoTurn = new RadioButton();
+		RadioButton rbPauseBetweenTurn = new RadioButton();
+		Label labelPauseBetweenTurn = new Label(getMessage("info.pane.time.rb.pause.title"));
+		rbAutoTurn.setSelected(true);
+		rbAutoTurn.setOnAction(e -> {
+			gameScene.setAutoTurn(rbAutoTurn.isSelected());
+			rbPauseBetweenTurn.setDisable(!rbAutoTurn.isSelected());
+			labelPauseBetweenTurn.setDisable(!rbAutoTurn.isSelected());
 		});
-		vbox.getChildren().addAll(hbox, new HBox(rb, new Label(getMessage("info.pane.time.rb.title"))));
+		rbPauseBetweenTurn.setSelected(true);
+		rbPauseBetweenTurn.setOnAction(e -> {
+			gameScene.setPauseBetweenTurn(rbPauseBetweenTurn.isSelected());
+		});
+		
+		vbox.getChildren().addAll(hbox,
+				new HBox(rbAutoTurn, new Label(getMessage("info.pane.time.rb.auto.title") + "  "), rbPauseBetweenTurn,
+						labelPauseBetweenTurn));
 		return vbox;
 	}
 
