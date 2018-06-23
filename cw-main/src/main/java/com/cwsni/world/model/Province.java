@@ -1,6 +1,7 @@
 package com.cwsni.world.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -34,7 +35,8 @@ public class Province implements EventTarget {
 	}
 
 	public List<Population> getPopulation() {
-		return population;
+		// unmodifiableList to prevent adding elements to list
+		return Collections.unmodifiableList(population);
 	}
 
 	public String getName() {
@@ -157,11 +159,11 @@ public class Province implements EventTarget {
 		if (!getTerrainType().isPopulationPossible() || getPopulationAmount() == 0) {
 			return;
 		}
-		Population.processEventsNewTurn(this, map.getGame());
+		ScienceCollection.growScienceNewTurn(this, map.getGame());		
+		Population.processEventsNewTurn(this, map.getGame());		
 		Population.migrateNewTurn(this, map.getGame());
 		processProvincePropertiesNewTurn();
-		Population.growPopulationNewTurn(this, map.getGame());
-		ScienceCollection.growScienceNewTurn(this, map.getGame());
+		Population.growPopulationNewTurn(this, map.getGame());		
 	}
 
 	private void processProvincePropertiesNewTurn() {
@@ -193,8 +195,12 @@ public class Province implements EventTarget {
 	}
 
 	public void addPopulation(Population pop) {
-		getPopulation().add(pop);
+		population.add(pop);
 		pop.setProvince(this);
+	}
+
+	public void removePopulation(Population pop) {
+		population.remove(pop);
 	}
 
 }

@@ -94,9 +94,11 @@ class DProvince extends Group {
 		}
 	}
 
-	private void drawScienceMode(Polygon polygon2) {
-		drawGradientMode(polygon, map.getGame().getGameTransientStats().getScienceAgricultureMaxInProvince(),
-				province.getScienceAgriculture(), true);
+	private void drawScienceMode(Polygon polygon) {
+		drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getScienceAgricultureMaxInProvince(),
+				map.getGame().getGameTransientStats().getScienceAgricultureAvgInProvince(),
+				map.getGame().getGameTransientStats().getScienceAgricultureMedianInProvince(),
+				province.getScienceAgriculture());
 	}
 
 	private void drawGeoMode(Polygon polygon) {
@@ -155,15 +157,15 @@ class DProvince extends Group {
 		double baseValue = medianValue;
 		provinceValue = Math.min(provinceValue, maxValue); // sometimes data can be old
 		Paint pValue;
-		if (provinceValue < baseValue) {
-			double fraction = baseValue != 0 ? provinceValue / baseValue : 1;
-			fraction = Math.sqrt(fraction);
-			// fraction = fraction * fraction;
+		if (provinceValue <= baseValue) {
+			double fraction = baseValue != 0 ? provinceValue / baseValue : 0;
+			//fraction = Math.sqrt(fraction);
+			fraction = fraction * fraction;
 			pValue = new Color(Math.min(fraction, 1), Math.min(fraction, 1), 0, 1);
 		} else {
 			provinceValue -= baseValue;
 			maxValue -= baseValue;
-			double fraction = maxValue != 0 ? provinceValue / maxValue : 1;
+			double fraction = maxValue != 0 ? provinceValue / maxValue : 0;
 			fraction = fraction * fraction;
 			pValue = new Color(1, Math.min(1 - fraction, 1), 0, 1);
 		}

@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import com.cwsni.world.CwException;
 import com.cwsni.world.model.data.DataPopulation;
+import com.cwsni.world.model.data.DataScience;
+import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.events.Event;
 
@@ -44,6 +46,10 @@ public class Population {
 		newPop.setAmount(migrantsCount);
 		setAmount(getAmount() - migrantsCount);
 		newPop.getScience().cloneFrom(getScience());
+		DataScienceCollection.allGetter4Science().forEach(sG -> {
+			DataScience scienceType = sG.apply(newPop.getScience().getScience());
+			scienceType.setMax(scienceType.getAmount());
+		});
 		return newPop;
 	}
 
@@ -70,7 +76,7 @@ public class Population {
 	static public void migrateNewTurn(Province from, Game game) {
 		GameParams gParams = game.getGameParams();
 		List<Province> provsTo = from.getNeighbors().stream()
-				.filter(n -> n.getTerrainType().isPopulationPossible() && n.getPopulationExcess() < 1)
+				.filter(n -> n.getTerrainType().isPopulationPossible() && n.getPopulationExcess() < 2)
 				.collect(Collectors.toList());
 		if (provsTo.size() == 0) {
 			return;
@@ -108,7 +114,8 @@ public class Population {
 		GameParams gParams = game.getGameParams();
 		if (from.getSoilFertility() >= 1) {
 			from.getPopulation().forEach(p -> {
-				p.setAmount((int) (p.getAmount() * (1 + gParams.getPopulationBaseGrowth())));
+				p.setAmount((int) (p.getAmount()
+						* (1 + gParams.getPopulationBaseGrowth() + p.getDiseaseResistance() / 100)));
 			});
 		} else {
 			dieFromHunger(game, from, 1 - from.getSoilFertility());
@@ -145,18 +152,19 @@ public class Population {
 
 	public static void processImmigrantsAndMergePops(Province p, Game game) {
 		if (!p.getImmigrants().isEmpty()) {
-			p.getPopulation().addAll(p.getImmigrants());
+			p.getImmigrants().forEach(immg -> p.addPopulation(immg));
 			p.getImmigrants().clear();
 		}
 		if (p.getPopulation().size() <= 1) {
 			return;
 		}
-		Population toPop = p.getPopulation().get(0);
-		for (int i = 1; i < p.getPopulation().size(); i++) {
-			toPop.addPop(p.getPopulation().get(i));
+		List<Population> currentList = new ArrayList<>(p.getPopulation());
+		Population toPop = currentList.get(0);
+		for (int i = 1; i < currentList.size(); i++) {
+			Population fromPop = currentList.get(i);
+			toPop.addPop(fromPop);
+			p.removePopulation(fromPop);
 		}
-		p.getPopulation().clear();
-		p.addPopulation(toPop);
 	}
 
 }

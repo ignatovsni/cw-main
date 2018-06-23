@@ -1,5 +1,7 @@
 package com.cwsni.world.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 import com.cwsni.world.model.data.DataScience;
@@ -40,30 +42,57 @@ public class ScienceCollection {
 	}
 
 	private void growScience(Game game, DataScienceCollection maxScience, Province p) {
-		growScienceType(game, science, maxScience, ds -> ds.getAgriculture());
-		growScienceType(game, science, maxScience, ds -> ds.getMedicine());
+		DataScienceCollection.allGetter4Science()
+				.forEach(scienceGetter -> growScienceType(game, p, science, maxScience, scienceGetter));
 		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
 			science.getMedicine().setAmount(science.getMedicine().getAmount() + 1);
 		}
 	}
 
 	public void mergeFrom(ScienceCollection from, double ownFraction) {
-		mergeFrom(science, from.getScience(), ownFraction, ds -> ds.getAgriculture());
-		mergeFrom(science, from.getScience(), ownFraction, ds -> ds.getMedicine());
+		DataScienceCollection.allGetter4Science()
+				.forEach(scienceGetter -> mergeFrom(science, from.getScience(), ownFraction, scienceGetter));
 	}
 
-	private void growScienceType(Game game, DataScienceCollection science, DataScienceCollection maxScience,
+	private void growScienceType(Game game, Province p, DataScienceCollection science, DataScienceCollection maxScience,
 			Function<DataScienceCollection, DataScience> getter4Science) {
 		DataScience scienceType = getter4Science.apply(science);
 		DataScience maxScienceType = getter4Science.apply(maxScience);
 		GameParams gParams = game.getGameParams();
-		int scienceIncrease = gParams.getScienceBaseIncreasePerTurn();
-		scienceType.setMax(scienceType.getMax() - scienceIncrease);
-		if (maxScienceType.getAmount() > scienceType.getAmount()) {
-			// if neighbors have more advanced science then science will growth more quicker
-			scienceIncrease *= 2;
+
+		/*
+		 * if (p.getId() == 1743) { System.out.println(1); }
+		 */
+
+		// natural pops science
+		int scienceIncrease = (int) Math.max(1,
+				+(Math.log10((double) p.getPopulationAmount() * gParams.getScienceBaseIncreasePerTurnPerPerson())));
+		int newAmount = scienceType.getAmount() + scienceIncrease;
+		// province.totalPopulation instead of population.amount - people develop
+		// science together
+		int maxNaturalScienceLimit = (int) ((double) p.getPopulationAmount()
+				* gParams.getScienceNaturalGrowthLimitPerPerson());
+		// science can't growth more than natural limit
+		newAmount = Math.min(newAmount, maxNaturalScienceLimit);
+		// ... and can't become lower without special reason
+		newAmount = Math.max(newAmount, scienceType.getAmount());
+
+		// science from max leveled people
+		int scienceLocalMax = scienceType.getMax();
+		int deltaWithLocalMax = (int) ((scienceLocalMax - newAmount) * gParams.getScienceExchangeWithMaxPerTurn());
+		if (deltaWithLocalMax > 0) {
+			scienceType.setMax((int) (scienceLocalMax - deltaWithLocalMax));
 		}
-		scienceType.setAmount(scienceType.getAmount() + scienceIncrease);
+
+		// science from neighbors
+		int deltaWithNeighborsMax = (int) ((maxScienceType.getAmount() - newAmount)
+				* gParams.getScienceExchangeWithMaxPerTurn());
+
+		if (deltaWithLocalMax > 0 || deltaWithNeighborsMax > 0) {
+			newAmount += Math.max(deltaWithLocalMax, deltaWithNeighborsMax);
+		}
+
+		scienceType.setAmount((int) newAmount);
 	}
 
 	private void mergeFrom(DataScienceCollection science, DataScienceCollection fromScience, double ownFraction,
@@ -77,18 +106,42 @@ public class ScienceCollection {
 
 	// --------------------- static ----------------------------------
 	public static void growScienceNewTurn(Province p, Game game) {
-		DataScienceCollection maxScience = findMaxScienceAmongNeighbors(p);
+		DataScienceCollection maxScience = findMaxScienceAmongNeighbors(p, game);
 		p.getPopulation().forEach(pop -> pop.getScience().growScience(game, maxScience, p));
 	}
 
-	private static DataScienceCollection findMaxScienceAmongNeighbors(Province p) {
+	private static DataScienceCollection findMaxScienceAmongNeighbors(Province p, Game game) {
 		DataScienceCollection maxScience = new DataScienceCollection();
-		// pops in the same province
-		maxScience.getAgriculture().setAmount(p.getPopulation().stream()
-				.mapToInt(pop -> pop.getScience().getScience().getAgriculture().getAmount()).max().getAsInt());
-		// Now we have migration from neighbors provinces, so we can rely on this.
-		// Probably in the future we need calculate level in neighbors provinces.
+
+		DataScienceCollection.allGetter4Science()
+				.forEach(scienceGetter -> findMaxScienceAmongNeighbors(p, game, maxScience, scienceGetter));
 		return maxScience;
+	}
+
+	static private void findMaxScienceAmongNeighbors(Province p, Game game, DataScienceCollection maxScience,
+			Function<DataScienceCollection, DataScience> getter4Science) {
+		DataScience scienceTypeMax = getter4Science.apply(maxScience);
+
+		// neighbors
+		List<Population> listNPops = new ArrayList<>(p.getNeighbors().size() * 3);
+		p.getNeighbors().stream().filter(n -> n.getPopulationAmount() > 0)
+				.forEach(n -> listNPops.addAll(n.getPopulation()));
+		if (!listNPops.isEmpty()) {
+			scienceTypeMax
+					.setAmount(listNPops.stream()
+							.mapToInt(pop -> (int) (getter4Science.apply(pop.getScience().getScience()).getAmount()
+									* game.getGameParams().getScienceExchangeFromNeighborsPercentFromMax()))
+							.max().getAsInt());
+		}
+
+		// locals
+		DataScience scienceLocalMax = new DataScience();
+		scienceLocalMax.setAmount(p.getPopulation().stream()
+				.mapToInt(pop -> getter4Science.apply(pop.getScience().getScience()).getAmount()).max().getAsInt());
+
+		if (scienceLocalMax.getAmount() > scienceTypeMax.getAmount()) {
+			scienceTypeMax.setAmount(scienceLocalMax.getAmount());
+		}
 	}
 
 }

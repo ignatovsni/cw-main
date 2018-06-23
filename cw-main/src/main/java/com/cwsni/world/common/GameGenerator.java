@@ -16,6 +16,7 @@ import com.cwsni.world.model.Game;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataProvince;
+import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.DataWorldMap;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.TerrainType;
@@ -233,8 +234,9 @@ public class GameGenerator {
 	}
 
 	private void initScience(DataPopulation pop, GameParams gParams) {
-		pop.getScience().getAgriculture().setAmount(gParams.getScienceValueStart());
-		pop.getScience().getMedicine().setAmount(gParams.getScienceValueStart());
+		DataScienceCollection.allGetter4Science().forEach(
+				scienceGetter -> scienceGetter.apply(pop.getScience()).setAmount(gParams.getScienceValueStart()));
+
 	}
 
 	public Game createEmptyGame() {

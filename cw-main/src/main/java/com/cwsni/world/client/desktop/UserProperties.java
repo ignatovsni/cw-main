@@ -21,6 +21,7 @@ public class UserProperties {
 	private static final String MAIN_WINDOW_WIDTH = "main.window.width";
 	private static final String MAIN_WINDOW_POS_X = "main.window.pos.x";
 	private static final String MAIN_WINDOW_POS_Y = "main.window.pos.y";
+	private static final String MAIN_WINDOW_MAXIMIZED = "main.window.maximized";
 
 	private Properties props;
 
@@ -46,6 +47,7 @@ public class UserProperties {
 		setDefaultProp(MAIN_WINDOW_WIDTH, "800");
 		setDefaultProp(MAIN_WINDOW_POS_X, "100");
 		setDefaultProp(MAIN_WINDOW_POS_Y, "100");
+		setDefaultProp(MAIN_WINDOW_MAXIMIZED, "0");
 	}
 
 	private void setDefaultProp(String code, String value) {
@@ -72,7 +74,7 @@ public class UserProperties {
 		}
 		return Integer.valueOf(value);
 	}
-	
+
 	public void saveUserProperties() {
 		try {
 			FileOutputStream out = new FileOutputStream(USER_PROP_FILE_NAME);
@@ -94,27 +96,37 @@ public class UserProperties {
 	public Integer getMainWindowHeight() {
 		return getIntegerOrNull(MAIN_WINDOW_HEIGHT);
 	}
-	
+
 	public Integer getMainWindowPosX() {
 		return getIntegerOrNull(MAIN_WINDOW_POS_X);
 	}
-	
+
 	public Integer getMainWindowPosY() {
 		return getIntegerOrNull(MAIN_WINDOW_POS_Y);
 	}
 
-	public void setMainWindowWidth(double v) {
-		setProp(MAIN_WINDOW_WIDTH, (int)v);
+	public boolean getMainWindowMaximized() {
+		return getIntegerOrNull(MAIN_WINDOW_MAXIMIZED) == 1;
 	}
-	
+
+	public void setMainWindowWidth(double v) {
+		setProp(MAIN_WINDOW_WIDTH, (int) v);
+	}
+
 	public void setMainWindowHeight(double v) {
-		setProp(MAIN_WINDOW_HEIGHT, (int)v);
+		setProp(MAIN_WINDOW_HEIGHT, (int) v);
 	}
 
 	public void setMainWindowPositionX(double v) {
-		setProp(MAIN_WINDOW_POS_X, (int)v);
+		setProp(MAIN_WINDOW_POS_X, (int) v);
 	}
+
 	public void setMainWindowPositionY(double v) {
-		setProp(MAIN_WINDOW_POS_Y, (int)v);
+		setProp(MAIN_WINDOW_POS_Y, (int) v);
 	}
+
+	public void setMainWindowMaximazed(boolean maximized) {
+		setProp(MAIN_WINDOW_MAXIMIZED, maximized ? 1 : 0);
+	}
+
 }

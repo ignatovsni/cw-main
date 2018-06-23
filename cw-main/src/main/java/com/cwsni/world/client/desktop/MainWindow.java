@@ -24,9 +24,10 @@ public class MainWindow extends Application {
 	private ConfigurableApplicationContext springContext;
 	private Parent root;
 	private Stage stage;
-	
+
 	/**
-	 * Use it to prevent savings of user preferences if application didn't start successfully
+	 * Use it to prevent savings of user preferences if application didn't start
+	 * successfully
 	 */
 	private boolean successfulStart;
 
@@ -61,6 +62,7 @@ public class MainWindow extends Application {
 		userProp.setMainWindowWidth(stage.getWidth());
 		userProp.setMainWindowPositionX(stage.getX());
 		userProp.setMainWindowPositionY(stage.getY());
+		userProp.setMainWindowMaximazed(stage.isMaximized());
 	}
 
 	@Override
@@ -86,6 +88,7 @@ public class MainWindow extends Application {
 		stage.setHeight(userProp.getMainWindowHeight());
 		stage.setX(userProp.getMainWindowPosX());
 		stage.setY(userProp.getMainWindowPosY());
+		stage.setMaximized(userProp.getMainWindowMaximized());
 	}
 
 	private String getMessage(String code) {

@@ -27,23 +27,24 @@ public class GameParams {
 	private double decreaseSoilFertilityAtPoles = 0.4;
 
 	private int populationAtStart = 1000;
-	// private double minSoilFertilityToStartPopulation = (soilFertilityAtStartMax +
-	// soilFertilityAtStartMin * 9) / 10;
 	private double minSoilFertilityToStartPopulation = Math.min(1.1, soilFertilityAtStartMin);
-
-	private int scienceBaseIncreasePerTurn = 1;
 	private int scienceValueStart = 0;
 
 	// ------------End of Map generation section--------
 
 	// ------------Turn procession section--------
 	private double populationBaseGrowth = 0.01;
-	private double populationBaseMigration = 0.005;
+	private double populationBaseMigration = 0.002;
 	private double populationMaxExcess = 1.2;
 
-	private double scienceAgricultureMultiplicatorForFertility = (double)1/4000;
-	private double scienceMedicineMultiplicatorForEpidemic = (double)1/10000;
-	
+	private double scienceBaseIncreasePerTurnPerPerson = 0.1;
+	private double scienceNaturalGrowthLimitPerPerson = 0.1;
+	private double scienceExchangeWithMaxPerTurn = 0.1;
+	private double scienceExchangeFromNeighborsPercentFromMax = 0.5;
+
+	private double scienceAgricultureMultiplicatorForFertility = (double) 1 / 4000;
+	private double scienceMedicineMultiplicatorForEpidemic = (double) 1 / 10000;
+
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
 	private double eventGlobalClimateChangeBadProbability = 0.7;
@@ -315,14 +316,6 @@ public class GameParams {
 		this.scienceValueStart = scienceAgricultureStart;
 	}
 
-	public int getScienceBaseIncreasePerTurn() {
-		return scienceBaseIncreasePerTurn;
-	}
-
-	public void setScienceBaseIncreasePerTurn(int scienceBaseIncreasePerTurn) {
-		this.scienceBaseIncreasePerTurn = scienceBaseIncreasePerTurn;
-	}
-
 	public double getSoilAreaMinPercentFromMaxArea() {
 		return soilAreaMinPercentFromMaxArea;
 	}
@@ -345,6 +338,38 @@ public class GameParams {
 
 	public void setScienceMedicineMultiplicatorForEpidemic(double scienceMedicineMultiplicatorForEpidemic) {
 		this.scienceMedicineMultiplicatorForEpidemic = scienceMedicineMultiplicatorForEpidemic;
+	}
+
+	public double getScienceBaseIncreasePerTurnPerPerson() {
+		return scienceBaseIncreasePerTurnPerPerson;
+	}
+
+	public void setScienceBaseIncreasePerTurnPerPerson(double scienceBaseIncreasePerTurnPerPerson) {
+		this.scienceBaseIncreasePerTurnPerPerson = scienceBaseIncreasePerTurnPerPerson;
+	}
+
+	public double getScienceExchangeWithMaxPerTurn() {
+		return scienceExchangeWithMaxPerTurn;
+	}
+
+	public void setScienceExchangeWithMaxPerTurn(double scienceExchangeWithMaxPerTurn) {
+		this.scienceExchangeWithMaxPerTurn = scienceExchangeWithMaxPerTurn;
+	}
+
+	public double getScienceNaturalGrowthLimitPerPerson() {
+		return scienceNaturalGrowthLimitPerPerson;
+	}
+
+	public void setScienceNaturalGrowthLimitPerPerson(double scienceNaturalGrowthLimitPerPerson) {
+		this.scienceNaturalGrowthLimitPerPerson = scienceNaturalGrowthLimitPerPerson;
+	}
+
+	public double getScienceExchangeFromNeighborsPercentFromMax() {
+		return scienceExchangeFromNeighborsPercentFromMax;
+	}
+
+	public void setScienceExchangeFromNeighborsPercentFromMax(double scienceExchangeFromNeighborsPercentFromMax) {
+		this.scienceExchangeFromNeighborsPercentFromMax = scienceExchangeFromNeighborsPercentFromMax;
 	}
 
 }

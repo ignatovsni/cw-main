@@ -3,6 +3,8 @@ package com.cwsni.world.client.desktop.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,8 @@ import javafx.scene.layout.VBox;
 @Component
 @Scope("prototype")
 public class GsTimeControl extends InternalInfoPane {
+
+	private static final Log logger = LogFactory.getLog(GsTimeControl.class);
 
 	private GameScene gameScene;
 
@@ -71,12 +75,21 @@ public class GsTimeControl extends InternalInfoPane {
 		});
 		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT4), () -> startButton_10.fire());
 
+		Button systemButton = new Button(getMessage("?"));
+		systemButton.setTooltip(new Tooltip("log jvm information"));
+		systemButton.setOnAction(e -> {
+			logger.info("totalMemory: " + toLong(Runtime.getRuntime().totalMemory()));
+			logger.info("maxMemory: " + toLong(Runtime.getRuntime().maxMemory()));
+			logger.info("freeMemory: " + toLong(Runtime.getRuntime().freeMemory()));
+		});
+
 		buttons = new ArrayList<>();
 		buttons.add(pauseButton);
 		buttons.add(startButton);
 		buttons.add(startButton_2);
 		buttons.add(startButton_5);
 		buttons.add(startButton_10);
+		buttons.add(systemButton);
 
 		HBox hbox = new HBox();
 		hbox.getChildren().addAll(buttons);
@@ -95,7 +108,7 @@ public class GsTimeControl extends InternalInfoPane {
 		rbPauseBetweenTurn.setOnAction(e -> {
 			gameScene.setPauseBetweenTurn(rbPauseBetweenTurn.isSelected());
 		});
-		
+
 		vbox.getChildren().addAll(hbox,
 				new HBox(rbAutoTurn, new Label(getMessage("info.pane.time.rb.auto.title") + "  "), rbPauseBetweenTurn,
 						labelPauseBetweenTurn));
