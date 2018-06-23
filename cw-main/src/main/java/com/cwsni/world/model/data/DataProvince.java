@@ -22,9 +22,9 @@ public class DataProvince {
 	 */
 	private int soilArea;
 	/**
-	 * nature area
+	 * size of the province, it is a synthetic concept
 	 */
-	private int area;
+	private int size;
 	private List<DataPopulation> population;
 	private Set<Integer> eventsIds;
 
@@ -114,12 +114,12 @@ public class DataProvince {
 		this.eventsIds = eventsIds;
 	}
 
-	public int getArea() {
-		return area;
+	public int getSize() {
+		return size;
 	}
 
-	public void setArea(int area) {
-		this.area = area;
+	public void setSize(int size) {
+		this.size = size;
 	}
 
 

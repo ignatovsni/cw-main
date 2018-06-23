@@ -16,7 +16,6 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
 import javafx.util.Duration;
 
@@ -44,6 +43,8 @@ class DProvince extends Group {
 	private final DWorldMap map;
 	private final Province province;
 
+	private MapMode prevMode;
+
 	private DProvince(DWorldMap map, Province province, double provinceRadius) {
 		this.map = map;
 		this.province = province;
@@ -64,11 +65,13 @@ class DProvince extends Group {
 	}
 
 	public void reDraw() {
+		MapMode mapMode = map.getMapMode();
 		if (getProvince().getTerrainType() == TerrainType.OCEAN) {
-			drawGeoMode(polygon);
+			if (mapMode != prevMode) {
+				drawGeoMode(polygon);
+			}
 			return;
 		}
-		MapMode mapMode = map.getMapMode();
 		switch (mapMode) {
 		case POPULATION:
 		case POPULATION_2:
@@ -84,14 +87,17 @@ class DProvince extends Group {
 			drawScienceMode(polygon);
 			break;
 		case DISEASE:
-			drawDesiaseMode(polygon);
+			drawDiseaseMode(polygon);
 			break;
 		case GEO:
-			drawGeoMode(polygon);
+			if (mapMode != prevMode) {
+				drawGeoMode(polygon);
+			}
 			break;
 		default:
 			break;
 		}
+		prevMode = mapMode;
 	}
 
 	private void drawScienceMode(Polygon polygon) {
@@ -136,7 +142,7 @@ class DProvince extends Group {
 	private void drawGradientMode(Polygon polygon, double maxValue, double provinceValue, boolean mode2) {
 		double fraction = maxValue != 0 ? provinceValue / maxValue : 1;
 		fraction = Math.min(fraction, 1); // sometimes data can be old
-		Paint pValue;
+		Color pValue;
 		if (fraction < 0.5) {
 			if (mode2) {
 				fraction = Math.sqrt(fraction);
@@ -148,7 +154,7 @@ class DProvince extends Group {
 			}
 			pValue = new Color(1, Math.min(1 - (fraction - 0.5) * 2, 1), 0, 1);
 		}
-		polygon.setFill(pValue);
+		fillPolygon(polygon, pValue);
 	}
 
 	private void drawGradientModeForMedian(Polygon polygon, double maxValue, double avgValue, double medianValue,
@@ -156,10 +162,10 @@ class DProvince extends Group {
 		// double baseValue = Math.max(medianValue, avgValue);
 		double baseValue = medianValue;
 		provinceValue = Math.min(provinceValue, maxValue); // sometimes data can be old
-		Paint pValue;
+		Color pValue;
 		if (provinceValue <= baseValue) {
 			double fraction = baseValue != 0 ? provinceValue / baseValue : 0;
-			//fraction = Math.sqrt(fraction);
+			// fraction = Math.sqrt(fraction);
 			fraction = fraction * fraction;
 			pValue = new Color(Math.min(fraction, 1), Math.min(fraction, 1), 0, 1);
 		} else {
@@ -169,16 +175,17 @@ class DProvince extends Group {
 			fraction = fraction * fraction;
 			pValue = new Color(1, Math.min(1 - fraction, 1), 0, 1);
 		}
-		polygon.setFill(pValue);
+		fillPolygon(polygon, pValue);
 	}
 
-	private void drawDesiaseMode(Polygon polygon) {
+	private void drawDiseaseMode(Polygon polygon) {
 		if (getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
-			polygon.setFill(Color.RED);
+			fillPolygon(polygon, Color.RED);
 		} else if (getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC_PROTECTED)) {
-			polygon.setFill(Color.GREEN);
+			fillPolygon(polygon, Color.GREEN);
 		} else {
-			polygon.setFill(Color.GREY);
+			fillPolygon(polygon, Color.GREY);
+			fillPolygon(polygon, Color.GREY);
 		}
 	}
 
@@ -216,6 +223,16 @@ class DProvince extends Group {
 
 	public Province getProvince() {
 		return province;
+	}
+
+	private Color prevColor;
+
+	private void fillPolygon(Polygon polygon, Color color) {
+		if (prevColor == null || color.getBlue() != prevColor.getBlue() || color.getRed() != prevColor.getRed()
+				|| color.getGreen() != prevColor.getGreen() || color.getOpacity() != prevColor.getOpacity()) {
+			polygon.setFill(color);
+		}
+		prevColor = color;
 	}
 
 }

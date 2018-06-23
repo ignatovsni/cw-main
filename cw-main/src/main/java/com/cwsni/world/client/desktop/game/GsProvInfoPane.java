@@ -20,6 +20,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 
 	private List<RowValue> allRows;
 	private RowValue valuesNameLabel;
+	private RowValue valuesSizeLabel;
 	private RowValue valuesTerrainTypeLabel;
 	private RowValue valuesPopsLabel;
 	private RowValue valuesSoilAreaLabel;
@@ -41,6 +42,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 		int idx = 0;
 		valuesNameLabel = addRow("info.pane.prov.name", grid, allRows, idx++);
 		valuesTerrainTypeLabel = addRow("info.pane.prov.terrain-type", grid, allRows, idx++);
+		valuesSizeLabel = addRow("info.pane.prov.size", grid, allRows, idx++);
 		valuesPopsLabel = addRow("info.pane.prov.population", grid, allRows, idx++);
 		valuesSoilAreaLabel = addRow("info.pane.prov.soil.area", grid, allRows, idx++);
 		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, allRows, idx++);
@@ -63,10 +65,11 @@ public class GsProvInfoPane extends InternalInfoPane {
 		Province prov = gameScene.getSelectedProvince();
 		allRows.forEach(l -> l.setVisible(false));
 		if (prov != null) {
-			setLabelText(valuesNameLabel, prov.getName());
+			setLabelText(valuesNameLabel, prov.getName());			
 			setLabelText(valuesTerrainTypeLabel, getMessage(prov.getTerrainType().getCodeMsg()));
 			switch (prov.getTerrainType()) {
 			case GRASSLAND:
+				setLabelText(valuesSizeLabel, toLong(prov.getSize()));
 				setLabelText(valuesPopsLabel, toLong(prov.getPopulationAmount()));
 				setLabelText(valuesSoilAreaLabel, toLong(prov.getSoilArea()));
 				setLabelText(valuesSoilFertilityLabel, toFraction(prov.getSoilFertility()));

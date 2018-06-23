@@ -149,10 +149,8 @@ public class GameGenerator {
 		List<DataProvince> terrain = new ArrayList<>();
 		// initialize area attributes and find all terrain provinces
 		map.getProvinces().stream().filter(p -> p.getTerrainType().isSoilPossible()).forEach(p -> {
-			p.setArea((int) (gParams.getProvinceAreaAtStartMax()
-					* (gParams.getRandom().nextNormalDouble() * (1 - gParams.getSoilAreaMinPercentFromMaxArea() * 2)
-							+ gParams.getSoilAreaMinPercentFromMaxArea() * 2)));
-			p.setSoilArea((int) (p.getArea() * gParams.getSoilAreaMinPercentFromMaxArea()));
+			p.setSize((int) (50 + 100 * gParams.getRandom().nextNormalDouble()));
+			p.setSoilArea(p.getSize() * gParams.getSoilAreaPerSize() / 10);
 			p.setSoilFertility(gParams.getSoilFertilityAtStartMin());
 			terrain.add(p);
 		});

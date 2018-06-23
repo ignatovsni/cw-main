@@ -59,8 +59,9 @@ public class Population {
 	}
 
 	public double getDiseaseResistance() {
-		return Math.min(0.99, getScience().getMedicine().getAmount()
+		double r = Math.min(0.9, getScience().getMedicine().getAmount()
 				* province.getMap().getGame().getGameParams().getScienceMedicineMultiplicatorForEpidemic());
+		return r * r;
 	}
 
 	DataPopulation getPopulationData() {

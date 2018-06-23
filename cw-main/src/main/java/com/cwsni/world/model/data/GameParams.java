@@ -12,13 +12,12 @@ public class GameParams {
 	private long seed = System.currentTimeMillis();
 	private int rows = 10;
 	private int columns = 10;
-	private int provinceRadius = 30;
+	private int provinceRadius = 20;
 	private int terrainCorePoints = 10;
 	private double oceanPercent = 0.4;
 
-	private int provinceAreaAtStartMax = 100000;
-	private double soilAreaMinPercentFromMaxArea = 0.1;
 	private double soilAreaCorePointsPerProvinces = 0.01;
+	private int soilAreaPerSize = 1000;
 
 	private double soilFertilityAtStartMin = 1.2;
 	private double soilFertilityAtStartMax = 1.4;
@@ -26,7 +25,7 @@ public class GameParams {
 	private int fractionOfMaxSoilFertility = 3;
 	private double decreaseSoilFertilityAtPoles = 0.4;
 
-	private int populationAtStart = 1000;
+	private int populationAtStart = 10000;
 	private double minSoilFertilityToStartPopulation = Math.min(1.1, soilFertilityAtStartMin);
 	private int scienceValueStart = 0;
 
@@ -37,9 +36,9 @@ public class GameParams {
 	private double populationBaseMigration = 0.002;
 	private double populationMaxExcess = 1.2;
 
-	private double scienceBaseIncreasePerTurnPerPerson = 0.1;
+	private double scienceBaseIncreasePerTurnPerPerson = 0.01;
 	private double scienceNaturalGrowthLimitPerPerson = 0.1;
-	private double scienceExchangeWithMaxPerTurn = 0.1;
+	private double scienceExchangeWithMaxPerTurn = 0.05;
 	private double scienceExchangeFromNeighborsPercentFromMax = 0.5;
 
 	private double scienceAgricultureMultiplicatorForFertility = (double) 1 / 4000;
@@ -56,7 +55,7 @@ public class GameParams {
 	private double eventEpidemicContagiousness = 0.5;
 	private double eventEpidemicDeathRate = 0.4;
 	private int eventEpidemicDuration = 10;
-	private int eventEpidemicProtectionDuration = 20;
+	private int eventEpidemicProtectionDuration = 40;
 	// ------------End of turn procession section--------
 
 	public double getEventGlobalClimateChangeProbability() {
@@ -97,14 +96,6 @@ public class GameParams {
 
 	public void setFractionOfMaxSoilFertility(int fractionOfMaxSoilFertility) {
 		this.fractionOfMaxSoilFertility = fractionOfMaxSoilFertility;
-	}
-
-	public int getProvinceAreaAtStartMax() {
-		return provinceAreaAtStartMax;
-	}
-
-	public void setProvinceAreaAtStartMax(int provinceAreAtStartMax) {
-		this.provinceAreaAtStartMax = provinceAreAtStartMax;
 	}
 
 	public double getSoilFertilityAtStartMin() {
@@ -185,11 +176,6 @@ public class GameParams {
 
 	public void setDecreaseSoilFertilityAtPoles(double decreaseSoilFertilityAtPoluses) {
 		this.decreaseSoilFertilityAtPoles = decreaseSoilFertilityAtPoluses;
-	}
-
-	@JsonIgnore
-	public int getSoilAreaCorePoints() {
-		return (int) (getRows() * getColumns() * getSoilAreaCorePointsPerProvinces());
 	}
 
 	@JsonIgnore
@@ -316,14 +302,6 @@ public class GameParams {
 		this.scienceValueStart = scienceAgricultureStart;
 	}
 
-	public double getSoilAreaMinPercentFromMaxArea() {
-		return soilAreaMinPercentFromMaxArea;
-	}
-
-	public void setSoilAreaMinPercentFromMaxArea(double soilAreaMinPercentFromMaxArea) {
-		this.soilAreaMinPercentFromMaxArea = soilAreaMinPercentFromMaxArea;
-	}
-
 	public double getScienceAgricultureMultiplicatorForFertility() {
 		return scienceAgricultureMultiplicatorForFertility;
 	}
@@ -370,6 +348,14 @@ public class GameParams {
 
 	public void setScienceExchangeFromNeighborsPercentFromMax(double scienceExchangeFromNeighborsPercentFromMax) {
 		this.scienceExchangeFromNeighborsPercentFromMax = scienceExchangeFromNeighborsPercentFromMax;
+	}
+
+	public int getSoilAreaPerSize() {
+		return soilAreaPerSize;
+	}
+
+	public void setSoilAreaPerSize(int soilAreaPerSize) {
+		this.soilAreaPerSize = soilAreaPerSize;
 	}
 
 }

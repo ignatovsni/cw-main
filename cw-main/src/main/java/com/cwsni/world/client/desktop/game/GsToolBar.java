@@ -49,13 +49,15 @@ public class GsToolBar extends ToolBar {
 		toolBarMapSoilMode.setOnAction(e -> {
 			pressMapModeButton(toolBarMapSoilMode, MapMode.SOIL);
 		});
-		
-		Button toolBarMapScienceAgricultureMode = new Button(getMessage("toolbar.map.mode.science.agriculture.button.text"));
-		toolBarMapScienceAgricultureMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.science.agriculture.button.tooltip")));
+
+		Button toolBarMapScienceAgricultureMode = new Button(
+				getMessage("toolbar.map.mode.science.agriculture.button.text"));
+		toolBarMapScienceAgricultureMode
+				.setTooltip(new Tooltip(getMessage("toolbar.map.mode.science.agriculture.button.tooltip")));
 		toolBarMapScienceAgricultureMode.setOnAction(e -> {
 			pressMapModeButton(toolBarMapScienceAgricultureMode, MapMode.SCIENCE_AGRICULTURE);
 		});
-		
+
 		Button toolBarMapDiseaseMode = new Button(getMessage("toolbar.map.mode.disease.button.text"));
 		toolBarMapDiseaseMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.disease.button.tooltip")));
 		toolBarMapDiseaseMode.setOnAction(e -> {
@@ -95,8 +97,7 @@ public class GsToolBar extends ToolBar {
 				break;
 			}
 		}
-		gameScene.getWorldMap().setMapModeAndRedraw(mapMode);
-		gameScene.setMapMode(mapMode);
+		gameScene.setMapModeAndRedraw(mapMode);
 		toolBarMapModes.forEach(b -> b.setEffect(null));
 		buttonMode.setEffect(new Lighting());
 	}

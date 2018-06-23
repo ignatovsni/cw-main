@@ -1,5 +1,7 @@
 package com.cwsni.world.client.desktop.game;
 
+import java.util.concurrent.Semaphore;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +74,8 @@ public class GameScene extends Scene {
 	private boolean autoTurn = true;
 	private boolean pauseBetweenTurn = true;
 
+	private Semaphore lockObj = new Semaphore(1);
+
 	public GameScene() {
 		super(new BorderPane());
 	}
@@ -108,7 +112,7 @@ public class GameScene extends Scene {
 
 	public void quickSaveGame() {
 		if (game != null) {
-			gameRepository.quickSaveGame(game);
+			runLocked(() -> gameRepository.quickSaveGame(game));
 		}
 	}
 
@@ -120,12 +124,14 @@ public class GameScene extends Scene {
 	}
 
 	private void setupGame(Game newGame) {
-		DWorldMap worldMap = DWorldMap.createDMap(newGame, mapMode);
-		mapPane.setTarget(worldMap.getMapGroup());
-		this.game = worldMap.getGame();
-		this.worldMap = worldMap;
-		worldMap.setGameScene(this);
-		refreshAllVisibleInfoAndResetSelections();
+		runLocked(() -> {
+			DWorldMap worldMap = DWorldMap.createDMap(newGame, mapMode);
+			mapPane.setTarget(worldMap.getMapGroup());
+			this.game = worldMap.getGame();
+			this.worldMap = worldMap;
+			worldMap.setGameScene(this);
+			refreshAllVisibleInfoAndResetSelections();
+		});
 	}
 
 	private Pane createStatusBar() {
@@ -142,12 +148,14 @@ public class GameScene extends Scene {
 	}
 
 	public void selectProvince(Province province) {
-		this.selectedProvinceId = province != null ? province.getId() : null;
-		if (province != null) {
-			statusBarText.setText("Selected province with id = " + province.getId());
-		}
-		provInfoPane.refreshInfo();
-		provEventsInfoPane.refreshInfo();
+		runLocked(() -> {
+			this.selectedProvinceId = province != null ? province.getId() : null;
+			if (province != null) {
+				statusBarText.setText("Selected province with id = " + province.getId());
+			}
+			provInfoPane.refreshInfo();
+			provEventsInfoPane.refreshInfo();
+		});
 	}
 
 	public DWorldMap getWorldMap() {
@@ -190,11 +198,13 @@ public class GameScene extends Scene {
 	}
 
 	public void setTimeModeAndRun(GsTimeMode newMode) {
-		GsTimeMode oldMode = timeMode;
-		this.timeMode = newMode;
-		if (newMode != GsTimeMode.PAUSE && oldMode == GsTimeMode.PAUSE) {
-			startProcessingNewTurn();
-		}
+		runLocked(() -> {
+			GsTimeMode oldMode = timeMode;
+			this.timeMode = newMode;
+			if (newMode != GsTimeMode.PAUSE && oldMode == GsTimeMode.PAUSE) {
+				startProcessingNewTurn();
+			}
+		});
 	}
 
 	private void startProcessingNewTurn() {
@@ -207,7 +217,7 @@ public class GameScene extends Scene {
 		Task<Integer> task = new Task<Integer>() {
 			@Override
 			protected Integer call() throws Exception {
-				processNewTurn();
+				runLocked(() -> processNewTurn());
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
@@ -236,7 +246,7 @@ public class GameScene extends Scene {
 		}
 	}
 
-	private void processNewTurn() throws InterruptedException {
+	private void processNewTurn() {
 		try {
 			for (int i = 0; i < timeMode.getTurnPerTime(); i++) {
 				game.processNewTurn(messageSource);
@@ -245,7 +255,11 @@ public class GameScene extends Scene {
 			logError(e);
 		}
 		if (autoTurn && pauseBetweenTurn) {
-			Thread.sleep(50 * Math.max((10 - timeMode.getTurnPerTime()), 0));
+			try {
+				Thread.sleep(50 * Math.max((10 - timeMode.getTurnPerTime()), 0));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -259,6 +273,34 @@ public class GameScene extends Scene {
 
 	public void setPauseBetweenTurn(boolean pauseBetweenTurn) {
 		this.pauseBetweenTurn = pauseBetweenTurn;
+	}
+
+	public void setMapModeAndRedraw(MapMode mapMode) {
+		runLocked(() -> {
+			this.mapMode = mapMode;
+			worldMap.setMapModeAndRedraw(mapMode);
+		});
+	}
+
+	public void lock() {
+		try {
+			lockObj.acquire();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void releaseLock() {
+		lockObj.release();
+	}
+
+	private void runLocked(Runnable r) {
+		lock();
+		try {
+			r.run();
+		} finally {
+			releaseLock();
+		}
 	}
 
 }

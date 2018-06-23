@@ -87,12 +87,12 @@ public class Province implements EventTarget {
 		return data.getSoilArea();
 	}
 
-	public int getArea() {
-		return data.getArea();
-	}
-
 	public TerrainType getTerrainType() {
 		return data.getTerrainType();
+	}
+
+	public int getSize() {
+		return data.getSize();
 	}
 
 	public EventCollection getEvents() {
@@ -124,8 +124,9 @@ public class Province implements EventTarget {
 	}
 
 	public double getDiseaseResistance() {
-		return Math.min(0.99,
+		double r = Math.min(0.9,
 				getScienceMedicine() * getMap().getGame().getGameParams().getScienceMedicineMultiplicatorForEpidemic());
+		return r * r;
 	}
 
 	@Override
@@ -159,11 +160,11 @@ public class Province implements EventTarget {
 		if (!getTerrainType().isPopulationPossible() || getPopulationAmount() == 0) {
 			return;
 		}
-		ScienceCollection.growScienceNewTurn(this, map.getGame());		
-		Population.processEventsNewTurn(this, map.getGame());		
+		ScienceCollection.growScienceNewTurn(this, map.getGame());
+		Population.processEventsNewTurn(this, map.getGame());
 		Population.migrateNewTurn(this, map.getGame());
 		processProvincePropertiesNewTurn();
-		Population.growPopulationNewTurn(this, map.getGame());		
+		Population.growPopulationNewTurn(this, map.getGame());
 	}
 
 	private void processProvincePropertiesNewTurn() {
@@ -176,13 +177,15 @@ public class Province implements EventTarget {
 		} else {
 			// improving
 			double improving = Math.min(neededFieldsArea / currentFieldsArea, 1.002);
-			setSoilArea((int) (getSoilArea() * improving));
+			int addSoilArea = (int) (getSoilArea() * improving - getSoilArea());
+			addSoilArea = Math.max(addSoilArea, 100);
+			setSoilArea(getSoilArea() + addSoilArea);
 		}
 	}
 
 	private void setSoilArea(int newSoilArea) {
-		data.setSoilArea((int) Math.min(data.getArea(), Math.max(newSoilArea,
-				data.getArea() * map.getGame().getGameParams().getSoilAreaMinPercentFromMaxArea())));
+		data.setSoilArea(Math.min(Math.max(0, newSoilArea),
+				data.getSize() * map.getGame().getGameParams().getSoilAreaPerSize()));
 	}
 
 	public void processImmigrantsAndMergePops() {
