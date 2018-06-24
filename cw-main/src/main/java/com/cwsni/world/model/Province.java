@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
+import com.cwsni.world.CwException;
 import com.cwsni.world.model.data.DataProvince;
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.Point;
@@ -52,6 +53,10 @@ public class Province implements EventTarget {
 		for (Event e : getEvents().getEventsWithType(Event.EVENT_GLOBAL_CLIMATE_CHANGE)) {
 			v *= e.getEffectDouble1();
 		}
+		// infrastructure
+		if (getPopulationAmount() > 0) {
+			v = v * 0.5 * (1 + getInfrastructure());
+		}
 		return v;
 	}
 
@@ -85,6 +90,20 @@ public class Province implements EventTarget {
 
 	public int getSoilArea() {
 		return data.getSoilArea();
+	}
+
+	public int getInfrastructureAbsoluteValue() {
+		return data.getInfrastructure();
+	}
+
+	public double getInfrastructure() {
+		int populationAmount = getPopulationAmount();
+		if (populationAmount == 0) {
+			return 0;
+		} else {
+			return Math.min((double) data.getInfrastructure() / populationAmount,
+					getMap().getGame().getGameParams().getInfrastructureMaxValue());
+		}
 	}
 
 	public TerrainType getTerrainType() {
@@ -157,29 +176,64 @@ public class Province implements EventTarget {
 	}
 
 	public void processNewTurn() {
-		if (!getTerrainType().isPopulationPossible() || getPopulationAmount() == 0) {
+		if (!getTerrainType().isPopulationPossible()) {
 			return;
 		}
-		ScienceCollection.growScienceNewTurn(this, map.getGame());
+		if (getPopulationAmount() != 0) {
+			ScienceCollection.growScienceNewTurn(this, map.getGame());
+		}
 		Population.processEventsNewTurn(this, map.getGame());
-		Population.migrateNewTurn(this, map.getGame());
+		if (getPopulationAmount() != 0) {
+			Population.migrateNewTurn(this, map.getGame());
+		}
 		processProvincePropertiesNewTurn();
-		Population.growPopulationNewTurn(this, map.getGame());
+		if (getPopulationAmount() != 0) {
+			Population.growPopulationNewTurn(this, map.getGame());
+		}
 	}
 
 	private void processProvincePropertiesNewTurn() {
-		double neededFieldsArea = (int) (getPopulationAmount() / getSoilFertility());
+		processSoilArea();
+		processInfrastructure();
+	}
+
+	private void processSoilArea() {
+		int populationAmount = getPopulationAmount();
+		double neededFieldsArea = (int) (populationAmount / getSoilFertility());
 		int currentFieldsArea = getSoilArea();
 		if (neededFieldsArea < currentFieldsArea) {
 			// degradation
 			double decreasing = Math.max(neededFieldsArea / currentFieldsArea, 0.98);
-			setSoilArea((int) (decreasing * getSoilArea()));
+			setSoilArea((int) (decreasing * currentFieldsArea));
 		} else {
 			// improving
-			double improving = Math.min(neededFieldsArea / currentFieldsArea, 1.002);
-			int addSoilArea = (int) (getSoilArea() * improving - getSoilArea());
-			addSoilArea = Math.max(addSoilArea, 100);
-			setSoilArea(getSoilArea() + addSoilArea);
+			if (populationAmount > 0) {
+				double improving = Math.min(neededFieldsArea / currentFieldsArea, 1.002);
+				int addSoilArea = (int) (currentFieldsArea * improving - currentFieldsArea);
+				addSoilArea = Math.max(addSoilArea, 100);
+				setSoilArea(currentFieldsArea + addSoilArea);
+			}
+		}
+	}
+
+	private void processInfrastructure() {
+		// natural growth can not excess infrastructureNaturalLimitFromPopulation
+		int populationAmount = getPopulationAmount();
+		int neededInfrastructure = (int) (populationAmount
+				* map.getGame().getGameParams().getInfrastructureNaturalLimitFromPopulation());
+		int currentInfrastructure = Math.max(getInfrastructureAbsoluteValue(), 1);
+		if (neededInfrastructure < currentInfrastructure) {
+			// degradation
+			double decreasing = Math.max((double) neededInfrastructure / currentInfrastructure, 0.99);
+			setInfrastructure((int) (decreasing * getInfrastructureAbsoluteValue()));
+		} else {
+			// improving
+			if (populationAmount > 0) {
+				double improving = Math.min((double) neededInfrastructure / currentInfrastructure, 1.01);
+				int addInfrastructure = (int) (currentInfrastructure * improving - currentInfrastructure);
+				addInfrastructure = Math.max(addInfrastructure, 100);
+				setInfrastructure(currentInfrastructure + addInfrastructure);
+			}
 		}
 	}
 
@@ -188,8 +242,15 @@ public class Province implements EventTarget {
 				data.getSize() * map.getGame().getGameParams().getSoilAreaPerSize()));
 	}
 
+	private void setInfrastructure(int newInfrastructure) {
+		data.setInfrastructure(Math.max(0, newInfrastructure));
+	}
+
 	public void processImmigrantsAndMergePops() {
 		if (!getTerrainType().isPopulationPossible()) {
+			if (!getImmigrants().isEmpty()) {
+				throw new CwException("Immigrants can not be on " + getTerrainType());
+			}
 			return;
 		}
 		Population.processImmigrantsAndMergePops(this, map.getGame());

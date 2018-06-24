@@ -15,7 +15,8 @@ import javafx.scene.layout.Pane;
 @Component
 @Scope("prototype")
 public class GsProvInfoPane extends InternalInfoPane {
-// TODO схлопывающиеся панели и метка или самая важная информации в заголовке справа. для событий - их количество, к примеру
+	// TODO схлопывающиеся панели и метка или самая важная информации в заголовке
+	// справа. для событий - их количество, к примеру
 	private GameScene gameScene;
 
 	private List<RowValue> allRows;
@@ -23,10 +24,11 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesSizeLabel;
 	private RowValue valuesTerrainTypeLabel;
 	private RowValue valuesPopsLabel;
+	private RowValue valuesInfrastructureLabel;
 	private RowValue valuesSoilAreaLabel;
 	private RowValue valuesSoilFertilityLabel;
-	private RowValue valuesScienceAgriculture;
 	private RowValue valuesScienceLabel;
+	private RowValue valuesScienceAgriculture;
 	private RowValue valuesScienceMedicine;
 
 	public void init(GameScene gameScene) {
@@ -44,13 +46,13 @@ public class GsProvInfoPane extends InternalInfoPane {
 		valuesTerrainTypeLabel = addRow("info.pane.prov.terrain-type", grid, allRows, idx++);
 		valuesSizeLabel = addRow("info.pane.prov.size", grid, allRows, idx++);
 		valuesPopsLabel = addRow("info.pane.prov.population", grid, allRows, idx++);
+		valuesInfrastructureLabel = addRow("info.pane.prov.infrastructure", grid, allRows, idx++);
 		valuesSoilAreaLabel = addRow("info.pane.prov.soil.area", grid, allRows, idx++);
 		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, allRows, idx++);
 
 		valuesScienceLabel = addRow("info.pane.prov.science.title", grid, allRows, idx++);
 		valuesScienceAgriculture = addRow("science.agriculture.name", grid, allRows, idx++);
 		valuesScienceMedicine = addRow("science.medicine.name", grid, allRows, idx++);
-		
 
 		return grid;
 	}
@@ -65,12 +67,13 @@ public class GsProvInfoPane extends InternalInfoPane {
 		Province prov = gameScene.getSelectedProvince();
 		allRows.forEach(l -> l.setVisible(false));
 		if (prov != null) {
-			setLabelText(valuesNameLabel, prov.getName());			
+			setLabelText(valuesNameLabel, prov.getName());
 			setLabelText(valuesTerrainTypeLabel, getMessage(prov.getTerrainType().getCodeMsg()));
 			switch (prov.getTerrainType()) {
 			case GRASSLAND:
 				setLabelText(valuesSizeLabel, toLong(prov.getSize()));
 				setLabelText(valuesPopsLabel, toLong(prov.getPopulationAmount()));
+				setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
 				setLabelText(valuesSoilAreaLabel, toLong(prov.getSoilArea()));
 				setLabelText(valuesSoilFertilityLabel, toFraction(prov.getSoilFertility()));
 				setLabelText(valuesScienceLabel, "");
@@ -83,6 +86,11 @@ public class GsProvInfoPane extends InternalInfoPane {
 		} else {
 			allRows.forEach(l -> l.setValue(""));
 		}
+	}
+
+	private String createTextForInfrastructure(Province prov) {
+		double infr = prov.getInfrastructure();
+		return toFraction(infr*100) + " (" + toLong(prov.getInfrastructureAbsoluteValue()) + ")";
 	}
 
 	private void setLabelText(RowValue l, String txt) {

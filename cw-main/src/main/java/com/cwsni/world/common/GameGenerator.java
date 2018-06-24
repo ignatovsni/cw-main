@@ -46,6 +46,7 @@ public class GameGenerator {
 		createTerrain(dataGame, tData);
 		fillSoil(dataGame, tData);
 		fillPopulation(dataGame);
+		fillInfrastructure(dataGame);
 		Game game = new Game();
 		game.buildFrom(dataGame);
 		return game;
@@ -230,6 +231,16 @@ public class GameGenerator {
 			}
 		});
 	}
+	
+	private void fillInfrastructure(DataGame game) {
+		GameParams gParams = game.getGameParams();
+		game.getMap().getProvinces().stream().filter(p -> (p.getTerrainType().isPopulationPossible())).forEach(p -> {
+			int popsAmpount = p.getPopulation().stream().mapToInt(pop -> pop.getAmount()).sum();
+			p.setInfrastructure((int) (popsAmpount * game.getGameParams().getInfrastructureNaturalLimitFromPopulation()));
+		});
+	}
+
+
 
 	private void initScience(DataPopulation pop, GameParams gParams) {
 		DataScienceCollection.allGetter4Science().forEach(

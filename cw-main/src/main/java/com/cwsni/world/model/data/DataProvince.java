@@ -25,8 +25,10 @@ public class DataProvince {
 	 * size of the province, it is a synthetic concept
 	 */
 	private int size;
+	private int infrastructure;
 	private List<DataPopulation> population;
 	private Set<Integer> eventsIds;
+	
 
 	public DataProvince() {
 		this(-1, 0, 0);
@@ -120,6 +122,14 @@ public class DataProvince {
 
 	public void setSize(int size) {
 		this.size = size;
+	}
+
+	public int getInfrastructure() {
+		return infrastructure;
+	}
+
+	public void setInfrastructure(int infrastructure) {
+		this.infrastructure = infrastructure;
 	}
 
 

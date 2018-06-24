@@ -77,6 +77,9 @@ class DProvince extends Group {
 		case POPULATION_2:
 			drawPopulationMode(polygon);
 			break;
+		case INFRASTRUCTURE:
+			drawInfrastructureMode(polygon);
+			break;
 		case SOIL:
 			drawSoilFertilityMode(polygon);
 			break;
@@ -84,7 +87,10 @@ class DProvince extends Group {
 			drawSoilQualityMode(polygon);
 			break;
 		case SCIENCE_AGRICULTURE:
-			drawScienceMode(polygon);
+			drawScienceAgricultureMode(polygon);
+			break;
+		case SCIENCE_MEDICINE:
+			drawScienceMedicineMode(polygon);
 			break;
 		case DISEASE:
 			drawDiseaseMode(polygon);
@@ -100,11 +106,35 @@ class DProvince extends Group {
 		prevMode = mapMode;
 	}
 
-	private void drawScienceMode(Polygon polygon) {
+	private void drawInfrastructureMode(Polygon polygon) {
+		double infrastructureMaxInProvince = map.getGame().getGameTransientStats().getInfrastructureMaxInProvince();
+		double infrastructureAvgInProvince = map.getGame().getGameTransientStats().getInfrastructureAvgInProvince();
+		double infrastructureMedianInProvince = map.getGame().getGameTransientStats()
+				.getInfrastructureMedianInProvince();
+		double infrastructure = province.getInfrastructure();
+		int populationAmount = province.getPopulationAmount();
+		if (infrastructure >= map.getGame().getGameParams().getInfrastructureMaxValue()
+				|| (populationAmount < 1000 && populationAmount > 0)) {
+			// too avoid showing as maximized that provinces where population fall very
+			// quickly
+			infrastructure = infrastructureMedianInProvince;
+		}
+		drawGradientModeForMedian(polygon, infrastructureMaxInProvince, infrastructureAvgInProvince,
+				infrastructureMedianInProvince, infrastructure);
+	}
+
+	private void drawScienceAgricultureMode(Polygon polygon) {
 		drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getScienceAgricultureMaxInProvince(),
 				map.getGame().getGameTransientStats().getScienceAgricultureAvgInProvince(),
 				map.getGame().getGameTransientStats().getScienceAgricultureMedianInProvince(),
 				province.getScienceAgriculture());
+	}
+
+	private void drawScienceMedicineMode(Polygon polygon) {
+		drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getScienceMedicineMaxInProvince(),
+				map.getGame().getGameTransientStats().getScienceMedicineAvgInProvince(),
+				map.getGame().getGameTransientStats().getScienceMedicineMedianInProvince(),
+				province.getScienceMedicine());
 	}
 
 	private void drawGeoMode(Polygon polygon) {
@@ -113,6 +143,7 @@ class DProvince extends Group {
 				.getResourceAsStream("desktop/map/" + getProvince().getTerrainType().toString().toLowerCase() + ".png");
 		Image texture = new Image(is);
 		polygon.setFill(new ImagePattern(texture, 0, 0, 1, 1, true));
+		this.prevColor = null;
 	}
 
 	private void drawPopulationMode(Polygon polygon) {
@@ -161,7 +192,7 @@ class DProvince extends Group {
 			double provinceValue) {
 		// double baseValue = Math.max(medianValue, avgValue);
 		double baseValue = medianValue;
-		provinceValue = Math.min(provinceValue, maxValue); // sometimes data can be old
+		provinceValue = Math.min(provinceValue, maxValue); // sometimes provinceValue can be more than maxValue
 		Color pValue;
 		if (provinceValue <= baseValue) {
 			double fraction = baseValue != 0 ? provinceValue / baseValue : 0;

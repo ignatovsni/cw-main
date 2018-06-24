@@ -37,12 +37,15 @@ public class GameParams {
 	private double populationMaxExcess = 1.2;
 
 	private double scienceBaseIncreasePerTurnPerPerson = 0.01;
-	private double scienceNaturalGrowthLimitPerPerson = 0.1;
+	private double scienceNaturalGrowthLimitPerPerson = 0.01;
 	private double scienceExchangeWithMaxPerTurn = 0.05;
 	private double scienceExchangeFromNeighborsPercentFromMax = 0.5;
 
 	private double scienceAgricultureMultiplicatorForFertility = (double) 1 / 4000;
 	private double scienceMedicineMultiplicatorForEpidemic = (double) 1 / 10000;
+
+	private double infrastructureNaturalLimitFromPopulation = 0.7;
+	private double infrastructureMaxValue = 1.2;
 
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
@@ -51,7 +54,7 @@ public class GameParams {
 	private double eventGlobalClimateMaxChange = 0.2;
 	private int eventGlobalClimateChangeDuration = 10;
 
-	private double eventEpidemicProbability = 0.02;
+	private double eventEpidemicProbability = 0.01;
 	private double eventEpidemicContagiousness = 0.5;
 	private double eventEpidemicDeathRate = 0.4;
 	private int eventEpidemicDuration = 10;
@@ -356,6 +359,22 @@ public class GameParams {
 
 	public void setSoilAreaPerSize(int soilAreaPerSize) {
 		this.soilAreaPerSize = soilAreaPerSize;
+	}
+
+	public double getInfrastructureNaturalLimitFromPopulation() {
+		return infrastructureNaturalLimitFromPopulation;
+	}
+
+	public void setInfrastructureNaturalLimitFromPopulation(double infrastructureNaturalLimitFromPopulation) {
+		this.infrastructureNaturalLimitFromPopulation = infrastructureNaturalLimitFromPopulation;
+	}
+
+	public double getInfrastructureMaxValue() {
+		return infrastructureMaxValue;
+	}
+
+	public void setInfrastructureMaxValue(double infrastructureMaxValue) {
+		this.infrastructureMaxValue = infrastructureMaxValue;
 	}
 
 }

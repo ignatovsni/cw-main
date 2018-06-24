@@ -11,6 +11,7 @@ import com.cwsni.world.client.desktop.game.map.MapMode;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Lighting;
@@ -43,6 +44,12 @@ public class GsToolBar extends ToolBar {
 		toolBarMapPopsMode.setOnAction(e -> {
 			pressMapModeButton(toolBarMapPopsMode, MapMode.POPULATION);
 		});
+		
+		Button toolBarMapInfrMode = new Button(getMessage("toolbar.map.mode.infrastructure.button.text"));
+		toolBarMapInfrMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.infrastructure.button.tooltip")));
+		toolBarMapInfrMode.setOnAction(e -> {
+			pressMapModeButton(toolBarMapInfrMode, MapMode.INFRASTRUCTURE);
+		});
 
 		Button toolBarMapSoilMode = new Button(getMessage("toolbar.map.mode.soil.button.text"));
 		toolBarMapSoilMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.soil.button.tooltip")));
@@ -58,6 +65,14 @@ public class GsToolBar extends ToolBar {
 			pressMapModeButton(toolBarMapScienceAgricultureMode, MapMode.SCIENCE_AGRICULTURE);
 		});
 
+		Button toolBarMapScienceMedicineMode = new Button(
+				getMessage("toolbar.map.mode.science.medicine.button.text"));
+		toolBarMapScienceMedicineMode
+				.setTooltip(new Tooltip(getMessage("toolbar.map.mode.science.medicine.button.tooltip")));
+		toolBarMapScienceMedicineMode.setOnAction(e -> {
+			pressMapModeButton(toolBarMapScienceMedicineMode, MapMode.SCIENCE_MEDICINE);
+		});
+
 		Button toolBarMapDiseaseMode = new Button(getMessage("toolbar.map.mode.disease.button.text"));
 		toolBarMapDiseaseMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.disease.button.tooltip")));
 		toolBarMapDiseaseMode.setOnAction(e -> {
@@ -65,12 +80,20 @@ public class GsToolBar extends ToolBar {
 		});
 
 		toolBarMapModes = new ArrayList<>();
-		toolBarMapModes.add(toolBarMapGeoMode);
-		toolBarMapModes.add(toolBarMapPopsMode);
-		toolBarMapModes.add(toolBarMapSoilMode);
-		toolBarMapModes.add(toolBarMapDiseaseMode);
-		toolBarMapModes.add(toolBarMapScienceAgricultureMode);
-		getItems().addAll(toolBarMapModes);
+		addButtonToPane(toolBarMapGeoMode);
+		addButtonToPane(toolBarMapPopsMode);
+		addButtonToPane(toolBarMapInfrMode);
+		addButtonToPane(toolBarMapSoilMode);
+		addButtonToPane(toolBarMapDiseaseMode);
+		getItems().add(new Label("|"));
+		addButtonToPane(toolBarMapScienceAgricultureMode);
+		addButtonToPane(toolBarMapScienceMedicineMode);
+		getItems().add(new Label("|"));
+	}
+
+	private void addButtonToPane(Button button) {
+		toolBarMapModes.add(button);
+		getItems().add(button);
 	}
 
 	private void pressMapModeButton(Button buttonMode, MapMode mapMode) {
