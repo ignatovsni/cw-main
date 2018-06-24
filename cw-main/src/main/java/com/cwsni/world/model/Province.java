@@ -27,6 +27,14 @@ public class Province implements EventTarget {
 		return neighbors;
 	}
 
+	public Culture getCulture() {
+		if (getPopulation().isEmpty()) {
+			return null;
+		} else {
+			return getPopulation().get(0).getCulture();
+		}
+	}
+
 	public Point getCenter() {
 		return data.getCenter();
 	}
@@ -175,23 +183,6 @@ public class Province implements EventTarget {
 
 	}
 
-	public void processNewTurn() {
-		if (!getTerrainType().isPopulationPossible()) {
-			return;
-		}
-		if (getPopulationAmount() != 0) {
-			ScienceCollection.growScienceNewTurn(this, map.getGame());
-		}
-		Population.processEventsNewTurn(this, map.getGame());
-		if (getPopulationAmount() != 0) {
-			Population.migrateNewTurn(this, map.getGame());
-		}
-		processProvincePropertiesNewTurn();
-		if (getPopulationAmount() != 0) {
-			Population.growPopulationNewTurn(this, map.getGame());
-		}
-	}
-
 	private void processProvincePropertiesNewTurn() {
 		processSoilArea();
 		processInfrastructure();
@@ -267,4 +258,20 @@ public class Province implements EventTarget {
 		population.remove(pop);
 	}
 
+	public void processNewTurn() {
+		if (!getTerrainType().isPopulationPossible()) {
+			return;
+		}
+		if (getPopulationAmount() != 0) {
+			ScienceCollection.growScienceNewTurn(this, map.getGame());
+		}
+		Population.processEventsNewTurn(this, map.getGame());
+		if (getPopulationAmount() != 0) {
+			Population.migrateNewTurn(this, map.getGame());
+		}
+		processProvincePropertiesNewTurn();
+		if (getPopulationAmount() != 0) {
+			Population.growPopulationNewTurn(this, map.getGame());
+		}
+	}
 }

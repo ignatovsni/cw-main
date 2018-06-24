@@ -39,7 +39,7 @@ public class GameParams {
 	private double scienceBaseIncreasePerTurnPerPerson = 0.01;
 	private double scienceNaturalGrowthLimitPerPerson = 0.01;
 	private double scienceExchangeWithMaxPerTurn = 0.05;
-	private double scienceExchangeFromNeighborsPercentFromMax = 0.5;
+	private double scienceExchangeFromNeighborsPercentFromMax = 0.7;
 
 	private double scienceAgricultureMultiplicatorForFertility = (double) 1 / 4000;
 	private double scienceMedicineMultiplicatorForEpidemic = (double) 1 / 10000;
@@ -54,7 +54,7 @@ public class GameParams {
 	private double eventGlobalClimateMaxChange = 0.2;
 	private int eventGlobalClimateChangeDuration = 10;
 
-	private double eventEpidemicProbability = 0.01;
+	private double eventEpidemicProbability = 0.02;
 	private double eventEpidemicContagiousness = 0.5;
 	private double eventEpidemicDeathRate = 0.4;
 	private int eventEpidemicDuration = 10;

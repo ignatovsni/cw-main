@@ -21,7 +21,7 @@ public class ScienceCollection {
 		this.science = science;
 	}
 
-	public DataScienceCollection getScience() {
+	DataScienceCollection getScience() {
 		return science;
 	}
 
@@ -112,7 +112,6 @@ public class ScienceCollection {
 
 	private static DataScienceCollection findMaxScienceAmongNeighbors(Province p, Game game) {
 		DataScienceCollection maxScience = new DataScienceCollection();
-
 		DataScienceCollection.allGetter4Science()
 				.forEach(scienceGetter -> findMaxScienceAmongNeighbors(p, game, maxScience, scienceGetter));
 		return maxScience;

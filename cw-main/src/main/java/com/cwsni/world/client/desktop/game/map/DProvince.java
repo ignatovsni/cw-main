@@ -3,6 +3,7 @@ package com.cwsni.world.client.desktop.game.map;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
+import com.cwsni.world.model.Culture;
 import com.cwsni.world.model.GameTransientStats;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.data.TerrainType;
@@ -77,6 +78,9 @@ class DProvince extends Group {
 		case POPULATION_2:
 			drawPopulationMode(polygon);
 			break;
+		case CULTURE:
+			drawCultureMode(polygon);
+			break;
 		case INFRASTRUCTURE:
 			drawInfrastructureMode(polygon);
 			break;
@@ -104,6 +108,17 @@ class DProvince extends Group {
 			break;
 		}
 		prevMode = mapMode;
+	}
+
+	private void drawCultureMode(Polygon polygon) {
+		Culture cult = province.getCulture();
+		Color color;
+		if (cult != null) {
+			color = new Color(cult.getRed() / 255.0, cult.getGreen() / 255.0, cult.getBlue() / 255.0, 1);
+		} else {
+			color = new Color(0, 0, 0, 1);
+		}
+		fillPolygon(polygon, color);
 	}
 
 	private void drawInfrastructureMode(Polygon polygon) {

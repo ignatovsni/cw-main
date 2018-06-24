@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.Game;
+import com.cwsni.world.model.data.DataCulture;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataProvince;
@@ -225,6 +226,7 @@ public class GameGenerator {
 			if (p.getSoilFertility() >= gParams.getMinSoilFertilityToStartPopulation()) {
 				DataPopulation pop = new DataPopulation();
 				pop.setAmount((int) (p.getSoilFertility() * gParams.getPopulationAtStart()));
+				initCulture(p, pop, game);
 				initScience(pop, gParams);
 				p.getPopulation().clear();
 				p.getPopulation().add(pop);
@@ -232,20 +234,26 @@ public class GameGenerator {
 		});
 	}
 	
+	private void initCulture(DataProvince p, DataPopulation pop, DataGame game) {
+		GameParams gParams = game.getGameParams();
+		DataCulture cult = new DataCulture();
+		cult.setRed(gParams.getRandom().nextInt(255));
+		cult.setGreen(gParams.getRandom().nextInt(255));
+		cult.setBlue(gParams.getRandom().nextInt(255));
+		pop.setCulture(cult);
+	}
+	private void initScience(DataPopulation pop, GameParams gParams) {
+		DataScienceCollection.allGetter4Science().forEach(
+				scienceGetter -> scienceGetter.apply(pop.getScience()).setAmount(gParams.getScienceValueStart()));
+	}
+
+	
 	private void fillInfrastructure(DataGame game) {
 		GameParams gParams = game.getGameParams();
 		game.getMap().getProvinces().stream().filter(p -> (p.getTerrainType().isPopulationPossible())).forEach(p -> {
 			int popsAmpount = p.getPopulation().stream().mapToInt(pop -> pop.getAmount()).sum();
 			p.setInfrastructure((int) (popsAmpount * game.getGameParams().getInfrastructureNaturalLimitFromPopulation()));
 		});
-	}
-
-
-
-	private void initScience(DataPopulation pop, GameParams gParams) {
-		DataScienceCollection.allGetter4Science().forEach(
-				scienceGetter -> scienceGetter.apply(pop.getScience()).setAmount(gParams.getScienceValueStart()));
-
 	}
 
 	public Game createEmptyGame() {

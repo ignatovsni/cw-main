@@ -45,6 +45,12 @@ public class GsToolBar extends ToolBar {
 			pressMapModeButton(toolBarMapPopsMode, MapMode.POPULATION);
 		});
 		
+		Button toolBarMapCultureMode = new Button(getMessage("toolbar.map.mode.culture.button.text"));
+		toolBarMapCultureMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.culture.button.tooltip")));
+		toolBarMapCultureMode.setOnAction(e -> {
+			pressMapModeButton(toolBarMapCultureMode, MapMode.CULTURE);
+		});
+		
 		Button toolBarMapInfrMode = new Button(getMessage("toolbar.map.mode.infrastructure.button.text"));
 		toolBarMapInfrMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.infrastructure.button.tooltip")));
 		toolBarMapInfrMode.setOnAction(e -> {
@@ -82,6 +88,7 @@ public class GsToolBar extends ToolBar {
 		toolBarMapModes = new ArrayList<>();
 		addButtonToPane(toolBarMapGeoMode);
 		addButtonToPane(toolBarMapPopsMode);
+		addButtonToPane(toolBarMapCultureMode);
 		addButtonToPane(toolBarMapInfrMode);
 		addButtonToPane(toolBarMapSoilMode);
 		addButtonToPane(toolBarMapDiseaseMode);

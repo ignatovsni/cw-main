@@ -14,12 +14,14 @@ import com.cwsni.world.model.events.Event;
 public class Population {
 
 	private DataPopulation data;
-	private ScienceCollection science;
 	private Province province;
+	private ScienceCollection science;
+	private Culture culture;
 
 	public Population() {
 		data = new DataPopulation();
 		science = new ScienceCollection(data.getScience());
+		culture = new Culture(data.getCulture());
 	}
 
 	public int getAmount() {
@@ -34,11 +36,17 @@ public class Population {
 		return science;
 	}
 
+	public Culture getCulture() {
+		return culture;
+	}
+
 	public void buildFrom(Province province, DataPopulation dpop) {
 		this.data = dpop;
 		this.province = province;
 		this.science = new ScienceCollection();
 		science.buildFrom(dpop.getScience());
+		this.culture = new Culture();
+		culture.buildFrom(dpop.getCulture());
 	}
 
 	private Population createNewEmigrant(int migrantsCount) {
@@ -46,6 +54,7 @@ public class Population {
 		newPop.setAmount(migrantsCount);
 		setAmount(getAmount() - migrantsCount);
 		newPop.getScience().cloneFrom(getScience());
+		newPop.getCulture().cloneFrom(getCulture());
 		DataScienceCollection.allGetter4Science().forEach(sG -> {
 			DataScience scienceType = sG.apply(newPop.getScience().getScience());
 			scienceType.setMax(scienceType.getAmount());
@@ -55,6 +64,7 @@ public class Population {
 
 	private void addPop(Population pop) {
 		getScience().mergeFrom(pop.getScience(), (double) getAmount() / (getAmount() + pop.getAmount()));
+		getCulture().mergeFrom(pop.getCulture(), (double) getAmount() / (getAmount() + pop.getAmount()));
 		setAmount(getAmount() + pop.getAmount());
 	}
 
