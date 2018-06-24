@@ -56,7 +56,7 @@ public class Population {
 		newPop.getScience().cloneFrom(getScience());
 		newPop.getCulture().cloneFrom(getCulture());
 		DataScienceCollection.allGetter4Science().forEach(sG -> {
-			DataScience scienceType = sG.apply(newPop.getScience().getScience());
+			DataScience scienceType = sG.apply(newPop.getScience().getScienceData());
 			scienceType.setMax(scienceType.getAmount());
 		});
 		return newPop;
@@ -121,28 +121,37 @@ public class Population {
 		});
 	}
 
-	static public void growPopulationNewTurn(Province from, Game game) {
+	static public void growPopulationNewTurn(Province prov, Game game) {
 		GameParams gParams = game.getGameParams();
-		if (from.getSoilFertility() >= 1) {
-			from.getPopulation().forEach(p -> {
-				p.setAmount((int) (p.getAmount()
-						* (1 + gParams.getPopulationBaseGrowth() + p.getDiseaseResistance() / 100)));
-			});
-		} else {
-			dieFromHunger(game, from, 1 - from.getSoilFertility());
+		int populationAmount = prov.getPopulationAmount();
+		int maxPopulation = (int) Math.max(1, prov.getMaxPopulation() * gParams.getPopulationMaxExcess());
+		if (maxPopulation > gParams.getPopulationLimitWithoutGovernment()) {
+			// TODO add government check
+			maxPopulation = (int) (gParams.getPopulationLimitWithoutGovernment() * prov.getSoilFertility());
 		}
-		int maxPopulation = Math.max(from.getMaxPopulation(), 1);
-		if (from.getPopulationAmount() > maxPopulation * gParams.getPopulationMaxExcess()) {
-			double needDivideTo = (double) from.getPopulationAmount() / maxPopulation
-					/ gParams.getPopulationMaxExcess();
-			double multi = 1 / needDivideTo;
-			dieFromHunger(game, from, 1 - multi);
+		double currentPopFromMax = (double) populationAmount / maxPopulation;
+		if (currentPopFromMax < 1) {
+			if (prov.getSoilFertility() >= 1) {
+				// growth pops
+				prov.getPopulation().forEach(p -> {
+					int newAmount = (int) (p.getAmount()
+							* (1 + gParams.getPopulationBaseGrowth() + p.getDiseaseResistance() / 100));
+					newAmount = (int) Math.min(newAmount, populationAmount / currentPopFromMax);
+					p.setAmount(newAmount);
+				});
+			} else {
+				// not enough food from fields
+				dieFromHunger(game, prov, 1 - prov.getSoilFertility());
+			}
+		} else {
+			// overpopulation
+			dieFromOverpopulation(game, prov, 1 - 1 / currentPopFromMax);
 		}
 	}
 
-	public static void processEventsNewTurn(Province p, Game game) {
-		List<Event> provEvents = new ArrayList<>(p.getEvents().getEvents());
-		provEvents.forEach(e -> Event.processEvent(game, p, e));
+	public static void processEventsNewTurn(Province prov, Game game) {
+		List<Event> provEvents = new ArrayList<>(prov.getEvents().getEvents());
+		provEvents.forEach(e -> Event.processEvent(game, prov, e));
 	}
 
 	private static void dieFromHunger(Game game, Province from, double fraction) {
@@ -158,6 +167,14 @@ public class Population {
 		from.getPopulation().forEach(p -> {
 			double effectiveDeathRate = deathRate * (1 - p.getDiseaseResistance());
 			p.setAmount((int) (p.getAmount() * (1 - effectiveDeathRate)));
+		});
+	}
+	
+	private static void dieFromOverpopulation(Game game, Province from, double fraction) {
+		double kf = Math.min(fraction / 5, 0.1);
+		game.getGameStats().addDiedFromOverpopulation(from.getPopulationAmount() * kf);
+		from.getPopulation().forEach(p -> {
+			p.setAmount((int) (p.getAmount() * (1 - kf)));
 		});
 	}
 

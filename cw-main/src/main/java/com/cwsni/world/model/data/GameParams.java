@@ -35,6 +35,7 @@ public class GameParams {
 	private double populationBaseGrowth = 0.01;
 	private double populationBaseMigration = 0.002;
 	private double populationMaxExcess = 1.2;
+	private int populationLimitWithoutGovernment = 10000;
 
 	private double scienceBaseIncreasePerTurnPerPerson = 0.01;
 	private double scienceNaturalGrowthLimitPerPerson = 0.01;
@@ -375,6 +376,14 @@ public class GameParams {
 
 	public void setInfrastructureMaxValue(double infrastructureMaxValue) {
 		this.infrastructureMaxValue = infrastructureMaxValue;
+	}
+
+	public int getPopulationLimitWithoutGovernment() {
+		return populationLimitWithoutGovernment;
+	}
+
+	public void setPopulationLimitWithoutGovernment(int populationLimitWithoutGovernment) {
+		this.populationLimitWithoutGovernment = populationLimitWithoutGovernment;
 	}
 
 }

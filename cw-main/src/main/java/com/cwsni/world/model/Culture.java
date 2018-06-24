@@ -4,38 +4,38 @@ import com.cwsni.world.model.data.DataCulture;
 
 public class Culture {
 
-	private DataCulture culture;
+	private DataCulture data;
 
 	public Culture() {
-		culture = new DataCulture();
+		data = new DataCulture();
 	}
 
 	public Culture(DataCulture culture) {
-		this.culture = culture;
+		this.data = culture;
 	}
 
 	public int getRed() {
-		return culture.getRed();
+		return data.getRed();
 	}
 
 	public int getGreen() {
-		return culture.getGreen();
+		return data.getGreen();
 	}
 
 	public int getBlue() {
-		return culture.getBlue();
+		return data.getBlue();
 	}
 
 	public void buildFrom(DataCulture culture) {
-		this.culture = culture;
+		this.data = culture;
 	}
 
 	public void cloneFrom(Culture from) {
-		culture.cloneFrom(from.getCulture());
+		data.cloneFrom(from.getCultureData());
 	}
 
-	DataCulture getCulture() {
-		return culture;
+	DataCulture getCultureData() {
+		return data;
 	}
 
 	public void mergeFrom(Culture from, double ownFraction) {
@@ -43,9 +43,9 @@ public class Culture {
 		// fromScienceType.getAmount() * (1 - ownFraction));
 		ownFraction = Math.sqrt(ownFraction);
 		if (ownFraction < 0.99) {
-			culture.setRed(merge(culture.getRed(), from.getCulture().getRed(), ownFraction));
-			culture.setGreen(merge(culture.getGreen(), from.getCulture().getGreen(), ownFraction));
-			culture.setBlue(merge(culture.getBlue(), from.getCulture().getBlue(), ownFraction));
+			data.setRed(merge(data.getRed(), from.getCultureData().getRed(), ownFraction));
+			data.setGreen(merge(data.getGreen(), from.getCultureData().getGreen(), ownFraction));
+			data.setBlue(merge(data.getBlue(), from.getCultureData().getBlue(), ownFraction));
 		}
 	}
 	

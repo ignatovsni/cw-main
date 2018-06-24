@@ -11,47 +11,47 @@ import com.cwsni.world.model.events.Event;
 
 public class ScienceCollection {
 
-	private DataScienceCollection science;
+	private DataScienceCollection data;
 
 	public ScienceCollection() {
-		science = new DataScienceCollection();
+		data = new DataScienceCollection();
 	}
 
 	public ScienceCollection(DataScienceCollection science) {
-		this.science = science;
+		this.data = science;
 	}
 
-	DataScienceCollection getScience() {
-		return science;
+	DataScienceCollection getScienceData() {
+		return data;
 	}
 
 	public void buildFrom(DataScienceCollection science) {
-		this.science = science;
+		this.data = science;
 	}
 
 	public DataScience getAgriculture() {
-		return science.getAgriculture();
+		return data.getAgriculture();
 	}
 
 	public DataScience getMedicine() {
-		return science.getMedicine();
+		return data.getMedicine();
 	}
 
 	public void cloneFrom(ScienceCollection from) {
-		science.cloneFrom(from.getScience());
+		data.cloneFrom(from.getScienceData());
 	}
 
 	private void growScience(Game game, DataScienceCollection maxScience, Province p) {
 		DataScienceCollection.allGetter4Science()
-				.forEach(scienceGetter -> growScienceType(game, p, science, maxScience, scienceGetter));
+				.forEach(scienceGetter -> growScienceType(game, p, data, maxScience, scienceGetter));
 		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
-			science.getMedicine().setAmount(science.getMedicine().getAmount() + 1);
+			data.getMedicine().setAmount(data.getMedicine().getAmount() + 1);
 		}
 	}
 
 	public void mergeFrom(ScienceCollection from, double ownFraction) {
 		DataScienceCollection.allGetter4Science()
-				.forEach(scienceGetter -> mergeFrom(science, from.getScience(), ownFraction, scienceGetter));
+				.forEach(scienceGetter -> mergeFrom(data, from.getScienceData(), ownFraction, scienceGetter));
 	}
 
 	private void growScienceType(Game game, Province p, DataScienceCollection science, DataScienceCollection maxScience,
@@ -128,7 +128,7 @@ public class ScienceCollection {
 		if (!listNPops.isEmpty()) {
 			scienceTypeMax
 					.setAmount(listNPops.stream()
-							.mapToInt(pop -> (int) (getter4Science.apply(pop.getScience().getScience()).getAmount()
+							.mapToInt(pop -> (int) (getter4Science.apply(pop.getScience().getScienceData()).getAmount()
 									* game.getGameParams().getScienceExchangeFromNeighborsPercentFromMax()))
 							.max().getAsInt());
 		}
@@ -136,7 +136,7 @@ public class ScienceCollection {
 		// locals
 		DataScience scienceLocalMax = new DataScience();
 		scienceLocalMax.setAmount(p.getPopulation().stream()
-				.mapToInt(pop -> getter4Science.apply(pop.getScience().getScience()).getAmount()).max().getAsInt());
+				.mapToInt(pop -> getter4Science.apply(pop.getScience().getScienceData()).getAmount()).max().getAsInt());
 
 		if (scienceLocalMax.getAmount() > scienceTypeMax.getAmount()) {
 			scienceTypeMax.setAmount(scienceLocalMax.getAmount());

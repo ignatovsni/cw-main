@@ -2,6 +2,7 @@ package com.cwsni.world.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -272,6 +273,18 @@ public class Province implements EventTarget {
 		processProvincePropertiesNewTurn();
 		if (getPopulationAmount() != 0) {
 			Population.growPopulationNewTurn(this, map.getGame());
+		}
+		removeDiedPops();
+	}
+
+	private void removeDiedPops() {
+		Iterator<Population> iter = population.iterator();
+		while (iter.hasNext()) {
+			Population pop = iter.next();
+			if (pop.getAmount() == 0) {
+				iter.remove();
+				data.getPopulation().remove(pop.getPopulationData());
+			}
 		}
 	}
 }
