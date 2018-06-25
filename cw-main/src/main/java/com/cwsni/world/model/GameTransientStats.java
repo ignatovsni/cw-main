@@ -34,6 +34,8 @@ public class GameTransientStats {
 	private InternalFutureTask<Integer> scienceAgricultureMedianInProvince;
 	private InternalFutureTask<IntSummaryStatistics> scienceMedicineInProvince;
 	private InternalFutureTask<Integer> scienceMedicineMedianInProvince;
+	private InternalFutureTask<IntSummaryStatistics> scienceAdministrationInProvince;
+	private InternalFutureTask<Integer> scienceAdministrationMedianInProvince;
 
 	public GameTransientStats(Game game) {
 		this.game = game;
@@ -97,6 +99,16 @@ public class GameTransientStats {
 		scienceMedicineMedianInProvince = new InternalFutureTask<>(() -> {
 			int v = new MedianFinder().findMedianInteger(
 					getPopulationPossibleProvinces().map(p -> p.getScienceMedicine()).collect(Collectors.toList()));
+			return v;
+		}, 0);
+
+		scienceAdministrationInProvince = new InternalFutureTask<>(() -> {
+			return getPopulationPossibleProvinces().mapToInt(p -> p.getScienceAdministration()).summaryStatistics();
+		}, new IntSummaryStatistics());
+
+		scienceAdministrationMedianInProvince = new InternalFutureTask<>(() -> {
+			int v = new MedianFinder().findMedianInteger(getPopulationPossibleProvinces()
+					.map(p -> p.getScienceAdministration()).collect(Collectors.toList()));
 			return v;
 		}, 0);
 	}
@@ -175,6 +187,18 @@ public class GameTransientStats {
 
 	public int getScienceMedicineMedianInProvince() {
 		return scienceMedicineMedianInProvince.get();
+	}
+
+	public int getScienceAdministrationMaxInProvince() {
+		return scienceAdministrationInProvince.get().getMax();
+	}
+
+	public double getScienceAdministrationAvgInProvince() {
+		return scienceAdministrationInProvince.get().getAverage();
+	}
+
+	public int getScienceAdministrationMedianInProvince() {
+		return scienceAdministrationMedianInProvince.get();
 	}
 
 	private class InternalFutureTask<V> extends FutureTask<V> {

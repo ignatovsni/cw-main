@@ -9,15 +9,18 @@ public class DataScienceCollection {
 
 	private DataScience agriculture;
 	private DataScience medicine;
+	private DataScience administration;
 
 	public DataScienceCollection() {
 		agriculture = new DataScience();
 		medicine = new DataScience();
+		administration = new DataScience();
 	}
 
 	public void cloneFrom(DataScienceCollection from) {
 		agriculture = from.getAgriculture().createClone();
 		medicine = from.getMedicine().createClone();
+		administration = from.getAdministration().createClone();
 	}
 
 	public DataScience getAgriculture() {
@@ -30,6 +33,10 @@ public class DataScienceCollection {
 
 	public DataScience getMedicine() {
 		return medicine;
+	}
+	
+	public DataScience getAdministration() {
+		return administration;
 	}
 
 	public void setMedicine(DataScience medicine) {
@@ -47,6 +54,7 @@ public class DataScienceCollection {
 		List<Function<DataScienceCollection, DataScience>> listOfFunctions = new ArrayList<>(2);
 		listOfFunctions.add(dsc -> dsc.getAgriculture());
 		listOfFunctions.add(dsc -> dsc.getMedicine());
+		listOfFunctions.add(dsc -> dsc.getAdministration());
 		getter4Science = Collections.unmodifiableList(listOfFunctions);
 	}
 

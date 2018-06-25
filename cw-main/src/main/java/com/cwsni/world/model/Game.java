@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
-import com.cwsni.world.model.data.DataProvince;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.GameStats;
 import com.cwsni.world.model.data.Turn;
@@ -18,21 +17,18 @@ public class Game implements EventTarget {
 	private GameTransientStats gameTransientStats;
 	private WorldMap map;
 	private EventCollection events;
+	private CountryCollection countries;
 
 	public List<Event> getEvents() {
-		return data.getEvents();
-	}
-
-	public void setLastEventId(int lastEventId) {
-		data.setLastEventId(lastEventId);
-	}
-
-	public int getLastEventId() {
-		return data.getLastEventId();
+		return events.getEvents();
 	}
 
 	public int nextEventId() {
 		return data.nextEventId();
+	}
+
+	public int nextCountryId() {
+		return data.nextCountryId();
 	}
 
 	public WorldMap getMap() {
@@ -61,18 +57,14 @@ public class Game implements EventTarget {
 
 	@Override
 	public void addEvent(Event e) {
-		getEvents().add(e);
-		registerEventByIdAndType(e);
-	}
-
-	private void registerEventByIdAndType(Event e) {
-		events.add(e);
+		data.getEvents().add(e);
+		events.addEvent(e);
 	}
 
 	@Override
 	public void removeEvent(Event e) {
 		getMap().remove(e);
-		getEvents().remove(e);
+		data.getEvents().remove(e);
 		events.removeEvent(e);
 	}
 
@@ -82,6 +74,24 @@ public class Game implements EventTarget {
 
 	public boolean hasEventWithType(String type) {
 		return events.hasEventWithType(type);
+	}
+
+	public List<Country> getCountries() {
+		return countries.getCountries();
+	}
+
+	public void addCountry(Country c) {
+		data.getCountries().add(c.getCountryData());
+		countries.addCountry(c);
+	}
+
+	public void removeCountry(Country c) {
+		data.getCountries().remove(c.getCountryData());
+		countries.removeCountry(c);
+	}
+
+	public Country findCountryById(Integer countryId) {
+		return countries.findCountryById(countryId);
 	}
 
 	private void calcGameStats() {
@@ -102,7 +112,20 @@ public class Game implements EventTarget {
 		map.getProvinces().forEach(p -> p.processNewTurn());
 		Event.processEvents(this, messageSource);
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
+		processNewProbablyCountries();
 		calcGameStats();
+	}
+
+	private void processNewProbablyCountries() {
+		map.getProvinces().stream()
+				.filter(p -> p.getCountry() == null
+						&& p.getPopulationAmount() > getGameParams().getNewCountryPopulationMin()
+						&& p.getScienceAdministration() > getGameParams().getNewCountryScienceAdministrationMin())
+				.forEach(p -> {
+					if (getGameParams().getRandom().nextDouble() <= getGameParams().getNewCountryProbability()) {
+						Country.createNewCountry(this, p);
+					}
+				});
 	}
 
 	public GameStats getGameStats() {
@@ -119,18 +142,24 @@ public class Game implements EventTarget {
 
 	public void buildFrom(DataGame dataGame) {
 		this.data = dataGame;
-		map = new WorldMap();
+
 		events = new EventCollection();
-		// fake province to be able to use EventCollection
-		events.setDataProvince(new DataProvince());
-		data.getEvents().forEach(e -> {
-			registerEventByIdAndType(e);
-		});
+		events.buildFrom(this, data.getEvents());
+
+		map = new WorldMap();
 		map.buildFrom(this, data.getMap());
+
+		countries = new CountryCollection();
+		countries.buildFrom(this, data.getCountries());
+
 		calcGameStats();
 	}
 
-	public DataGame getSaveData() {
+	DataGame getGameData() {
+		return data;
+	}
+
+	public Object getSaveData() {
 		return data;
 	}
 

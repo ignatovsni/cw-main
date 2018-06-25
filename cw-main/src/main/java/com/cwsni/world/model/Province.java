@@ -53,6 +53,18 @@ public class Province implements EventTarget {
 		return data.getName();
 	}
 
+	public Country getCountry() {
+		if (data.getCountry() == null) {
+			return null;
+		} else {
+			return getMap().getGame().findCountryById(data.getCountry());
+		}
+	}
+
+	public void setCountry(Country c) {
+		data.setCountry(c.getId());
+	}
+
 	public double getSoilFertility() {
 		double v = data.getSoilFertility();
 		// science
@@ -69,22 +81,16 @@ public class Province implements EventTarget {
 		return v;
 	}
 
-	public int getScienceAgriculture2() {
-		if (getPopulationAmount() == 0) {
-			return 0;
-		}
-		long agricultureLevel = getPopulation().stream()
-				.mapToLong(pop -> (long) pop.getAmount() * pop.getScience().getAgriculture().getAmount()).sum()
-				/ getPopulationAmount();
-		return (int) agricultureLevel;
-	}
-
 	public int getScienceAgriculture() {
 		return getScienceTypeValue(ds -> ds.getAgriculture());
 	}
 
 	public int getScienceMedicine() {
 		return getScienceTypeValue(ds -> ds.getMedicine());
+	}
+
+	public int getScienceAdministration() {
+		return getScienceTypeValue(ds -> ds.getAdministration());
 	}
 
 	private int getScienceTypeValue(Function<ScienceCollection, DataScience> getter4Science) {
@@ -159,7 +165,7 @@ public class Province implements EventTarget {
 
 	@Override
 	public void addEvent(Event e) {
-		getEvents().add(e);
+		getEvents().addEvent(e);
 	}
 
 	@Override

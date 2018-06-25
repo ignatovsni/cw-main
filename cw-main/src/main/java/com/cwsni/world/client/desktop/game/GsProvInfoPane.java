@@ -30,6 +30,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesScienceLabel;
 	private RowValue valuesScienceAgriculture;
 	private RowValue valuesScienceMedicine;
+	private RowValue valuesScienceAdministration;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -53,6 +54,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 		valuesScienceLabel = addRow("info.pane.prov.science.title", grid, allRows, idx++);
 		valuesScienceAgriculture = addRow("science.agriculture.name", grid, allRows, idx++);
 		valuesScienceMedicine = addRow("science.medicine.name", grid, allRows, idx++);
+		valuesScienceAdministration = addRow("science.administration.name", grid, allRows, idx++);
 
 		return grid;
 	}
@@ -79,6 +81,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 				setLabelText(valuesScienceLabel, "");
 				setLabelText(valuesScienceAgriculture, toLong(prov.getScienceAgriculture()));
 				setLabelText(valuesScienceMedicine, toLong(prov.getScienceMedicine()));
+				setLabelText(valuesScienceAdministration, toLong(prov.getScienceAdministration()));
 				break;
 			case OCEAN:
 				break;
@@ -90,7 +93,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 
 	private String createTextForInfrastructure(Province prov) {
 		double infr = prov.getInfrastructure();
-		return toFraction(infr*100) + " (" + toLong(prov.getInfrastructureAbsoluteValue()) + ")";
+		return toFraction(infr * 100) + " (" + toLong(prov.getInfrastructureAbsoluteValue()) + ")";
 	}
 
 	private void setLabelText(RowValue l, String txt) {

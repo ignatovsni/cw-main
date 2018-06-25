@@ -39,6 +39,12 @@ public class GsToolBar extends ToolBar {
 		});
 		toolBarMapGeoMode.setEffect(new Lighting());
 
+		Button toolBarMapPoliticalMode = new Button(getMessage("toolbar.map.mode.political.button.text"));
+		toolBarMapPoliticalMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.political.button.tooltip")));
+		toolBarMapPoliticalMode.setOnAction(e -> {
+			pressMapModeButton(toolBarMapPoliticalMode, MapMode.POLITICAL);
+		});
+		
 		Button toolBarMapPopsMode = new Button(getMessage("toolbar.map.mode.population.button.text"));
 		toolBarMapPopsMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.population.button.tooltip")));
 		toolBarMapPopsMode.setOnAction(e -> {
@@ -78,6 +84,14 @@ public class GsToolBar extends ToolBar {
 		toolBarMapScienceMedicineMode.setOnAction(e -> {
 			pressMapModeButton(toolBarMapScienceMedicineMode, MapMode.SCIENCE_MEDICINE);
 		});
+		
+		Button toolBarMapScienceAdministrationMode = new Button(
+				getMessage("toolbar.map.mode.science.administration.button.text"));
+		toolBarMapScienceAdministrationMode
+				.setTooltip(new Tooltip(getMessage("toolbar.map.mode.science.administration.button.tooltip")));
+		toolBarMapScienceAdministrationMode.setOnAction(e -> {
+			pressMapModeButton(toolBarMapScienceAdministrationMode, MapMode.SCIENCE_ADMINISTRATION);
+		});
 
 		Button toolBarMapDiseaseMode = new Button(getMessage("toolbar.map.mode.disease.button.text"));
 		toolBarMapDiseaseMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.disease.button.tooltip")));
@@ -87,6 +101,7 @@ public class GsToolBar extends ToolBar {
 
 		toolBarMapModes = new ArrayList<>();
 		addButtonToPane(toolBarMapGeoMode);
+		addButtonToPane(toolBarMapPoliticalMode);
 		addButtonToPane(toolBarMapPopsMode);
 		addButtonToPane(toolBarMapCultureMode);
 		addButtonToPane(toolBarMapInfrMode);
@@ -95,6 +110,7 @@ public class GsToolBar extends ToolBar {
 		getItems().add(new Label("|"));
 		addButtonToPane(toolBarMapScienceAgricultureMode);
 		addButtonToPane(toolBarMapScienceMedicineMode);
+		addButtonToPane(toolBarMapScienceAdministrationMode);
 		getItems().add(new Label("|"));
 	}
 

@@ -88,7 +88,7 @@ public class EventEpidemic extends Event {
 		e.setTitle("event.epidemic.protected.title");
 		e.setDescription("event.epidemic.protected.title");
 		game.addEvent(e);
-		p.getEvents().add(e);
+		p.getEvents().addEvent(e);
 	}
 
 }

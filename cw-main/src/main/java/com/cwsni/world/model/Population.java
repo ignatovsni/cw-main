@@ -125,8 +125,7 @@ public class Population {
 		GameParams gParams = game.getGameParams();
 		int populationAmount = prov.getPopulationAmount();
 		int maxPopulation = (int) Math.max(1, prov.getMaxPopulation() * gParams.getPopulationMaxExcess());
-		if (maxPopulation > gParams.getPopulationLimitWithoutGovernment()) {
-			// TODO add government check
+		if (prov.getCountry() == null && maxPopulation > gParams.getPopulationLimitWithoutGovernment()) {
 			maxPopulation = (int) (gParams.getPopulationLimitWithoutGovernment() * prov.getSoilFertility());
 		}
 		double currentPopFromMax = (double) populationAmount / maxPopulation;
@@ -169,7 +168,7 @@ public class Population {
 			p.setAmount((int) (p.getAmount() * (1 - effectiveDeathRate)));
 		});
 	}
-	
+
 	private static void dieFromOverpopulation(Game game, Province from, double fraction) {
 		double kf = Math.min(fraction / 5, 0.1);
 		game.getGameStats().addDiedFromOverpopulation(from.getPopulationAmount() * kf);

@@ -3,6 +3,7 @@ package com.cwsni.world.client.desktop.game.map;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
+import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Culture;
 import com.cwsni.world.model.GameTransientStats;
 import com.cwsni.world.model.Province;
@@ -32,6 +33,9 @@ class DProvince extends Group {
 	private static final Color STROKE_SELECTED_2_COLOR = Color.YELLOW;
 	private static final Color STROKE_SELECTED_1_COLOR = Color.RED;
 	private static final Color STROKE_DEFAULT_COLOR = Color.GRAY;
+
+	private static final Color COLOR_NONE = new Color(0, 0, 0, 1);
+	private static final Color COLOR_NO_COUNTRY_BUT_POPS = new Color(0.3, 0.3, 0.3, 1);
 
 	public static final int SIDES = 6;
 
@@ -78,6 +82,9 @@ class DProvince extends Group {
 		case POPULATION_2:
 			drawPopulationMode(polygon);
 			break;
+		case POLITICAL:
+			drawPoliticalMode(polygon);
+			break;
 		case CULTURE:
 			drawCultureMode(polygon);
 			break;
@@ -96,6 +103,9 @@ class DProvince extends Group {
 		case SCIENCE_MEDICINE:
 			drawScienceMedicineMode(polygon);
 			break;
+		case SCIENCE_ADMINISTRATION:
+			drawScienceAdministrationMode(polygon);
+			break;
 		case DISEASE:
 			drawDiseaseMode(polygon);
 			break;
@@ -110,13 +120,29 @@ class DProvince extends Group {
 		prevMode = mapMode;
 	}
 
+	private void drawPoliticalMode(Polygon polygon) {
+		Country country = province.getCountry();
+		Color color;
+		if (country != null) {
+			com.cwsni.world.model.data.Color cc = country.getColor();
+			color = new Color(cc.getR() / 255.0, cc.getG() / 255.0, cc.getB() / 255.0, 1);
+		} else {
+			if (province.getPopulationAmount() == 0) {
+				color = COLOR_NONE;
+			} else {
+				color = COLOR_NO_COUNTRY_BUT_POPS;
+			}
+		}
+		fillPolygon(polygon, color);
+	}
+
 	private void drawCultureMode(Polygon polygon) {
 		Culture cult = province.getCulture();
 		Color color;
 		if (cult != null) {
 			color = new Color(cult.getRed() / 255.0, cult.getGreen() / 255.0, cult.getBlue() / 255.0, 1);
 		} else {
-			color = new Color(0, 0, 0, 1);
+			color = COLOR_NONE;
 		}
 		fillPolygon(polygon, color);
 	}
@@ -152,6 +178,13 @@ class DProvince extends Group {
 				province.getScienceMedicine());
 	}
 
+	private void drawScienceAdministrationMode(Polygon polygon) {
+		drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getScienceAdministrationMaxInProvince(),
+				map.getGame().getGameTransientStats().getScienceAdministrationAvgInProvince(),
+				map.getGame().getGameTransientStats().getScienceAdministrationMedianInProvince(),
+				province.getScienceAdministration());
+	}
+	
 	private void drawGeoMode(Polygon polygon) {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 		InputStream is = classloader
@@ -274,8 +307,9 @@ class DProvince extends Group {
 	private Color prevColor;
 
 	private void fillPolygon(Polygon polygon, Color color) {
-		if (prevColor == null || color.getBlue() != prevColor.getBlue() || color.getRed() != prevColor.getRed()
-				|| color.getGreen() != prevColor.getGreen() || color.getOpacity() != prevColor.getOpacity()) {
+		if (prevColor != color
+				&& (prevColor == null || color.getBlue() != prevColor.getBlue() || color.getRed() != prevColor.getRed()
+						|| color.getGreen() != prevColor.getGreen() || color.getOpacity() != prevColor.getOpacity())) {
 			polygon.setFill(color);
 		}
 		prevColor = color;

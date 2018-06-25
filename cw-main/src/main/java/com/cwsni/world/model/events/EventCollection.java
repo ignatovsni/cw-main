@@ -13,7 +13,7 @@ public class EventCollection extends ObjectStorage<Event, Integer, String> {
 
 	private DataProvince dataProvince;
 
-	public void add(Event e) {
+	public void addEvent(Event e) {
 		add(e, e.getId(), e.getType());
 		dataProvince.getEvents().add(e.getId());
 	}
@@ -24,7 +24,7 @@ public class EventCollection extends ObjectStorage<Event, Integer, String> {
 	}
 
 	public List<Event> getEvents() {
-		return getObjects();
+		return Collections.unmodifiableList(getObjects());
 	}
 
 	public boolean hasEventWithType(String type) {
@@ -37,17 +37,19 @@ public class EventCollection extends ObjectStorage<Event, Integer, String> {
 		return map != null ? map.values() : Collections.emptyList();
 	}
 
-	public void buildFrom(DataProvince dp, Game game) {
-		this.dataProvince = dp;
-		dataProvince.getEvents().forEach(id -> add(game.findEventById(id)));
-	}
-	
 	public Event getEventById(Integer id) {
 		return getObjectByKey(id);
 	}
-	
-	public void setDataProvince(DataProvince dataProvince) {
-		this.dataProvince = dataProvince;
+
+	public void buildFrom(DataProvince dp, Game game) {
+		this.dataProvince = dp;
+		dataProvince.getEvents().forEach(id -> addEvent(game.findEventById(id)));
+	}
+
+	public void buildFrom(Game game, List<Event> events) {
+		// fake province to be able to use EventCollection
+		this.dataProvince = new DataProvince();
+		events.forEach(e -> addEvent(e));
 	}
 
 }

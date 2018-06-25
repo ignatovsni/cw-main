@@ -36,6 +36,10 @@ public class ScienceCollection {
 	public DataScience getMedicine() {
 		return data.getMedicine();
 	}
+	
+	public DataScience getAdministration() {
+		return data.getAdministration();
+	}
 
 	public void cloneFrom(ScienceCollection from) {
 		data.cloneFrom(from.getScienceData());

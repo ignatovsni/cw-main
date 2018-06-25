@@ -34,8 +34,12 @@ public class GameParams {
 	// ------------Turn procession section--------
 	private double populationBaseGrowth = 0.01;
 	private double populationBaseMigration = 0.002;
-	private double populationMaxExcess = 1.2;
-	private int populationLimitWithoutGovernment = 10000;
+	private double populationMaxExcess = 1.2;	
+	private int populationLimitWithoutGovernment = 10000;	
+	
+	private int newCountryPopulationMin = 10000;
+	private int newCountryScienceAdministrationMin = 100;
+	private double newCountryProbability = 0.01;
 
 	private double scienceBaseIncreasePerTurnPerPerson = 0.01;
 	private double scienceNaturalGrowthLimitPerPerson = 0.01;
@@ -55,7 +59,7 @@ public class GameParams {
 	private double eventGlobalClimateMaxChange = 0.2;
 	private int eventGlobalClimateChangeDuration = 10;
 
-	private double eventEpidemicProbability = 0.02;
+	private double eventEpidemicProbability = 0.01;
 	private double eventEpidemicContagiousness = 0.5;
 	private double eventEpidemicDeathRate = 0.4;
 	private int eventEpidemicDuration = 10;
@@ -384,6 +388,30 @@ public class GameParams {
 
 	public void setPopulationLimitWithoutGovernment(int populationLimitWithoutGovernment) {
 		this.populationLimitWithoutGovernment = populationLimitWithoutGovernment;
+	}
+
+	public int getNewCountryPopulationMin() {
+		return newCountryPopulationMin;
+	}
+
+	public void setNewCountryPopulationMin(int newCountryPopulationMin) {
+		this.newCountryPopulationMin = newCountryPopulationMin;
+	}
+
+	public int getNewCountryScienceAdministrationMin() {
+		return newCountryScienceAdministrationMin;
+	}
+
+	public void setNewCountryScienceAdministrationMin(int newCountryScienceAdministrationMin) {
+		this.newCountryScienceAdministrationMin = newCountryScienceAdministrationMin;
+	}
+
+	public double getNewCountryProbability() {
+		return newCountryProbability;
+	}
+
+	public void setNewCountryProbability(double newCountryProbability) {
+		this.newCountryProbability = newCountryProbability;
 	}
 
 }

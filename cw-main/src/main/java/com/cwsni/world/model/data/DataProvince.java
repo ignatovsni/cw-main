@@ -7,16 +7,19 @@ import java.util.Set;
 
 public class DataProvince {
 
+	// --------------- map section --------------------
+
 	private int id;
 	private String name;
 	private Point center;
-	/**
-	 * It is used only for save/load Primary list of neighbors is stored in list
-	 * 'neighbors'
-	 */
 	private List<Integer> neighbors;
 	private TerrainType terrainType;
+	private int size;
 	private double soilFertility;
+
+	// --------------- data section -------------------
+
+	private Integer country;
 	/**
 	 * current area
 	 */
@@ -24,11 +27,9 @@ public class DataProvince {
 	/**
 	 * size of the province, it is a synthetic concept
 	 */
-	private int size;
 	private int infrastructure;
 	private List<DataPopulation> population;
-	private Set<Integer> eventsIds;
-	
+	private Set<Integer> events;
 
 	public DataProvince() {
 		this(-1, 0, 0);
@@ -41,7 +42,7 @@ public class DataProvince {
 		this.population = new ArrayList<>(1);
 		this.neighbors = new ArrayList<>();
 		this.terrainType = TerrainType.OCEAN;
-		eventsIds = new HashSet<>();
+		events = new HashSet<>();
 	}
 
 	public List<Integer> getNeighbors() {
@@ -109,11 +110,11 @@ public class DataProvince {
 	}
 
 	public Set<Integer> getEvents() {
-		return eventsIds;
+		return events;
 	}
 
 	public void setEvents(Set<Integer> eventsIds) {
-		this.eventsIds = eventsIds;
+		this.events = eventsIds;
 	}
 
 	public int getSize() {
@@ -132,5 +133,12 @@ public class DataProvince {
 		this.infrastructure = infrastructure;
 	}
 
+	public Integer getCountry() {
+		return country;
+	}
+
+	public void setCountry(Integer country) {
+		this.country = country;
+	}
 
 }
