@@ -57,6 +57,9 @@ public class GameScene extends Scene {
 	private GsProvInfoPane provInfoPane;
 
 	@Autowired
+	private GsProvScienceInfoPane provScienceInfoPane;
+
+	@Autowired
 	private GsProvEventsInfoPane provEventsInfoPane;
 
 	@Autowired
@@ -91,6 +94,7 @@ public class GameScene extends Scene {
 		menuBar.init(this);
 		globalInfoPane.init(this);
 		provInfoPane.init(this);
+		provScienceInfoPane.init(this);
 		provEventsInfoPane.init(this);
 		timeControl.init(this);
 
@@ -98,7 +102,8 @@ public class GameScene extends Scene {
 		menuSection.getChildren().addAll(menuBar);
 
 		VBox rightSection = new VBox();
-		rightSection.getChildren().addAll(timeControl, globalInfoPane, provInfoPane, provEventsInfoPane);
+		rightSection.getChildren().addAll(timeControl, globalInfoPane, provInfoPane, provScienceInfoPane,
+				provEventsInfoPane);
 		rightSection.setMinWidth(220);
 		rightSection.setMaxWidth(220);
 
@@ -161,9 +166,14 @@ public class GameScene extends Scene {
 			if (province != null) {
 				statusBarText.setText("Selected province with id = " + province.getId());
 			}
-			provInfoPane.refreshInfo();
-			provEventsInfoPane.refreshInfo();
+			refreshProvinceInfos();
 		});
+	}
+
+	private void refreshProvinceInfos() {
+		provInfoPane.refreshInfo();
+		provScienceInfoPane.refreshInfo();
+		provEventsInfoPane.refreshInfo();
 	}
 
 	public DWorldMap getWorldMap() {
@@ -197,8 +207,7 @@ public class GameScene extends Scene {
 
 	private void refreshAllVisibleInfo() {
 		globalInfoPane.refreshInfo();
-		provInfoPane.refreshInfo();
-		provEventsInfoPane.refreshInfo();
+		refreshProvinceInfos();
 	}
 
 	public Province getSelectedProvince() {
@@ -324,6 +333,7 @@ public class GameScene extends Scene {
 		userPref.setTimeControlPauseBetweenTurns(isPauseBetweenTurn());
 		userPref.setInfoPaneGlobalMinimized(globalInfoPane.isMinimazed());
 		userPref.setInfoPaneProvinceMinimized(provInfoPane.isMinimazed());
+		userPref.setInfoPaneProvinceScienceMinimized(provScienceInfoPane.isMinimazed());
 		userPref.setInfoPaneProvinceEventsMinimized(provEventsInfoPane.isMinimazed());
 	}
 
@@ -331,6 +341,7 @@ public class GameScene extends Scene {
 		timeControl.applyUserPreferences(userPref);
 		globalInfoPane.setMinimized(userPref.isInfoPaneGlobalMinimized());
 		provInfoPane.setMinimized(userPref.isInfoPaneProvinceMinimized());
+		provScienceInfoPane.setMinimized(userPref.isInfoPaneProvinceScienceMinimized());
 		provEventsInfoPane.setMinimized(userPref.isInfoPaneProvinceEventsMinimized());
 	}
 

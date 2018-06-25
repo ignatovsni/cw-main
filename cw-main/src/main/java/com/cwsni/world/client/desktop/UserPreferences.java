@@ -26,6 +26,7 @@ public class UserPreferences {
 	private static final String TIME_CONTROL_PAUSE_BETWEEN_TURNS = "time-control.pause-between-turns";
 	private static final String INFO_PANE_GLOBALE_MINIMIZED = "info.pane.global.minimized";
 	private static final String INFO_PANE_PROVINCE_MINIMIZED = "info.pane.province.minimized";
+	private static final String INFO_PANE_PROVINCE_SCIENCE_MINIMIZED = "info.pane.province-science.minimized";
 	private static final String INFO_PANE_PROVINCE_EVENTS_MINIMIZED = "info.pane.province-events.minimized";
 
 	private Properties props;
@@ -57,6 +58,7 @@ public class UserPreferences {
 		setDefaultProp(TIME_CONTROL_PAUSE_BETWEEN_TURNS, "1");
 		setDefaultProp(INFO_PANE_GLOBALE_MINIMIZED, "0");
 		setDefaultProp(INFO_PANE_PROVINCE_MINIMIZED, "0");
+		setDefaultProp(INFO_PANE_PROVINCE_SCIENCE_MINIMIZED, "0");
 		setDefaultProp(INFO_PANE_PROVINCE_EVENTS_MINIMIZED, "0");
 	}
 
@@ -177,6 +179,14 @@ public class UserPreferences {
 
 	public boolean isInfoPaneProvinceEventsMinimized() {
 		return getIntegerOrNull(INFO_PANE_PROVINCE_EVENTS_MINIMIZED) == 1;
+	}
+	
+	public void setInfoPaneProvinceScienceMinimized(boolean v) {
+		setProp(INFO_PANE_PROVINCE_SCIENCE_MINIMIZED, v ? 1 : 0);
+	}
+
+	public boolean isInfoPaneProvinceScienceMinimized() {
+		return getIntegerOrNull(INFO_PANE_PROVINCE_SCIENCE_MINIMIZED) == 1;
 	}
 
 }

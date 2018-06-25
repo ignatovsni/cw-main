@@ -28,10 +28,6 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesInfrastructureLabel;
 	private RowValue valuesSoilAreaLabel;
 	private RowValue valuesSoilFertilityLabel;
-	private RowValue valuesScienceLabel;
-	private RowValue valuesScienceAgriculture;
-	private RowValue valuesScienceMedicine;
-	private RowValue valuesScienceAdministration;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -51,11 +47,6 @@ public class GsProvInfoPane extends InternalInfoPane {
 		valuesInfrastructureLabel = addRow("info.pane.prov.infrastructure", grid, allRows, idx++);
 		valuesSoilAreaLabel = addRow("info.pane.prov.soil.area", grid, allRows, idx++);
 		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, allRows, idx++);
-
-		valuesScienceLabel = addRow("info.pane.prov.science.title", grid, allRows, idx++);
-		valuesScienceAgriculture = addRow("science.agriculture.name", grid, allRows, idx++);
-		valuesScienceMedicine = addRow("science.medicine.name", grid, allRows, idx++);
-		valuesScienceAdministration = addRow("science.administration.name", grid, allRows, idx++);
 
 		return grid;
 	}
@@ -79,10 +70,6 @@ public class GsProvInfoPane extends InternalInfoPane {
 				setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
 				setLabelText(valuesSoilAreaLabel, DataFormatter.toLong(prov.getSoilArea()));
 				setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));
-				setLabelText(valuesScienceLabel, "");
-				setLabelText(valuesScienceAgriculture, DataFormatter.toLong(prov.getScienceAgriculture()));
-				setLabelText(valuesScienceMedicine, DataFormatter.toLong(prov.getScienceMedicine()));
-				setLabelText(valuesScienceAdministration, DataFormatter.toLong(prov.getScienceAdministration()));
 				break;
 			case OCEAN:
 				break;

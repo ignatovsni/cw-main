@@ -7,7 +7,6 @@ import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
@@ -40,8 +39,8 @@ public class InternalInfoPane extends BorderPane {
 	@Autowired
 	private LocaleMessageSource messageSource;
 	private Pane internalPane;
+	private Label modeLabel;
 	private boolean isMinimized = false;
-	private Button modeButton;
 
 	protected String getMessage(String code) {
 		return messageSource.getMessage(code);
@@ -56,29 +55,26 @@ public class InternalInfoPane extends BorderPane {
 	}
 
 	private Pane createTitle(String title) {
-		modeButton = new Button("");
-		modeButton.setStyle("-fx-background-color: #999999; -fx-padding: 3");
-		modeButton.setOnAction(e -> {
-			setMinimized(!isMinimized);
-		});
-
+		modeLabel = new Label();
 		HBox titleBar = new HBox();
 		titleBar.setStyle("-fx-background-color: #999999; -fx-padding: 3");
 		Label label = new Label(title);
-		label.setStyle("-fx-background-color: #999999; -fx-padding: 3");
-		titleBar.getChildren().addAll(modeButton, label);
+		titleBar.getChildren().addAll(modeLabel, label);
 		setStyle("-fx-border-width: 1; -fx-border-color: black");
+
+		titleBar.setOnMouseClicked(e -> setMinimized(!isMinimized));
+
 		return titleBar;
 	}
 
 	public void setMinimized(boolean newMode) {
 		isMinimized = newMode;
 		if (isMinimized) {
-			modeButton.setText(">");
+			modeLabel.setText("> ");
 			setCenter(null);
 		} else {
-			setCenter(internalPane);
-			modeButton.setText("v");
+			modeLabel.setText("v ");
+			setCenter(internalPane);			
 		}
 	}
 
