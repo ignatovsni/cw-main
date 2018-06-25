@@ -1,15 +1,29 @@
 package com.cwsni.world.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.cwsni.world.model.data.Color;
+import com.cwsni.world.model.data.DataArmy;
 import com.cwsni.world.model.data.DataCountry;
 import com.cwsni.world.util.CwRandom;
 
 public class Country {
 
 	private DataCountry data;
+	private Game game;
+	private List<Army> armies;
 
-	public void buildFrom(DataCountry dc) {
+	public void buildFrom(Game game, DataCountry dc) {
+		this.game = game;
 		this.data = dc;
+		armies = new ArrayList<>();
+		dc.getArmies().forEach(da -> {
+			Army a = new Army();
+			a.buildFrom(this, da);
+			armies.add(a);
+		});
 	}
 
 	public int getId() {
@@ -24,9 +38,24 @@ public class Country {
 		return data.getColor();
 	}
 
+	public Game getGame() {
+		return game;
+	}
+
 	DataCountry getCountryData() {
 		return data;
 	}
+
+	public List<Army> getArmies() {
+		return Collections.unmodifiableList(armies);
+	}
+
+	private void addArmy(Army a) {
+		armies.add(a);
+		data.getArmies().add(a.getDataArmy());
+	}
+
+	// --------------------- static -------------------------------
 
 	public static void createNewCountry(Game game, Province p) {
 		if (p.getCountry() != null) {
@@ -37,9 +66,19 @@ public class Country {
 		dc.setName(String.valueOf(dc.getId()));
 		dc.setColor(createNewColorForCountry(game));
 		Country c = new Country();
-		c.buildFrom(dc);
+		c.buildFrom(game, dc);
 		p.setCountry(c);
 		game.addCountry(c);
+
+		// test army
+		Army a = new Army();
+		a.buildFrom(c, new DataArmy());
+		a.setSoldiers(1000);
+		a.setEquipment(1);
+		a.setOrganisation(2);
+		a.setTraining(3);
+		c.addArmy(a);
+		a.setProvince(p);
 	}
 
 	private static Color createNewColorForCountry(Game game) {

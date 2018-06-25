@@ -63,6 +63,12 @@ public class MainWindow extends Application {
 		userProp.setMainWindowPositionX(stage.getX());
 		userProp.setMainWindowPositionY(stage.getY());
 		userProp.setMainWindowMaximazed(stage.isMaximized());
+
+		if (stage.getScene() instanceof GameScene) {
+			GameScene scene = (GameScene) stage.getScene();
+			userProp.setTimeControlAutoTurn(scene.isAutoTurn());
+			userProp.setTimeControlPauseBetweenTurns(scene.isPauseBetweenTurn());
+		}
 	}
 
 	@Override
@@ -77,9 +83,16 @@ public class MainWindow extends Application {
 
 	private void createGameScene(Stage stage) {
 		GameScene gameScene = getGameScene();
+		applyUserPreferences(gameScene);
 		gameScene.setStage(stage);
 		gameScene.init();
 		stage.setScene(gameScene);
+	}
+
+	private void applyUserPreferences(GameScene gameScene) {
+		UserProperties userProp = getUserProperties();
+		gameScene.setAutoTurn(userProp.isTimeControlAutoTurn());
+		gameScene.setPauseBetweenTurn(userProp.isTimeControlPauseBetweenTurns());
 	}
 
 	private void applyUserPreferences(Stage stage) {
@@ -88,7 +101,7 @@ public class MainWindow extends Application {
 		stage.setHeight(userProp.getMainWindowHeight());
 		stage.setX(userProp.getMainWindowPosX());
 		stage.setY(userProp.getMainWindowPosY());
-		stage.setMaximized(userProp.getMainWindowMaximized());
+		stage.setMaximized(userProp.isMainWindowMaximized());
 	}
 
 	private String getMessage(String code) {

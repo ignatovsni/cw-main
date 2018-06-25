@@ -23,6 +23,7 @@ public class Province implements EventTarget {
 	private WorldMap map;
 	private EventCollection events;
 	private List<Population> immigrants;
+	private List<Army> armies;
 
 	public List<Province> getNeighbors() {
 		return neighbors;
@@ -47,6 +48,10 @@ public class Province implements EventTarget {
 	public List<Population> getPopulation() {
 		// unmodifiableList to prevent adding elements to list
 		return Collections.unmodifiableList(population);
+	}
+
+	public List<Army> getArmies() {
+		return Collections.unmodifiableList(armies);
 	}
 
 	public String getName() {
@@ -188,6 +193,7 @@ public class Province implements EventTarget {
 		data.getNeighbors().forEach(id -> neighbors.add(map.findProvById(id)));
 		events.buildFrom(dp, worldMap.getGame());
 
+		armies = new ArrayList<>();
 	}
 
 	private void processProvincePropertiesNewTurn() {
@@ -292,5 +298,13 @@ public class Province implements EventTarget {
 				data.getPopulation().remove(pop.getPopulationData());
 			}
 		}
+	}
+
+	public void addArmy(Army a) {
+		armies.add(a);
+	}
+
+	public void removeArmy(Army a) {
+		armies.remove(a);
 	}
 }

@@ -152,6 +152,12 @@ public class Game implements EventTarget {
 		countries = new CountryCollection();
 		countries.buildFrom(this, data.getCountries());
 
+		countries.getCountries().forEach(c -> {
+			c.getArmies().forEach(a -> {
+				a.getLocation().addArmy(a);
+			});
+		});
+
 		calcGameStats();
 	}
 

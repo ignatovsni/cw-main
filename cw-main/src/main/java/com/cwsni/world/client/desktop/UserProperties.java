@@ -22,6 +22,8 @@ public class UserProperties {
 	private static final String MAIN_WINDOW_POS_X = "main.window.pos.x";
 	private static final String MAIN_WINDOW_POS_Y = "main.window.pos.y";
 	private static final String MAIN_WINDOW_MAXIMIZED = "main.window.maximized";
+	private static final String TIME_CONTROL_AUTO_TURN = "time-control.auto-turn";
+	private static final String TIME_CONTROL_PAUSE_BETWEEN_TURNS = "time-control.pause-between-turns";
 
 	private Properties props;
 
@@ -48,6 +50,8 @@ public class UserProperties {
 		setDefaultProp(MAIN_WINDOW_POS_X, "100");
 		setDefaultProp(MAIN_WINDOW_POS_Y, "100");
 		setDefaultProp(MAIN_WINDOW_MAXIMIZED, "0");
+		setDefaultProp(TIME_CONTROL_AUTO_TURN, "1");
+		setDefaultProp(TIME_CONTROL_PAUSE_BETWEEN_TURNS, "1");
 	}
 
 	private void setDefaultProp(String code, String value) {
@@ -105,8 +109,16 @@ public class UserProperties {
 		return getIntegerOrNull(MAIN_WINDOW_POS_Y);
 	}
 
-	public boolean getMainWindowMaximized() {
+	public boolean isMainWindowMaximized() {
 		return getIntegerOrNull(MAIN_WINDOW_MAXIMIZED) == 1;
+	}
+	
+	public boolean isTimeControlAutoTurn() {
+		return getIntegerOrNull(TIME_CONTROL_AUTO_TURN) == 1;
+	}
+	
+	public boolean isTimeControlPauseBetweenTurns() {
+		return getIntegerOrNull(TIME_CONTROL_PAUSE_BETWEEN_TURNS) == 1;
 	}
 
 	public void setMainWindowWidth(double v) {
@@ -127,6 +139,14 @@ public class UserProperties {
 
 	public void setMainWindowMaximazed(boolean maximized) {
 		setProp(MAIN_WINDOW_MAXIMIZED, maximized ? 1 : 0);
+	}
+
+	public void setTimeControlAutoTurn(boolean v) {
+		setProp(TIME_CONTROL_AUTO_TURN, v ? 1 : 0);
+	}
+
+	public void setTimeControlPauseBetweenTurns(boolean v) {
+		setProp(TIME_CONTROL_PAUSE_BETWEEN_TURNS, v ? 1 : 0);
 	}
 
 }

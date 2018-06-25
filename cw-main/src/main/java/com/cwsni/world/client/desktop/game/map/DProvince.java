@@ -19,6 +19,8 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
 /**
@@ -42,11 +44,12 @@ class DProvince extends Group {
 	private Point2D[] points = new Point2D[SIDES];
 	private Point2D center;
 	private double radius;
-	private Polygon polygon;
 	private Timeline timeline;
-
 	private final DWorldMap map;
 	private final Province province;
+
+	private Polygon polygon;
+	private Shape armyPolygon;
 
 	private MapMode prevMode;
 
@@ -64,9 +67,9 @@ class DProvince extends Group {
 		Stream.of(points).forEach(p -> polygon.getPoints().addAll(p.getX(), p.getY()));
 		polygon.setStroke(STROKE_DEFAULT_COLOR);
 		polygon.setStrokeWidth(2);
-		reDraw();
 		getChildren().add(polygon);
 		polygon.setOnMouseClicked(e -> map.mouseClickOnProvince(this, e));
+		reDraw();
 	}
 
 	public void reDraw() {
@@ -118,6 +121,29 @@ class DProvince extends Group {
 			break;
 		}
 		prevMode = mapMode;
+
+		drawArmy();
+	}
+
+	private void drawArmy() {
+		boolean isArmy = !province.getArmies().isEmpty();
+		if (isArmy) {
+			if (armyPolygon == null) {
+				Rectangle rect = new Rectangle(10, 10);
+				rect.setX(province.getCenter().getX() - 5);
+				rect.setY(province.getCenter().getY() - 5);
+				armyPolygon = rect;
+				getChildren().add(armyPolygon);
+				armyPolygon.setOnMouseClicked(e -> {
+					map.mouseClickOnProvince(this, e);
+					System.out.println("army clicked");
+				});
+			}
+			armyPolygon.toFront();
+		} else if (armyPolygon != null) {
+			getChildren().remove(armyPolygon);
+			armyPolygon = null;
+		}
 	}
 
 	private void drawPoliticalMode(Polygon polygon) {
@@ -179,18 +205,24 @@ class DProvince extends Group {
 	}
 
 	private void drawScienceAdministrationMode(Polygon polygon) {
-		drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getScienceAdministrationMaxInProvince(),
+		drawGradientModeForMedian(polygon,
+				map.getGame().getGameTransientStats().getScienceAdministrationMaxInProvince(),
 				map.getGame().getGameTransientStats().getScienceAdministrationAvgInProvince(),
 				map.getGame().getGameTransientStats().getScienceAdministrationMedianInProvince(),
 				province.getScienceAdministration());
 	}
-	
+
 	private void drawGeoMode(Polygon polygon) {
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream is = classloader
-				.getResourceAsStream("desktop/map/" + getProvince().getTerrainType().toString().toLowerCase() + ".png");
-		Image texture = new Image(is);
-		polygon.setFill(new ImagePattern(texture, 0, 0, 1, 1, true));
+		String terrainType = getProvince().getTerrainType().toString().toLowerCase();
+		ImagePattern image = map.getTextures().get(terrainType);
+		if (image == null) {
+			ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+			InputStream is = classloader.getResourceAsStream("desktop/map/" + terrainType + ".png");
+			Image texture = new Image(is);
+			image = new ImagePattern(texture, 0, 0, 1, 1, true);
+			map.getTextures().put(terrainType, image);
+		}
+		polygon.setFill(image);
 		this.prevColor = null;
 	}
 
@@ -212,7 +244,7 @@ class DProvince extends Group {
 	}
 
 	private void drawSoilFertilityMode(Polygon polygon) {
-		// TODO blue color if fertility < 1
+		// TODO ?? blue color if fertility < 1
 		GameTransientStats stats = map.getGame().getGameTransientStats();
 		drawGradientModeForMedian(polygon, stats.getSoilFertilityMax(), stats.getSoilFertilityAvg(),
 				stats.getSoilFertilityMedian(), province.getSoilFertility());

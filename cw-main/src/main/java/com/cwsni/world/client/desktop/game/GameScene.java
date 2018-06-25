@@ -275,6 +275,14 @@ public class GameScene extends Scene {
 		this.pauseBetweenTurn = pauseBetweenTurn;
 	}
 
+	public boolean isAutoTurn() {
+		return autoTurn;
+	}
+
+	public boolean isPauseBetweenTurn() {
+		return pauseBetweenTurn;
+	}
+
 	public void setMapModeAndRedraw(MapMode mapMode) {
 		runLocked(() -> {
 			this.mapMode = mapMode;

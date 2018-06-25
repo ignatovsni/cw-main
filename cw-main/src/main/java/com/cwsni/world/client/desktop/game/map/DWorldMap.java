@@ -1,7 +1,9 @@
 package com.cwsni.world.client.desktop.game.map;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.model.Game;
@@ -11,6 +13,7 @@ import com.cwsni.world.model.WorldMap;
 import javafx.scene.Group;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.ImagePattern;
 
 public class DWorldMap {
 
@@ -21,9 +24,12 @@ public class DWorldMap {
 	private GameScene gameScene;
 	private MapMode mapMode = MapMode.GEO;
 
+	private Map<String, ImagePattern> textures;
+
 	private DWorldMap(Game game, MapMode mapMode) {
 		this.game = game;
 		this.mapMode = mapMode;
+		textures = new HashMap<>();
 		fillMap(game.getMap());
 	}
 
@@ -41,6 +47,10 @@ public class DWorldMap {
 
 	public Group getMapGroup() {
 		return mapGroup;
+	}
+
+	Map<String, ImagePattern> getTextures() {
+		return textures;
 	}
 
 	public void mouseClickOnProvince(DProvince dProvince, MouseEvent e) {
