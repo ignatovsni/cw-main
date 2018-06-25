@@ -283,7 +283,8 @@ class DProvince extends Group {
 			provinceValue -= baseValue;
 			maxValue -= baseValue;
 			double fraction = maxValue != 0 ? provinceValue / maxValue : 0;
-			fraction = fraction * fraction;
+			//fraction = fraction * fraction;
+			//fraction = Math.sqrt(fraction);
 			pValue = new Color(1, Math.min(1 - fraction, 1), 0, 1);
 		}
 		fillPolygon(polygon, pValue);

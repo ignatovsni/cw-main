@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 import com.cwsni.world.model.Province;
 
@@ -73,15 +74,15 @@ public class GsProvInfoPane extends InternalInfoPane {
 			setLabelText(valuesTerrainTypeLabel, getMessage(prov.getTerrainType().getCodeMsg()));
 			switch (prov.getTerrainType()) {
 			case GRASSLAND:
-				setLabelText(valuesSizeLabel, toLong(prov.getSize()));
-				setLabelText(valuesPopsLabel, toLong(prov.getPopulationAmount()));
+				setLabelText(valuesSizeLabel, DataFormatter.toLong(prov.getSize()));
+				setLabelText(valuesPopsLabel, DataFormatter.toLong(prov.getPopulationAmount()));
 				setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
-				setLabelText(valuesSoilAreaLabel, toLong(prov.getSoilArea()));
-				setLabelText(valuesSoilFertilityLabel, toFraction(prov.getSoilFertility()));
+				setLabelText(valuesSoilAreaLabel, DataFormatter.toLong(prov.getSoilArea()));
+				setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));
 				setLabelText(valuesScienceLabel, "");
-				setLabelText(valuesScienceAgriculture, toLong(prov.getScienceAgriculture()));
-				setLabelText(valuesScienceMedicine, toLong(prov.getScienceMedicine()));
-				setLabelText(valuesScienceAdministration, toLong(prov.getScienceAdministration()));
+				setLabelText(valuesScienceAgriculture, DataFormatter.toLong(prov.getScienceAgriculture()));
+				setLabelText(valuesScienceMedicine, DataFormatter.toLong(prov.getScienceMedicine()));
+				setLabelText(valuesScienceAdministration, DataFormatter.toLong(prov.getScienceAdministration()));
 				break;
 			case OCEAN:
 				break;
@@ -93,7 +94,8 @@ public class GsProvInfoPane extends InternalInfoPane {
 
 	private String createTextForInfrastructure(Province prov) {
 		double infr = prov.getInfrastructure();
-		return toFraction(infr * 100) + " (" + toLong(prov.getInfrastructureAbsoluteValue()) + ")";
+		return DataFormatter.toFraction(infr * 100) + " (" + DataFormatter.toLong(prov.getInfrastructureAbsoluteValue())
+				+ ")";
 	}
 
 	private void setLabelText(RowValue l, String txt) {

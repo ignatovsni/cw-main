@@ -11,9 +11,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserProperties {
+public class UserPreferences {
 
-	private static final Log logger = LogFactory.getLog(UserProperties.class);
+	private static final Log logger = LogFactory.getLog(UserPreferences.class);
 
 	private static final String USER_PROP_FILE_NAME = "user.properties";
 
@@ -24,6 +24,9 @@ public class UserProperties {
 	private static final String MAIN_WINDOW_MAXIMIZED = "main.window.maximized";
 	private static final String TIME_CONTROL_AUTO_TURN = "time-control.auto-turn";
 	private static final String TIME_CONTROL_PAUSE_BETWEEN_TURNS = "time-control.pause-between-turns";
+	private static final String INFO_PANE_GLOBALE_MINIMIZED = "info.pane.global.minimized";
+	private static final String INFO_PANE_PROVINCE_MINIMIZED = "info.pane.province.minimized";
+	private static final String INFO_PANE_PROVINCE_EVENTS_MINIMIZED = "info.pane.province-events.minimized";
 
 	private Properties props;
 
@@ -52,6 +55,9 @@ public class UserProperties {
 		setDefaultProp(MAIN_WINDOW_MAXIMIZED, "0");
 		setDefaultProp(TIME_CONTROL_AUTO_TURN, "1");
 		setDefaultProp(TIME_CONTROL_PAUSE_BETWEEN_TURNS, "1");
+		setDefaultProp(INFO_PANE_GLOBALE_MINIMIZED, "0");
+		setDefaultProp(INFO_PANE_PROVINCE_MINIMIZED, "0");
+		setDefaultProp(INFO_PANE_PROVINCE_EVENTS_MINIMIZED, "0");
 	}
 
 	private void setDefaultProp(String code, String value) {
@@ -112,11 +118,11 @@ public class UserProperties {
 	public boolean isMainWindowMaximized() {
 		return getIntegerOrNull(MAIN_WINDOW_MAXIMIZED) == 1;
 	}
-	
+
 	public boolean isTimeControlAutoTurn() {
 		return getIntegerOrNull(TIME_CONTROL_AUTO_TURN) == 1;
 	}
-	
+
 	public boolean isTimeControlPauseBetweenTurns() {
 		return getIntegerOrNull(TIME_CONTROL_PAUSE_BETWEEN_TURNS) == 1;
 	}
@@ -147,6 +153,30 @@ public class UserProperties {
 
 	public void setTimeControlPauseBetweenTurns(boolean v) {
 		setProp(TIME_CONTROL_PAUSE_BETWEEN_TURNS, v ? 1 : 0);
+	}
+
+	public void setInfoPaneGlobalMinimized(boolean v) {
+		setProp(INFO_PANE_GLOBALE_MINIMIZED, v ? 1 : 0);
+	}
+
+	public boolean isInfoPaneGlobalMinimized() {
+		return getIntegerOrNull(INFO_PANE_GLOBALE_MINIMIZED) == 1;
+	}
+
+	public void setInfoPaneProvinceMinimized(boolean v) {
+		setProp(INFO_PANE_PROVINCE_MINIMIZED, v ? 1 : 0);
+	}
+
+	public boolean isInfoPaneProvinceMinimized() {
+		return getIntegerOrNull(INFO_PANE_PROVINCE_MINIMIZED) == 1;
+	}
+
+	public void setInfoPaneProvinceEventsMinimized(boolean v) {
+		setProp(INFO_PANE_PROVINCE_EVENTS_MINIMIZED, v ? 1 : 0);
+	}
+
+	public boolean isInfoPaneProvinceEventsMinimized() {
+		return getIntegerOrNull(INFO_PANE_PROVINCE_EVENTS_MINIMIZED) == 1;
 	}
 
 }

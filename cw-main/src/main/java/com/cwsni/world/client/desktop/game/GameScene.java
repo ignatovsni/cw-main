@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.UserPreferences;
 import com.cwsni.world.client.desktop.game.map.DWorldMap;
 import com.cwsni.world.client.desktop.game.map.MapMode;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
@@ -44,7 +45,7 @@ public class GameScene extends Scene {
 	private GameGenerator gameGenerator;
 
 	@Autowired
-	private GsToolBar toolBar;
+	private GsMapToolBar mapToolBar;
 
 	@Autowired
 	private GsMenuBar menuBar;
@@ -86,26 +87,33 @@ public class GameScene extends Scene {
 
 	public void init() {
 		mapPane = new ZoomableScrollPane();
-		toolBar.init(this);
+		mapToolBar.init(this);
 		menuBar.init(this);
 		globalInfoPane.init(this);
 		provInfoPane.init(this);
 		provEventsInfoPane.init(this);
 		timeControl.init(this);
 
-		VBox topSection = new VBox();
-		topSection.getChildren().addAll(menuBar, toolBar);
+		VBox menuSection = new VBox();
+		menuSection.getChildren().addAll(menuBar);
 
 		VBox rightSection = new VBox();
 		rightSection.getChildren().addAll(timeControl, globalInfoPane, provInfoPane, provEventsInfoPane);
 		rightSection.setMinWidth(220);
 		rightSection.setMaxWidth(220);
 
+		BorderPane mapBlock = new BorderPane();
+		mapBlock.setBottom(mapToolBar);
+		mapBlock.setCenter(mapPane);
+
+		BorderPane leftSection = new BorderPane();
+		leftSection.setTop(menuSection);
+		leftSection.setCenter(mapBlock);
+
 		BorderPane layout = (BorderPane) getRoot();
-		layout.setTop(topSection);
 		layout.setBottom(createStatusBar());
 		layout.setRight(rightSection);
-		layout.setCenter(mapPane);
+		layout.setCenter(leftSection);
 
 		setupGame(gameGenerator.createEmptyGame());
 	}
@@ -309,6 +317,21 @@ public class GameScene extends Scene {
 		} finally {
 			releaseLock();
 		}
+	}
+
+	public void setUserPreferences(UserPreferences userPref) {
+		userPref.setTimeControlAutoTurn(isAutoTurn());
+		userPref.setTimeControlPauseBetweenTurns(isPauseBetweenTurn());
+		userPref.setInfoPaneGlobalMinimized(globalInfoPane.isMinimazed());
+		userPref.setInfoPaneProvinceMinimized(provInfoPane.isMinimazed());
+		userPref.setInfoPaneProvinceEventsMinimized(provEventsInfoPane.isMinimazed());
+	}
+
+	public void applyUserPreferences(UserPreferences userPref) {
+		timeControl.applyUserPreferences(userPref);
+		globalInfoPane.setMinimized(userPref.isInfoPaneGlobalMinimized());
+		provInfoPane.setMinimized(userPref.isInfoPaneProvinceMinimized());
+		provEventsInfoPane.setMinimized(userPref.isInfoPaneProvinceEventsMinimized());
 	}
 
 }

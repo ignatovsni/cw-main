@@ -3,6 +3,7 @@ package com.cwsni.world.client.desktop.game;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 
 import javafx.scene.layout.GridPane;
@@ -37,9 +38,10 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 
 	public void refreshInfo() {
 		if (gameScene.getGame() != null) {
-			valuesTurnLabel.setValue(toString(gameScene.getGame().getTurn().getTurnTexToDisplay()));
-			valuesProvsLabel.setValue(toString(gameScene.getGame().getMap().getProvinces().size()));
-			valuesTotalPopsLabel.setValue(toLong(gameScene.getGame().getGameTransientStats().getPopulationTotal()));
+			valuesTurnLabel.setValue(DataFormatter.toString(gameScene.getGame().getTurn().getTurnTexToDisplay()));
+			valuesProvsLabel.setValue(DataFormatter.toString(gameScene.getGame().getMap().getProvinces().size()));
+			valuesTotalPopsLabel
+					.setValue(DataFormatter.toLong(gameScene.getGame().getGameTransientStats().getPopulationTotal()));
 		}
 	}
 

@@ -7,10 +7,12 @@ import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
 public class InternalInfoPane extends BorderPane {
@@ -18,7 +20,7 @@ public class InternalInfoPane extends BorderPane {
 	protected class RowValue {
 		private Node nameNode;
 		private Label valueNode;
-		
+
 		public RowValue(Node nameColumn, Label valueColumn) {
 			this.nameNode = nameColumn;
 			this.valueNode = valueColumn;
@@ -33,24 +35,55 @@ public class InternalInfoPane extends BorderPane {
 			valueNode.setText(v);
 		}
 
-
 	}
 
 	@Autowired
 	private LocaleMessageSource messageSource;
+	private Pane internalPane;
+	private boolean isMinimized = false;
+	private Button modeButton;
 
 	protected String getMessage(String code) {
 		return messageSource.getMessage(code);
 	}
 
 	public void init(String title, Pane internalPane) {
-		BorderPane titleBar = new BorderPane();
-		titleBar.setStyle("-fx-background-color: #999999; -fx-padding: 3");
-		Label label = new Label(title);
-		titleBar.setLeft(label);
-		setStyle("-fx-border-width: 1; -fx-border-color: black");
+		this.internalPane = internalPane;
+		Pane titleBar = createTitle(title);
 		setTop(titleBar);
 		setCenter(internalPane);
+		setMinimized(isMinimized);
+	}
+
+	private Pane createTitle(String title) {
+		modeButton = new Button("");
+		modeButton.setStyle("-fx-background-color: #999999; -fx-padding: 3");
+		modeButton.setOnAction(e -> {
+			setMinimized(!isMinimized);
+		});
+
+		HBox titleBar = new HBox();
+		titleBar.setStyle("-fx-background-color: #999999; -fx-padding: 3");
+		Label label = new Label(title);
+		label.setStyle("-fx-background-color: #999999; -fx-padding: 3");
+		titleBar.getChildren().addAll(modeButton, label);
+		setStyle("-fx-border-width: 1; -fx-border-color: black");
+		return titleBar;
+	}
+
+	public void setMinimized(boolean newMode) {
+		isMinimized = newMode;
+		if (isMinimized) {
+			modeButton.setText(">");
+			setCenter(null);
+		} else {
+			setCenter(internalPane);
+			modeButton.setText("v");
+		}
+	}
+
+	public boolean isMinimazed() {
+		return isMinimized;
 	}
 
 	protected GridPane createDefaultGrid() {
@@ -88,18 +121,6 @@ public class InternalInfoPane extends BorderPane {
 	protected Label createGridValueColumn(Object value) {
 		String txt = String.valueOf(value);
 		return new Label(txt);
-	}
-
-	protected String toString(Object o) {
-		return String.valueOf(o);
-	}
-
-	protected String toLong(long v) {
-		return DataFormatter.formatLongNumber(v);
-	}
-	
-	protected String toFraction(double v) {
-		return DataFormatter.formatFractionNumber(v);
 	}
 
 }

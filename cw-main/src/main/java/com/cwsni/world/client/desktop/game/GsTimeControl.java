@@ -5,10 +5,13 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.util.InternalInfoPane;
+import com.cwsni.world.client.desktop.UserPreferences;
+import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
+import com.cwsni.world.client.desktop.util.DataFormatter;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,25 +20,35 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Lighting;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 @Component
 @Scope("prototype")
-public class GsTimeControl extends InternalInfoPane {
+public class GsTimeControl extends BorderPane {
 
 	private static final Log logger = LogFactory.getLog(GsTimeControl.class);
+
+	@Autowired
+	private LocaleMessageSource messageSource;
 
 	private GameScene gameScene;
 
 	private List<Button> buttons;
 	private Button pauseButton;
 
+	private RadioButton rbAutoTurn;
+
+	private RadioButton rbPauseBetweenTurn;
+
+	private Label labelPauseBetweenTurn;
+
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
 		Pane pane = createUI();
-		init(getMessage("info.pane.time.title"), pane);
+		setCenter(pane);
 	}
 
 	private Pane createUI() {
@@ -78,9 +91,9 @@ public class GsTimeControl extends InternalInfoPane {
 		Button systemButton = new Button(getMessage("?"));
 		systemButton.setTooltip(new Tooltip("log jvm information"));
 		systemButton.setOnAction(e -> {
-			logger.info("totalMemory: " + toLong(Runtime.getRuntime().totalMemory()));
-			logger.info("maxMemory: " + toLong(Runtime.getRuntime().maxMemory()));
-			logger.info("freeMemory: " + toLong(Runtime.getRuntime().freeMemory()));
+			logger.info("totalMemory: " + DataFormatter.toLong(Runtime.getRuntime().totalMemory()));
+			logger.info("maxMemory: " + DataFormatter.toLong(Runtime.getRuntime().maxMemory()));
+			logger.info("freeMemory: " + DataFormatter.toLong(Runtime.getRuntime().freeMemory()));
 		});
 
 		buttons = new ArrayList<>();
@@ -95,17 +108,15 @@ public class GsTimeControl extends InternalInfoPane {
 		hbox.getChildren().addAll(buttons);
 		VBox vbox = new VBox();
 
-		RadioButton rbAutoTurn = new RadioButton();
-		RadioButton rbPauseBetweenTurn = new RadioButton();
-		Label labelPauseBetweenTurn = new Label(getMessage("info.pane.time.rb.pause.title"));
+		rbAutoTurn = new RadioButton();
+		rbPauseBetweenTurn = new RadioButton();
+		labelPauseBetweenTurn = new Label(getMessage("info.pane.time.rb.pause.title"));
 		rbAutoTurn.setOnAction(e -> {
 			gameScene.setAutoTurn(rbAutoTurn.isSelected());
-			rbPauseBetweenTurn.setDisable(!rbAutoTurn.isSelected());
-			labelPauseBetweenTurn.setDisable(!rbAutoTurn.isSelected());
+			switchPauseBetweenTurn();
 		});
 		rbAutoTurn.setSelected(gameScene.isAutoTurn());
-		rbPauseBetweenTurn.setDisable(!rbAutoTurn.isSelected());
-		labelPauseBetweenTurn.setDisable(!rbAutoTurn.isSelected());
+		switchPauseBetweenTurn();
 
 		rbPauseBetweenTurn.setOnAction(e -> {
 			gameScene.setPauseBetweenTurn(rbPauseBetweenTurn.isSelected());
@@ -118,6 +129,11 @@ public class GsTimeControl extends InternalInfoPane {
 		return vbox;
 	}
 
+	private void switchPauseBetweenTurn() {
+		rbPauseBetweenTurn.setDisable(!rbAutoTurn.isSelected());
+		labelPauseBetweenTurn.setDisable(!rbAutoTurn.isSelected());
+	}
+
 	private void pressButton(Button buttonMode, GsTimeMode timeMode) {
 		buttons.forEach(b -> b.setEffect(null));
 		buttonMode.setEffect(new Lighting());
@@ -128,6 +144,18 @@ public class GsTimeControl extends InternalInfoPane {
 		buttons.forEach(b -> b.setEffect(null));
 		pauseButton.setEffect(new Lighting());
 		gameScene.setTimeModeAndRun(GsTimeMode.PAUSE);
+	}
+
+	protected String getMessage(String code) {
+		return messageSource.getMessage(code);
+	}
+
+	public void applyUserPreferences(UserPreferences userPref) {
+		rbAutoTurn.setSelected(userPref.isTimeControlAutoTurn());
+		rbPauseBetweenTurn.setSelected(userPref.isTimeControlPauseBetweenTurns());
+		switchPauseBetweenTurn();
+		gameScene.setAutoTurn(rbAutoTurn.isSelected());
+		gameScene.setPauseBetweenTurn(rbPauseBetweenTurn.isSelected());
 	}
 
 }

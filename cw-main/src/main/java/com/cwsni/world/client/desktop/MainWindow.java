@@ -57,17 +57,14 @@ public class MainWindow extends Application {
 		if (stage == null || !successfulStart) {
 			return;
 		}
-		UserProperties userProp = getUserProperties();
+		UserPreferences userProp = getUserProperties();
 		userProp.setMainWindowHeight(stage.getHeight());
 		userProp.setMainWindowWidth(stage.getWidth());
 		userProp.setMainWindowPositionX(stage.getX());
 		userProp.setMainWindowPositionY(stage.getY());
 		userProp.setMainWindowMaximazed(stage.isMaximized());
-
 		if (stage.getScene() instanceof GameScene) {
-			GameScene scene = (GameScene) stage.getScene();
-			userProp.setTimeControlAutoTurn(scene.isAutoTurn());
-			userProp.setTimeControlPauseBetweenTurns(scene.isPauseBetweenTurn());
+			((GameScene) stage.getScene()).setUserPreferences(userProp);
 		}
 	}
 
@@ -83,25 +80,21 @@ public class MainWindow extends Application {
 
 	private void createGameScene(Stage stage) {
 		GameScene gameScene = getGameScene();
-		applyUserPreferences(gameScene);
 		gameScene.setStage(stage);
 		gameScene.init();
 		stage.setScene(gameScene);
 	}
 
-	private void applyUserPreferences(GameScene gameScene) {
-		UserProperties userProp = getUserProperties();
-		gameScene.setAutoTurn(userProp.isTimeControlAutoTurn());
-		gameScene.setPauseBetweenTurn(userProp.isTimeControlPauseBetweenTurns());
-	}
-
 	private void applyUserPreferences(Stage stage) {
-		UserProperties userProp = getUserProperties();
-		stage.setWidth(userProp.getMainWindowWidth());
-		stage.setHeight(userProp.getMainWindowHeight());
-		stage.setX(userProp.getMainWindowPosX());
-		stage.setY(userProp.getMainWindowPosY());
-		stage.setMaximized(userProp.isMainWindowMaximized());
+		UserPreferences userPref = getUserProperties();
+		stage.setWidth(userPref.getMainWindowWidth());
+		stage.setHeight(userPref.getMainWindowHeight());
+		stage.setX(userPref.getMainWindowPosX());
+		stage.setY(userPref.getMainWindowPosY());
+		stage.setMaximized(userPref.isMainWindowMaximized());
+		if (stage.getScene() instanceof GameScene) {
+			((GameScene) stage.getScene()).applyUserPreferences(userPref);
+		}
 	}
 
 	private String getMessage(String code) {
@@ -112,8 +105,8 @@ public class MainWindow extends Application {
 		return springContext.getBean(GameScene.class);
 	}
 
-	private UserProperties getUserProperties() {
-		return springContext.getBean(UserProperties.class);
+	private UserPreferences getUserProperties() {
+		return springContext.getBean(UserPreferences.class);
 	}
 
 }

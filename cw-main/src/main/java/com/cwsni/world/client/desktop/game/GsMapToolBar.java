@@ -18,7 +18,7 @@ import javafx.scene.effect.Lighting;
 
 @Component
 @Scope("prototype")
-public class GsToolBar extends ToolBar {
+public class GsMapToolBar extends ToolBar {
 
 	@Autowired
 	private LocaleMessageSource messageSource;
