@@ -19,6 +19,7 @@ public class DataGame {
 	private List<Event> events = new ArrayList<>();
 	private int lastEventId;
 	private int lastCountryId;
+	private int lastArmyId;
 
 	private GameStats gameStats = new GameStats();
 
@@ -113,6 +114,18 @@ public class DataGame {
 
 	public int nextCountryId() {
 		return ++lastCountryId;
+	}
+
+	public int getLastArmyId() {
+		return lastArmyId;
+	}
+
+	public void setLastArmyId(int lastArmyId) {
+		this.lastArmyId = lastArmyId;
+	}
+	
+	public int nextArmyId() {
+		return ++lastArmyId;
 	}
 
 }

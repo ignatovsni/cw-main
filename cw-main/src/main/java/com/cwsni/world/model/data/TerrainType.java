@@ -1,6 +1,10 @@
 package com.cwsni.world.model.data;
 
 public enum TerrainType {
+	// TODO for water provinces I can use "complexity" - короче, некая "сложность
+	// мореходства", на практике это может быть просто расстояние от берега.
+	// Чем более развита наука, тем дальше могут плавать корабли.
+
 	GRASSLAND("model.province.terrain-type.grassland"), OCEAN("model.province.terrain-type.ocean");
 
 	/**

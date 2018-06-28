@@ -11,10 +11,11 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.client.desktop.UserPreferences;
 import com.cwsni.world.client.desktop.game.map.DWorldMap;
 import com.cwsni.world.client.desktop.game.map.MapMode;
-import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
 import com.cwsni.world.common.GameGenerator;
 import com.cwsni.world.common.GameRepository;
+import com.cwsni.world.game.GameHandler;
+import com.cwsni.world.game.ai.AIHandler;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 
@@ -34,9 +35,6 @@ import javafx.stage.Stage;
 public class GameScene extends Scene {
 
 	private static final Log logger = LogFactory.getLog(GameScene.class);
-
-	@Autowired
-	private LocaleMessageSource messageSource;
 
 	@Autowired
 	private GameRepository gameRepository;
@@ -64,6 +62,9 @@ public class GameScene extends Scene {
 
 	@Autowired
 	private GsTimeControl timeControl;
+
+	@Autowired
+	private GameHandler gameHadler;
 
 	private Stage stage;
 	private ZoomableScrollPane mapPane;
@@ -234,7 +235,7 @@ public class GameScene extends Scene {
 		Task<Integer> task = new Task<Integer>() {
 			@Override
 			protected Integer call() throws Exception {
-				runLocked(() -> processNewTurn());
+				runLocked(() -> gameHadler.processNewTurn(game, timeMode, autoTurn, pauseBetweenTurn));
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
@@ -263,25 +264,8 @@ public class GameScene extends Scene {
 		}
 	}
 
-	private void processNewTurn() {
-		try {
-			for (int i = 0; i < timeMode.getTurnPerTime(); i++) {
-				game.processNewTurn(messageSource);
-			}
-		} catch (Exception e) {
-			logError(e);
-		}
-		if (autoTurn && pauseBetweenTurn) {
-			try {
-				Thread.sleep(50 * Math.max((10 - timeMode.getTurnPerTime()), 0));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 	private void logError(Exception e) {
-		logger.error(e);
+		logger.error(e.getMessage(), e);
 	}
 
 	public void setAutoTurn(boolean autoTurn) {

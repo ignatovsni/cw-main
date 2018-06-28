@@ -6,12 +6,19 @@ public class DataArmy {
 	 * неохотно
 	 */
 
+	private int id;
 	private int soldiers;
 	private int training;
 	private int organisation;
 	private int equipment;
-
 	private Integer province;
+
+	public DataArmy() {
+	}
+
+	public DataArmy(int id) {
+		this.setId(id);
+	}
 
 	public int getSoldiers() {
 		return soldiers;
@@ -51,6 +58,14 @@ public class DataArmy {
 
 	public void setProvince(Integer province) {
 		this.province = province;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 }

@@ -5,8 +5,10 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.data.DataGame;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +21,9 @@ public class GameRepository {
 	private static final Log logger = LogFactory.getLog(GameRepository.class);
 
 	final static String QUICK_SAVE_FILE_NAME = "quick-save.cw";
+
+	@Autowired
+	private LocaleMessageSource messageSource;
 
 	public void quickSaveGame(Game game) {
 		logger.info("quick save : " + game.logDescription());
@@ -44,15 +49,15 @@ public class GameRepository {
 		ObjectMapper objectMapper = new ObjectMapper();
 		Game game = null;
 		try {
-			DataGame dataGame = objectMapper.readValue(new File(QUICK_SAVE_FILE_NAME), DataGame.class);			
+			DataGame dataGame = objectMapper.readValue(new File(QUICK_SAVE_FILE_NAME), DataGame.class);
 			game = new Game();
-			game.buildFrom(dataGame);
+			game.buildFrom(dataGame, messageSource);
 			logger.info("quick load is successful : " + game.logDescription());
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.info("quick load is failed ", e);
 			game = null;
-		}		
+		}
 		return game;
 	}
 

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import com.cwsni.world.CwException;
+import com.cwsni.world.common.algorithms.Node;
 import com.cwsni.world.model.data.DataProvince;
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.Point;
@@ -15,7 +16,7 @@ import com.cwsni.world.model.events.Event;
 import com.cwsni.world.model.events.EventCollection;
 import com.cwsni.world.model.events.EventTarget;
 
-public class Province implements EventTarget {
+public class Province implements EventTarget, Node<Province> {
 
 	private DataProvince data;
 	private List<Province> neighbors;
@@ -66,8 +67,12 @@ public class Province implements EventTarget {
 		}
 	}
 
+	public Integer getCountryId() {
+		return data.getCountry();
+	}
+
 	public void setCountry(Country c) {
-		data.setCountry(c.getId());
+		data.setCountry(c != null ? c.getId() : null);
 	}
 
 	public double getSoilFertility() {
@@ -306,5 +311,23 @@ public class Province implements EventTarget {
 
 	public void removeArmy(Army a) {
 		armies.remove(a);
+	}
+
+	@Override
+	public int hashCode() {
+		return data.getId();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != getClass()) {
+			return false;
+		}
+		return ((Province) obj).getId() == getId();
+	}
+
+	@Override
+	public String toString() {
+		return "province with id = " + getId() + ";";
 	}
 }

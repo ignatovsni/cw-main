@@ -9,8 +9,10 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.data.DataCulture;
@@ -25,6 +27,9 @@ import com.cwsni.world.model.data.Turn;
 
 @Component
 public class GameGenerator {
+
+	@Autowired
+	private LocaleMessageSource messageSource;
 
 	private class TempData {
 		Map<Integer, DataProvince> provByIds = new HashMap<>();
@@ -49,7 +54,7 @@ public class GameGenerator {
 		fillPopulation(dataGame);
 		fillInfrastructure(dataGame);
 		Game game = new Game();
-		game.buildFrom(dataGame);
+		game.buildFrom(dataGame, messageSource);
 		return game;
 	}
 
@@ -233,7 +238,7 @@ public class GameGenerator {
 			}
 		});
 	}
-	
+
 	private void initCulture(DataProvince p, DataPopulation pop, DataGame game) {
 		GameParams gParams = game.getGameParams();
 		DataCulture cult = new DataCulture();
@@ -242,17 +247,18 @@ public class GameGenerator {
 		cult.setBlue(gParams.getRandom().nextInt(255));
 		pop.setCulture(cult);
 	}
+
 	private void initScience(DataPopulation pop, GameParams gParams) {
 		DataScienceCollection.allGetter4Science().forEach(
 				scienceGetter -> scienceGetter.apply(pop.getScience()).setAmount(gParams.getScienceValueStart()));
 	}
 
-	
 	private void fillInfrastructure(DataGame game) {
 		GameParams gParams = game.getGameParams();
 		game.getMap().getProvinces().stream().filter(p -> (p.getTerrainType().isPopulationPossible())).forEach(p -> {
 			int popsAmpount = p.getPopulation().stream().mapToInt(pop -> pop.getAmount()).sum();
-			p.setInfrastructure((int) (popsAmpount * game.getGameParams().getInfrastructureNaturalLimitFromPopulation()));
+			p.setInfrastructure(
+					(int) (popsAmpount * game.getGameParams().getInfrastructureNaturalLimitFromPopulation()));
 		});
 	}
 

@@ -12,7 +12,7 @@ public class GameParams {
 	private long seed = System.currentTimeMillis();
 	private int rows = 10;
 	private int columns = 10;
-	private int provinceRadius = 20;
+	private int provinceRadius = 10;
 	private int terrainCorePoints = 10;
 	private double oceanPercent = 0.4;
 

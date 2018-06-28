@@ -45,4 +45,14 @@ public class WorldMap {
 
 	}
 
+	/**
+	 * Find distance quickly just for comparison
+	 * 
+	 */
+	public double findRelativeDistanceBetweenProvs(int provId1, int provId2) {
+		Province p1 = findProvById(provId1);
+		Province p2 = findProvById(provId2);
+		return Math.pow(p1.getCenter().getX()-p2.getCenter().getX(), 2) + Math.pow(p1.getCenter().getY()-p2.getCenter().getY(), 2);
+	}
+
 }

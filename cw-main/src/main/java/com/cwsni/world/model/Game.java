@@ -1,6 +1,9 @@
 package com.cwsni.world.model;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
@@ -18,6 +21,8 @@ public class Game implements EventTarget {
 	private WorldMap map;
 	private EventCollection events;
 	private CountryCollection countries;
+	private LocaleMessageSource messageSource;
+	private Map<Integer, Army> armies;
 
 	public List<Event> getEvents() {
 		return events.getEvents();
@@ -29,6 +34,10 @@ public class Game implements EventTarget {
 
 	public int nextCountryId() {
 		return data.nextCountryId();
+	}
+
+	public int nextArmyId() {
+		return data.nextArmyId();
 	}
 
 	public WorldMap getMap() {
@@ -80,12 +89,12 @@ public class Game implements EventTarget {
 		return countries.getCountries();
 	}
 
-	public void addCountry(Country c) {
+	public void registerCountry(Country c) {
 		data.getCountries().add(c.getCountryData());
 		countries.addCountry(c);
 	}
 
-	public void removeCountry(Country c) {
+	public void unregisterCountry(Country c) {
 		data.getCountries().remove(c.getCountryData());
 		countries.removeCountry(c);
 	}
@@ -107,13 +116,25 @@ public class Game implements EventTarget {
 		this.gameTransientStats = stats;
 	}
 
-	public void processNewTurn(LocaleMessageSource messageSource) {
+	public void processNewTurn() {
 		getTurn().increment();
+		armies.values().forEach(a -> a.processNewTurn());
+		processNewProbablyCountries();
+		dismissEmptyCountries();
 		map.getProvinces().forEach(p -> p.processNewTurn());
 		Event.processEvents(this, messageSource);
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
-		processNewProbablyCountries();
 		calcGameStats();
+	}
+
+	private void dismissEmptyCountries() {
+		List<Country> countryList = new LinkedList<>(countries.getCountries());
+		countryList.forEach(c -> {
+			if (c.getProvinces().isEmpty()) {
+				c.dismiss();
+				unregisterCountry(c);
+			}
+		});
 	}
 
 	private void processNewProbablyCountries() {
@@ -140,8 +161,11 @@ public class Game implements EventTarget {
 		data.setTurn(turn);
 	}
 
-	public void buildFrom(DataGame dataGame) {
+	public void buildFrom(DataGame dataGame, LocaleMessageSource messageSource) {
 		this.data = dataGame;
+		this.messageSource = messageSource;
+
+		armies = new HashMap<>();
 
 		events = new EventCollection();
 		events.buildFrom(this, data.getEvents());
@@ -167,6 +191,18 @@ public class Game implements EventTarget {
 
 	public Object getSaveData() {
 		return data;
+	}
+
+	public void registerArmy(Army a) {
+		armies.put(a.getId(), a);
+	}
+
+	public void unregisterArmy(Army a) {
+		armies.remove(a.getId());
+	}
+
+	public Army findArmyById(Integer id) {
+		return armies.get(id);
 	}
 
 }
