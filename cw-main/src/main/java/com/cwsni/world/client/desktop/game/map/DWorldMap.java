@@ -18,6 +18,7 @@ import javafx.scene.paint.ImagePattern;
 public class DWorldMap {
 
 	private List<DProvince> provinces;
+	private Map<Integer, DProvince> provincesById;
 	private Game game;
 	private Group mapGroup;
 	private DProvince selectedProvince;
@@ -36,7 +37,12 @@ public class DWorldMap {
 	private void fillMap(WorldMap map) {
 		List<Province> pvs = map.getProvinces();
 		provinces = new ArrayList<>(pvs.size());
-		pvs.forEach(p -> provinces.add(DProvince.createDProvince(this, p, game.getGameParams().getProvinceRadius())));
+		provincesById = new HashMap<>(pvs.size());
+		pvs.forEach(p -> {
+			DProvince dProvince = DProvince.createDProvince(this, p, game.getGameParams().getProvinceRadius());
+			provinces.add(dProvince);
+			provincesById.put(p.getId(), dProvince);
+		});
 		mapGroup = new Group();
 		mapGroup.getChildren().addAll(provinces);
 	}
@@ -53,13 +59,24 @@ public class DWorldMap {
 		return textures;
 	}
 
-	public void mouseClickOnProvince(DProvince dProvince, MouseEvent e) {
+	void mouseClickOnProvince(DProvince dProvince, MouseEvent e) {
 		if (e.getButton() == MouseButton.PRIMARY) {
+			// selectProvince(dProvince) can be removed, because it is invoking by
+			// GameScene::selectProvince
+			// But I keep it for consistency
 			selectProvince(dProvince);
+			gameScene.selectProvince(dProvince.getProvince());
 		}
 	}
 
+	public void selectProvince(Integer provId) {
+		selectProvince(provincesById.get(provId));
+	}
+
 	private void selectProvince(DProvince dProvince) {
+		if (selectedProvince == dProvince) {
+			return;
+		}
 		if (selectedProvince != null) {
 			selectedProvince.selectProvince(false);
 		}
@@ -67,7 +84,6 @@ public class DWorldMap {
 		if (selectedProvince != null) {
 			selectedProvince.selectProvince(true);
 		}
-		gameScene.selectProvince(dProvince.getProvince());
 	}
 
 	public void setGameScene(GameScene gameScene) {

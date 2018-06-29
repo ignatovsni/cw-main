@@ -1,5 +1,9 @@
 package com.cwsni.world.client.desktop.game;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 import org.apache.commons.logging.Log;
@@ -81,6 +85,9 @@ public class GameScene extends Scene {
 	private boolean autoTurn = true;
 	private boolean pauseBetweenTurn = true;
 
+	private Map<MapMode, Stage> otherMapWindows;
+	private Map<MapMode, DWorldMap> otherMaps;
+
 	private Semaphore lockObj = new Semaphore(1);
 
 	public GameScene() {
@@ -124,6 +131,9 @@ public class GameScene extends Scene {
 		layout.setRight(rightSection);
 		layout.setCenter(leftSection);
 
+		otherMapWindows = new HashMap<>();
+		otherMaps = new HashMap<>();
+
 		setupGame(gameGenerator.createEmptyGame());
 	}
 
@@ -147,8 +157,16 @@ public class GameScene extends Scene {
 			this.game = worldMap.getGame();
 			this.worldMap = worldMap;
 			worldMap.setGameScene(this);
+			closeOtherMaps();
 			refreshAllVisibleInfoAndResetSelections();
 		});
+	}
+
+	private void closeOtherMaps() {
+		List<Stage> copyMaps = new ArrayList<>(otherMapWindows.values());
+		copyMaps.forEach(stage -> stage.hide());
+		otherMapWindows.clear();
+		otherMaps.clear();
 	}
 
 	private Pane createStatusBar() {
@@ -168,7 +186,9 @@ public class GameScene extends Scene {
 		runLocked(() -> {
 			this.selectedProvinceId = province != null ? province.getId() : null;
 			if (province != null) {
-				statusBarText.setText("Selected province with id = " + province.getId());
+				worldMap.selectProvince(selectedProvinceId);
+				otherMaps.values().forEach(map -> map.selectProvince(selectedProvinceId));
+				statusBarText.setText("Selected province with id = " + selectedProvinceId);
 			}
 			refreshProvinceInfos();
 		});
@@ -191,7 +211,7 @@ public class GameScene extends Scene {
 
 	public void exitApp() {
 		Platform.exit();
-		//stage.close();
+		// stage.close();
 	}
 
 	public Game getGame() {
@@ -262,6 +282,7 @@ public class GameScene extends Scene {
 	private void refreshViewAndStartNewTurn() {
 		refreshAllVisibleInfo();
 		getWorldMap().setMapModeAndRedraw(mapMode);
+		otherMaps.forEach((mode, map) -> map.setMapModeAndRedraw(mode));
 		if (autoTurn) {
 			startProcessingNewTurn();
 		} else {
@@ -334,6 +355,39 @@ public class GameScene extends Scene {
 		provInfoPane.setMinimized(userPref.isInfoPaneProvinceMinimized());
 		provScienceInfoPane.setMinimized(userPref.isInfoPaneProvinceScienceMinimized());
 		provEventsInfoPane.setMinimized(userPref.isInfoPaneProvinceEventsMinimized());
+	}
+
+	public void openNewMapForMode(MapMode mapModeForNewWindow, String tooltip) {
+		Stage window = otherMapWindows.get(mapModeForNewWindow);
+		if (window != null) {
+			window.close();
+			otherMapWindows.remove(mapModeForNewWindow);
+			otherMaps.remove(mapModeForNewWindow);
+		} else {
+			window = new Stage();
+			window.setTitle(tooltip);
+			window.setWidth(mapPane.getWidth());
+			window.setHeight(mapPane.getHeight());
+			window.setOnCloseRequest(e -> {
+				otherMapWindows.remove(mapModeForNewWindow);
+				otherMaps.remove(mapModeForNewWindow);
+			});
+
+			BorderPane root = new BorderPane();
+			Scene scene = new Scene(root);
+			ZoomableScrollPane newMapPane = new ZoomableScrollPane();
+			root.setCenter(newMapPane);
+
+			DWorldMap newWorldMap = DWorldMap.createDMap(game, mapModeForNewWindow);
+			newMapPane.setTarget(newWorldMap.getMapGroup());
+			newWorldMap.setGameScene(this);
+
+			otherMapWindows.put(mapModeForNewWindow, window);
+			otherMaps.put(mapModeForNewWindow, newWorldMap);
+
+			window.setScene(scene);
+			window.show();
+		}
 	}
 
 }

@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Lighting;
+import javafx.scene.input.MouseButton;
 
 @Component
 @Scope("prototype")
@@ -32,86 +33,37 @@ public class GsMapToolBar extends ToolBar {
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
-		Button toolBarMapGeoMode = new Button(getMessage("toolbar.map.mode.geo.button.text"));
-		toolBarMapGeoMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.geo.button.tooltip")));
-		toolBarMapGeoMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapGeoMode, MapMode.GEO);
-		});
-		toolBarMapGeoMode.setEffect(new Lighting());
-
-		Button toolBarMapPoliticalMode = new Button(getMessage("toolbar.map.mode.political.button.text"));
-		toolBarMapPoliticalMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.political.button.tooltip")));
-		toolBarMapPoliticalMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapPoliticalMode, MapMode.POLITICAL);
-		});
-		
-		Button toolBarMapPopsMode = new Button(getMessage("toolbar.map.mode.population.button.text"));
-		toolBarMapPopsMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.population.button.tooltip")));
-		toolBarMapPopsMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapPopsMode, MapMode.POPULATION);
-		});
-		
-		Button toolBarMapCultureMode = new Button(getMessage("toolbar.map.mode.culture.button.text"));
-		toolBarMapCultureMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.culture.button.tooltip")));
-		toolBarMapCultureMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapCultureMode, MapMode.CULTURE);
-		});
-		
-		Button toolBarMapInfrMode = new Button(getMessage("toolbar.map.mode.infrastructure.button.text"));
-		toolBarMapInfrMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.infrastructure.button.tooltip")));
-		toolBarMapInfrMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapInfrMode, MapMode.INFRASTRUCTURE);
-		});
-
-		Button toolBarMapSoilMode = new Button(getMessage("toolbar.map.mode.soil.button.text"));
-		toolBarMapSoilMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.soil.button.tooltip")));
-		toolBarMapSoilMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapSoilMode, MapMode.SOIL);
-		});
-
-		Button toolBarMapScienceAgricultureMode = new Button(
-				getMessage("toolbar.map.mode.science.agriculture.button.text"));
-		toolBarMapScienceAgricultureMode
-				.setTooltip(new Tooltip(getMessage("toolbar.map.mode.science.agriculture.button.tooltip")));
-		toolBarMapScienceAgricultureMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapScienceAgricultureMode, MapMode.SCIENCE_AGRICULTURE);
-		});
-
-		Button toolBarMapScienceMedicineMode = new Button(
-				getMessage("toolbar.map.mode.science.medicine.button.text"));
-		toolBarMapScienceMedicineMode
-				.setTooltip(new Tooltip(getMessage("toolbar.map.mode.science.medicine.button.tooltip")));
-		toolBarMapScienceMedicineMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapScienceMedicineMode, MapMode.SCIENCE_MEDICINE);
-		});
-		
-		Button toolBarMapScienceAdministrationMode = new Button(
-				getMessage("toolbar.map.mode.science.administration.button.text"));
-		toolBarMapScienceAdministrationMode
-				.setTooltip(new Tooltip(getMessage("toolbar.map.mode.science.administration.button.tooltip")));
-		toolBarMapScienceAdministrationMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapScienceAdministrationMode, MapMode.SCIENCE_ADMINISTRATION);
-		});
-
-		Button toolBarMapDiseaseMode = new Button(getMessage("toolbar.map.mode.disease.button.text"));
-		toolBarMapDiseaseMode.setTooltip(new Tooltip(getMessage("toolbar.map.mode.disease.button.tooltip")));
-		toolBarMapDiseaseMode.setOnAction(e -> {
-			pressMapModeButton(toolBarMapDiseaseMode, MapMode.DISEASE);
-		});
-
 		toolBarMapModes = new ArrayList<>();
-		addButtonToPane(toolBarMapGeoMode);
-		addButtonToPane(toolBarMapPoliticalMode);
-		addButtonToPane(toolBarMapPopsMode);
-		addButtonToPane(toolBarMapCultureMode);
-		addButtonToPane(toolBarMapInfrMode);
-		addButtonToPane(toolBarMapSoilMode);
-		addButtonToPane(toolBarMapDiseaseMode);
+
+		addButton("geo", MapMode.GEO).setEffect(new Lighting());
+		addButton("political", MapMode.POLITICAL);
+		addButton("population", MapMode.POPULATION);
+		addButton("culture", MapMode.CULTURE);
+		addButton("infrastructure", MapMode.INFRASTRUCTURE);
+		addButton("soil", MapMode.SOIL);
+		addButton("disease", MapMode.DISEASE);
 		getItems().add(new Label("|"));
-		addButtonToPane(toolBarMapScienceAgricultureMode);
-		addButtonToPane(toolBarMapScienceMedicineMode);
-		addButtonToPane(toolBarMapScienceAdministrationMode);
+		addButton("science.agriculture", MapMode.SCIENCE_AGRICULTURE);
+		addButton("science.medicine", MapMode.SCIENCE_MEDICINE);
+		addButton("science.administration", MapMode.SCIENCE_ADMINISTRATION);
 		getItems().add(new Label("|"));
+
+	}
+
+	private Button addButton(String modeCode, MapMode mapMode) {
+		Button button = new Button(getMessage("toolbar.map.mode." + modeCode + ".button.text"));
+		String tooltip = getMessage("toolbar.map.mode." + modeCode + ".button.tooltip");
+		button.setTooltip(new Tooltip(tooltip + getMessage("toolbar.map.mode.button.tooltip")));
+		button.setOnAction(e -> {
+			pressMapModeButton(button, mapMode);
+		});
+		addButtonToPane(button);
+		button.setOnMouseClicked(e -> {
+			if (e.getButton() == MouseButton.SECONDARY) {
+				gameScene.openNewMapForMode(mapMode, tooltip);
+			}
+		});
+		return button;
 	}
 
 	private void addButtonToPane(Button button) {
