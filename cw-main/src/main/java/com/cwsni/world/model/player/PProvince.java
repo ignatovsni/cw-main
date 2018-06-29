@@ -3,11 +3,10 @@ package com.cwsni.world.model.player;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cwsni.world.common.algorithms.Node;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.data.TerrainType;
 
-public class PProvince implements Node<PProvince> {
+public class PProvince {
 
 	private Province province;
 	private PGame game;
@@ -53,6 +52,11 @@ public class PProvince implements Node<PProvince> {
 
 	public int getPopulationAmount() {
 		return province.getPopulationAmount();
+	}
+
+	@Override
+	public String toString() {
+		return "PProvince: " + getId();
 	}
 
 }

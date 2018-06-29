@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import com.cwsni.world.CwException;
-import com.cwsni.world.common.algorithms.Node;
 import com.cwsni.world.model.data.DataProvince;
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.Point;
@@ -16,7 +15,7 @@ import com.cwsni.world.model.events.Event;
 import com.cwsni.world.model.events.EventCollection;
 import com.cwsni.world.model.events.EventTarget;
 
-public class Province implements EventTarget, Node<Province> {
+public class Province implements EventTarget {
 
 	private DataProvince data;
 	private List<Province> neighbors;

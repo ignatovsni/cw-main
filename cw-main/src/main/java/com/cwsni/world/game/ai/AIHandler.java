@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.common.algorithms.GameAlgorithms;
+import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.player.PArmy;
 import com.cwsni.world.model.player.PCountry;
 import com.cwsni.world.model.player.PGame;
@@ -36,10 +37,17 @@ public class AIHandler {
 	}
 
 	private void processArmy(AIData4Country data, PArmy a) {
-		if (tryMovingToNeighbors(data, a)) {
+		if (!ComparisonTool.isEqual(a.getCountry().getId(), a.getLocation().getCountryId())) {
+			// stay here
 			return;
 		}
-		// nearest provinces are not priority, so we try to look further
+		if (tryMovingArmyToNeighbors(data, a)) {
+			return;
+		}
+		tryMovingArmyFurther(data, a);
+	}
+
+	private void tryMovingArmyFurther(AIData4Country data, PArmy a) {
 		PProvince nearestProv = null;
 		double minDistance = Double.MAX_VALUE;
 		for (PProvince p : data.getCountry().getNeighborsProvs()) {
@@ -50,12 +58,13 @@ public class AIHandler {
 			}
 		}
 		if (nearestProv != null) {
-			List<Integer> path = gameAlgorithms.findShortestPath(a.getLocation(), nearestProv);
+			List<Object> path = gameAlgorithms.findShortestPath(new PProvinceNodeWrapper(a.getLocation()),
+					new PProvinceNodeWrapper(nearestProv));
 			a.moveTo(path);
 		}
 	}
 
-	private boolean tryMovingToNeighbors(AIData4Country data, PArmy a) {
+	private boolean tryMovingArmyToNeighbors(AIData4Country data, PArmy a) {
 		PProvince target = null;
 		double maxWeight = -1;
 		Integer armyCountryId = a.getCountry().getId();
@@ -81,9 +90,8 @@ public class AIHandler {
 		if (capital == null) {
 			capital = pCountry.getFirstCapital();
 		}
-		return 1 / Math.max(data.getGame().relativeDistance(neighbor, capital), 1);
-		// return calculateImportanceOfProvinceByCountOfNeighborsPops(data, neighbor,
-		// pCountry.getId());
+		// return 1 / Math.max(data.getGame().relativeDistance(neighbor, capital), 1);
+		return calculateImportanceOfProvinceByCountOfNeighborsPops(data, neighbor, pCountry.getId());
 	}
 
 	private double calculateImportanceOfProvinceByCountOfNeighborsPops(AIData4Country data, PProvince p,

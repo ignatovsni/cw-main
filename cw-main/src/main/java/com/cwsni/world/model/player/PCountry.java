@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.Country;
 
 public class PCountry {
@@ -64,7 +65,8 @@ public class PCountry {
 			neighborsProvs = new ArrayList<>();
 			getProvinces().forEach(p -> {
 				p.getNeighbors().forEach(n -> {
-					if (n.getCountryId() != p.getCountryId() && n.getTerrainType().isPopulationPossible()) {
+					if (!ComparisonTool.isEqual(n.getCountryId(), p.getCountryId())
+							&& n.getTerrainType().isPopulationPossible()) {
 						neighborsProvs.add(n);
 					}
 				});

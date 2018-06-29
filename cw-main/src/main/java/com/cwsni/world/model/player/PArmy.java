@@ -46,7 +46,6 @@ public class PArmy {
 		}
 		return ((PArmy) obj).getId() == getId();
 	}
-	
 
 	public void moveTo(PProvince destination) {
 		int destId = destination.getId();
@@ -56,13 +55,13 @@ public class PArmy {
 	private void moveTo(int destId) {
 		if (command != null) {
 			game.removeCommand(command);
-		}		
+		}
 		command = new CommandArmyMove(army.getId(), destId);
 		game.addCommand(command);
 	}
 
-	public void moveTo(List<Integer> path) {
-		moveTo(path.get(1));
+	public void moveTo(List<Object> path) {
+		moveTo((Integer) path.get(1));
 	}
 
 }

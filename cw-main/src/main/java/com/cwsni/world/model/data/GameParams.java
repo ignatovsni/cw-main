@@ -33,7 +33,7 @@ public class GameParams {
 
 	// ------------Turn procession section--------
 	private double populationBaseGrowth = 0.01;
-	private double populationBaseMigration = 0.002;
+	private double populationBaseMigration = 0.0005;
 	private double populationMaxExcess = 1.2;	
 	private int populationLimitWithoutGovernment = 10000;	
 	

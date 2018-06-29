@@ -5,13 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.model.Province;
-import com.cwsni.world.model.WorldMap;
-import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.util.Heap;
 
 @Component
@@ -38,48 +34,46 @@ public class GameAlgorithms {
 
 	}
 
-	public List<Integer> findShortestPath(WorldMap map, int fromId, int toId) {
-		Province fromProv = map.findProvById(fromId);
-		Province toProv = map.findProvById(toId);
-		return findShortestPath(fromProv, toProv);
-	}
-
-	public List<Integer> findShortestPath(Node fromProv, Node toProv) {
+	public List<Object> findShortestPath(Node nodeFrom, Node nodeTo) {
 		Heap<Pair<Node, Double>> fromArea = new Heap<>();
 		Map<Node, Pair<Node, Double>> fromAreaDistance = new HashMap<>();
-		fromArea.put(new Pair<>(fromProv, 0.0));
-		fromAreaDistance.put(fromProv, new Pair<>(null, 0.0));
+		fromArea.put(new Pair<>(nodeFrom, 0.0));
+		fromAreaDistance.put(nodeFrom, new Pair<>(null, 0.0));
 
-		while (fromArea.size() > 0 && !fromAreaDistance.containsKey(toProv)) {
+		while (fromArea.size() > 0 && !fromAreaDistance.containsKey(nodeTo)) {
 			stepWave(fromArea, fromAreaDistance);
 		}
 
-		List<Integer> path;
-		Pair<Node, Double> toNode = fromAreaDistance.get(toProv);
+		List<Object> path;
+		Pair<Node, Double> toNode = fromAreaDistance.get(nodeTo);
 		if (toNode != null) {
 			// found
 			path = new LinkedList<>();
-			path.add(0, toProv.getId());
+			path.add(0, nodeTo.getKey());
 
 			while (toNode != null && toNode.first != null) {
-				path.add(0, toNode.first.getId());
+				path.add(0, toNode.first.getKey());
 				toNode = fromAreaDistance.get(toNode.first);
 			}
 
 		} else {
-			path = Collections.EMPTY_LIST;
+			path = Collections.emptyList();
+		}
+		
+		if (path.size()<2) {
+			System.out.println(path);
 		}
 
 		return path;
 	}
 
-	static void stepWave(Heap<Pair<Node, Double>> heap, Map<Node, Pair<Node, Double>> areaDistance) {
+	private void stepWave(Heap<Pair<Node, Double>> heap, Map<Node, Pair<Node, Double>> visited) {
 		Pair<Node, Double> p = heap.poll();
-		((Stream<Node>) (p.first.getNeighbors().stream())).filter(n -> !areaDistance.containsKey(n)).forEach(n -> {
+		p.first.getNeighbors().stream().filter(n -> !visited.containsKey(n)).forEach(n -> {
 			// now distance between all nodes = 1
 			double distance = p.second + 1;
 			heap.put(new Pair<>(n, distance));
-			areaDistance.put(n, new Pair<>(p.first, distance));
+			visited.put(n, new Pair<>(p.first, distance));
 		});
 	}
 
