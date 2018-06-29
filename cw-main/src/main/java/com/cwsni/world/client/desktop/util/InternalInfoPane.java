@@ -1,20 +1,28 @@
 package com.cwsni.world.client.desktop.util;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 
+import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
-public class InternalInfoPane extends BorderPane {
+abstract public class InternalInfoPane extends BorderPane {
 
 	protected class RowValue {
 		private Node nameNode;
@@ -40,7 +48,11 @@ public class InternalInfoPane extends BorderPane {
 	private LocaleMessageSource messageSource;
 	private Pane internalPane;
 	private Label modeLabel;
+	private List<RowValue> infoRows;
 	private boolean isMinimized = false;
+	private Pane titleBar;
+	private Stage tooltipWindow;
+	private Pane tooltipLayout;
 
 	protected String getMessage(String code) {
 		return messageSource.getMessage(code);
@@ -48,11 +60,54 @@ public class InternalInfoPane extends BorderPane {
 
 	public void init(String title, Pane internalPane) {
 		this.internalPane = internalPane;
-		Pane titleBar = createTitle(title);
+		titleBar = createTitle(title);
+		addTooltipWindow(titleBar);
 		setTop(titleBar);
 		setCenter(internalPane);
 		setMinimized(isMinimized);
 	}
+
+	private void addTooltipWindow(Pane titleBar) {
+		tooltipWindow = new Stage();
+		tooltipWindow.initStyle(StageStyle.UNDECORATED);
+		tooltipWindow.initModality(Modality.NONE);
+		tooltipLayout = new VBox();
+		tooltipLayout.setStyle("-fx-border-width: 1; -fx-border-color: black");
+		Scene tooltipScene = new Scene(tooltipLayout);
+		tooltipWindow.setScene(tooltipScene);
+		titleBar.setOnMouseEntered(e -> showTooltipWindowIfPossible());
+		titleBar.setOnMouseExited(e -> {
+			tooltipLayout.getChildren().clear();
+			tooltipWindow.hide();
+		});
+	}
+
+	private void showTooltipWindowIfPossible() {
+		if (isMinimized && hasDataForUser() && tooltipLayout.getChildren().isEmpty()) {
+			tooltipLayout.getChildren().add(internalPane);
+			Bounds screenCoords = titleBar.localToScreen(titleBar.getBoundsInLocal());
+			tooltipWindow.setX(screenCoords.getMinX());
+			tooltipWindow.setY(screenCoords.getMaxY() + 1);
+			tooltipWindow.show();
+		}
+	}
+
+	abstract protected boolean hasDataForUser();
+
+	public void refreshInfo() {
+		getInfoRows().forEach(l -> {
+			l.setVisible(false);
+			l.setValue("");
+		});
+		if (!hasDataForUser()) {
+			return;
+		}
+		refreshInfoInternal();
+	}
+
+	protected void refreshInfoInternal() {
+		// nothing
+	};
 
 	private Pane createTitle(String title) {
 		modeLabel = new Label();
@@ -61,9 +116,7 @@ public class InternalInfoPane extends BorderPane {
 		Label label = new Label(title);
 		titleBar.getChildren().addAll(modeLabel, label);
 		setStyle("-fx-border-width: 1; -fx-border-color: black");
-
 		titleBar.setOnMouseClicked(e -> setMinimized(!isMinimized));
-
 		return titleBar;
 	}
 
@@ -72,14 +125,26 @@ public class InternalInfoPane extends BorderPane {
 		if (isMinimized) {
 			modeLabel.setText("> ");
 			setCenter(null);
+			if (this.getWidth() > 0) {
+				// getWidth() > 0 : to prevent showing before primary stage
+				showTooltipWindowIfPossible();
+			}
 		} else {
 			modeLabel.setText("v ");
-			setCenter(internalPane);			
+			setCenter(internalPane);
 		}
 	}
 
 	public boolean isMinimazed() {
 		return isMinimized;
+	}
+
+	public List<RowValue> getInfoRows() {
+		return infoRows;
+	}
+
+	public void setInfoRows(List<RowValue> rows) {
+		this.infoRows = rows;
 	}
 
 	protected GridPane createDefaultGrid() {
@@ -89,6 +154,8 @@ public class InternalInfoPane extends BorderPane {
 		grid.setPadding(new Insets(0, 10, 0, 10));
 		ColumnConstraints column1 = new ColumnConstraints();
 		column1.setHalignment(HPos.RIGHT);
+		column1.setMinWidth(90);
+		column1.setMaxWidth(90);
 		grid.getColumnConstraints().add(column1);
 		ColumnConstraints column2 = new ColumnConstraints();
 		column2.setHalignment(HPos.LEFT);
@@ -117,6 +184,17 @@ public class InternalInfoPane extends BorderPane {
 	protected Label createGridValueColumn(Object value) {
 		String txt = String.valueOf(value);
 		return new Label(txt);
+	}
+
+	protected RowValue add2AllRows(String msgCode, GridPane grid, int row) {
+		RowValue newRowValue = addRow(msgCode, grid, row, "");
+		infoRows.add(newRowValue);
+		return newRowValue;
+	}
+
+	protected void setLabelText(RowValue l, String txt) {
+		l.setValue(txt);
+		l.setVisible(true);
 	}
 
 }

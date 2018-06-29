@@ -1,7 +1,6 @@
 package com.cwsni.world.client.desktop.game;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,11 +15,9 @@ import javafx.scene.layout.Pane;
 @Component
 @Scope("prototype")
 public class GsProvInfoPane extends InternalInfoPane {
-	// TODO схлопывающиеся панели и метка или самая важная информации в заголовке
-	// справа. для событий - их количество, к примеру
+
 	private GameScene gameScene;
 
-	private List<RowValue> allRows;
 	private RowValue valuesNameLabel;
 	private RowValue valuesSizeLabel;
 	private RowValue valuesTerrainTypeLabel;
@@ -28,6 +25,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesInfrastructureLabel;
 	private RowValue valuesSoilAreaLabel;
 	private RowValue valuesSoilFertilityLabel;
+	// private RowValue valuesArmiesLabel;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -37,45 +35,34 @@ public class GsProvInfoPane extends InternalInfoPane {
 
 	private Pane createUI() {
 		GridPane grid = createDefaultGrid();
-		allRows = new ArrayList<>();
+		setInfoRows(new ArrayList<>());
 
 		int idx = 0;
-		valuesNameLabel = addRow("info.pane.prov.name", grid, allRows, idx++);
-		valuesTerrainTypeLabel = addRow("info.pane.prov.terrain-type", grid, allRows, idx++);
-		valuesSizeLabel = addRow("info.pane.prov.size", grid, allRows, idx++);
-		valuesPopsLabel = addRow("info.pane.prov.population", grid, allRows, idx++);
-		valuesInfrastructureLabel = addRow("info.pane.prov.infrastructure", grid, allRows, idx++);
-		valuesSoilAreaLabel = addRow("info.pane.prov.soil.area", grid, allRows, idx++);
-		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, allRows, idx++);
+		valuesNameLabel = add2AllRows("info.pane.prov.name", grid, idx++);
+		valuesTerrainTypeLabel = add2AllRows("info.pane.prov.terrain-type", grid, idx++);
+		valuesSizeLabel = add2AllRows("info.pane.prov.size", grid, idx++);
+		valuesPopsLabel = add2AllRows("info.pane.prov.population", grid, idx++);
+		valuesInfrastructureLabel = add2AllRows("info.pane.prov.infrastructure", grid, idx++);
+		valuesSoilAreaLabel = add2AllRows("info.pane.prov.soil.area", grid, idx++);
+		valuesSoilFertilityLabel = add2AllRows("info.pane.prov.soil.fertility", grid, idx++);
 
 		return grid;
 	}
 
-	private RowValue addRow(String msgCode, GridPane grid, List<RowValue> rows, int row) {
-		RowValue newRowValue = addRow(msgCode, grid, row, "");
-		rows.add(newRowValue);
-		return newRowValue;
-	}
-
-	public void refreshInfo() {
+	protected void refreshInfoInternal() {
 		Province prov = gameScene.getSelectedProvince();
-		allRows.forEach(l -> l.setVisible(false));
-		if (prov != null) {
-			setLabelText(valuesNameLabel, prov.getName());
-			setLabelText(valuesTerrainTypeLabel, getMessage(prov.getTerrainType().getCodeMsg()));
-			switch (prov.getTerrainType()) {
-			case GRASSLAND:
-				setLabelText(valuesSizeLabel, DataFormatter.toLong(prov.getSize()));
-				setLabelText(valuesPopsLabel, DataFormatter.toLong(prov.getPopulationAmount()));
-				setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
-				setLabelText(valuesSoilAreaLabel, DataFormatter.toLong(prov.getSoilArea()));
-				setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));
-				break;
-			case OCEAN:
-				break;
-			}
-		} else {
-			allRows.forEach(l -> l.setValue(""));
+		setLabelText(valuesNameLabel, prov.getName());
+		setLabelText(valuesTerrainTypeLabel, getMessage(prov.getTerrainType().getCodeMsg()));
+		switch (prov.getTerrainType()) {
+		case GRASSLAND:
+			setLabelText(valuesSizeLabel, DataFormatter.toLong(prov.getSize()));
+			setLabelText(valuesPopsLabel, DataFormatter.toLong(prov.getPopulationAmount()));
+			setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
+			setLabelText(valuesSoilAreaLabel, DataFormatter.toLong(prov.getSoilArea()));
+			setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));
+			break;
+		case OCEAN:
+			break;
 		}
 	}
 
@@ -85,9 +72,9 @@ public class GsProvInfoPane extends InternalInfoPane {
 				+ ")";
 	}
 
-	private void setLabelText(RowValue l, String txt) {
-		l.setValue(txt);
-		l.setVisible(true);
+	@Override
+	protected boolean hasDataForUser() {
+		return gameScene.getSelectedProvince() != null;
 	}
 
 }

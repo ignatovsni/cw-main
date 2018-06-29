@@ -11,6 +11,7 @@ import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
@@ -74,6 +75,7 @@ public class MainWindow extends Application {
 		stage.setTitle(getMessage("main.window.title"));
 		createGameScene(stage);
 		applyUserPreferences(stage);
+		stage.setOnCloseRequest(e -> Platform.exit());
 		stage.show();
 		successfulStart = true;
 	}

@@ -150,8 +150,7 @@ class DProvince extends Group {
 		Country country = province.getCountry();
 		Color color;
 		if (country != null) {
-			com.cwsni.world.model.data.Color cc = country.getColor();
-			color = new Color(cc.getR() / 255.0, cc.getG() / 255.0, cc.getB() / 255.0, 1);
+			color = getCountryColor(country);
 		} else {
 			if (province.getPopulationAmount() == 0) {
 				color = COLOR_NONE;
@@ -160,6 +159,11 @@ class DProvince extends Group {
 			}
 		}
 		fillPolygon(polygon, color);
+	}
+
+	private Color getCountryColor(Country country) {
+		com.cwsni.world.model.data.Color cc = country.getColor();
+		return new Color(cc.getR() / 255.0, cc.getG() / 255.0, cc.getB() / 255.0, 1);
 	}
 
 	private void drawCultureMode(Polygon polygon) {
@@ -283,8 +287,8 @@ class DProvince extends Group {
 			provinceValue -= baseValue;
 			maxValue -= baseValue;
 			double fraction = maxValue != 0 ? provinceValue / maxValue : 0;
-			//fraction = fraction * fraction;
-			//fraction = Math.sqrt(fraction);
+			// fraction = fraction * fraction;
+			// fraction = Math.sqrt(fraction);
 			pValue = new Color(1, Math.min(1 - fraction, 1), 0, 1);
 		}
 		fillPolygon(polygon, pValue);

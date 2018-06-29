@@ -1,5 +1,7 @@
 package com.cwsni.world.client.desktop.game;
 
+import java.util.ArrayList;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +29,7 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 
 	private Pane createUI() {
 		GridPane grid = createDefaultGrid();
+		setInfoRows(new ArrayList<>());
 
 		int idx = 0;
 		valuesTurnLabel = addRow("info.pane.global.turn", grid, idx++);
@@ -36,13 +39,18 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 		return grid;
 	}
 
-	public void refreshInfo() {
+	protected void refreshInfoInternal() {
 		if (gameScene.getGame() != null) {
 			valuesTurnLabel.setValue(DataFormatter.toString(gameScene.getGame().getTurn().getTurnTexToDisplay()));
 			valuesProvsLabel.setValue(DataFormatter.toString(gameScene.getGame().getMap().getProvinces().size()));
 			valuesTotalPopsLabel
 					.setValue(DataFormatter.toLong(gameScene.getGame().getGameTransientStats().getPopulationTotal()));
 		}
+	}
+
+	@Override
+	protected boolean hasDataForUser() {
+		return true;
 	}
 
 }

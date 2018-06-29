@@ -35,18 +35,18 @@ public class GsProvEventsInfoPane extends InternalInfoPane {
 
 	public void refreshInfo() {
 		pane.getChildren().clear();
-		Province prov = gameScene.getSelectedProvince();
-		if (prov == null || prov.getEvents().getEvents().isEmpty()) {
+		if (!hasDataForUser()) {
 			return;
 		}
+		Province prov = gameScene.getSelectedProvince();
 		List<Event> events = new ArrayList<Event>(prov.getEvents().getEvents());
 		events.forEach(e -> {
-			pane.getChildren().add(createWithAl(e.getTitle(), true));
-			pane.getChildren().add(createWithAl(e.getDescription(), false));
+			pane.getChildren().add(createWithAlignment(e.getTitle(), true));
+			pane.getChildren().add(createWithAlignment(e.getDescription(), false));
 		});
 	}
 
-	private Pane createWithAl(String txt, boolean al) {
+	private Pane createWithAlignment(String txt, boolean al) {
 		BorderPane pane = new BorderPane();
 		Label lblMsg = new Label(txt);
 		if (al) {
@@ -55,5 +55,11 @@ public class GsProvEventsInfoPane extends InternalInfoPane {
 			pane.setRight(lblMsg);
 		}
 		return pane;
+	}
+
+	@Override
+	protected boolean hasDataForUser() {
+		Province prov = gameScene.getSelectedProvince();
+		return (prov != null && !prov.getEvents().getEvents().isEmpty());
 	}
 }
