@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
+import com.cwsni.world.model.ProvinceBorder;
 import com.cwsni.world.model.WorldMap;
 
 import javafx.scene.Group;
@@ -101,6 +103,12 @@ public class DWorldMap {
 	public void setMapModeAndRedraw(MapMode mapMode) {
 		this.mapMode = mapMode;
 		provinces.forEach(p -> p.reDraw());
+		drawCountriesBorders();
+	}
+
+	private void drawCountriesBorders() {
+		Set<ProvinceBorder> countriesBorders = game.getMap().getCountriesBorders();
+		//countriesBorders
 	}
 
 }

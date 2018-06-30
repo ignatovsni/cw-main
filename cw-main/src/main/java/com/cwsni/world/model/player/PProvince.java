@@ -44,7 +44,7 @@ public class PProvince {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != getClass()) {
+		if (!(obj instanceof PProvince)) {
 			return false;
 		}
 		return ((PProvince) obj).getId() == getId();

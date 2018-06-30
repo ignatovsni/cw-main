@@ -3,10 +3,11 @@ package com.cwsni.world.model;
 public class ComparisonTool {
 
 	static public boolean isEqual(Integer a, Integer b) {
-		if (a == null || b == null) {
-			return false;
+		if (a == null) {
+			return b == null;
+		} else {
+			return a.equals(b);
 		}
-		return a.equals(b);
 	}
 
 }

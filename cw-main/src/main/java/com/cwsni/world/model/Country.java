@@ -136,7 +136,7 @@ public class Country {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != getClass()) {
+		if (!(obj instanceof Country)) {
 			return false;
 		}
 		return ((Country) obj).getId() == getId();

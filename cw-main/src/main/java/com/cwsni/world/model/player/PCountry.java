@@ -82,7 +82,7 @@ public class PCountry {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != getClass()) {
+		if (!(obj instanceof PCountry)) {
 			return false;
 		}
 		return ((PCountry) obj).getId() == getId();

@@ -76,7 +76,7 @@ public class Army {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != getClass()) {
+		if (!(obj instanceof Army)) {
 			return false;
 		}
 		return ((Army) obj).getId() == getId();

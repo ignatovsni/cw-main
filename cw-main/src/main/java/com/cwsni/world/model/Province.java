@@ -319,7 +319,7 @@ public class Province implements EventTarget {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != getClass()) {
+		if (!(obj instanceof Province)) {
 			return false;
 		}
 		return ((Province) obj).getId() == getId();

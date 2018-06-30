@@ -41,7 +41,7 @@ public class PArmy {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != getClass()) {
+		if (!(obj instanceof PArmy)) {
 			return false;
 		}
 		return ((PArmy) obj).getId() == getId();

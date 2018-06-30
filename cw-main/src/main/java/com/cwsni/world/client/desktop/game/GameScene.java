@@ -372,7 +372,7 @@ public class GameScene extends Scene {
 		provEventsInfoPane.setMinimized(userPref.isInfoPaneProvinceEventsMinimized());
 	}
 
-	public void openNewMapForMode(MapMode mapModeForNewWindow, String tooltip) {
+	public void openNewMapForMode(MapMode mapModeForNewWindow, String windowTitle) {
 		Stage window = otherMapWindows.get(mapModeForNewWindow);
 		if (window != null) {
 			window.close();
@@ -383,7 +383,7 @@ public class GameScene extends Scene {
 				return;
 			}
 			window = new Stage();
-			window.setTitle(tooltip);
+			window.setTitle(windowTitle);
 			Bounds boundsInLocal = worldMap.getMapGroup().getBoundsInLocal();
 			double width = Math.min(boundsInLocal.getWidth(), 800);
 			double height = width * boundsInLocal.getHeight() / boundsInLocal.getWidth() * 1.05;
