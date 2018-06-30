@@ -24,6 +24,7 @@ import com.cwsni.world.model.Province;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCodeCombination;
@@ -110,18 +111,27 @@ public class GameScene extends Scene {
 		provEventsInfoPane.init(this);
 		timeControl.init(this);
 
+		VBox rightInfoPanes = new VBox();
+		rightInfoPanes.getChildren().addAll(countryInfoPane, provInfoPane, provScienceInfoPane, provEventsInfoPane);
+		rightInfoPanes.setMinWidth(220);
+		rightInfoPanes.setMaxWidth(220);
+		ScrollPane scrollRightSection = new ScrollPane();
+		scrollRightSection.setContent(rightInfoPanes);
+		scrollRightSection.setMinWidth(240);
+		scrollRightSection.setMaxWidth(240);
+
+		VBox rightTopSection = new VBox();
+		rightTopSection.getChildren().addAll(timeControl, globalInfoPane);
+		rightTopSection.setMinWidth(220);
+		rightTopSection.setMaxWidth(220);
+
+		VBox rightSection = new VBox();
+		rightSection.setMinWidth(220);
+		rightSection.setMaxWidth(220);
+		rightSection.getChildren().addAll(rightTopSection, scrollRightSection);
+
 		VBox menuSection = new VBox();
 		menuSection.getChildren().addAll(menuBar);
-
-		VBox rightVB = new VBox();
-		rightVB.getChildren().addAll(timeControl, globalInfoPane, countryInfoPane, provInfoPane,
-				provScienceInfoPane, provEventsInfoPane);
-		rightVB.setMinWidth(220);
-		rightVB.setMaxWidth(220);
-		ScrollPane rightSection = new ScrollPane();
-		rightSection.setContent(rightVB);
-		rightSection.setMinWidth(240);
-		rightSection.setMaxWidth(240);
 
 		BorderPane mapBlock = new BorderPane();
 		mapBlock.setBottom(mapToolBar);
@@ -369,10 +379,16 @@ public class GameScene extends Scene {
 			otherMapWindows.remove(mapModeForNewWindow);
 			otherMaps.remove(mapModeForNewWindow);
 		} else {
+			if (game.getMap().getProvinces().size() == 0) {
+				return;
+			}
 			window = new Stage();
 			window.setTitle(tooltip);
-			window.setWidth(mapPane.getWidth());
-			window.setHeight(mapPane.getHeight());
+			Bounds boundsInLocal = worldMap.getMapGroup().getBoundsInLocal();
+			double width = Math.min(boundsInLocal.getWidth(), 800);
+			double height = width * boundsInLocal.getHeight() / boundsInLocal.getWidth() * 1.05;
+			window.setWidth(width);
+			window.setHeight(height);
 			window.setOnCloseRequest(e -> {
 				otherMapWindows.remove(mapModeForNewWindow);
 				otherMaps.remove(mapModeForNewWindow);
