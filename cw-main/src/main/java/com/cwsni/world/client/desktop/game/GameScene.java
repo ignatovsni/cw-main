@@ -25,6 +25,7 @@ import com.cwsni.world.model.Province;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -112,11 +113,15 @@ public class GameScene extends Scene {
 		VBox menuSection = new VBox();
 		menuSection.getChildren().addAll(menuBar);
 
-		VBox rightSection = new VBox();
-		rightSection.getChildren().addAll(timeControl, globalInfoPane, countryInfoPane, provInfoPane,
+		VBox rightVB = new VBox();
+		rightVB.getChildren().addAll(timeControl, globalInfoPane, countryInfoPane, provInfoPane,
 				provScienceInfoPane, provEventsInfoPane);
-		rightSection.setMinWidth(220);
-		rightSection.setMaxWidth(220);
+		rightVB.setMinWidth(220);
+		rightVB.setMaxWidth(220);
+		ScrollPane rightSection = new ScrollPane();
+		rightSection.setContent(rightVB);
+		rightSection.setMinWidth(240);
+		rightSection.setMaxWidth(240);
 
 		BorderPane mapBlock = new BorderPane();
 		mapBlock.setBottom(mapToolBar);
