@@ -1,4 +1,4 @@
-package com.cwsni.world.game;
+package com.cwsni.world.services;
 
 import java.util.List;
 import java.util.stream.Collectors;

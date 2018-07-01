@@ -10,12 +10,13 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cwsni.world.common.algorithms.GameAlgorithms;
-import com.cwsni.world.common.algorithms.Node;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.WorldMap;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.services.GameGenerator;
+import com.cwsni.world.services.algorithms.GameAlgorithms;
+import com.cwsni.world.services.algorithms.Node;
 
 public class GameAlgorithmsTest {
 

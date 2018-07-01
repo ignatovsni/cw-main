@@ -9,9 +9,9 @@ import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -25,10 +25,10 @@ import javafx.stage.StageStyle;
 abstract public class InternalInfoPane extends BorderPane {
 
 	protected class RowValue {
-		private Node nameNode;
+		private Label nameNode;
 		private Label valueNode;
 
-		public RowValue(Node nameColumn, Label valueColumn) {
+		public RowValue(Label nameColumn, Label valueColumn) {
 			this.nameNode = nameColumn;
 			this.valueNode = valueColumn;
 		}
@@ -40,6 +40,14 @@ abstract public class InternalInfoPane extends BorderPane {
 
 		public void setValue(String v) {
 			valueNode.setText(v);
+		}
+
+		public void setNameColumnTooltip(String txt) {
+			nameNode.setTooltip(new Tooltip(txt));
+		}
+
+		public void setValueColumnTooltip(String txt) {
+			valueNode.setTooltip(new Tooltip(txt));
 		}
 
 	}
@@ -139,12 +147,21 @@ abstract public class InternalInfoPane extends BorderPane {
 		return isMinimized;
 	}
 
-	public List<RowValue> getInfoRows() {
+	protected List<RowValue> getInfoRows() {
 		return infoRows;
 	}
 
-	public void setInfoRows(List<RowValue> rows) {
+	protected void setInfoRows(List<RowValue> rows) {
 		this.infoRows = rows;
+	}
+
+	protected void clearPane() {
+		internalPane.getChildren().clear();
+		infoRows.clear();
+	}
+
+	protected Pane getInternalPane() {
+		return internalPane;
 	}
 
 	protected GridPane createDefaultGrid() {
@@ -164,32 +181,26 @@ abstract public class InternalInfoPane extends BorderPane {
 	}
 
 	protected RowValue addRow(String msgCode, GridPane grid, int row, String txt) {
-		Node nameColumn = createGridNameColumn(getMessage(msgCode));
+		Label nameColumn = createGridNameColumn(getMessage(msgCode));
 		grid.add(nameColumn, 0, row);
 		Label label = createGridValueColumn(0);
 		grid.add(label, 1, row);
 		label.setText(txt);
-		return new RowValue(nameColumn, label);
+		RowValue rowValue = new RowValue(nameColumn, label);
+		infoRows.add(rowValue);
+		return rowValue;
 	}
 
 	protected RowValue addRow(String msgCode, GridPane grid, int row) {
 		return addRow(msgCode, grid, row, "");
 	}
 
-	protected Node createGridNameColumn(Object title) {
-		String txt = String.valueOf(title);
-		return new Label(txt);
+	protected Label createGridNameColumn(Object value) {
+		return new Label(String.valueOf(value));
 	}
 
 	protected Label createGridValueColumn(Object value) {
-		String txt = String.valueOf(value);
-		return new Label(txt);
-	}
-
-	protected RowValue add2AllRows(String msgCode, GridPane grid, int row) {
-		RowValue newRowValue = addRow(msgCode, grid, row, "");
-		infoRows.add(newRowValue);
-		return newRowValue;
+		return new Label(String.valueOf(value));
 	}
 
 	protected void setLabelText(RowValue l, String txt) {

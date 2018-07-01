@@ -379,6 +379,7 @@ class DProvince extends Group {
 	public void drawCountryBorder() {
 		// work based on features of updatePoints()
 		getChildren().removeAll(borders);
+		borders.clear();
 		countriesBordersWithProvId.stream().map(id -> map.getGame().getMap().findProvById(id)).forEach(neighbor -> {
 			int neighborPosition = whatNeighborPosition(neighbor);
 			int borderFromIdx = neighborPosition;

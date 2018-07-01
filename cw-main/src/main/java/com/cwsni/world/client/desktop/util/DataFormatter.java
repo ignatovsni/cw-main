@@ -15,6 +15,10 @@ public class DataFormatter {
 		return internalFormatLongNumber(v);
 	}
 
+	public static String formatLongNumber(Integer v) {
+		return formatLongNumber(new Long(v));
+	}
+
 	private static String internalFormatLongNumber(Long v) {
 		Locale currentLocale = new Locale("en", "US");
 		DecimalFormatSymbols dfs = new DecimalFormatSymbols(currentLocale);

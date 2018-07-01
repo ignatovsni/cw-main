@@ -35,10 +35,10 @@ public class GsCountryInfoPane extends InternalInfoPane {
 		setInfoRows(new ArrayList<>());
 
 		int idx = 0;
-		valuesNameLabel = add2AllRows("info.pane.country.name", grid, idx++);
-		valuesProvincesLabel = add2AllRows("info.pane.country.provinces", grid, idx++);
-		valuesPopulationLabel = add2AllRows("info.pane.country.population", grid, idx++);
-		valuesArmiesSoldiersLabel = add2AllRows("info.pane.country.armies-soldiers", grid, idx++);
+		valuesNameLabel = addRow("info.pane.country.name", grid, idx++);
+		valuesProvincesLabel = addRow("info.pane.country.provinces", grid, idx++);
+		valuesPopulationLabel = addRow("info.pane.country.population", grid, idx++);
+		valuesArmiesSoldiersLabel = addRow("info.pane.country.armies-soldiers", grid, idx++);
 
 		return grid;
 	}

@@ -16,11 +16,11 @@ import com.cwsni.world.client.desktop.UserPreferences;
 import com.cwsni.world.client.desktop.game.map.DWorldMap;
 import com.cwsni.world.client.desktop.game.map.MapMode;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
-import com.cwsni.world.common.GameGenerator;
-import com.cwsni.world.common.GameRepository;
-import com.cwsni.world.game.GameHandler;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
+import com.cwsni.world.services.GameGenerator;
+import com.cwsni.world.services.GameHandler;
+import com.cwsni.world.services.GameRepository;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -66,6 +66,9 @@ public class GameScene extends Scene {
 	private GsProvScienceInfoPane provScienceInfoPane;
 
 	@Autowired
+	private GsProvArmiesInfoPane provArmiesInfoPane;
+
+	@Autowired
 	private GsProvEventsInfoPane provEventsInfoPane;
 
 	@Autowired
@@ -74,7 +77,6 @@ public class GameScene extends Scene {
 	@Autowired
 	private GameHandler gameHadler;
 
-	private Stage stage;
 	private ZoomableScrollPane mapPane;
 	private Text statusBarText;
 
@@ -96,10 +98,6 @@ public class GameScene extends Scene {
 		super(new BorderPane());
 	}
 
-	public void setStage(Stage stage) {
-		this.stage = stage;
-	}
-
 	public void init() {
 		mapPane = new ZoomableScrollPane();
 		mapToolBar.init(this);
@@ -107,12 +105,14 @@ public class GameScene extends Scene {
 		globalInfoPane.init(this);
 		provInfoPane.init(this);
 		provScienceInfoPane.init(this);
+		provArmiesInfoPane.init(this);
 		countryInfoPane.init(this);
 		provEventsInfoPane.init(this);
 		timeControl.init(this);
 
 		VBox rightInfoPanes = new VBox();
-		rightInfoPanes.getChildren().addAll(countryInfoPane, provInfoPane, provScienceInfoPane, provEventsInfoPane);
+		rightInfoPanes.getChildren().addAll(countryInfoPane, provInfoPane, provScienceInfoPane, provArmiesInfoPane,
+				provEventsInfoPane);
 		rightInfoPanes.setMinWidth(220);
 		rightInfoPanes.setMaxWidth(220);
 		ScrollPane scrollRightSection = new ScrollPane();
@@ -212,6 +212,7 @@ public class GameScene extends Scene {
 	private void refreshProvinceInfos() {
 		countryInfoPane.refreshInfo();
 		provInfoPane.refreshInfo();
+		provArmiesInfoPane.refreshInfo();
 		provScienceInfoPane.refreshInfo();
 		provEventsInfoPane.refreshInfo();
 	}
@@ -359,6 +360,7 @@ public class GameScene extends Scene {
 		userPref.setInfoPaneGlobalMinimized(globalInfoPane.isMinimazed());
 		userPref.setInfoPaneCountryMinimized(countryInfoPane.isMinimazed());
 		userPref.setInfoPaneProvinceMinimized(provInfoPane.isMinimazed());
+		userPref.setInfoPaneProvinceArmiesMinimized(provArmiesInfoPane.isMinimazed());
 		userPref.setInfoPaneProvinceScienceMinimized(provScienceInfoPane.isMinimazed());
 		userPref.setInfoPaneProvinceEventsMinimized(provEventsInfoPane.isMinimazed());
 	}
@@ -368,6 +370,7 @@ public class GameScene extends Scene {
 		globalInfoPane.setMinimized(userPref.isInfoPaneGlobalMinimized());
 		countryInfoPane.setMinimized(userPref.isInfoPaneCountryMinimized());
 		provInfoPane.setMinimized(userPref.isInfoPaneProvinceMinimized());
+		provArmiesInfoPane.setMinimized(userPref.isInfoPaneProvinceArmiesMinimized());
 		provScienceInfoPane.setMinimized(userPref.isInfoPaneProvinceScienceMinimized());
 		provEventsInfoPane.setMinimized(userPref.isInfoPaneProvinceEventsMinimized());
 	}

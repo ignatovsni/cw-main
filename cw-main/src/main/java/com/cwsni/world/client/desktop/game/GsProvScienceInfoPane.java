@@ -32,9 +32,9 @@ public class GsProvScienceInfoPane extends InternalInfoPane {
 		setInfoRows(new ArrayList<>());
 
 		int idx = 0;
-		valuesScienceAgriculture = add2AllRows("science.agriculture.name", grid, idx++);
-		valuesScienceMedicine = add2AllRows("science.medicine.name", grid, idx++);
-		valuesScienceAdministration = add2AllRows("science.administration.name", grid, idx++);
+		valuesScienceAgriculture = addRow("science.agriculture.name", grid, idx++);
+		valuesScienceMedicine = addRow("science.medicine.name", grid, idx++);
+		valuesScienceAdministration = addRow("science.administration.name", grid, idx++);
 
 		return grid;
 	}

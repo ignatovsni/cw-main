@@ -3,8 +3,8 @@ package com.cwsni.world.game.ai;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import com.cwsni.world.common.algorithms.Node;
 import com.cwsni.world.model.player.PProvince;
+import com.cwsni.world.services.algorithms.Node;
 
 public class PProvinceNodeWrapper extends Node {
 

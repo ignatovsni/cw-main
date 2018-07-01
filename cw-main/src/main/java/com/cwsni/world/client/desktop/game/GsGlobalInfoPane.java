@@ -40,17 +40,15 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 	}
 
 	protected void refreshInfoInternal() {
-		if (gameScene.getGame() != null) {
-			valuesTurnLabel.setValue(DataFormatter.toString(gameScene.getGame().getTurn().getTurnTexToDisplay()));
-			valuesCountriesLabel.setValue(DataFormatter.toString(gameScene.getGame().getCountries().size()));
-			valuesTotalPopsLabel
-					.setValue(DataFormatter.toLong(gameScene.getGame().getGameTransientStats().getPopulationTotal()));
-		}
+		setLabelText(valuesTurnLabel, DataFormatter.toString(gameScene.getGame().getTurn().getTurnTexToDisplay()));
+		setLabelText(valuesCountriesLabel, DataFormatter.toString(gameScene.getGame().getCountries().size()));
+		setLabelText(valuesTotalPopsLabel,
+				DataFormatter.toLong(gameScene.getGame().getGameTransientStats().getPopulationTotal()));
 	}
 
 	@Override
 	protected boolean hasDataForUser() {
-		return true;
+		return gameScene.getGame() != null;
 	}
 
 }

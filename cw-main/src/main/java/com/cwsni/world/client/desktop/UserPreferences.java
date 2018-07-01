@@ -27,6 +27,7 @@ public class UserPreferences {
 	private static final String INFO_PANE_GLOBALE_MINIMIZED = "info.pane.global.minimized";
 	private static final String INFO_PANE_COUNTRY_MINIMIZED = "info.pane.country.minimized";
 	private static final String INFO_PANE_PROVINCE_MINIMIZED = "info.pane.province.minimized";
+	private static final String INFO_PANE_PROVINCE_ARMIES_MINIMIZED = "info.pane.province-armies.minimized";
 	private static final String INFO_PANE_PROVINCE_SCIENCE_MINIMIZED = "info.pane.province-science.minimized";
 	private static final String INFO_PANE_PROVINCE_EVENTS_MINIMIZED = "info.pane.province-events.minimized";
 
@@ -60,6 +61,7 @@ public class UserPreferences {
 		setDefaultProp(INFO_PANE_GLOBALE_MINIMIZED, "0");
 		setDefaultProp(INFO_PANE_COUNTRY_MINIMIZED, "0");
 		setDefaultProp(INFO_PANE_PROVINCE_MINIMIZED, "0");
+		setDefaultProp(INFO_PANE_PROVINCE_ARMIES_MINIMIZED, "0");
 		setDefaultProp(INFO_PANE_PROVINCE_SCIENCE_MINIMIZED, "0");
 		setDefaultProp(INFO_PANE_PROVINCE_EVENTS_MINIMIZED, "0");
 	}
@@ -182,7 +184,7 @@ public class UserPreferences {
 	public boolean isInfoPaneProvinceEventsMinimized() {
 		return getIntegerOrNull(INFO_PANE_PROVINCE_EVENTS_MINIMIZED) == 1;
 	}
-	
+
 	public void setInfoPaneProvinceScienceMinimized(boolean v) {
 		setProp(INFO_PANE_PROVINCE_SCIENCE_MINIMIZED, v ? 1 : 0);
 	}
@@ -190,13 +192,21 @@ public class UserPreferences {
 	public boolean isInfoPaneProvinceScienceMinimized() {
 		return getIntegerOrNull(INFO_PANE_PROVINCE_SCIENCE_MINIMIZED) == 1;
 	}
-	
+
 	public void setInfoPaneCountryMinimized(boolean v) {
 		setProp(INFO_PANE_COUNTRY_MINIMIZED, v ? 1 : 0);
 	}
 
 	public boolean isInfoPaneCountryMinimized() {
 		return getIntegerOrNull(INFO_PANE_COUNTRY_MINIMIZED) == 1;
+	}
+
+	public void setInfoPaneProvinceArmiesMinimized(boolean v) {
+		setProp(INFO_PANE_PROVINCE_ARMIES_MINIMIZED, v ? 1 : 0);
+	}
+
+	public boolean isInfoPaneProvinceArmiesMinimized() {
+		return getIntegerOrNull(INFO_PANE_PROVINCE_ARMIES_MINIMIZED) == 1;
 	}
 
 }

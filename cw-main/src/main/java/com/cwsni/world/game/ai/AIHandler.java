@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.common.algorithms.GameAlgorithms;
 import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.player.PArmy;
 import com.cwsni.world.model.player.PCountry;
 import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.model.player.PProvince;
+import com.cwsni.world.services.algorithms.GameAlgorithms;
 
 @Component
 public class AIHandler {
@@ -90,8 +90,8 @@ public class AIHandler {
 		if (capital == null) {
 			capital = pCountry.getFirstCapital();
 		}
-		// return 1 / Math.max(data.getGame().relativeDistance(neighbor, capital), 1);
-		return calculateImportanceOfProvinceByCountOfNeighborsPops(data, neighbor, pCountry.getId());
+		return 1 / Math.max(data.getGame().relativeDistance(neighbor, capital), 1);
+		//return calculateImportanceOfProvinceByCountOfNeighborsPops(data, neighbor, pCountry.getId());
 	}
 
 	private double calculateImportanceOfProvinceByCountOfNeighborsPops(AIData4Country data, PProvince p,

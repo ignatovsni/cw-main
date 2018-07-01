@@ -52,12 +52,16 @@ public class Army {
 	}
 
 	public void setProvince(Province province) {
-		Province p = country.getGame().getMap().findProvById(data.getProvince());
+		Province p = getLocation();
 		if (p != null) {
 			p.removeArmy(this);
 		}
-		data.setProvince(province.getId());
-		province.addArmy(this);
+		if (province != null) {
+			data.setProvince(province.getId());
+			province.addArmy(this);
+		} else {
+			data.setProvince(null);
+		}
 	}
 
 	DataArmy getDataArmy() {
@@ -106,6 +110,7 @@ public class Army {
 	}
 
 	public void dismiss() {
+		setProvince(null);
 		// TODO
 	}
 

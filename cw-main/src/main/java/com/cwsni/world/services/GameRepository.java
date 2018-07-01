@@ -1,4 +1,4 @@
-package com.cwsni.world.common;
+package com.cwsni.world.services;
 
 import java.io.File;
 import java.io.IOException;
