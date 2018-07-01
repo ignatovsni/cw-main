@@ -30,13 +30,13 @@ public class DataFormatter {
 	}
 
 	public static double doubleWith2points(double d) {
-		return ((int) (d * 100)) / 100.0;
+		return Math.round(d * 100) / 100.0;
 	}
-	
+
 	public static double doubleWith3points(double d) {
-		return ((int) (d * 1000)) / 1000.0;
+		return Math.round(d * 1000) / 1000.0;
 	}
-	
+
 	public static String toString(Object o) {
 		return String.valueOf(o);
 	}
@@ -44,7 +44,7 @@ public class DataFormatter {
 	public static String toLong(long v) {
 		return DataFormatter.formatLongNumber(v);
 	}
-	
+
 	public static String toFraction(double v) {
 		return DataFormatter.formatFractionNumber(v);
 	}

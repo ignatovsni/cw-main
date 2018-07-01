@@ -1,7 +1,6 @@
 package com.cwsni.world.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +16,7 @@ public class WorldMap {
 	private Map<Integer, Province> mapProvById;
 	private Game game;
 	private Set<ProvinceBorder> countriesBorders;
+	private int countriesBordersWasRefreshedAtTurn = -1;
 
 	public List<Province> getProvinces() {
 		return provinces;
@@ -60,36 +60,42 @@ public class WorldMap {
 				+ Math.pow(p1.getCenter().getY() - p2.getCenter().getY(), 2);
 	}
 
-	void refreshCountriesBorders() {
+	private Set<ProvinceBorder> refreshCountriesBorders() {
 		/*
 		 * We can remember if province changes owner and check only such provinces with
 		 * neighbors. It will improve performance.
 		 */
-		countriesBorders = new HashSet<>();
+		Set<ProvinceBorder> borders = new HashSet<>();
 		Map<Integer, Set<Integer>> bordersNeighbors = new HashMap<>();
-		provinces.stream().forEach(p -> {
-			Set<Integer> pN = bordersNeighbors.get(p.getId());
-			if (pN == null) {
-				pN = new HashSet<>();
-				bordersNeighbors.put(p.getId(), pN);
-			}
-			Set<Integer> pNeighbors = pN;
-			p.getNeighbors().stream().filter(
-					n -> !ComparisonTool.isEqual(p.getCountryId(), n.getCountryId()) && !pNeighbors.contains(n.getId()))
-					.forEach(n -> {
-						Set<Integer> nNeighbors = bordersNeighbors.get(n.getId());
-						if (nNeighbors == null) {
-							nNeighbors = new HashSet<>();
-							bordersNeighbors.put(n.getId(), nNeighbors);
-						}
-						pNeighbors.add(n.getId());
-						nNeighbors.add(p.getId());
-						countriesBorders.add(new ProvinceBorder(n.getId(), p.getId()));
-					});
+		game.getCountries().forEach(c -> {
+			c.getProvinces().forEach(p -> {
+				Set<Integer> pN = bordersNeighbors.get(p.getId());
+				if (pN == null) {
+					pN = new HashSet<>();
+					bordersNeighbors.put(p.getId(), pN);
+				}
+				Set<Integer> pNeighbors = pN;
+				p.getNeighbors().stream().filter(n -> !ComparisonTool.isEqual(p.getCountryId(), n.getCountryId())
+						&& !pNeighbors.contains(n.getId())).forEach(n -> {
+							Set<Integer> nNeighbors = bordersNeighbors.get(n.getId());
+							if (nNeighbors == null) {
+								nNeighbors = new HashSet<>();
+								bordersNeighbors.put(n.getId(), nNeighbors);
+							}
+							pNeighbors.add(n.getId());
+							nNeighbors.add(p.getId());
+							borders.add(new ProvinceBorder(n.getId(), p.getId()));
+						});
+			});
 		});
+		return borders;
 	}
 
 	public Set<ProvinceBorder> getCountriesBorders() {
+		if (countriesBordersWasRefreshedAtTurn != game.getTurn().getTurn()) {
+			countriesBorders = refreshCountriesBorders();
+			countriesBordersWasRefreshedAtTurn = game.getTurn().getTurn();
+		}
 		return countriesBorders;
 	}
 

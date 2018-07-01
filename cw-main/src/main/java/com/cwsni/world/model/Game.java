@@ -124,7 +124,6 @@ public class Game implements EventTarget {
 		map.getProvinces().forEach(p -> p.processNewTurn());
 		Event.processEvents(this, messageSource);
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
-		map.refreshCountriesBorders();
 		calcGameStats();
 	}
 
@@ -183,7 +182,6 @@ public class Game implements EventTarget {
 			});
 		});
 
-		map.refreshCountriesBorders();
 		calcGameStats();
 	}
 

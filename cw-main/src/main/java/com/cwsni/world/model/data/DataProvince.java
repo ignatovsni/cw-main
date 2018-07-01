@@ -35,7 +35,7 @@ public class DataProvince {
 		this(-1, 0, 0);
 	}
 
-	public DataProvince(int id, int x, int y) {
+	public DataProvince(int id, double x, double y) {
 		this.id = id;
 		this.name = String.valueOf(id);
 		this.center = new Point(x, y);

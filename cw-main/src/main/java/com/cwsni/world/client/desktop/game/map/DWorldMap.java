@@ -47,6 +47,7 @@ public class DWorldMap {
 		});
 		mapGroup = new Group();
 		mapGroup.getChildren().addAll(provinces);
+		drawCountryBorders();
 	}
 
 	public static DWorldMap createDMap(Game game, MapMode mapMode) {
@@ -81,6 +82,9 @@ public class DWorldMap {
 		}
 		if (selectedProvince != null) {
 			selectedProvince.selectProvince(false);
+			// refresh borders because polygon.stroke can overlap them
+			selectedProvince.getProvince().getNeighbors()
+					.forEach(n -> provincesById.get(n.getId()).drawCountryBorder());
 		}
 		this.selectedProvince = dProvince;
 		if (selectedProvince != null) {
@@ -102,13 +106,18 @@ public class DWorldMap {
 
 	public void setMapModeAndRedraw(MapMode mapMode) {
 		this.mapMode = mapMode;
-		provinces.forEach(p -> p.reDraw());
-		drawCountriesBorders();
+		provinces.forEach(p -> p.draw());
+		drawCountryBorders();
 	}
 
-	private void drawCountriesBorders() {
+	private void drawCountryBorders() {
+		provinces.forEach(p -> p.resetCountriesBorders());
 		Set<ProvinceBorder> countriesBorders = game.getMap().getCountriesBorders();
-		//countriesBorders
+		countriesBorders.forEach(pb -> {
+			provincesById.get(pb.getFirst()).addCountryBorderWith(pb.getSecond());	
+			provincesById.get(pb.getSecond()).addCountryBorderWith(pb.getFirst());
+		});
+		provinces.forEach(p -> p.drawCountryBorder());
 	}
 
 }

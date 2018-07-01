@@ -64,22 +64,24 @@ public class GameGenerator {
 	}
 
 	private DataWorldMap createMap(GameParams gParams, TempData tData) {
-		double xStep = 1.75;
-		double yStep = 1.51;
 		DataWorldMap map = new DataWorldMap();
-		double x = gParams.getProvinceRadius();
-		double y = gParams.getProvinceRadius();
+		double size = gParams.getProvinceRadius();
+		double yStep = Math.sqrt(2);
+		double xStep = Math.sqrt(3);
+		double startCoord = size;
+		double x = startCoord + size;
+		double y = startCoord + size;
 		int idx = 0;
 		for (int row = 0; row < gParams.getRows(); row++) {
-			x = gParams.getProvinceRadius() * xStep / 2 * (row % 2);
+			x = startCoord + size * xStep / 2 * (row % 2);
 			for (int column = 0; column < gParams.getColumns(); column++) {
-				DataProvince province = new DataProvince(idx++, (int) x, (int) y);
+				DataProvince province = new DataProvince(idx++, x, y);
 				map.addProvince(province);
 				tData.provByIds.put(province.getId(), province);
 				setLinks(tData, province, map, row, column, gParams.getColumns());
-				x += gParams.getProvinceRadius() * xStep;
+				x += size * xStep;
 			}
-			y += gParams.getProvinceRadius() * yStep;
+			y += size * yStep;
 		}
 		return map;
 	}
@@ -201,8 +203,8 @@ public class GameGenerator {
 
 	private void fillSoilFertilityAtPoles(TempData tData, List<DataProvince> terrain, GameParams gParams) {
 		if (!terrain.isEmpty()) {
-			int minY = terrain.stream().mapToInt(p -> p.getCenter().getY()).min().getAsInt();
-			int maxY = terrain.stream().mapToInt(p -> p.getCenter().getY()).max().getAsInt();
+			double minY = terrain.stream().mapToDouble(p -> p.getCenter().getY()).min().getAsDouble();
+			double maxY = terrain.stream().mapToDouble(p -> p.getCenter().getY()).max().getAsDouble();
 			terrain.stream().filter(p -> !tData.coreTerrainIds.contains(p.getId())).forEach(p -> {
 				double distanceToPole = (double) (1
 						+ Math.min(p.getCenter().getY() - minY, maxY - p.getCenter().getY())) / (maxY - minY);
@@ -258,7 +260,7 @@ public class GameGenerator {
 		game.getMap().getProvinces().stream().filter(p -> (p.getTerrainType().isPopulationPossible())).forEach(p -> {
 			int popsAmpount = p.getPopulation().stream().mapToInt(pop -> pop.getAmount()).sum();
 			p.setInfrastructure(
-					(int) (popsAmpount * game.getGameParams().getInfrastructureNaturalLimitFromPopulation()));
+					(int) (popsAmpount * gParams.getInfrastructureNaturalLimitFromPopulation()));
 		});
 	}
 

@@ -14,6 +14,14 @@ public class ProvinceBorder {
 		}
 	}
 
+	public int getFirst() {
+		return first;
+	}
+
+	public int getSecond() {
+		return second;
+	}
+
 	@Override
 	public int hashCode() {
 		return first * 10000 + second;

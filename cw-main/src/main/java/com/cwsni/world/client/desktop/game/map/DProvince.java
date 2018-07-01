@@ -1,12 +1,17 @@
 package com.cwsni.world.client.desktop.game.map;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Culture;
 import com.cwsni.world.model.GameTransientStats;
 import com.cwsni.world.model.Province;
+import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.events.Event;
 
@@ -18,6 +23,7 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -32,12 +38,14 @@ import javafx.util.Duration;
 class DProvince extends Group {
 	// https://www.redblobgames.com/grids/hexagons/ - how to calculate hex
 
-	private static final Color STROKE_SELECTED_2_COLOR = Color.YELLOW;
-	private static final Color STROKE_SELECTED_1_COLOR = Color.RED;
+	private static final Color STROKE_SELECTED_1_COLOR = new Color(1, 0, 0, 0.8);
+	private static final Color STROKE_SELECTED_2_COLOR = new Color(1, 1, 0, 0.8);
 	private static final Color STROKE_DEFAULT_COLOR = Color.GRAY;
 
 	private static final Color COLOR_NONE = new Color(0, 0, 0, 1);
 	private static final Color COLOR_NO_COUNTRY_BUT_POPS = new Color(0.3, 0.3, 0.3, 1);
+
+	private static final Color BORDER_COLOR = Color.BLACK;
 
 	public static final int SIDES = 6;
 
@@ -53,11 +61,16 @@ class DProvince extends Group {
 
 	private MapMode prevMode;
 
+	private Set<Integer> countriesBordersWithProvId;
+	private List<Line> borders;
+
 	private DProvince(DWorldMap map, Province province, double provinceRadius) {
 		this.map = map;
 		this.province = province;
 		this.center = new Point2D(province.getCenter().getX(), province.getCenter().getY());
 		this.radius = provinceRadius;
+		this.countriesBordersWithProvId = new HashSet<>();
+		this.borders = new ArrayList<>();
 		updatePoints();
 		createVisualElements();
 	}
@@ -66,63 +79,62 @@ class DProvince extends Group {
 		polygon = new Polygon();
 		Stream.of(points).forEach(p -> polygon.getPoints().addAll(p.getX(), p.getY()));
 		polygon.setStroke(STROKE_DEFAULT_COLOR);
-		polygon.setStrokeWidth(2);
+		polygon.setStrokeWidth(1);
 		getChildren().add(polygon);
 		polygon.setOnMouseClicked(e -> map.mouseClickOnProvince(this, e));
-		reDraw();
+		draw();
 	}
 
-	public void reDraw() {
+	public void draw() {
 		MapMode mapMode = map.getMapMode();
 		if (getProvince().getTerrainType() == TerrainType.OCEAN) {
 			if (mapMode != prevMode) {
 				drawGeoMode(polygon);
 			}
-			return;
-		}
-		switch (mapMode) {
-		case POPULATION:
-		case POPULATION_2:
-			drawPopulationMode(polygon);
-			break;
-		case POLITICAL:
-			drawPoliticalMode(polygon);
-			break;
-		case CULTURE:
-			drawCultureMode(polygon);
-			break;
-		case INFRASTRUCTURE:
-			drawInfrastructureMode(polygon);
-			break;
-		case SOIL:
-			drawSoilFertilityMode(polygon);
-			break;
-		case SOIL_2:
-			drawSoilQualityMode(polygon);
-			break;
-		case SCIENCE_AGRICULTURE:
-			drawScienceAgricultureMode(polygon);
-			break;
-		case SCIENCE_MEDICINE:
-			drawScienceMedicineMode(polygon);
-			break;
-		case SCIENCE_ADMINISTRATION:
-			drawScienceAdministrationMode(polygon);
-			break;
-		case DISEASE:
-			drawDiseaseMode(polygon);
-			break;
-		case GEO:
-			if (mapMode != prevMode) {
-				drawGeoMode(polygon);
+		} else {
+			switch (mapMode) {
+			case POPULATION:
+			case POPULATION_2:
+				drawPopulationMode(polygon);
+				break;
+			case POLITICAL:
+				drawPoliticalMode(polygon);
+				break;
+			case CULTURE:
+				drawCultureMode(polygon);
+				break;
+			case INFRASTRUCTURE:
+				drawInfrastructureMode(polygon);
+				break;
+			case SOIL:
+				drawSoilFertilityMode(polygon);
+				break;
+			case SOIL_2:
+				drawSoilQualityMode(polygon);
+				break;
+			case SCIENCE_AGRICULTURE:
+				drawScienceAgricultureMode(polygon);
+				break;
+			case SCIENCE_MEDICINE:
+				drawScienceMedicineMode(polygon);
+				break;
+			case SCIENCE_ADMINISTRATION:
+				drawScienceAdministrationMode(polygon);
+				break;
+			case DISEASE:
+				drawDiseaseMode(polygon);
+				break;
+			case GEO:
+				if (mapMode != prevMode) {
+					drawGeoMode(polygon);
+				}
+				break;
+			default:
+				break;
 			}
-			break;
-		default:
-			break;
 		}
-		prevMode = mapMode;
-
 		drawArmy();
+		prevMode = mapMode;
 	}
 
 	private void drawArmy() {
@@ -248,7 +260,6 @@ class DProvince extends Group {
 	}
 
 	private void drawSoilFertilityMode(Polygon polygon) {
-		// TODO ?? blue color if fertility < 1
 		GameTransientStats stats = map.getGame().getGameTransientStats();
 		drawGradientModeForMedian(polygon, stats.getSoilFertilityMax(), stats.getSoilFertilityAvg(),
 				stats.getSoilFertilityMedian(), province.getSoilFertility());
@@ -321,6 +332,10 @@ class DProvince extends Group {
 	public void selectProvince(boolean isSelected) {
 		if (isSelected) {
 			DProvince.this.toFront();
+			polygon.toFront();
+			if (armyPolygon != null) {
+				armyPolygon.toFront();
+			}
 			polygon.setStroke(STROKE_SELECTED_2_COLOR);
 			if (timeline == null) {
 				timeline = new Timeline(
@@ -334,6 +349,7 @@ class DProvince extends Group {
 				timeline.stop();
 			}
 			polygon.setStroke(STROKE_DEFAULT_COLOR);
+			borders.forEach(b -> b.toFront());
 		}
 	}
 
@@ -350,6 +366,51 @@ class DProvince extends Group {
 			polygon.setFill(color);
 		}
 		prevColor = color;
+	}
+
+	void resetCountriesBorders() {
+		countriesBordersWithProvId = new HashSet<>();
+	}
+
+	public void addCountryBorderWith(int neighborId) {
+		countriesBordersWithProvId.add(neighborId);
+	}
+
+	public void drawCountryBorder() {
+		// work based on features of updatePoints()
+		getChildren().removeAll(borders);
+		countriesBordersWithProvId.stream().map(id -> map.getGame().getMap().findProvById(id)).forEach(neighbor -> {
+			int neighborPosition = whatNeighborPosition(neighbor);
+			int borderFromIdx = neighborPosition;
+			int borderToIdx = (neighborPosition + 1) % SIDES;
+			Line line = new Line(points[borderFromIdx].getX(), points[borderFromIdx].getY(), points[borderToIdx].getX(),
+					points[borderToIdx].getY());
+			line.setStroke(BORDER_COLOR);
+			line.getStrokeDashArray().addAll(2d);
+			borders.add(line);
+			getChildren().add(line);
+		});
+	}
+
+	private int whatNeighborPosition(Province neighbor) {
+		Point nc = neighbor.getCenter();
+		if (nc.getX() > center.getX()) {
+			if ((nc.getY() - center.getY()) > 1) {
+				return 0;
+			} else if ((nc.getY() - center.getY()) < -1) {
+				return 4;
+			} else {
+				return 5;
+			}
+		} else {
+			if ((nc.getY() - center.getY()) > 1) {
+				return 1;
+			} else if ((nc.getY() - center.getY()) < -1) {
+				return 3;
+			} else {
+				return 2;
+			}
+		}
 	}
 
 }
