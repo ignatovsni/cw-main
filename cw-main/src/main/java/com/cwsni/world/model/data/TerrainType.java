@@ -27,4 +27,8 @@ public enum TerrainType {
 	public boolean isPopulationPossible() {
 		return !OCEAN.equals(this);
 	}
+
+	public boolean isWater() {
+		return OCEAN.equals(this);
+	}
 }

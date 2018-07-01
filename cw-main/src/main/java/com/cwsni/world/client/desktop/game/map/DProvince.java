@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Culture;
 import com.cwsni.world.model.GameTransientStats;
@@ -56,6 +57,7 @@ class DProvince extends Group {
 	private final Province province;
 
 	private Polygon polygon;
+	private Shape capitalPolygon;
 	private Shape armyPolygon;
 
 	private MapMode prevMode;
@@ -132,8 +134,38 @@ class DProvince extends Group {
 				break;
 			}
 		}
+		drawCapital();
 		drawArmy();
 		prevMode = mapMode;
+	}
+
+	private void drawCapital() {
+		boolean isCapital = province.getCountryId() != null && province.getCountry().getCapital() != null
+				&& ComparisonTool.isEqual(province.getCountry().getCapital().getId(), province.getId());
+		if (isCapital) {
+			if (capitalPolygon == null) {
+				Double[] capitalPoints = new Double[] { 0.0, 0.0, 10.0, 0.0, 10.0, 10.0, 0.0, 10.0 };
+				for (int i = 0; i < capitalPoints.length - 1; i = i + 2) {
+					capitalPoints[i] = capitalPoints[i] / radius * 7 + province.getCenter().getX() - radius * 0.35;
+					capitalPoints[i + 1] = capitalPoints[i + 1] / radius * 7 + province.getCenter().getY()
+							- radius * 0.35;
+				}
+				Polygon p = new Polygon();
+				p.getPoints().addAll(capitalPoints);
+				p.setStrokeWidth(2);
+				p.setStroke(Color.BLACK);
+				p.setFill(getCountryColor(province.getCountry()));
+				capitalPolygon = p;
+				getChildren().add(capitalPolygon);
+				capitalPolygon.setOnMouseClicked(e -> {
+					map.mouseClickOnProvince(this, e);
+				});
+			}
+			capitalPolygon.toFront();
+		} else if (capitalPolygon != null) {
+			getChildren().remove(capitalPolygon);
+			capitalPolygon = null;
+		}
 	}
 
 	private void drawArmy() {
@@ -148,14 +180,14 @@ class DProvince extends Group {
 				Polygon p = new Polygon();
 				p.getPoints().addAll(armyPoints);
 				p.setStrokeWidth(1);
-				p.setStroke(Color.WHITE);
+				p.setStroke(Color.BLACK);
 				armyPolygon = p;
 				getChildren().add(armyPolygon);
 				armyPolygon.setOnMouseClicked(e -> {
 					map.mouseClickOnProvince(this, e);
 				});
 			}
-			if (province.getArmies().size()==1) {
+			if (province.getArmies().size() == 1) {
 				armyPolygon.setFill(getCountryColor(province.getArmies().get(0).getCountry()));
 			} else {
 				armyPolygon.setFill(Color.BLACK);
@@ -342,6 +374,9 @@ class DProvince extends Group {
 		if (isSelected) {
 			DProvince.this.toFront();
 			polygon.toFront();
+			if (capitalPolygon != null) {
+				capitalPolygon.toFront();
+			}
 			if (armyPolygon != null) {
 				armyPolygon.toFront();
 			}

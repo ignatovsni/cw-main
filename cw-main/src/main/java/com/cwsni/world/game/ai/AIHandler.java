@@ -37,8 +37,9 @@ public class AIHandler {
 	}
 
 	private void processArmy(AIData4Country data, PArmy a) {
-		if (!ComparisonTool.isEqual(a.getCountry().getId(), a.getLocation().getCountryId())) {
-			// stay here
+		if (!ComparisonTool.isEqual(a.getCountry().getId(), a.getLocation().getCountryId())
+				&& !a.getLocation().getTerrainType().isWater()) {
+			// alien province, stay here
 			return;
 		}
 		if (tryMovingArmyToNeighbors(data, a)) {
@@ -91,7 +92,8 @@ public class AIHandler {
 			capital = pCountry.getFirstCapital();
 		}
 		return 1 / Math.max(data.getGame().relativeDistance(neighbor, capital), 1);
-		//return calculateImportanceOfProvinceByCountOfNeighborsPops(data, neighbor, pCountry.getId());
+		// return calculateImportanceOfProvinceByCountOfNeighborsPops(data, neighbor,
+		// pCountry.getId());
 	}
 
 	private double calculateImportanceOfProvinceByCountOfNeighborsPops(AIData4Country data, PProvince p,
