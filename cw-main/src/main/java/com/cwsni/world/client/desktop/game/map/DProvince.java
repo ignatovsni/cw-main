@@ -25,7 +25,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
@@ -141,15 +140,25 @@ class DProvince extends Group {
 		boolean isArmy = !province.getArmies().isEmpty();
 		if (isArmy) {
 			if (armyPolygon == null) {
-				Rectangle rect = new Rectangle(10, 10);
-				rect.setX(province.getCenter().getX() - 5);
-				rect.setY(province.getCenter().getY() - 5);
-				armyPolygon = rect;
+				Double[] armyPoints = new Double[] { 0.0, 0.0, 10.0, 0.0, 10.0, 10.0, 5.0, 13.0, 0.0, 10.0 };
+				for (int i = 0; i < armyPoints.length - 1; i = i + 2) {
+					armyPoints[i] = armyPoints[i] / radius * 5 + province.getCenter().getX() - radius * 0.25;
+					armyPoints[i + 1] = armyPoints[i + 1] / radius * 5 + province.getCenter().getY() - radius * 0.25;
+				}
+				Polygon p = new Polygon();
+				p.getPoints().addAll(armyPoints);
+				p.setStrokeWidth(1);
+				p.setStroke(Color.WHITE);
+				armyPolygon = p;
 				getChildren().add(armyPolygon);
 				armyPolygon.setOnMouseClicked(e -> {
 					map.mouseClickOnProvince(this, e);
-					System.out.println("army clicked");
 				});
+			}
+			if (province.getArmies().size()==1) {
+				armyPolygon.setFill(getCountryColor(province.getArmies().get(0).getCountry()));
+			} else {
+				armyPolygon.setFill(Color.BLACK);
 			}
 			armyPolygon.toFront();
 		} else if (armyPolygon != null) {

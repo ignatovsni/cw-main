@@ -75,7 +75,7 @@ public class GameGenerator {
 		for (int row = 0; row < gParams.getRows(); row++) {
 			x = startCoord + size * xStep / 2 * (row % 2);
 			for (int column = 0; column < gParams.getColumns(); column++) {
-				DataProvince province = new DataProvince(idx++, x, y);
+				DataProvince province = new DataProvince(idx++, null, x, y);
 				map.addProvince(province);
 				tData.provByIds.put(province.getId(), province);
 				setLinks(tData, province, map, row, column, gParams.getColumns());

@@ -100,8 +100,10 @@ public class Country {
 	}
 
 	public void addProvince(Province p) {
-		p.setCountry(this);
-		provinces.add(p);
+		if (p.getTerrainType().isPopulationPossible()) {
+			p.setCountry(this);
+			provinces.add(p);
+		}
 	}
 
 	public void removeProvince(Province p) {
@@ -159,7 +161,7 @@ public class Country {
 		}
 		DataCountry dc = new DataCountry();
 		dc.setId(game.nextCountryId());
-		dc.setName(String.valueOf(dc.getId()));
+		dc.setName("#" + String.valueOf(dc.getId()));
 		dc.setColor(createNewColorForCountry(game));
 		Country c = new Country();
 		c.buildFrom(game, dc);

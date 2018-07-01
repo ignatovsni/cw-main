@@ -73,8 +73,9 @@ public class GsProvArmiesInfoPane extends InternalInfoPane {
 			row.setNameColumnTooltip(getMessage("info.pane.prov.army.soldiers"));
 			row.setValueColumnTooltip(getMessage("info.pane.prov.army.effectiveness"));
 		}
-		addRow("=" + DataFormatter.formatLongNumber(armies.stream().mapToLong(Army::getSoldiers).sum()), grid, idx++,
-				"");
+		RowValue row = addRow("=" + DataFormatter.formatLongNumber(armies.stream().mapToLong(Army::getSoldiers).sum()),
+				grid, idx++, "");
+		row.setNameColumnTooltip(getMessage("info.pane.prov.army.soldiers"));
 		return idx;
 	}
 

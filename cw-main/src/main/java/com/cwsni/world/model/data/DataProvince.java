@@ -32,12 +32,12 @@ public class DataProvince {
 	private Set<Integer> events;
 
 	public DataProvince() {
-		this(-1, 0, 0);
+		this(-1, null, 0, 0);
 	}
 
-	public DataProvince(int id, double x, double y) {
+	public DataProvince(int id, String name, double x, double y) {
 		this.id = id;
-		this.name = String.valueOf(id);
+		this.name = name != null ? name : "#" + String.valueOf(id);
 		this.center = new Point(x, y);
 		this.population = new ArrayList<>(1);
 		this.neighbors = new ArrayList<>();
