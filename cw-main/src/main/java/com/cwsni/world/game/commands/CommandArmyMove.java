@@ -15,6 +15,14 @@ public class CommandArmyMove extends Command {
 		this.destinationProvId = destinationProvId;
 	}
 
+	public int getArmyId() {
+		return armyId;
+	}
+
+	public Integer getDestinationProvId() {
+		return destinationProvId;
+	}
+
 	@Override
 	public void apply(Country country, CommandErrorHandler errorHandler) {
 		Game game = country.getGame();

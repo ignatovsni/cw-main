@@ -110,7 +110,7 @@ public class Army {
 		return 1.0 * data.getOrganisation() / 100 * data.getTraining() / 100;
 	}
 
-	private double getStrength() {
+	public double getStrength() {
 		return 1.0 * getEffectiveness() * data.getSoldiers();
 	}
 

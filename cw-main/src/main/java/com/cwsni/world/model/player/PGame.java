@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.cwsni.world.game.ai.AIData4Country;
 import com.cwsni.world.game.commands.Command;
+import com.cwsni.world.game.commands.CommandArmyMove;
 import com.cwsni.world.model.Army;
 import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
@@ -103,6 +104,10 @@ public class PGame {
 
 	void removeCommand(Command command) {
 		commands.remove(command);
+	}
+
+	public void removeCommands(List<CommandArmyMove> commandsForCancellation) {
+		commands.removeAll(commandsForCancellation);
 	}
 
 }
