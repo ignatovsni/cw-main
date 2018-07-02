@@ -28,7 +28,7 @@ public class Population {
 		return data.getAmount();
 	}
 
-	public void setAmount(int amount) {
+	private void setAmount(int amount) {
 		data.setAmount(amount);
 	}
 

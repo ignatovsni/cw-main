@@ -36,8 +36,9 @@ public class CommandArmyMove extends Command {
 		if (!army.getLocation().getNeighbors().contains(destination)) {
 			// destination is not neighbor
 			// TODO find nearest province to move
+			// right now command has only neighbors target
 		}
-		army.setProvince(destination);
+		army.moveTo(destination);
 	}
 
 	@Override

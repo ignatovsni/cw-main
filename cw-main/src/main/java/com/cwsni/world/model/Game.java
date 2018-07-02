@@ -1,9 +1,10 @@
 package com.cwsni.world.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
@@ -118,7 +119,9 @@ public class Game implements EventTarget {
 
 	public void processNewTurn() {
 		getTurn().increment();
+		processFights();
 		armies.values().forEach(a -> a.processNewTurn());
+		dismissEmptyArmies();
 		processNewProbablyCountries();
 		dismissEmptyCountries();
 		map.getProvinces().forEach(p -> p.processNewTurn());
@@ -127,13 +130,56 @@ public class Game implements EventTarget {
 		calcGameStats();
 	}
 
+	private void processFights() {
+		GameParams gParams = map.getGame().getGameParams();
+		for (Province p : map.getProvinces()) {
+			Map<Integer, List<Army>> armies = p.getArmies().stream().filter(a -> a.isCanFightThisTurn())
+					.collect(Collectors.groupingBy(a -> a.getCountry().getId()));
+			while (armies.keySet().size() > 1) {
+				List<Integer> countryIds = new ArrayList<>(armies.keySet());
+				int attacker = gParams.getRandom().nextInt(countryIds.size());
+				int defender = -1;
+				while (defender == -1) {
+					int d = gParams.getRandom().nextInt(countryIds.size());
+					if (d != attacker) {
+						defender = d;
+					}
+				}
+				if (ComparisonTool.isEqual(countryIds.get(attacker), p.getCountryId())) {
+					// province owner is always a defender
+					int temp = attacker;
+					attacker = defender;
+					defender = temp;
+				}
+				Integer countryAttacker = countryIds.get(attacker);
+				Integer countryDefender = countryIds.get(defender);
+				double result = Army.fight(armies.get(countryAttacker), armies.get(countryDefender));
+				if (result > 1) {
+					armies.remove(countryDefender);
+				} else {
+					armies.remove(countryAttacker);
+				}
+			}
+		}
+	}
+
 	private void dismissEmptyCountries() {
-		List<Country> countryList = new LinkedList<>(countries.getCountries());
+		List<Country> countryList = new ArrayList<>(countries.getCountries());
 		countryList.forEach(c -> {
 			if (c.getProvinces().isEmpty()) {
 				c.dismiss();
 				unregisterCountry(c);
 			}
+		});
+	}
+
+	private void dismissEmptyArmies() {
+		GameParams gParams = getGameParams();
+		countries.getCountries().forEach(c -> {
+			List<Army> armiesList = new ArrayList<>(c.getArmies());
+			armiesList.stream()
+					.filter(a -> a.getSoldiers() <= 0 || a.getOrganisation() < gParams.getArmyMinAllowedOrganization())
+					.forEach(a -> c.dismissArmy(a));
 		});
 	}
 

@@ -148,9 +148,13 @@ public class Country {
 		getProvinces().forEach(p -> p.setCountry(null));
 		List<Army> listArmies = new LinkedList<>(getArmies());
 		listArmies.forEach(a -> {
-			a.dismiss();
-			unregisterArmy(a);
+			dismissArmy(a);
 		});
+	}
+
+	void dismissArmy(Army a) {
+		a.dismiss();
+		unregisterArmy(a);
 	}
 
 	// --------------------- static -------------------------------

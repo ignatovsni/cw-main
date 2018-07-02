@@ -1,11 +1,15 @@
 package com.cwsni.world.model;
 
+import java.util.List;
+
 import com.cwsni.world.model.data.DataArmy;
 
 public class Army {
 
 	private DataArmy data;
 	private Country country;
+	private Province moveFrom;
+	private boolean isCanFightThisTurn = true;
 
 	public int getId() {
 		return data.getId();
@@ -86,32 +90,106 @@ public class Army {
 		return ((Army) obj).getId() == getId();
 	}
 
+	boolean isCanFightThisTurn() {
+		return isCanFightThisTurn;
+	}
+
+	private void changeOrganization(int delta) {
+		data.setOrganisation(Math.min(100, data.getOrganisation() + delta));
+	}
+
+	private void changeTraining(int delta) {
+		data.setTraining(Math.max(50, Math.min(200, data.getTraining() + delta)));
+	}
+
+	private void changeSoldiers(int delta) {
+		data.setSoldiers(Math.max(0, data.getSoldiers() + delta));
+	}
+
+	private double getEffectiveness() {
+		return 1.0 * data.getOrganisation() / 100 * data.getTraining() / 100;
+	}
+
+	private double getStrength() {
+		return 1.0 * getEffectiveness() * data.getSoldiers();
+	}
+
+	public void dismiss() {
+		// TODO pops should return to home or stay in current province
+		setProvince(null);
+	}
+
+	public void moveTo(Province destination) {
+		moveFrom = getLocation();
+		changeOrganization(-2);
+		setProvince(destination);
+	}
+
+	private void processEffectivenessInNewTurn() {
+		changeOrganization(20);
+		changeTraining(-1);
+	}
+
 	public void processNewTurn() {
+		isCanFightThisTurn = true;
+		moveFrom = null;
+		processEffectivenessInNewTurn();
 		Country locationCountry = getLocation().getCountry();
 		if (getCountry().equals(locationCountry)) {
 			// our land, doing nothing
 			return;
 		}
-		boolean successful = fightIfNeededInCurrentLocation();
-		if (successful) {
-			// it is our land now!
-			if (locationCountry != null) {
-				locationCountry.removeProvince(getLocation());
-			}
-			getCountry().addProvince(getLocation());
-		} else {
-			// TODO retreat OR do it in fightIfNeededInCurrentLocation()
+		// it is our land now!
+		if (locationCountry != null) {
+			locationCountry.removeProvince(getLocation());
 		}
+		getCountry().addProvince(getLocation());
 	}
 
-	private boolean fightIfNeededInCurrentLocation() {
-		// TODO
-		return true;
+	private void retreat() {
+		Province retreatTo = moveFrom;
+		if (retreatTo == null || !ComparisonTool.isEqual(retreatTo.getCountryId(), getCountry().getId())) {
+			// TODO path to capital
+		}
+		if (retreatTo == null) {
+			// nowhere to go... prepare to fight again or to die
+			return;
+		}
+		setProvince(retreatTo);
+		isCanFightThisTurn = false;
 	}
 
-	public void dismiss() {
-		setProvince(null);
-		// TODO
+	// ---------------------------- static -----------------------------
+
+	public static double fight(List<Army> attacker, List<Army> defender) {
+		Game game = attacker.get(0).getCountry().getGame();
+		double attackerStrenth = attacker.stream().mapToDouble(a -> a.getStrength()).sum();
+		double defenderStrenth = defender.stream().mapToDouble(a -> a.getStrength()).sum();
+		double ras = attackerStrenth
+				* (1 + game.getGameParams().getArmyFightRandomness() * game.getGameParams().getRandom().nextDouble());
+		double das = defenderStrenth
+				* (1 + game.getGameParams().getArmyFightRandomness() * game.getGameParams().getRandom().nextDouble());
+		double result = ras / das;
+		if (result > 1) {
+			processFightResult(game, attacker, defender, result);
+		} else {
+			processFightResult(game, defender, attacker, 1 / result);
+		}
+		return result;
+	}
+
+	private static void processFightResult(Game game, List<Army> winner, List<Army> loser, double result) {
+		winner.forEach(a -> {
+			a.changeOrganization((int) Math.round(-10 / result));
+			a.changeTraining(5);
+			a.changeSoldiers((int) (-game.getGameParams().getArmyFightBasePercentOfLoss() * a.getSoldiers() / result));
+		});
+		loser.forEach(a -> {
+			a.changeOrganization((int) Math.round(-10 * result));
+			a.changeTraining(5);
+			a.changeSoldiers((int) (-game.getGameParams().getArmyFightBasePercentOfLoss() * a.getSoldiers() * result));
+		});
+		loser.forEach(a -> a.retreat());
 	}
 
 }

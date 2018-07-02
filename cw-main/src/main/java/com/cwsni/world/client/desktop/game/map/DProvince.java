@@ -353,7 +353,6 @@ class DProvince extends Group {
 			fillPolygon(polygon, Color.GREEN);
 		} else {
 			fillPolygon(polygon, Color.GREY);
-			fillPolygon(polygon, Color.GREY);
 		}
 	}
 

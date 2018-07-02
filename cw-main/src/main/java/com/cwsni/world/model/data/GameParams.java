@@ -52,6 +52,10 @@ public class GameParams {
 	private double infrastructureNaturalLimitFromPopulation = 0.7;
 	private double infrastructureMaxValue = 1.2;
 
+	private double armyFightRandomness = 0.2;
+	private double armyFightBasePercentOfLoss = 0.2;
+	private int armyMinAllowedOrganization = 10;
+	
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
 	private double eventGlobalClimateChangeBadProbability = 0.7;
@@ -412,6 +416,30 @@ public class GameParams {
 
 	public void setNewCountryProbability(double newCountryProbability) {
 		this.newCountryProbability = newCountryProbability;
+	}
+
+	public double getArmyFightRandomness() {
+		return armyFightRandomness;
+	}
+
+	public void setArmyFightRandomness(double armyFightRandomness) {
+		this.armyFightRandomness = armyFightRandomness;
+	}
+
+	public int getArmyMinAllowedOrganization() {
+		return armyMinAllowedOrganization;
+	}
+
+	public void setArmyMinAllowedOrganization(int armyMinAllowedOrganization) {
+		this.armyMinAllowedOrganization = armyMinAllowedOrganization;
+	}
+
+	public double getArmyFightBasePercentOfLoss() {
+		return armyFightBasePercentOfLoss;
+	}
+
+	public void setArmyFightBasePercentOfLoss(double armyFightBasePercentOfLoss) {
+		this.armyFightBasePercentOfLoss = armyFightBasePercentOfLoss;
 	}
 
 }
