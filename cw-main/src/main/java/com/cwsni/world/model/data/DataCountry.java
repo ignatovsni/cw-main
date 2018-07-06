@@ -3,6 +3,8 @@ package com.cwsni.world.model.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cwsni.world.client.desktop.util.DataFormatter;
+
 public class DataCountry {
 
 	private int id;
@@ -10,7 +12,9 @@ public class DataCountry {
 	private Color color;
 	private Integer capital;
 	private Integer firstCapital;
+	private double focus;
 	private List<DataArmy> armies = new ArrayList<>();
+	private DataMoneyBudget budget;
 	private boolean isAI = true;
 
 	public int getId() {
@@ -67,6 +71,22 @@ public class DataCountry {
 
 	public void setFirstCapital(Integer firstCapital) {
 		this.firstCapital = firstCapital;
+	}
+
+	public double getFocus() {
+		return focus;
+	}
+
+	public void setFocus(double focus) {
+		this.focus = DataFormatter.doubleWith3points(focus);
+	}
+
+	public DataMoneyBudget getBudget() {
+		return budget;
+	}
+
+	public void setBudget(DataMoneyBudget budget) {
+		this.budget = budget;
 	}
 
 }

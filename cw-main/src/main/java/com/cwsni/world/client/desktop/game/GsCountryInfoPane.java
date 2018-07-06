@@ -22,6 +22,8 @@ public class GsCountryInfoPane extends InternalInfoPane {
 	private RowValue valuesNameLabel;
 	private RowValue valuesProvincesLabel;
 	private RowValue valuesPopulationLabel;
+	private RowValue valuesMoneyLabel;
+	private RowValue valuesFocusLabel;
 	private RowValue valuesArmiesSoldiersLabel;
 
 	public void init(GameScene gameScene) {
@@ -38,6 +40,8 @@ public class GsCountryInfoPane extends InternalInfoPane {
 		valuesNameLabel = addRow("info.pane.country.name", grid, idx++);
 		valuesProvincesLabel = addRow("info.pane.country.provinces", grid, idx++);
 		valuesPopulationLabel = addRow("info.pane.country.population", grid, idx++);
+		valuesMoneyLabel = addRow("info.pane.country.money", grid, idx++);
+		valuesFocusLabel = addRow("info.pane.country.focus", grid, idx++);
 		valuesArmiesSoldiersLabel = addRow("info.pane.country.armies-soldiers", grid, idx++);
 
 		return grid;
@@ -50,6 +54,8 @@ public class GsCountryInfoPane extends InternalInfoPane {
 		setLabelText(valuesProvincesLabel, DataFormatter.toLong(country.getProvinces().size()));
 		setLabelText(valuesPopulationLabel,
 				DataFormatter.toLong(country.getProvinces().stream().mapToLong(p -> p.getPopulationAmount()).sum()));
+		setLabelText(valuesMoneyLabel, DataFormatter.toLong((long) country.getMoney()));
+		setLabelText(valuesFocusLabel, DataFormatter.toFraction(country.getFocus()));
 		String armies = DataFormatter.toLong(country.getArmies().size()) + " / "
 				+ country.getArmies().stream().mapToLong(a -> a.getSoldiers()).sum();
 		setLabelText(valuesArmiesSoldiersLabel, armies);

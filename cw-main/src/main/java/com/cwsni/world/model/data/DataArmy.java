@@ -25,7 +25,7 @@ public class DataArmy {
 	}
 
 	public void setSoldiers(int soldiers) {
-		this.soldiers = soldiers;
+		this.soldiers = Math.max(0, soldiers);
 	}
 
 	public int getTraining() {

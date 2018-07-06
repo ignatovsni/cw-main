@@ -25,6 +25,24 @@ public class Province implements EventTarget {
 	private List<Population> immigrants;
 	private List<Army> armies;
 
+	@Override
+	public int hashCode() {
+		return data.getId();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Province)) {
+			return false;
+		}
+		return ((Province) obj).getId() == getId();
+	}
+
+	@Override
+	public String toString() {
+		return "province with id = " + getId() + ";";
+	}
+
 	public List<Province> getNeighbors() {
 		return neighbors;
 	}
@@ -312,21 +330,7 @@ public class Province implements EventTarget {
 		armies.remove(a);
 	}
 
-	@Override
-	public int hashCode() {
-		return data.getId();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Province)) {
-			return false;
-		}
-		return ((Province) obj).getId() == getId();
-	}
-
-	@Override
-	public String toString() {
-		return "province with id = " + getId() + ";";
+	public double getFederalIncomePerYear() {
+		return getPopulationAmount() * getCountry().getGame().getGameParams().getBudgetBaseTaxPerPerson();
 	}
 }

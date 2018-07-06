@@ -1,26 +1,29 @@
 package com.cwsni.world.util;
 
 import java.util.Arrays;
+import java.util.function.BiFunction;
 
-public class Heap<T extends Comparable<T>> {
+public class Heap<T> {
 
-	private Object[] elements;
-	private int size = 0;
-	private boolean isMinHeap = true;
+	protected Object[] elements;
+	protected int size = 0;
+	protected boolean isMinHeap = true;
+	protected BiFunction<T, T, Integer> comparator;
 
-	public Heap() {
-		this(1, true);
+	public Heap(BiFunction<T, T, Integer> comparator) {
+		this(1, true, comparator);
 	}
 
-	public Heap(boolean isMinHeap) {
-		this(1, isMinHeap);
+	public Heap(boolean isMinHeap, BiFunction<T, T, Integer> comparator) {
+		this(1, isMinHeap, comparator);
 	}
 
-	public Heap(int size) {
-		this(size, true);
+	public Heap(int size, BiFunction<T, T, Integer> comparator) {
+		this(size, true, comparator);
 	}
 
-	public Heap(int size, boolean isMinHeap) {
+	public Heap(int size, boolean isMinHeap, BiFunction<T, T, Integer> comparator) {
+		this.comparator = comparator;
 		elements = new Object[Math.max(size, 1)];
 		this.isMinHeap = isMinHeap;
 	}
@@ -33,7 +36,7 @@ public class Heap<T extends Comparable<T>> {
 		rise(size - 1);
 	}
 
-	private void rise(int idx) {
+	protected void rise(int idx) {
 		if (idx == 0) {
 			return;
 		}
@@ -47,11 +50,11 @@ public class Heap<T extends Comparable<T>> {
 		}
 	}
 
-	private int compare(T first, T second) {
+	protected int compare(T first, T second) {
 		if (isMinHeap) {
-			return first.compareTo(second);
+			return comparator.apply(first, second);
 		} else {
-			return second.compareTo(first);
+			return comparator.apply(second, first);
 		}
 	}
 
@@ -74,7 +77,7 @@ public class Heap<T extends Comparable<T>> {
 		return (T) elements[0];
 	}
 
-	private void sink(int parentIdx) {
+	protected void sink(int parentIdx) {
 		int rightIdx = parentIdx * 2 + 1;
 		int leftIdx = rightIdx + 1;
 		if (rightIdx >= size) {
@@ -96,7 +99,7 @@ public class Heap<T extends Comparable<T>> {
 	public int size() {
 		return size;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "heap with size = " + size();

@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.util.Heap;
+import com.cwsni.world.util.HeapComparable;
 
 @Component
 public class GameAlgorithms {
@@ -35,7 +35,7 @@ public class GameAlgorithms {
 	}
 
 	public List<Object> findShortestPath(Node nodeFrom, Node nodeTo) {
-		Heap<Pair<Node, Double>> fromArea = new Heap<>();
+		HeapComparable<Pair<Node, Double>> fromArea = new HeapComparable<>();
 		Map<Node, Pair<Node, Double>> fromAreaDistance = new HashMap<>();
 		fromArea.put(new Pair<>(nodeFrom, 0.0));
 		fromAreaDistance.put(nodeFrom, new Pair<>(null, 0.0));
@@ -67,7 +67,7 @@ public class GameAlgorithms {
 		return path;
 	}
 
-	private void stepWave(Heap<Pair<Node, Double>> heap, Map<Node, Pair<Node, Double>> visited) {
+	private void stepWave(HeapComparable<Pair<Node, Double>> heap, Map<Node, Pair<Node, Double>> visited) {
 		Pair<Node, Double> p = heap.poll();
 		p.first.getNeighbors().stream().filter(n -> !visited.containsKey(n)).forEach(n -> {
 			// now distance between all nodes = 1

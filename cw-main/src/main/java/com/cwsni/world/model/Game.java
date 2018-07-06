@@ -125,6 +125,7 @@ public class Game implements EventTarget {
 		processNewProbablyCountries();
 		dismissEmptyCountries();
 		map.getProvinces().forEach(p -> p.processNewTurn());
+		countries.getCountries().forEach(c -> c.processNewTurn());
 		Event.processEvents(this, messageSource);
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
 		calcGameStats();
@@ -165,6 +166,7 @@ public class Game implements EventTarget {
 
 	private void dismissEmptyCountries() {
 		List<Country> countryList = new ArrayList<>(countries.getCountries());
+		// TODO check pops, if == 0 then dismiss
 		countryList.forEach(c -> {
 			if (c.getProvinces().isEmpty()) {
 				c.dismiss();

@@ -118,6 +118,11 @@ public class Army {
 		// TODO pops should return to home or stay in current province
 		setProvince(null);
 	}
+	
+
+	public void dismissSoldiers(int howManySoldiersNeedToDismiss) {
+		setSoldiers(getSoldiers() - howManySoldiersNeedToDismiss); 
+	}
 
 	public void moveTo(Province destination) {
 		moveFrom = getLocation();
@@ -159,6 +164,16 @@ public class Army {
 		isCanFightThisTurn = false;
 	}
 
+	public double getCostPerYear() {
+		return getSoldiers() * getCostForSoldierPerYear();
+	}
+	
+
+	public double getCostForSoldierPerYear() {
+		return country.getGame().getGameParams().getBudgetBaseCostPerSoldier();
+	}
+
+
 	// ---------------------------- static -----------------------------
 
 	public static double fight(List<Army> attacker, List<Army> defender) {
@@ -191,5 +206,6 @@ public class Army {
 		});
 		loser.forEach(a -> a.retreat());
 	}
+
 
 }

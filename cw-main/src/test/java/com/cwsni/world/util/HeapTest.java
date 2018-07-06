@@ -21,7 +21,7 @@ public class HeapTest {
 	}
 
 	private void testSorting(boolean isMin) {
-		Heap<Integer> heap = new Heap<>(isMin);
+		HeapComparable<Integer> heap = new HeapComparable<>(isMin);
 		Integer[] elements = { 2, 5, 1, 45, 3, 5, 5, 6, 7, 71, 72, 70, 69 };
 		Arrays.asList(elements).forEach(el -> heap.put(el));
 		assertEquals(heap.size(), elements.length);
