@@ -51,6 +51,8 @@ public class Population {
 
 	private Population createNewEmigrant(int migrantsCount) {
 		Population newPop = new Population();
+		newPop.setWealth(migrantsCount / getAmount() * getWealth());
+		changeWealth(-newPop.getWealth());
 		newPop.setAmount(migrantsCount);
 		setAmount(getAmount() - migrantsCount);
 		newPop.getScience().cloneFrom(getScience());
@@ -80,6 +82,18 @@ public class Population {
 
 	public void setProvince(Province province) {
 		this.province = province;
+	}
+
+	double getWealth() {
+		return data.getWealth();
+	}
+
+	private void setWealth(double wealth) {
+		data.setWealth(wealth);
+	}
+
+	void changeWealth(double delta) {
+		data.setWealth(Math.max(0, data.getWealth() + delta));
 	}
 
 	// --------------- static section -----------------------

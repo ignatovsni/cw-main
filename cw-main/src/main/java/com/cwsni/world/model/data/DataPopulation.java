@@ -5,6 +5,7 @@ public class DataPopulation {
 	private int amount;
 	private DataScienceCollection science = new DataScienceCollection();
 	private DataCulture culture = new DataCulture();
+	private double wealth;
 
 	public int getAmount() {
 		return amount;
@@ -28,6 +29,14 @@ public class DataPopulation {
 
 	public void setCulture(DataCulture culture) {
 		this.culture = culture;
+	}
+
+	public double getWealth() {
+		return wealth;
+	}
+
+	public void setWealth(double wealth) {
+		this.wealth = wealth;
 	}
 	
 }

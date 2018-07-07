@@ -9,6 +9,7 @@ import java.util.function.Function;
 import com.cwsni.world.CwException;
 import com.cwsni.world.model.data.DataProvince;
 import com.cwsni.world.model.data.DataScience;
+import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.events.Event;
@@ -298,6 +299,7 @@ public class Province implements EventTarget {
 			return;
 		}
 		if (getPopulationAmount() != 0) {
+			processTaxesAndWealthInNewTurn();
 			ScienceCollection.growScienceNewTurn(this, map.getGame());
 		}
 		Population.processEventsNewTurn(this, map.getGame());
@@ -315,7 +317,7 @@ public class Province implements EventTarget {
 		Iterator<Population> iter = population.iterator();
 		while (iter.hasNext()) {
 			Population pop = iter.next();
-			if (pop.getAmount() == 0) {
+			if (pop.getAmount() < 10) {
 				iter.remove();
 				data.getPopulation().remove(pop.getPopulationData());
 			}
@@ -330,7 +332,54 @@ public class Province implements EventTarget {
 		armies.remove(a);
 	}
 
+	public double getWealth() {
+		return getPopulation().stream().mapToDouble(p -> p.getWealth()).sum() + data.getWealth();
+	}
+
 	public double getFederalIncomePerYear() {
-		return getPopulationAmount() * getCountry().getGame().getGameParams().getBudgetBaseTaxPerPerson();
+		return sumTaxForYear();
+	}
+
+	private double sumTaxForYear() {
+		int populationAmount = getPopulationAmount();
+		if (populationAmount <= 0) {
+			return 0;
+		}
+		GameParams gParams = map.getGame().getGameParams();
+		// absolutely poor people
+		double income = populationAmount * gParams.getBudgetBaseTaxPerPerson();
+		// wealth people
+		income += getWealth() / populationAmount / gParams.getBudgetMaxWealthPerPerson() / 2
+				* (gParams.getBudgetBaseTaxPerWealthPerson() - gParams.getBudgetBaseTaxPerPerson());
+		// if the province lost population, then wealth can be much more than current
+		// pops, so we should ignore too much wealth
+		income = Math.min(income, populationAmount * gParams.getBudgetBaseTaxPerWealthPerson());
+		return income;
+	}
+
+	private void processTaxesAndWealthInNewTurn() {
+		GameParams gParams = map.getGame().getGameParams();
+		int populationAmount = getPopulationAmount();
+		double income = sumTaxForYear();
+
+		// province
+		double wealthForProvince = income / 2;
+		double wealthForPops = income / 2;
+		double addWealthForProv = Math.min(populationAmount * gParams.getBudgetMaxWealthPerPerson() - data.getWealth(),
+				wealthForProvince);
+		changeWealth(addWealthForProv);
+
+		// population
+		for (Population p : getPopulation()) {
+			if (p.getAmount() > 0) {
+				double addWealth = Math.min(p.getAmount() * gParams.getBudgetMaxWealthPerPerson() - p.getWealth(),
+						wealthForPops / populationAmount * p.getAmount());
+				p.changeWealth(addWealth);
+			}
+		}
+	}
+
+	private void changeWealth(double addWealth) {
+		data.setWealth(Math.max(0, data.getWealth() + addWealth));
 	}
 }

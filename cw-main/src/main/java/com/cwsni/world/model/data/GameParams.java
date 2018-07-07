@@ -58,6 +58,8 @@ public class GameParams {
 	private int armyMinAllowedSoldiers = 50;
 	
 	private double budgetBaseTaxPerPerson = 1;
+	private double budgetBaseTaxPerWealthPerson = 3;
+	private double budgetMaxWealthPerPerson = 10;
 	private double budgetBaseCostPerSoldier = 100;
 	private double budgetBaseHiringCostPerSoldier = 1000;
 	
@@ -477,6 +479,22 @@ public class GameParams {
 
 	public void setBudgetBaseHiringCostPerSoldier(double budgetBaseHiringCostPerSoldier) {
 		this.budgetBaseHiringCostPerSoldier = budgetBaseHiringCostPerSoldier;
+	}
+
+	public double getBudgetMaxWealthPerPerson() {
+		return budgetMaxWealthPerPerson;
+	}
+
+	public void setBudgetMaxWealthPerPerson(double budgetMaxWealthPerPerson) {
+		this.budgetMaxWealthPerPerson = budgetMaxWealthPerPerson;
+	}
+
+	public double getBudgetBaseTaxPerWealthPerson() {
+		return budgetBaseTaxPerWealthPerson;
+	}
+
+	public void setBudgetBaseTaxPerWealthPerson(double budgetBaseTaxPerWealthPerson) {
+		this.budgetBaseTaxPerWealthPerson = budgetBaseTaxPerWealthPerson;
 	}
 
 }

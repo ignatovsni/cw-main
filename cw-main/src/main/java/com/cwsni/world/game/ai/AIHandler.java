@@ -64,6 +64,7 @@ public class AIHandler {
 		double canAllowNewSoldiers = Math.min(availableMoneyForArmy / baseCostPerSoldier,
 				budget.getMoney() / baseHiringCostPerSoldier);
 		PProvince capital = data.getCountry().getCapital();
+		// TODO create army in different provinces, where are many free people
 		if (canAllowNewSoldiers >= params.getArmyMinAllowedSoldiers() && capital != null) {
 			data.getCountry().createArmy(capital.getId(), (int) Math.max(1000, canAllowNewSoldiers));
 		}

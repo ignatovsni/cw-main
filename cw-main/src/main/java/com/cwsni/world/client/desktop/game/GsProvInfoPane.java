@@ -22,6 +22,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesSizeLabel;
 	private RowValue valuesTerrainTypeLabel;
 	private RowValue valuesPopsLabel;
+	private RowValue valuesWealthLabel;
 	private RowValue valuesInfrastructureLabel;
 	private RowValue valuesSoilAreaLabel;
 	private RowValue valuesSoilFertilityLabel;
@@ -42,6 +43,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 		valuesTerrainTypeLabel = addRow("info.pane.prov.terrain-type", grid, idx++);
 		valuesSizeLabel = addRow("info.pane.prov.size", grid, idx++);
 		valuesPopsLabel = addRow("info.pane.prov.population", grid, idx++);
+		valuesWealthLabel = addRow("info.pane.prov.wealth", grid, idx++);
 		valuesInfrastructureLabel = addRow("info.pane.prov.infrastructure", grid, idx++);
 		valuesSoilAreaLabel = addRow("info.pane.prov.soil.area", grid, idx++);
 		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, idx++);
@@ -57,6 +59,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 		case GRASSLAND:
 			setLabelText(valuesSizeLabel, DataFormatter.toLong(prov.getSize()));
 			setLabelText(valuesPopsLabel, DataFormatter.toLong(prov.getPopulationAmount()));
+			setLabelText(valuesWealthLabel, DataFormatter.toLong((long) prov.getWealth()));
 			setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
 			setLabelText(valuesSoilAreaLabel, DataFormatter.toLong(prov.getSoilArea()));
 			setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));

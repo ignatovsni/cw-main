@@ -98,6 +98,9 @@ class DProvince extends Group {
 			case POPULATION_2:
 				drawPopulationMode(polygon);
 				break;
+			case WEALTH:
+				drawWealthMode(polygon);
+				break;
 			case POLITICAL:
 				drawPoliticalMode(polygon);
 				break;
@@ -293,6 +296,12 @@ class DProvince extends Group {
 					map.getGame().getGameTransientStats().getPopulationMedianInProvince(),
 					province.getPopulationAmount());
 		}
+	}
+
+	private void drawWealthMode(Polygon polygon2) {
+		drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getWealthMaxInProvince(),
+				map.getGame().getGameTransientStats().getWealthAvgInProvince(),
+				map.getGame().getGameTransientStats().getWealthMedianInProvince(), province.getWealth());
 	}
 
 	private void drawSoilQualityMode(Polygon polygon) {

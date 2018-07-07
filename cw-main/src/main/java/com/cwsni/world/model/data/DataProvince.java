@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.cwsni.world.client.desktop.util.DataFormatter;
+
 public class DataProvince {
 
 	// --------------- map section --------------------
@@ -30,6 +32,7 @@ public class DataProvince {
 	private int infrastructure;
 	private List<DataPopulation> population;
 	private Set<Integer> events;
+	private double wealth;
 
 	public DataProvince() {
 		this(-1, null, 0, 0);
@@ -139,6 +142,14 @@ public class DataProvince {
 
 	public void setCountry(Integer country) {
 		this.country = country;
+	}
+
+	public double getWealth() {
+		return wealth;
+	}
+
+	public void setWealth(double wealth) {
+		this.wealth = DataFormatter.doubleWith3points(wealth);
 	}
 
 }
