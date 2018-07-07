@@ -1,28 +1,28 @@
 package com.cwsni.world.util;
 
 import java.util.Arrays;
-import java.util.function.BiFunction;
+import java.util.Comparator;
 
 public class Heap<T> {
 
 	protected Object[] elements;
 	protected int size = 0;
 	protected boolean isMinHeap = true;
-	protected BiFunction<T, T, Integer> comparator;
+	protected Comparator<T> comparator;
 
-	public Heap(BiFunction<T, T, Integer> comparator) {
+	public Heap(Comparator<T> comparator) {
 		this(1, true, comparator);
 	}
 
-	public Heap(boolean isMinHeap, BiFunction<T, T, Integer> comparator) {
+	public Heap(boolean isMinHeap, Comparator<T> comparator) {
 		this(1, isMinHeap, comparator);
 	}
 
-	public Heap(int size, BiFunction<T, T, Integer> comparator) {
+	public Heap(int size, Comparator<T> comparator) {
 		this(size, true, comparator);
 	}
 
-	public Heap(int size, boolean isMinHeap, BiFunction<T, T, Integer> comparator) {
+	public Heap(int size, boolean isMinHeap, Comparator<T> comparator) {
 		this.comparator = comparator;
 		elements = new Object[Math.max(size, 1)];
 		this.isMinHeap = isMinHeap;
@@ -52,9 +52,9 @@ public class Heap<T> {
 
 	protected int compare(T first, T second) {
 		if (isMinHeap) {
-			return comparator.apply(first, second);
+			return comparator.compare(first, second);
 		} else {
-			return comparator.apply(second, first);
+			return comparator.compare(second, first);
 		}
 	}
 
