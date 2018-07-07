@@ -120,14 +120,14 @@ public class Game implements EventTarget {
 	public void processNewTurn() {
 		getTurn().increment();
 		processFights();
-		armies.values().forEach(a -> a.processNewTurn());
 		dismissEmptyArmies();
+		armies.values().forEach(a -> a.processNewTurn());
 		processNewProbablyCountries();
 		dismissEmptyCountries();
 		map.getProvinces().forEach(p -> p.processNewTurn());
-		countries.getCountries().forEach(c -> c.processNewTurn());
 		Event.processEvents(this, messageSource);
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
+		countries.getCountries().forEach(c -> c.processNewTurn());
 		calcGameStats();
 	}
 
@@ -166,9 +166,10 @@ public class Game implements EventTarget {
 
 	private void dismissEmptyCountries() {
 		List<Country> countryList = new ArrayList<>(countries.getCountries());
-		// TODO check pops, if == 0 then dismiss
 		countryList.forEach(c -> {
-			if (c.getProvinces().isEmpty()) {
+			c.getProvinces().stream().mapToInt(p -> p.getPopulationAmount()).sum();
+			if (c.getProvinces().isEmpty() || c.getProvinces().stream().mapToInt(p -> p.getPopulationAmount())
+					.sum() <= getGameParams().getNewCountryPopulationMin() / 2) {
 				c.dismiss();
 				unregisterCountry(c);
 			}
@@ -176,12 +177,9 @@ public class Game implements EventTarget {
 	}
 
 	private void dismissEmptyArmies() {
-		GameParams gParams = getGameParams();
 		countries.getCountries().forEach(c -> {
 			List<Army> armiesList = new ArrayList<>(c.getArmies());
-			armiesList.stream()
-					.filter(a -> a.getSoldiers() <= 0 || a.getOrganisation() < gParams.getArmyMinAllowedOrganization())
-					.forEach(a -> c.dismissArmy(a));
+			armiesList.stream().filter(a -> !a.isAbleToWork()).forEach(a -> c.dismissArmy(a));
 		});
 	}
 

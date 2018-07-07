@@ -7,10 +7,13 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.player.PArmy;
+import com.cwsni.world.model.player.PBudget;
 import com.cwsni.world.model.player.PCountry;
 import com.cwsni.world.model.player.PGame;
+import com.cwsni.world.model.player.PGameParams;
 import com.cwsni.world.model.player.PProvince;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
+import com.cwsni.world.util.Heap;
 
 @Component
 public class AIHandler {
@@ -25,7 +28,45 @@ public class AIHandler {
 	private void processCountry(PGame game, PCountry c) {
 		AIData4Country data = game.getAIData();
 		data.initNewTurn(game, c);
+		processArmyBudget(data);
 		processArmies(data);
+	}
+
+	private void processArmyBudget(AIData4Country data) {
+		PGameParams params = data.getGame().getParams();
+		PBudget budget = data.getCountry().getBudget();
+		double availableMoneyForArmy = budget.getAvailableMoneyForArmy();
+		List<PArmy> armies = data.getCountry().getArmies();
+		if (availableMoneyForArmy < 0 && !armies.isEmpty()) {
+			// we spend all money for existing armies
+			// try to dismiss some
+			// I can just sort array instead of using Heap
+			Heap<PArmy> armiesByValues = new Heap<>((x, y) -> x.getSoldiers() - y.getSoldiers());
+			armies.forEach(a -> armiesByValues.put(a));
+			PArmy weakestArmy = armiesByValues.poll();
+			while (availableMoneyForArmy < 0 && armiesByValues.size() > 0) {
+				double costForSoldier = weakestArmy.getCostForSoldierPerYear();
+				double howManySoldiersNeedToDismiss = -availableMoneyForArmy / costForSoldier;
+				if (howManySoldiersNeedToDismiss >= weakestArmy.getSoldiers()) {
+					availableMoneyForArmy += weakestArmy.getCostPerYear();
+					weakestArmy.dismiss();
+					weakestArmy = armiesByValues.poll();
+				} else {
+					weakestArmy.dismissSoldiers((int) howManySoldiersNeedToDismiss);
+					availableMoneyForArmy = 0; // += howManySoldiersNeedToDismiss * costForSoldier;
+				}
+			}
+		}
+
+		// new armies
+		double baseHiringCostPerSoldier = params.getBudgetBaseHiringCostPerSoldier();
+		double baseCostPerSoldier = params.getBudgetBaseCostPerSoldier();
+		double canAllowNewSoldiers = Math.min(availableMoneyForArmy / baseCostPerSoldier,
+				budget.getMoney() / baseHiringCostPerSoldier);
+		PProvince capital = data.getCountry().getCapital();
+		if (canAllowNewSoldiers >= params.getArmyMinAllowedSoldiers() && capital != null) {
+			data.getCountry().createArmy(capital.getId(), (int) Math.max(1000, canAllowNewSoldiers));
+		}
 	}
 
 	private void processArmies(AIData4Country data) {
@@ -33,7 +74,7 @@ public class AIHandler {
 		if (armies.isEmpty()) {
 			return;
 		}
-		armies.forEach(a -> processArmy(data, a));
+		armies.stream().filter(a -> a.isAbleToWork()).forEach(a -> processArmy(data, a));
 	}
 
 	private void processArmy(AIData4Country data, PArmy a) {

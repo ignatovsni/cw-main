@@ -5,18 +5,13 @@ import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 
-public class CommandArmyMove extends Command {
+public class CommandArmyMove extends CommandArmy {
 
-	private int armyId;
 	private Integer destinationProvId;
 
 	public CommandArmyMove(int armyId, Integer destinationProvId) {
-		this.armyId = armyId;
+		super(armyId);
 		this.destinationProvId = destinationProvId;
-	}
-
-	public int getArmyId() {
-		return armyId;
 	}
 
 	public Integer getDestinationProvId() {
@@ -28,6 +23,7 @@ public class CommandArmyMove extends Command {
 		Game game = country.getGame();
 		Army army = game.findArmyById(armyId);
 		if (army == null) {
+			// the army could be dismissed
 			errorHandler.addError(this.toString() + ": army = null");
 			return;
 		}
@@ -52,10 +48,7 @@ public class CommandArmyMove extends Command {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName());
-		sb.append(".");
-		sb.append(" armyId:");
-		sb.append(armyId);
+		sb.append(super.toString());
 		sb.append(" destinationProvId:");
 		sb.append(destinationProvId);
 		return sb.toString();

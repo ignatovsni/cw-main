@@ -55,9 +55,11 @@ public class GameParams {
 	private double armyFightRandomness = 0.2;
 	private double armyFightBasePercentOfLoss = 0.2;
 	private int armyMinAllowedOrganization = 10;
+	private int armyMinAllowedSoldiers = 50;
 	
 	private double budgetBaseTaxPerPerson = 1;
 	private double budgetBaseCostPerSoldier = 100;
+	private double budgetBaseHiringCostPerSoldier = 1000;
 	
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
@@ -459,6 +461,22 @@ public class GameParams {
 
 	public void setBudgetBaseCostPerSoldier(double budgetBaseCostPerSoldier) {
 		this.budgetBaseCostPerSoldier = budgetBaseCostPerSoldier;
+	}
+
+	public int getArmyMinAllowedSoldiers() {
+		return armyMinAllowedSoldiers;
+	}
+
+	public void setArmyMinAllowedSoldiers(int armyMinAllowedSoldiers) {
+		this.armyMinAllowedSoldiers = armyMinAllowedSoldiers;
+	}
+
+	public double getBudgetBaseHiringCostPerSoldier() {
+		return budgetBaseHiringCostPerSoldier;
+	}
+
+	public void setBudgetBaseHiringCostPerSoldier(double budgetBaseHiringCostPerSoldier) {
+		this.budgetBaseHiringCostPerSoldier = budgetBaseHiringCostPerSoldier;
 	}
 
 }

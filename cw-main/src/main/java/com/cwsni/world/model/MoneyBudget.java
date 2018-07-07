@@ -48,6 +48,11 @@ public class MoneyBudget {
 		return availableMoneyForArmy;
 	}
 
+	public void spendMoneyForArmy(double money) {
+		availableMoneyForArmy -= money;
+		data.setMoney(data.getMoney() - money);
+	}
+
 	public double getArmyCost() {
 		return armyCost;
 	}

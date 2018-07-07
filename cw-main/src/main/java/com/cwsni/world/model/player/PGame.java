@@ -18,6 +18,7 @@ import com.cwsni.world.model.Province;
 public class PGame {
 
 	private Game game;
+	private PGameParams params;
 	private Country country;
 	private Map<Integer, PCountry> countries;
 	private Map<Integer, PProvince> provinces;
@@ -32,6 +33,7 @@ public class PGame {
 	public PGame(Country country) {
 		this.game = country.getGame();
 		this.country = country;
+		this.params = new PGameParams(game.getGameParams());
 		provinces = new HashMap<>();
 		armies = new HashMap<>();
 		countries = new HashMap<>(game.getCountries().size());
@@ -44,6 +46,10 @@ public class PGame {
 
 	public Integer getCountryId() {
 		return country.getId();
+	}
+	
+	public PGameParams getParams() {
+		return params;
 	}
 
 	public Collection<PCountry> getCountries() {
@@ -98,11 +104,11 @@ public class PGame {
 		return Collections.unmodifiableList(commands);
 	}
 
-	void addCommand(Command command) {
+	public void addCommand(Command command) {
 		commands.add(command);
 	}
 
-	void removeCommand(Command command) {
+	public void removeCommand(Command command) {
 		commands.remove(command);
 	}
 

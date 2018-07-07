@@ -3,6 +3,7 @@ package com.cwsni.world.model;
 import java.util.List;
 
 import com.cwsni.world.model.data.DataArmy;
+import com.cwsni.world.model.data.GameParams;
 
 public class Army {
 
@@ -118,10 +119,9 @@ public class Army {
 		// TODO pops should return to home or stay in current province
 		setProvince(null);
 	}
-	
 
 	public void dismissSoldiers(int howManySoldiersNeedToDismiss) {
-		setSoldiers(getSoldiers() - howManySoldiersNeedToDismiss); 
+		setSoldiers(getSoldiers() - howManySoldiersNeedToDismiss);
 	}
 
 	public void moveTo(Province destination) {
@@ -167,12 +167,21 @@ public class Army {
 	public double getCostPerYear() {
 		return getSoldiers() * getCostForSoldierPerYear();
 	}
-	
 
 	public double getCostForSoldierPerYear() {
 		return country.getGame().getGameParams().getBudgetBaseCostPerSoldier();
 	}
 
+	/**
+	 * Check if army is still able to work. If not, it will be dismissed.
+	 * 
+	 * @return
+	 */
+	public boolean isAbleToWork() {
+		GameParams gParams = getCountry().getGame().getGameParams();
+		return getSoldiers() >= gParams.getArmyMinAllowedSoldiers()
+				&& getOrganisation() >= gParams.getArmyMinAllowedOrganization();
+	}
 
 	// ---------------------------- static -----------------------------
 
@@ -206,6 +215,5 @@ public class Army {
 		});
 		loser.forEach(a -> a.retreat());
 	}
-
 
 }

@@ -6,14 +6,19 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.cwsni.world.model.data.Color;
 import com.cwsni.world.model.data.DataArmy;
 import com.cwsni.world.model.data.DataCountry;
 import com.cwsni.world.model.data.DataMoneyBudget;
+import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.util.CwRandom;
-import com.cwsni.world.util.Heap;
 
 public class Country {
+
+	private static final Log logger = LogFactory.getLog(Country.class);
 
 	private DataCountry data;
 	private Game game;
@@ -100,6 +105,10 @@ public class Country {
 		return data;
 	}
 
+	public MoneyBudget getBudget() {
+		return budget;
+	}
+
 	public Collection<Army> getArmies() {
 		return Collections.unmodifiableCollection(armies);
 	}
@@ -169,15 +178,32 @@ public class Country {
 		});
 	}
 
-	void dismissArmy(Army a) {
+	public void dismissArmy(Army a) {
 		a.dismiss();
 		unregisterArmy(a);
 	}
 
-	private Army createArmy(Province p) {
+	public Army createArmy(Province p, int soldiers) {
+		if (!ComparisonTool.isEqual(p.getCountryId(), getId())) {
+			logger.error("destination country id = " + p.getCountryId() + " but country.id = " + getId());
+			return null;
+		}
+		GameParams gParams = game.getGameParams();
+		double baseHiringCostPerSoldier = gParams.getBudgetBaseHiringCostPerSoldier();
+		// TODO it is better to take money from military savings, not common savings...
+		if (soldiers * baseHiringCostPerSoldier > budget.getMoney()) {
+			soldiers = (int) (budget.getMoney() / baseHiringCostPerSoldier);
+		}
+		if (soldiers < gParams.getArmyMinAllowedSoldiers()) {
+			logger.warn("soldiers <= gParams.getArmyMinAllowedSoldiers() ; " + soldiers + " < "
+					+ gParams.getArmyMinAllowedSoldiers());
+			return null;
+		}
+		budget.spendMoneyForArmy(soldiers * baseHiringCostPerSoldier);
 		Army a = new Army();
 		a.buildFrom(this, new DataArmy(game.nextArmyId()));
-		a.setSoldiers(1000);
+		// TODO hire people from population
+		a.setSoldiers(soldiers);
 		a.setEquipment(1);
 		a.setOrganisation(100);
 		a.setTraining(50);
@@ -188,40 +214,6 @@ public class Country {
 
 	public void processNewTurn() {
 		budget.processNewTurn();
-		manageArmyWithBudget(budget.getAvailableMoneyForArmy());
-
-	}
-
-	private void manageArmyWithBudget(double availableMoneyForArmy) {
-		// TODO it should be in AIHandler and must generate commands!!!
-		if (availableMoneyForArmy < 0 && !getArmies().isEmpty()) {
-			// we spend all money for existing armies
-			// try to dismiss some
-			// можно просто отсортировать массив, а не использовать heap
-			Heap<Army> armiesByValues = new Heap<>((x, y) -> x.getSoldiers() - y.getSoldiers());
-			getArmies().forEach(a -> armiesByValues.put(a));
-			Army weakestArmy = armiesByValues.poll();
-			while (availableMoneyForArmy < 0 && !getArmies().isEmpty()) {
-				double costForSoldier = weakestArmy.getCostForSoldierPerYear();
-				double howManySoldiersNeedToDismiss = -availableMoneyForArmy / costForSoldier;
-				if (howManySoldiersNeedToDismiss >= weakestArmy.getSoldiers()) {
-					availableMoneyForArmy += weakestArmy.getCostPerYear();
-					dismissArmy(weakestArmy);
-					weakestArmy = armiesByValues.poll();
-				} else {
-					weakestArmy.dismissSoldiers((int) howManySoldiersNeedToDismiss);
-					availableMoneyForArmy = 0; // += howManySoldiersNeedToDismiss * costForSoldier;
-				}
-			}
-		}
-
-		double baseCostPerSoldier = game.getGameParams().getBudgetBaseCostPerSoldier();
-		if (availableMoneyForArmy > baseCostPerSoldier * 100 && getCapital() != null) {
-			Army a = createArmy(getCapital());
-			a.setSoldiers((int) Math.max(1000, Math.min(100, availableMoneyForArmy / baseCostPerSoldier)));
-			// TODO spend money for hiring
-		}
-
 	}
 
 	// --------------------- static -------------------------------
