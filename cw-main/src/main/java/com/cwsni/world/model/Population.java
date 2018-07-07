@@ -30,6 +30,12 @@ public class Population {
 
 	private void setAmount(int amount) {
 		data.setAmount(amount);
+		if (province != null) {
+			double maxWealth = amount * province.getMap().getGame().getGameParams().getBudgetMaxWealthPerPerson();
+			if (maxWealth < data.getWealth()) {
+				data.setWealth(maxWealth);
+			}
+		}
 	}
 
 	public ScienceCollection getScience() {
@@ -94,6 +100,11 @@ public class Population {
 
 	void changeWealth(double delta) {
 		data.setWealth(Math.max(0, data.getWealth() + delta));
+	}
+
+	public void sufferFromWar(double loss) {
+		setWealth(getWealth() * (1 - loss));
+		setAmount((int) (getAmount() * (1 - loss)));
 	}
 
 	// --------------- static section -----------------------

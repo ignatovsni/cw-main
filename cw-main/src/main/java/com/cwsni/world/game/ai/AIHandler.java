@@ -44,7 +44,7 @@ public class AIHandler {
 			Heap<PArmy> armiesByValues = new Heap<>((x, y) -> x.getSoldiers() - y.getSoldiers());
 			armies.forEach(a -> armiesByValues.put(a));
 			PArmy weakestArmy = armiesByValues.poll();
-			while (availableMoneyForArmy < 0 && armiesByValues.size() > 0) {
+			while (availableMoneyForArmy < 0 && weakestArmy != null) {
 				double costForSoldier = weakestArmy.getCostForSoldierPerYear();
 				double howManySoldiersNeedToDismiss = -availableMoneyForArmy / costForSoldier;
 				if (howManySoldiersNeedToDismiss >= weakestArmy.getSoldiers()) {

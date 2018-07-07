@@ -57,6 +57,8 @@ public class GameParams {
 	private int armyMinAllowedOrganization = 10;
 	private int armyMinAllowedSoldiers = 50;
 	
+	private double provinceLossFromFight = 0.2;
+	
 	private double budgetBaseTaxPerPerson = 1;
 	private double budgetBaseTaxPerWealthPerson = 3;
 	private double budgetMaxWealthPerPerson = 10;
@@ -495,6 +497,14 @@ public class GameParams {
 
 	public void setBudgetBaseTaxPerWealthPerson(double budgetBaseTaxPerWealthPerson) {
 		this.budgetBaseTaxPerWealthPerson = budgetBaseTaxPerWealthPerson;
+	}
+
+	public double getProvinceLossFromFight() {
+		return provinceLossFromFight;
+	}
+
+	public void setProvinceLossFromFight(double provinceLossFromFight) {
+		this.provinceLossFromFight = provinceLossFromFight;
 	}
 
 }

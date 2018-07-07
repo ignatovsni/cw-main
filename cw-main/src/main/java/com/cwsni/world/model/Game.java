@@ -154,7 +154,10 @@ public class Game implements EventTarget {
 				}
 				Integer countryAttacker = countryIds.get(attacker);
 				Integer countryDefender = countryIds.get(defender);
-				double result = Army.fight(armies.get(countryAttacker), armies.get(countryDefender));
+				List<Army> attackerArmies = armies.get(countryAttacker);
+				List<Army> defenderArmies = armies.get(countryDefender);
+				p.sufferFromFight(attackerArmies, defenderArmies);
+				double result = Army.fight(attackerArmies, defenderArmies);
 				if (result > 1) {
 					armies.remove(countryDefender);
 				} else {

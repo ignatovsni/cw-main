@@ -367,7 +367,7 @@ public class Province implements EventTarget {
 		double wealthForPops = income / 2;
 		double addWealthForProv = Math.min(populationAmount * gParams.getBudgetMaxWealthPerPerson() - data.getWealth(),
 				wealthForProvince);
-		changeWealth(addWealthForProv);
+		addWealth(addWealthForProv);
 
 		// population
 		for (Population p : getPopulation()) {
@@ -379,7 +379,33 @@ public class Province implements EventTarget {
 		}
 	}
 
-	private void changeWealth(double addWealth) {
-		data.setWealth(Math.max(0, data.getWealth() + addWealth));
+	private void setWealth(double wealth) {
+		data.setWealth(wealth);
+	}
+
+	private void addWealth(double delta) {
+		setWealth(Math.max(0, data.getWealth() + delta));
+	}
+
+	void sufferFromFight(List<Army> attackerArmies, List<Army> defenderArmies) {
+		double loss = map.getGame().getGameParams().getProvinceLossFromFight();
+		setWealth(data.getWealth() * (1 - loss));
+		int populationAmount = getPopulationAmount();
+		if (populationAmount > 0) {
+			int attackerSoldiers = attackerArmies.stream().mapToInt(a -> a.getSoldiers()).sum();
+			int defenderSoldiers = defenderArmies.stream().mapToInt(a -> a.getSoldiers()).sum();
+			loss = Math.min(0.9, loss + (attackerSoldiers + defenderSoldiers) / populationAmount);
+			for (Population p : getPopulation()) {
+				p.sufferFromWar(loss);
+			}
+		}
+	}
+
+	void sufferFromInvading() {
+		double loss = map.getGame().getGameParams().getProvinceLossFromFight();
+		setWealth(data.getWealth() * (1 - loss));
+		for (Population p : getPopulation()) {
+			p.sufferFromWar(loss);
+		}
 	}
 }

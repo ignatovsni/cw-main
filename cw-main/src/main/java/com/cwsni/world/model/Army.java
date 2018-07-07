@@ -139,16 +139,18 @@ public class Army {
 		isCanFightThisTurn = true;
 		moveFrom = null;
 		processEffectivenessInNewTurn();
-		Country locationCountry = getLocation().getCountry();
+		Province currentProv = getLocation();
+		Country locationCountry = currentProv.getCountry();
 		if (getCountry().equals(locationCountry)) {
 			// our land, doing nothing
 			return;
 		}
 		// it is our land now!
 		if (locationCountry != null) {
-			locationCountry.removeProvince(getLocation());
+			currentProv.sufferFromInvading();
+			locationCountry.removeProvince(currentProv);
 		}
-		getCountry().addProvince(getLocation());
+		getCountry().addProvince(currentProv);
 	}
 
 	private void retreat() {
