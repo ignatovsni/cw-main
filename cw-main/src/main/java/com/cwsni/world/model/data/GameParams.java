@@ -49,7 +49,7 @@ public class GameParams {
 	private double scienceAgricultureMultiplicatorForFertility = (double) 1 / 4000;
 	private double scienceMedicineMultiplicatorForEpidemic = (double) 1 / 10000;
 
-	private double infrastructureNaturalLimitFromPopulation = 0.5;
+	private double infrastructureNaturalLimitFromPopulation = 0.7;
 	private double infrastructureNaturalLimitWithLocalGovernment = 1.0;
 	private double infrastructureMaxValue = 1.2;
 

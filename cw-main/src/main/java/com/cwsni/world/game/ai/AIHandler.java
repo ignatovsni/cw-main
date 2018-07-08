@@ -58,6 +58,9 @@ public class AIHandler {
 			}
 		}
 
+		if (armies.size() > 20) {
+			return;
+		}
 		// new armies
 		double baseHiringCostPerSoldier = params.getBudgetBaseHiringCostPerSoldier();
 		double baseCostPerSoldier = params.getBudgetBaseCostPerSoldier();

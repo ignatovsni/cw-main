@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({ "id", "name", "color", "capital", "firstCapital", "focus", "budget", "scienceBudget", "isAI" })
 public class DataCountry {
 
 	private int id;
@@ -15,6 +17,7 @@ public class DataCountry {
 	private double focus;
 	private List<DataArmy> armies = new ArrayList<>();
 	private DataMoneyBudget budget;
+	private DataScienceBudget scienceBudget;
 	private boolean isAI = true;
 
 	public int getId() {
@@ -87,6 +90,14 @@ public class DataCountry {
 
 	public void setBudget(DataMoneyBudget budget) {
 		this.budget = budget;
+	}
+
+	public DataScienceBudget getScienceBudget() {
+		return scienceBudget;
+	}
+
+	public void setScienceBudget(DataScienceBudget scienceBudget) {
+		this.scienceBudget = scienceBudget;
 	}
 
 }

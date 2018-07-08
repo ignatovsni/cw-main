@@ -15,6 +15,10 @@ public class MoneyBudget {
 		return data.getSavingWeight();
 	}
 
+	public double getScienceWeight() {
+		return data.getSavingWeight();
+	}
+
 	public double getArmyWeight() {
 		return data.getArmyWeight();
 	}
@@ -41,7 +45,11 @@ public class MoneyBudget {
 	}
 
 	private double getTotalWeight() {
-		return data.getSavingWeight() + data.getArmyWeight();
+		return data.getSavingWeight() + data.getScienceWeight() + data.getArmyWeight();
+	}
+
+	public double getAvailableMoneyForScience() {
+		return income * getScienceWeight() / getTotalWeight();
 	}
 
 	public double getAvailableMoneyForArmy() {
@@ -59,6 +67,10 @@ public class MoneyBudget {
 
 	public double getMoney() {
 		return data.getMoney();
+	}
+	
+	public double getIncome() {
+		return income;
 	}
 
 }

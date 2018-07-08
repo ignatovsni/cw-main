@@ -1,36 +1,42 @@
 package com.cwsni.world.model.data;
 
+import com.cwsni.world.client.desktop.util.DataFormatter;
+
 public class DataScience {
-	
-	private int amount;
-	private int max;
+
+	private double amount;
+	private double max;
 
 	public DataScience() {
 		this(0, 0);
 	}
-	
-	public DataScience(int amount, int max) {
+
+	public DataScience(double amount, double max) {
 		this.amount = amount;
 		this.max = max;
 	}
 
-	public int getAmount() {
+	public double getAmount() {
 		return amount;
 	}
 
-	public void setAmount(int amount) {
-		this.amount = amount;
-		if (amount > max) {
-			max = amount;
+	public void setAmount(double amount) {
+		this.amount = DataFormatter.doubleWith3points(amount);
+		if (this.amount > max) {
+			max = this.amount;
 		}
 	}
 
-	public int getMax() {
+	public void addAmount(double delta) {
+		setAmount(getAmount() + delta);
+	}
+
+	public double getMax() {
 		return max;
 	}
 
-	public void setMax(int max) {
-		this.max = max;
+	public void setMax(double max) {
+		this.max = DataFormatter.doubleWith3points(max);
 	}
 
 	public DataScience createClone() {

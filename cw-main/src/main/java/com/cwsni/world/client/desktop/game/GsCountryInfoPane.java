@@ -54,7 +54,8 @@ public class GsCountryInfoPane extends InternalInfoPane {
 		setLabelText(valuesProvincesLabel, DataFormatter.toLong(country.getProvinces().size()));
 		setLabelText(valuesPopulationLabel,
 				DataFormatter.toLong(country.getProvinces().stream().mapToLong(p -> p.getPopulationAmount()).sum()));
-		setLabelText(valuesMoneyLabel, DataFormatter.toLong((long) country.getMoney()));
+		setLabelText(valuesMoneyLabel, DataFormatter.toLong((long) country.getMoney()) + " / "
+				+ DataFormatter.toLong((long) country.getIncome()));
 		setLabelText(valuesFocusLabel, DataFormatter.toFraction(country.getFocus()));
 		String armies = DataFormatter.toLong(country.getArmies().size()) + " / "
 				+ country.getArmies().stream().mapToLong(a -> a.getSoldiers()).sum();

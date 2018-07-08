@@ -125,9 +125,9 @@ public class Province implements EventTarget {
 		if (getPopulationAmount() == 0) {
 			return 0;
 		}
-		long scienceValue = getPopulation().stream()
-				.mapToLong(pop -> (long) pop.getAmount() * getter4Science.apply(pop.getScience()).getAmount()).sum()
-				/ getPopulationAmount();
+		long scienceValue = (long) (getPopulation().stream()
+				.mapToDouble(pop -> pop.getAmount() * getter4Science.apply(pop.getScience()).getAmount()).sum()
+				/ getPopulationAmount());
 		return (int) scienceValue;
 	}
 
@@ -349,7 +349,7 @@ public class Province implements EventTarget {
 		// absolutely poor people
 		double income = populationAmount * gParams.getBudgetBaseTaxPerPerson();
 		// wealth people
-		income += getWealth() / populationAmount / gParams.getBudgetMaxWealthPerPerson() / 2
+		income += getWealth() / gParams.getBudgetMaxWealthPerPerson() / 2
 				* (gParams.getBudgetBaseTaxPerWealthPerson() - gParams.getBudgetBaseTaxPerPerson());
 		// if the province lost population, then wealth can be much more than current
 		// pops, so we should ignore too much wealth
@@ -369,17 +369,20 @@ public class Province implements EventTarget {
 		double wealthForInfrastructure = income / 3;
 
 		// province wealth
-		double addWealthForProv = Math.min(populationAmount * gParams.getBudgetMaxWealthPerPerson() - data.getWealth(),
-				wealthForProvince);
+		double maxWealthForProv = populationAmount * gParams.getBudgetMaxWealthPerPerson();
+		double addWealthForProv = Math.min(maxWealthForProv - data.getWealth(), wealthForProvince);
+		//addWealthForProv = addWealthForProv * addWealthForProv / (data.getWealth() + addWealthForProv);
 		addWealth(addWealthForProv);
 		income -= addWealthForProv;
 
 		// population wealth
 		for (Population p : getPopulation()) {
 			if (p.getAmount() > 0) {
-				double addWealth = Math.min(p.getAmount() * gParams.getBudgetMaxWealthPerPerson() - p.getWealth(),
+				double maxWealth = p.getAmount() * gParams.getBudgetMaxWealthPerPerson();
+				double addWealth = Math.min(maxWealth - p.getWealth(),
 						wealthForPops / populationAmount * p.getAmount());
-				p.changeWealth(addWealth);
+				//addWealth = addWealth * addWealth / (p.getWealth() + addWealth);
+				p.addWealth(addWealth);
 				income -= addWealth;
 			}
 		}
@@ -422,5 +425,9 @@ public class Province implements EventTarget {
 		for (Population p : getPopulation()) {
 			p.sufferFromWar(loss);
 		}
+	}
+
+	void spendMoneyForScience(double money) {
+		ScienceCollection.spendMoneyForScience(map.getGame(), this, money);
 	}
 }

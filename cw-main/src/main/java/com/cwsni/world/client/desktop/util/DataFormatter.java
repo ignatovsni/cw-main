@@ -7,9 +7,11 @@ import java.util.Locale;
 public class DataFormatter {
 
 	public static String formatLongNumber(Long v) {
-		if (v > 1000000000) {
+		if (v > 100000000000L) {
+			return internalFormatLongNumber(v / 1000000000) + " g";
+		} else if (v > 100000000) {
 			return internalFormatLongNumber(v / 1000000) + " m";
-		} else if (v > 1000000) {
+		} else if (v > 100000) {
 			return internalFormatLongNumber(v / 1000) + " k";
 		}
 		return internalFormatLongNumber(v);

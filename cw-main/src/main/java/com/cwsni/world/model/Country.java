@@ -13,6 +13,7 @@ import com.cwsni.world.model.data.Color;
 import com.cwsni.world.model.data.DataArmy;
 import com.cwsni.world.model.data.DataCountry;
 import com.cwsni.world.model.data.DataMoneyBudget;
+import com.cwsni.world.model.data.DataScienceBudget;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.util.CwRandom;
 
@@ -25,6 +26,7 @@ public class Country {
 	private Collection<Province> provinces;
 	private Collection<Army> armies;
 	private MoneyBudget budget;
+	private ScienceBudget scienceBudget;
 
 	public void buildFrom(Game game, DataCountry dc) {
 		this.game = game;
@@ -32,7 +34,7 @@ public class Country {
 		armies = new HashSet<>();
 		provinces = new HashSet<>();
 		budget = new MoneyBudget();
-		budget.buildFrom(this, dc.getBudget());
+		scienceBudget = new ScienceBudget();
 
 		game.getMap().getProvinces().stream().filter(p -> p.getCountryId() != null && p.getCountryId() == data.getId())
 				.forEach(p -> provinces.add(game.getMap().findProvById(p.getId())));
@@ -43,6 +45,10 @@ public class Country {
 			armies.add(a);
 			game.registerArmy(a);
 		});
+
+		// budget is initialized last to calculate actual numbers
+		budget.buildFrom(this, dc.getBudget());
+		scienceBudget.buildFrom(this, dc.getScienceBudget());
 	}
 
 	public int getId() {
@@ -93,6 +99,10 @@ public class Country {
 		return budget.getMoney();
 	}
 
+	public double getIncome() {
+		return budget.getIncome();
+	}
+
 	public double getFocus() {
 		return data.getFocus();
 	}
@@ -107,6 +117,10 @@ public class Country {
 
 	public MoneyBudget getBudget() {
 		return budget;
+	}
+
+	public ScienceBudget getScienceBudget() {
+		return scienceBudget;
 	}
 
 	public Collection<Army> getArmies() {
@@ -214,6 +228,14 @@ public class Country {
 
 	public void processNewTurn() {
 		budget.processNewTurn();
+		processScienceNewTurn();
+	}
+
+	private void processScienceNewTurn() {
+		Province capital = getCapital();
+		if (capital != null) {
+			capital.spendMoneyForScience(budget.getAvailableMoneyForScience());
+		}
 	}
 
 	// --------------------- static -------------------------------
@@ -227,6 +249,10 @@ public class Country {
 		dc.setName("#" + String.valueOf(dc.getId()));
 		dc.setColor(createNewColorForCountry(game));
 		dc.setBudget(new DataMoneyBudget());
+		dc.setScienceBudget(new DataScienceBudget());
+		dc.getScienceBudget().setAdministrationWeight(game.getGameParams().getRandom().nextDouble());
+		dc.getScienceBudget().setAgricultureWeight(game.getGameParams().getRandom().nextDouble());
+		dc.getScienceBudget().setMedicineWeight(game.getGameParams().getRandom().nextDouble());
 		Country c = new Country();
 		c.buildFrom(game, dc);
 		c.addProvince(p);

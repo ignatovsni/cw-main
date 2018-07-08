@@ -36,7 +36,7 @@ public class ScienceCollection {
 	public DataScience getMedicine() {
 		return data.getMedicine();
 	}
-	
+
 	public DataScience getAdministration() {
 		return data.getAdministration();
 	}
@@ -69,34 +69,34 @@ public class ScienceCollection {
 		 */
 
 		// natural pops science
-		int scienceIncrease = (int) Math.max(1,
+		double scienceIncrease = Math.max(1,
 				+(Math.log10((double) p.getPopulationAmount() * gParams.getScienceBaseIncreasePerTurnPerPerson())));
-		int newAmount = scienceType.getAmount() + scienceIncrease;
-		// province.totalPopulation instead of population.amount - people develop
-		// science together
-		int maxNaturalScienceLimit = (int) ((double) p.getPopulationAmount()
-				* gParams.getScienceNaturalGrowthLimitPerPerson());
+		double newAmount = scienceType.getAmount() + scienceIncrease;
+		// province.totalPopulation instead of population.amount,
+		// because people develop science together
+		double maxNaturalScienceLimit = (double) p.getPopulationAmount()
+				* gParams.getScienceNaturalGrowthLimitPerPerson();
 		// science can't growth more than natural limit
 		newAmount = Math.min(newAmount, maxNaturalScienceLimit);
-		// ... and can't become lower without special reason
+		// ... and can't become lower current level without special reason
 		newAmount = Math.max(newAmount, scienceType.getAmount());
 
 		// science from max leveled people
-		int scienceLocalMax = scienceType.getMax();
-		int deltaWithLocalMax = (int) ((scienceLocalMax - newAmount) * gParams.getScienceExchangeWithMaxPerTurn());
+		double scienceLocalMax = scienceType.getMax();
+		double deltaWithLocalMax = (scienceLocalMax - newAmount) * gParams.getScienceExchangeWithMaxPerTurn();
 		if (deltaWithLocalMax > 0) {
-			scienceType.setMax((int) (scienceLocalMax - deltaWithLocalMax));
+			scienceType.setMax(scienceLocalMax - deltaWithLocalMax);
 		}
 
 		// science from neighbors
-		int deltaWithNeighborsMax = (int) ((maxScienceType.getAmount() - newAmount)
-				* gParams.getScienceExchangeWithMaxPerTurn());
+		double deltaWithNeighborsMax = (maxScienceType.getAmount() - newAmount)
+				* gParams.getScienceExchangeWithMaxPerTurn();
 
 		if (deltaWithLocalMax > 0 || deltaWithNeighborsMax > 0) {
 			newAmount += Math.max(deltaWithLocalMax, deltaWithNeighborsMax);
 		}
 
-		scienceType.setAmount((int) newAmount);
+		scienceType.setAmount(newAmount);
 	}
 
 	private void mergeFrom(DataScienceCollection science, DataScienceCollection fromScience, double ownFraction,
@@ -106,6 +106,13 @@ public class ScienceCollection {
 		double avg = (ownFraction * scienceType.getAmount() + fromScienceType.getAmount() * (1 - ownFraction));
 		scienceType.setAmount((int) Math.round(avg));
 		scienceType.setMax(Math.max(scienceType.getMax(), fromScienceType.getMax()));
+	}
+
+	private void spendMoneyForScienceProvince(Game game, Province p, double money) {
+		ScienceBudget scienceBudget = p.getCountry().getScienceBudget();
+		data.getAdministration().addAmount(scienceBudget.getAdministrationFraction(money));
+		data.getAgriculture().addAmount(scienceBudget.getAgricultureFraction(money));
+		data.getMedicine().addAmount(scienceBudget.getMedicineFraction(money));
 	}
 
 	// --------------------- static ----------------------------------
@@ -140,11 +147,16 @@ public class ScienceCollection {
 		// locals
 		DataScience scienceLocalMax = new DataScience();
 		scienceLocalMax.setAmount(p.getPopulation().stream()
-				.mapToInt(pop -> getter4Science.apply(pop.getScience().getScienceData()).getAmount()).max().getAsInt());
+				.mapToDouble(pop -> getter4Science.apply(pop.getScience().getScienceData()).getAmount()).max()
+				.getAsDouble());
 
 		if (scienceLocalMax.getAmount() > scienceTypeMax.getAmount()) {
 			scienceTypeMax.setAmount(scienceLocalMax.getAmount());
 		}
+	}
+
+	public static void spendMoneyForScience(Game game, Province p, double money) {
+		p.getPopulation().forEach(pop -> pop.getScience().spendMoneyForScienceProvince(game, p, money));
 	}
 
 }
