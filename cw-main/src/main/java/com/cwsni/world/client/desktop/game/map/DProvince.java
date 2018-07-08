@@ -238,10 +238,11 @@ class DProvince extends Group {
 		double infrastructureAvgInProvince = map.getGame().getGameTransientStats().getInfrastructureAvgInProvince();
 		double infrastructureMedianInProvince = map.getGame().getGameTransientStats()
 				.getInfrastructureMedianInProvince();
-		double infrastructure = province.getInfrastructure();
+		double infrastructure = province.getInfrastructurePercent();
 		int populationAmount = province.getPopulationAmount();
-		if (infrastructure >= map.getGame().getGameParams().getInfrastructureMaxValue()
-				|| (populationAmount < 1000 && populationAmount > 0)) {
+		int populationMedianInProvince = map.getGame().getGameTransientStats().getPopulationMedianInProvince();
+		if (populationAmount > 0 && populationAmount < populationMedianInProvince
+				&& infrastructure > infrastructureMedianInProvince) {
 			// too avoid showing as maximized that provinces where population fall very
 			// quickly
 			infrastructure = infrastructureMedianInProvince;

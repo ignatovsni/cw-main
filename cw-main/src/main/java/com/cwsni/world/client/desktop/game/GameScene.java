@@ -296,9 +296,11 @@ public class GameScene extends Scene {
 	}
 
 	private void refreshViewAndStartNewTurn() {
-		refreshAllVisibleInfo();
-		getWorldMap().setMapModeAndRedraw(mapMode);
-		otherMaps.forEach((mode, map) -> map.setMapModeAndRedraw(mode));
+		runLocked(() -> {
+			refreshAllVisibleInfo();
+			getWorldMap().setMapModeAndRedraw(mapMode);
+			otherMaps.forEach((mode, map) -> map.setMapModeAndRedraw(mode));
+		});
 		if (autoTurn) {
 			startProcessingNewTurn();
 		} else {

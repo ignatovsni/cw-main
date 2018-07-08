@@ -104,7 +104,7 @@ public class Province implements EventTarget {
 		}
 		// infrastructure
 		if (getPopulationAmount() > 0) {
-			v = v * 0.5 * (1 + getInfrastructure());
+			v = v * 0.5 * (1 + getInfrastructurePercent());
 		}
 		return v;
 	}
@@ -135,11 +135,14 @@ public class Province implements EventTarget {
 		return data.getSoilArea();
 	}
 
-	public int getInfrastructureAbsoluteValue() {
+	public int getInfrastructure() {
 		return data.getInfrastructure();
 	}
 
-	public double getInfrastructure() {
+	/**
+	 * Return percent value, how much population have needed infrastructure
+	 */
+	public double getInfrastructurePercent() {
 		int populationAmount = getPopulationAmount();
 		if (populationAmount == 0) {
 			return 0;
@@ -219,11 +222,6 @@ public class Province implements EventTarget {
 		armies = new ArrayList<>();
 	}
 
-	private void processProvincePropertiesNewTurn() {
-		processSoilArea();
-		processInfrastructure();
-	}
-
 	private void processSoilArea() {
 		int populationAmount = getPopulationAmount();
 		double neededFieldsArea = (int) (populationAmount / getSoilFertility());
@@ -243,16 +241,19 @@ public class Province implements EventTarget {
 		}
 	}
 
-	private void processInfrastructure() {
+	/**
+	 * infrastructure without government influence
+	 */
+	private void processNaturalInfrastructure() {
 		// natural growth can not excess infrastructureNaturalLimitFromPopulation
 		int populationAmount = getPopulationAmount();
 		int neededInfrastructure = (int) (populationAmount
 				* map.getGame().getGameParams().getInfrastructureNaturalLimitFromPopulation());
-		int currentInfrastructure = Math.max(getInfrastructureAbsoluteValue(), 1);
+		int currentInfrastructure = Math.max(getInfrastructure(), 1);
 		if (neededInfrastructure < currentInfrastructure) {
 			// degradation
 			double decreasing = Math.max((double) neededInfrastructure / currentInfrastructure, 0.99);
-			setInfrastructure((int) (decreasing * getInfrastructureAbsoluteValue()));
+			setInfrastructure((int) (decreasing * getInfrastructure()));
 		} else {
 			// improving
 			if (populationAmount > 0) {
@@ -298,17 +299,16 @@ public class Province implements EventTarget {
 		if (!getTerrainType().isPopulationPossible()) {
 			return;
 		}
+		processSoilArea();
 		if (getPopulationAmount() != 0) {
-			processTaxesAndWealthInNewTurn();
 			ScienceCollection.growScienceNewTurn(this, map.getGame());
+			Population.migrateNewTurn(this, map.getGame());
+			Population.growPopulationNewTurn(this, map.getGame());
 		}
 		Population.processEventsNewTurn(this, map.getGame());
+		processNaturalInfrastructure();
 		if (getPopulationAmount() != 0) {
-			Population.migrateNewTurn(this, map.getGame());
-		}
-		processProvincePropertiesNewTurn();
-		if (getPopulationAmount() != 0) {
-			Population.growPopulationNewTurn(this, map.getGame());
+			processTaxesAndOthersInNewTurn();
 		}
 		removeDiedPops();
 	}
@@ -357,25 +357,38 @@ public class Province implements EventTarget {
 		return income;
 	}
 
-	private void processTaxesAndWealthInNewTurn() {
+	private void processTaxesAndOthersInNewTurn() {
 		GameParams gParams = map.getGame().getGameParams();
 		int populationAmount = getPopulationAmount();
 		double income = sumTaxForYear();
+		if (getCountryId() == null) {
+			income *= 0.5;
+		}
+		double wealthForProvince = income / 3;
+		double wealthForPops = income / 3;
+		double wealthForInfrastructure = income / 3;
 
-		// province
-		double wealthForProvince = income / 2;
-		double wealthForPops = income / 2;
+		// province wealth
 		double addWealthForProv = Math.min(populationAmount * gParams.getBudgetMaxWealthPerPerson() - data.getWealth(),
 				wealthForProvince);
 		addWealth(addWealthForProv);
+		income -= addWealthForProv;
 
-		// population
+		// population wealth
 		for (Population p : getPopulation()) {
 			if (p.getAmount() > 0) {
 				double addWealth = Math.min(p.getAmount() * gParams.getBudgetMaxWealthPerPerson() - p.getWealth(),
 						wealthForPops / populationAmount * p.getAmount());
 				p.changeWealth(addWealth);
+				income -= addWealth;
 			}
+		}
+
+		// infrastructure
+		if (getCountryId() != null) {
+			double newInfrastructure = Math.min(getInfrastructure() + wealthForInfrastructure,
+					getPopulationAmount() * gParams.getInfrastructureNaturalLimitWithLocalGovernment());
+			setInfrastructure((int) newInfrastructure);
 		}
 	}
 
@@ -390,6 +403,7 @@ public class Province implements EventTarget {
 	void sufferFromFight(List<Army> attackerArmies, List<Army> defenderArmies) {
 		double loss = map.getGame().getGameParams().getProvinceLossFromFight();
 		setWealth(data.getWealth() * (1 - loss));
+		setInfrastructure((int) (getInfrastructure() * (1 - loss)));
 		int populationAmount = getPopulationAmount();
 		if (populationAmount > 0) {
 			int attackerSoldiers = attackerArmies.stream().mapToInt(a -> a.getSoldiers()).sum();
@@ -404,6 +418,7 @@ public class Province implements EventTarget {
 	void sufferFromInvading() {
 		double loss = map.getGame().getGameParams().getProvinceLossFromFight();
 		setWealth(data.getWealth() * (1 - loss));
+		setInfrastructure((int) (getInfrastructure() * (1 - loss)));
 		for (Population p : getPopulation()) {
 			p.sufferFromWar(loss);
 		}

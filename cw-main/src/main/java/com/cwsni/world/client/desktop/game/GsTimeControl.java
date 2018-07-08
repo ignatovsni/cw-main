@@ -135,9 +135,13 @@ public class GsTimeControl extends BorderPane {
 	}
 
 	private void pressButton(Button buttonMode, GsTimeMode timeMode) {
-		buttons.forEach(b -> b.setEffect(null));
-		buttonMode.setEffect(new Lighting());
-		gameScene.setTimeModeAndRun(timeMode);
+		if (gameScene.getTimeMode() != timeMode) {
+			buttons.forEach(b -> b.setEffect(null));
+			buttonMode.setEffect(new Lighting());
+			gameScene.setTimeModeAndRun(timeMode);
+		} else {
+			enablePauseButton();
+		}
 	}
 
 	public void enablePauseButton() {

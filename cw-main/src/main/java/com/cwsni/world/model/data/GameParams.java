@@ -49,7 +49,8 @@ public class GameParams {
 	private double scienceAgricultureMultiplicatorForFertility = (double) 1 / 4000;
 	private double scienceMedicineMultiplicatorForEpidemic = (double) 1 / 10000;
 
-	private double infrastructureNaturalLimitFromPopulation = 0.7;
+	private double infrastructureNaturalLimitFromPopulation = 0.5;
+	private double infrastructureNaturalLimitWithLocalGovernment = 1.0;
 	private double infrastructureMaxValue = 1.2;
 
 	private double armyFightRandomness = 0.2;
@@ -505,6 +506,14 @@ public class GameParams {
 
 	public void setProvinceLossFromFight(double provinceLossFromFight) {
 		this.provinceLossFromFight = provinceLossFromFight;
+	}
+
+	public double getInfrastructureNaturalLimitWithLocalGovernment() {
+		return infrastructureNaturalLimitWithLocalGovernment;
+	}
+
+	public void setInfrastructureNaturalLimitWithLocalGovernment(double infrastructureNaturalLimitWithLocalGovernment) {
+		this.infrastructureNaturalLimitWithLocalGovernment = infrastructureNaturalLimitWithLocalGovernment;
 	}
 
 }

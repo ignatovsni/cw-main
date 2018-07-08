@@ -70,8 +70,8 @@ public class GsProvInfoPane extends InternalInfoPane {
 	}
 
 	private String createTextForInfrastructure(Province prov) {
-		double infr = prov.getInfrastructure();
-		return DataFormatter.toFraction(infr * 100) + " (" + DataFormatter.toLong(prov.getInfrastructureAbsoluteValue())
+		double infr = prov.getInfrastructurePercent();
+		return DataFormatter.toFraction(infr * 100) + " (" + DataFormatter.toLong(prov.getInfrastructure())
 				+ ")";
 	}
 

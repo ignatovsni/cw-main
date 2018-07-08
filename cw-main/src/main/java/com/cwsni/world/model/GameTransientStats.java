@@ -67,14 +67,15 @@ public class GameTransientStats {
 		}, 0.0);
 
 		infrastructureInProvince = new InternalFutureTask<>(() -> {
-			return getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 1000)
-					.mapToDouble(p -> p.getInfrastructure()).summaryStatistics();
+			return getPopulationPossibleProvinces()
+					.filter(p -> p.getPopulationAmount() >= getPopulationMedianInProvince())
+					.mapToDouble(p -> p.getInfrastructurePercent()).summaryStatistics();
 		}, new DoubleSummaryStatistics());
 
 		infrastructureMedianInProvince = new InternalFutureTask<>(() -> {
-			double v = new MedianFinder()
-					.findMedianDouble(getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 1000)
-							.map(p -> p.getInfrastructure()).collect(Collectors.toList()));
+			double v = new MedianFinder().findMedianDouble(getPopulationPossibleProvinces()
+					.filter(p -> p.getPopulationAmount() >= getPopulationMedianInProvince())
+					.map(p -> p.getInfrastructurePercent()).collect(Collectors.toList()));
 			return v;
 		}, 0.0);
 
