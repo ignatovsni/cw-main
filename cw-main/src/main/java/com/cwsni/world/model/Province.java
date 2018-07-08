@@ -337,7 +337,7 @@ public class Province implements EventTarget {
 	}
 
 	public double getFederalIncomePerYear() {
-		return sumTaxForYear();
+		return sumTaxForYear() * getCountry().getBudget().getProvinceTax();
 	}
 
 	private double sumTaxForYear() {
@@ -363,6 +363,8 @@ public class Province implements EventTarget {
 		double income = sumTaxForYear();
 		if (getCountryId() == null) {
 			income *= 0.5;
+		} else {
+			income *= 1 - getCountry().getBudget().getProvinceTax();
 		}
 		double wealthForProvince = income / 3;
 		double wealthForPops = income / 3;
@@ -371,7 +373,6 @@ public class Province implements EventTarget {
 		// province wealth
 		double maxWealthForProv = populationAmount * gParams.getBudgetMaxWealthPerPerson();
 		double addWealthForProv = Math.min(maxWealthForProv - data.getWealth(), wealthForProvince);
-		//addWealthForProv = addWealthForProv * addWealthForProv / (data.getWealth() + addWealthForProv);
 		addWealth(addWealthForProv);
 		income -= addWealthForProv;
 
@@ -381,7 +382,6 @@ public class Province implements EventTarget {
 				double maxWealth = p.getAmount() * gParams.getBudgetMaxWealthPerPerson();
 				double addWealth = Math.min(maxWealth - p.getWealth(),
 						wealthForPops / populationAmount * p.getAmount());
-				//addWealth = addWealth * addWealth / (p.getWealth() + addWealth);
 				p.addWealth(addWealth);
 				income -= addWealth;
 			}

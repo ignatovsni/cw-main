@@ -72,5 +72,9 @@ public class MoneyBudget {
 	public double getIncome() {
 		return income;
 	}
+	
+	public double getProvinceTax() {
+		return data.getProvinceTax();
+	}
 
 }

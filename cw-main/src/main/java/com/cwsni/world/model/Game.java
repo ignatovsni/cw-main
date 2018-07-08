@@ -170,8 +170,7 @@ public class Game implements EventTarget {
 	private void dismissEmptyCountries() {
 		List<Country> countryList = new ArrayList<>(countries.getCountries());
 		countryList.forEach(c -> {
-			c.getProvinces().stream().mapToInt(p -> p.getPopulationAmount()).sum();
-			if (c.getProvinces().isEmpty() || c.getProvinces().stream().mapToInt(p -> p.getPopulationAmount())
+			if (c.getProvinces().isEmpty() || c.getProvinces().stream().mapToLong(p -> p.getPopulationAmount())
 					.sum() <= getGameParams().getNewCountryPopulationMin() / 2) {
 				c.dismiss();
 				unregisterCountry(c);

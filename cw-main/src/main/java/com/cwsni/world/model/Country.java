@@ -250,9 +250,6 @@ public class Country {
 		dc.setColor(createNewColorForCountry(game));
 		dc.setBudget(new DataMoneyBudget());
 		dc.setScienceBudget(new DataScienceBudget());
-		dc.getScienceBudget().setAdministrationWeight(game.getGameParams().getRandom().nextDouble());
-		dc.getScienceBudget().setAgricultureWeight(game.getGameParams().getRandom().nextDouble());
-		dc.getScienceBudget().setMedicineWeight(game.getGameParams().getRandom().nextDouble());
 		Country c = new Country();
 		c.buildFrom(game, dc);
 		c.addProvince(p);
@@ -260,6 +257,15 @@ public class Country {
 		c.setFirstCapital(p);
 		c.setFocus(100);
 		game.registerCountry(c);
+
+		// randomize parameters
+		dc.getBudget().setProvinceTax(game.getGameParams().getRandom().nextDouble());
+		dc.getBudget().setArmyWeight(game.getGameParams().getRandom().nextDouble());
+		dc.getBudget().setScienceWeight(game.getGameParams().getRandom().nextDouble());
+		dc.getBudget().setSavingWeight(game.getGameParams().getRandom().nextDouble());
+		dc.getScienceBudget().setAdministrationWeight(game.getGameParams().getRandom().nextDouble());
+		dc.getScienceBudget().setAgricultureWeight(game.getGameParams().getRandom().nextDouble());
+		dc.getScienceBudget().setMedicineWeight(game.getGameParams().getRandom().nextDouble());
 	}
 
 	private static Color createNewColorForCountry(Game game) {

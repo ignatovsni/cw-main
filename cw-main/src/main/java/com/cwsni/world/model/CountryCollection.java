@@ -18,9 +18,9 @@ public class CountryCollection {
 		countriesById = new HashMap<>(dataCountries.size());
 		dataCountries.forEach(dc -> {
 			Country c = new Country();
-			c.buildFrom(game, dc);
 			countries.add(c);
-			countriesById.put(c.getId(), c);
+			countriesById.put(dc.getId(), c);
+			c.buildFrom(game, dc);
 		});
 	}
 
