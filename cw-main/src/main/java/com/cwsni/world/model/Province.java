@@ -14,6 +14,7 @@ import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.events.Event;
 import com.cwsni.world.model.events.EventCollection;
+import com.cwsni.world.model.events.EventEpidemic;
 import com.cwsni.world.model.events.EventTarget;
 
 public class Province implements EventTarget {
@@ -26,7 +27,7 @@ public class Province implements EventTarget {
 	private List<Population> immigrants;
 	private List<Army> armies;
 	private Integer oldCapitalId;
-	private double influenceFromCapital;
+	private double distanceToCapital;
 
 	@Override
 	public int hashCode() {
@@ -191,9 +192,7 @@ public class Province implements EventTarget {
 	}
 
 	public double getDiseaseResistance() {
-		double r = Math.min(0.9,
-				getScienceMedicine() * getMap().getGame().getGameParams().getScienceMedicineMultiplicatorForEpidemic());
-		return r * r;
+		return EventEpidemic.getDiseaseResistance(getScienceMedicine());
 	}
 
 	@Override
@@ -346,14 +345,20 @@ public class Province implements EventTarget {
 		Integer capitalId = country.getCapitalId();
 		if (!ComparisonTool.isEqual(oldCapitalId, capitalId)) {
 			if (ComparisonTool.isEqual(capitalId, getId())) {
-				influenceFromCapital = 1;
+				distanceToCapital = 0;
 			} else {
-				double distanceToCapital = map.findDistanceBetweenProvs(capitalId, getId());
-				influenceFromCapital = Math.pow(0.9, (int) Math.max(0, distanceToCapital - 1));
+				distanceToCapital = map.findDistanceBetweenProvs(capitalId, getId());
 			}
 			oldCapitalId = capitalId;
 		}
-		return influenceFromCapital;
+		double adminScience = getScienceAdministration() + country.getCapital().getScienceAdministration();
+		double effectiveDistanceToCapital = distanceToCapital - Math.log10(adminScience);
+		if (effectiveDistanceToCapital <= 0) {
+			return 1;
+		} else {
+			return Math.pow(map.getGame().getGameParams().getProvinceInfluenceFromCapitalWithDistanceDecrease(),
+					(int) effectiveDistanceToCapital);
+		}
 	}
 
 	public double getFederalIncomePerYear() {

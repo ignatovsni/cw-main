@@ -10,6 +10,7 @@ import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.events.Event;
+import com.cwsni.world.model.events.EventEpidemic;
 
 public class Population {
 
@@ -79,9 +80,7 @@ public class Population {
 	}
 
 	public double getDiseaseResistance() {
-		double r = Math.min(0.9, getScience().getMedicine().getAmount()
-				* province.getMap().getGame().getGameParams().getScienceMedicineMultiplicatorForEpidemic());
-		return r * r;
+		return EventEpidemic.getDiseaseResistance(getScience().getMedicine().getAmount());
 	}
 
 	DataPopulation getPopulationData() {
@@ -189,10 +188,19 @@ public class Population {
 	}
 
 	public static void dieFromDisease(Game game, Province from, double deathRate) {
-		game.getGameStats().addDiedFromDisease(from.getPopulationAmount() * deathRate);
+		// regular population
 		from.getPopulation().forEach(p -> {
 			double effectiveDeathRate = deathRate * (1 - p.getDiseaseResistance());
-			p.setAmount((int) (p.getAmount() * (1 - effectiveDeathRate)));
+			int died = (int) (p.getAmount() * effectiveDeathRate);
+			p.setAmount(p.getAmount() - died);
+			game.getGameStats().addDiedFromDisease(died);
+		});
+		// armies
+		double effectiveDeathRate = deathRate * (1 - from.getDiseaseResistance());
+		from.getArmies().forEach(a -> {
+			int died = (int) (a.getSoldiers() * effectiveDeathRate);
+			a.setSoldiers(a.getSoldiers() - died);
+			game.getGameStats().addDiedFromDisease(died);
 		});
 	}
 

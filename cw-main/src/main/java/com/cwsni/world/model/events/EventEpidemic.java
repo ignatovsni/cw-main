@@ -91,4 +91,8 @@ public class EventEpidemic extends Event {
 		p.getEvents().addEvent(e);
 	}
 
+	public static double getDiseaseResistance(double scienceMedicine) {
+		return Math.min(0.9, Math.log10(scienceMedicine) / 10);
+	}
+
 }

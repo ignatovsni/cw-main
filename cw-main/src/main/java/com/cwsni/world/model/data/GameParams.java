@@ -34,9 +34,9 @@ public class GameParams {
 	// ------------Turn procession section--------
 	private double populationBaseGrowth = 0.01;
 	private double populationBaseMigration = 0.0005;
-	private double populationMaxExcess = 1.2;	
-	private int populationLimitWithoutGovernment = 10000;	
-	
+	private double populationMaxExcess = 1.2;
+	private int populationLimitWithoutGovernment = 10000;
+
 	private int newCountryPopulationMin = 10000;
 	private int newCountryScienceAdministrationMin = 100;
 	private double newCountryProbability = 0.01;
@@ -47,7 +47,6 @@ public class GameParams {
 	private double scienceExchangeFromNeighborsPercentFromMax = 0.7;
 
 	private double scienceAgricultureMultiplicatorForFertility = (double) 1 / 4000;
-	private double scienceMedicineMultiplicatorForEpidemic = (double) 1 / 10000;
 
 	private double infrastructureNaturalLimitFromPopulation = 0.7;
 	private double infrastructureNaturalLimitWithLocalGovernment = 1.0;
@@ -57,15 +56,16 @@ public class GameParams {
 	private double armyFightBasePercentOfLoss = 0.2;
 	private int armyMinAllowedOrganization = 10;
 	private int armyMinAllowedSoldiers = 50;
-	
+
 	private double provinceLossFromFight = 0.2;
-	
+	private double provinceInfluenceFromCapitalWithDistanceDecrease = 0.8;
+
 	private double budgetBaseTaxPerPerson = 1;
 	private double budgetBaseTaxPerWealthPerson = 3;
 	private double budgetMaxWealthPerPerson = 10;
 	private double budgetBaseCostPerSoldier = 10;
 	private double budgetBaseHiringCostPerSoldier = 100;
-	
+
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
 	private double eventGlobalClimateChangeBadProbability = 0.7;
@@ -332,14 +332,6 @@ public class GameParams {
 		this.scienceAgricultureMultiplicatorForFertility = scienceAgricultureMultiplicatorForFertility;
 	}
 
-	public double getScienceMedicineMultiplicatorForEpidemic() {
-		return scienceMedicineMultiplicatorForEpidemic;
-	}
-
-	public void setScienceMedicineMultiplicatorForEpidemic(double scienceMedicineMultiplicatorForEpidemic) {
-		this.scienceMedicineMultiplicatorForEpidemic = scienceMedicineMultiplicatorForEpidemic;
-	}
-
 	public double getScienceBaseIncreasePerTurnPerPerson() {
 		return scienceBaseIncreasePerTurnPerPerson;
 	}
@@ -514,6 +506,15 @@ public class GameParams {
 
 	public void setInfrastructureNaturalLimitWithLocalGovernment(double infrastructureNaturalLimitWithLocalGovernment) {
 		this.infrastructureNaturalLimitWithLocalGovernment = infrastructureNaturalLimitWithLocalGovernment;
+	}
+
+	public double getProvinceInfluenceFromCapitalWithDistanceDecrease() {
+		return provinceInfluenceFromCapitalWithDistanceDecrease;
+	}
+
+	public void setProvinceInfluenceFromCapitalWithDistanceDecrease(
+			double provinceInfluenceFromCapitalWithDistanceDecrease) {
+		this.provinceInfluenceFromCapitalWithDistanceDecrease = provinceInfluenceFromCapitalWithDistanceDecrease;
 	}
 
 }
