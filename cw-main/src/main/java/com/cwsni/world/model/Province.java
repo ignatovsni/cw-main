@@ -337,7 +337,7 @@ public class Province implements EventTarget {
 		return getPopulation().stream().mapToDouble(p -> p.getWealth()).sum() + data.getWealth();
 	}
 
-	private double getInfluenceFromCapital() {
+	public double getGovernmentInfluence() {
 		Country country = getCountry();
 		if (country == null || country.getCapitalId() == null) {
 			return 0;
@@ -357,19 +357,19 @@ public class Province implements EventTarget {
 			return 1;
 		} else {
 			return Math.pow(map.getGame().getGameParams().getProvinceInfluenceFromCapitalWithDistanceDecrease(),
-					(int) effectiveDistanceToCapital);
+					effectiveDistanceToCapital);
 		}
 	}
 
 	public double getFederalIncomePerYear() {
-		return sumTaxForYear() * getCountry().getBudget().getProvinceTax() * getInfluenceFromCapital();
+		return sumTaxForYear() * getCountry().getBudget().getProvinceTax() * getGovernmentInfluence();
 	}
 
 	private double getLocalIncomePerYear() {
 		if (getCountryId() == null) {
 			return sumTaxForYear() / 2;
 		} else {
-			return sumTaxForYear() * (1 - getCountry().getBudget().getProvinceTax() * getInfluenceFromCapital());
+			return sumTaxForYear() * (1 - getCountry().getBudget().getProvinceTax() * getGovernmentInfluence());
 		}
 	}
 

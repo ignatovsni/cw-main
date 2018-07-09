@@ -23,10 +23,10 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesTerrainTypeLabel;
 	private RowValue valuesPopsLabel;
 	private RowValue valuesWealthLabel;
+	private RowValue valuesGovInfluenceLabel;
 	private RowValue valuesInfrastructureLabel;
 	private RowValue valuesSoilAreaLabel;
 	private RowValue valuesSoilFertilityLabel;
-	// private RowValue valuesArmiesLabel;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -44,6 +44,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 		valuesSizeLabel = addRow("info.pane.prov.size", grid, idx++);
 		valuesPopsLabel = addRow("info.pane.prov.population", grid, idx++);
 		valuesWealthLabel = addRow("info.pane.prov.wealth", grid, idx++);
+		valuesGovInfluenceLabel = addRow("info.pane.prov.government-influence", grid, idx++);
 		valuesInfrastructureLabel = addRow("info.pane.prov.infrastructure", grid, idx++);
 		valuesSoilAreaLabel = addRow("info.pane.prov.soil.area", grid, idx++);
 		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, idx++);
@@ -60,6 +61,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 			setLabelText(valuesSizeLabel, DataFormatter.toLong(prov.getSize()));
 			setLabelText(valuesPopsLabel, DataFormatter.toLong(prov.getPopulationAmount()));
 			setLabelText(valuesWealthLabel, DataFormatter.toLong((long) prov.getWealth()));
+			setLabelText(valuesGovInfluenceLabel, DataFormatter.formatFractionNumber(prov.getGovernmentInfluence()));
 			setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
 			setLabelText(valuesSoilAreaLabel, DataFormatter.toLong(prov.getSoilArea()));
 			setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));
@@ -71,8 +73,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 
 	private String createTextForInfrastructure(Province prov) {
 		double infr = prov.getInfrastructurePercent();
-		return DataFormatter.toFraction(infr * 100) + " (" + DataFormatter.toLong(prov.getInfrastructure())
-				+ ")";
+		return DataFormatter.toFraction(infr * 100) + " (" + DataFormatter.toLong(prov.getInfrastructure()) + ")";
 	}
 
 	@Override

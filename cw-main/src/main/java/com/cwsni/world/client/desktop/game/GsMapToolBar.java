@@ -38,6 +38,7 @@ public class GsMapToolBar extends ToolBar {
 		addButton("geo", MapMode.GEO).setEffect(new Lighting());
 		addButton("political", MapMode.POLITICAL);
 		addButton("population", MapMode.POPULATION);
+		addButton("government-influence", MapMode.GOVERNMENT_INFLUENCE);
 		addButton("wealth", MapMode.WEALTH);
 		addButton("culture", MapMode.CULTURE);
 		addButton("infrastructure", MapMode.INFRASTRUCTURE);

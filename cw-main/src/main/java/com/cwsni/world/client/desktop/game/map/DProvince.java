@@ -104,6 +104,9 @@ class DProvince extends Group {
 			case POLITICAL:
 				drawPoliticalMode(polygon);
 				break;
+			case GOVERNMENT_INFLUENCE:
+				drawGovInfluenceMode(polygon);
+				break;
 			case CULTURE:
 				drawCultureMode(polygon);
 				break;
@@ -299,7 +302,17 @@ class DProvince extends Group {
 		}
 	}
 
-	private void drawWealthMode(Polygon polygon2) {
+	private void drawGovInfluenceMode(Polygon polygon) {
+		drawGradientMode(polygon, 1.0, province.getGovernmentInfluence(), false);
+
+		// drawGradientModeForMedian(polygon,
+		// map.getGame().getGameTransientStats().getGovInfluenceMaxInProvince(),
+		// map.getGame().getGameTransientStats().getGovInfluenceAvgInProvince(),
+		// map.getGame().getGameTransientStats().getGovInfluenceMedianInProvince(),
+		// province.getGovernmentInfluence());
+	}
+
+	private void drawWealthMode(Polygon polygon) {
 		drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getWealthMaxInProvince(),
 				map.getGame().getGameTransientStats().getWealthAvgInProvince(),
 				map.getGame().getGameTransientStats().getWealthMedianInProvince(), province.getWealth());

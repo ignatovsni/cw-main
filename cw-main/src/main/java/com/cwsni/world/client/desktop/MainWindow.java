@@ -1,5 +1,8 @@
 package com.cwsni.world.client.desktop;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
@@ -14,7 +17,9 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 @SpringBootApplication
 @ComponentScan("com.cwsni.world")
@@ -108,6 +113,34 @@ public class MainWindow extends Application {
 
 	private UserPreferences getUserProperties() {
 		return springContext.getBean(UserPreferences.class);
+	}
+
+	private static void updateTooltipBehavior(double openDelay, double visibleDuration, double closeDelay,
+			boolean hideOnExit) {
+		try {
+			// Get the non public field "BEHAVIOR"
+			Field fieldBehavior = Tooltip.class.getDeclaredField("BEHAVIOR");
+			// Make the field accessible to be able to get and set its value
+			fieldBehavior.setAccessible(true);
+			// Get the value of the static field
+			Object objBehavior = fieldBehavior.get(null);
+			// Get the constructor of the private static inner class TooltipBehavior
+			Constructor<?> constructor = objBehavior.getClass().getDeclaredConstructor(Duration.class, Duration.class,
+					Duration.class, boolean.class);
+			// Make the constructor accessible to be able to invoke it
+			constructor.setAccessible(true);
+			// Create a new instance of the private static inner class TooltipBehavior
+			Object tooltipBehavior = constructor.newInstance(new Duration(openDelay), new Duration(visibleDuration),
+					new Duration(closeDelay), hideOnExit);
+			// Set the new instance of TooltipBehavior
+			fieldBehavior.set(null, tooltipBehavior);
+		} catch (Throwable e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	static {
+		updateTooltipBehavior(100, 5000, 200, false);
 	}
 
 }
