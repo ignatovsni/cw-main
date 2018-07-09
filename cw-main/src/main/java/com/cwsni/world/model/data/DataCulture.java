@@ -11,7 +11,7 @@ public class DataCulture {
 	}
 
 	public void setRed(int red) {
-		this.red = red;
+		this.red = correctValue(red);
 	}
 
 	public int getGreen() {
@@ -19,7 +19,7 @@ public class DataCulture {
 	}
 
 	public void setGreen(int green) {
-		this.green = green;
+		this.green = correctValue(green);
 	}
 
 	public int getBlue() {
@@ -27,7 +27,16 @@ public class DataCulture {
 	}
 
 	public void setBlue(int blue) {
-		this.blue = blue;
+		this.blue = correctValue(blue);
+	}
+
+	private int correctValue(int v) {
+		if (v <= 0) {
+			return 0;
+		} else if (v >= 255) {
+			return 255;
+		}
+		return v;
 	}
 
 	public void cloneFrom(DataCulture culture) {

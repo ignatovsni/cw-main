@@ -305,6 +305,7 @@ public class Province implements EventTarget {
 			ScienceCollection.growScienceNewTurn(this, map.getGame());
 			Population.migrateNewTurn(this, map.getGame());
 			Population.growPopulationNewTurn(this, map.getGame());
+			Culture.influenceOfCountry(this, map.getGame());
 		}
 		Population.processEventsNewTurn(this, map.getGame());
 		processNaturalInfrastructure();
