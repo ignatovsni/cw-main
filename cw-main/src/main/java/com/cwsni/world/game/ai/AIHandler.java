@@ -2,7 +2,6 @@ package com.cwsni.world.game.ai;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.model.ComparisonTool;
@@ -12,14 +11,10 @@ import com.cwsni.world.model.player.PCountry;
 import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.model.player.PGameParams;
 import com.cwsni.world.model.player.PProvince;
-import com.cwsni.world.services.algorithms.GameAlgorithms;
 import com.cwsni.world.util.Heap;
 
 @Component
 public class AIHandler {
-
-	@Autowired
-	private GameAlgorithms gameAlgorithms;
 
 	public void processNewTurn(List<PGame> pGames) {
 		pGames.forEach(pg -> processCountry(pg, pg.getCountry()));
@@ -58,7 +53,7 @@ public class AIHandler {
 			}
 		}
 
-		if (armies.size() > 20) {
+		if (armies.size() >= 20) {
 			return;
 		}
 		// new armies
@@ -66,10 +61,15 @@ public class AIHandler {
 		double baseCostPerSoldier = params.getBudgetBaseCostPerSoldier();
 		double canAllowNewSoldiers = Math.min(availableMoneyForArmy / baseCostPerSoldier,
 				budget.getMoney() / baseHiringCostPerSoldier);
-		PProvince capital = data.getCountry().getCapital();
-		// TODO create army in different provinces, where are many free people
-		if (canAllowNewSoldiers >= params.getArmyMinAllowedSoldiers() && capital != null) {
-			data.getCountry().createArmy(capital.getId(), (int) Math.max(1000, canAllowNewSoldiers));
+
+		List<PProvince> provinces = data.getCountry().getProvinces();
+		if (canAllowNewSoldiers >= params.getArmyMinAllowedSoldiers() && !provinces.isEmpty()) {
+			Heap<PProvince> provsBySoldiers = new Heap<>((x, y) -> y.getPopulationAmount() - x.getPopulationAmount());
+			provinces.forEach(p -> provsBySoldiers.put(p));
+			PProvince provForHiring = provsBySoldiers.poll();
+			data.getCountry().createArmy(provForHiring.getId(), (int) canAllowNewSoldiers);
+			// data.getCountry().createArmy(provForHiring.getId(), (int) Math.min(1000 +
+			// Math.sqrt(canAllowNewSoldiers), canAllowNewSoldiers));
 		}
 	}
 
@@ -104,8 +104,7 @@ public class AIHandler {
 			}
 		}
 		if (nearestProv != null) {
-			List<Object> path = gameAlgorithms.findShortestPath(new PProvinceNodeWrapper(a.getLocation()),
-					new PProvinceNodeWrapper(nearestProv));
+			List<Object> path = data.getGame().findShortestPath(a.getLocation().getId(), nearestProv.getId());
 			a.moveTo(path);
 		}
 	}

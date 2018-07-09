@@ -25,6 +25,8 @@ public class Province implements EventTarget {
 	private EventCollection events;
 	private List<Population> immigrants;
 	private List<Army> armies;
+	private Integer oldCapitalId;
+	private double influenceFromCapital;
 
 	@Override
 	public int hashCode() {
@@ -336,8 +338,34 @@ public class Province implements EventTarget {
 		return getPopulation().stream().mapToDouble(p -> p.getWealth()).sum() + data.getWealth();
 	}
 
+	private double getInfluenceFromCapital() {
+		Country country = getCountry();
+		if (country == null || country.getCapitalId() == null) {
+			return 0;
+		}
+		Integer capitalId = country.getCapitalId();
+		if (!ComparisonTool.isEqual(oldCapitalId, capitalId)) {
+			if (ComparisonTool.isEqual(capitalId, getId())) {
+				influenceFromCapital = 1;
+			} else {
+				double distanceToCapital = map.findDistanceBetweenProvs(capitalId, getId());
+				influenceFromCapital = Math.pow(0.9, (int) Math.max(0, distanceToCapital - 1));
+			}
+			oldCapitalId = capitalId;
+		}
+		return influenceFromCapital;
+	}
+
 	public double getFederalIncomePerYear() {
-		return sumTaxForYear() * getCountry().getBudget().getProvinceTax();
+		return sumTaxForYear() * getCountry().getBudget().getProvinceTax() * getInfluenceFromCapital();
+	}
+
+	private double getLocalIncomePerYear() {
+		if (getCountryId() == null) {
+			return sumTaxForYear() / 2;
+		} else {
+			return sumTaxForYear() * (1 - getCountry().getBudget().getProvinceTax() * getInfluenceFromCapital());
+		}
 	}
 
 	private double sumTaxForYear() {
@@ -360,12 +388,7 @@ public class Province implements EventTarget {
 	private void processTaxesAndOthersInNewTurn() {
 		GameParams gParams = map.getGame().getGameParams();
 		int populationAmount = getPopulationAmount();
-		double income = sumTaxForYear();
-		if (getCountryId() == null) {
-			income *= 0.5;
-		} else {
-			income *= 1 - getCountry().getBudget().getProvinceTax();
-		}
+		double income = getLocalIncomePerYear();
 		double wealthForProvince = income / 3;
 		double wealthForPops = income / 3;
 		double wealthForInfrastructure = income / 3;
@@ -429,5 +452,25 @@ public class Province implements EventTarget {
 
 	void spendMoneyForScience(double money) {
 		ScienceCollection.spendMoneyForScience(map.getGame(), this, money);
+	}
+
+	public void hirePeopleForArmy(Army a, int soldiers) {
+		int populationAmount = getPopulationAmount();
+		if (populationAmount == 0) {
+			return;
+		}
+		double fraction = Math.min(1, (double) soldiers / populationAmount);
+		int hiredSoldiers = 0;
+		List<Population> pops = new ArrayList<>(getPopulation());
+		for (Population pop : pops) {
+			int soldiersFromPop = (int) (pop.getAmount() * fraction);
+			if (fraction >= 1 || soldiersFromPop == pop.getAmount()) {
+				hiredSoldiers += pop.getAmount();
+				removePopulation(pop);
+			} else {
+				hiredSoldiers += pop.createNewPopFromThis(soldiersFromPop).getAmount();
+			}
+		}
+		a.setSoldiers(hiredSoldiers);
 	}
 }

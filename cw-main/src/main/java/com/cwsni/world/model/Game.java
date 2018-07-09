@@ -14,6 +14,7 @@ import com.cwsni.world.model.data.Turn;
 import com.cwsni.world.model.events.Event;
 import com.cwsni.world.model.events.EventCollection;
 import com.cwsni.world.model.events.EventTarget;
+import com.cwsni.world.services.algorithms.GameAlgorithms;
 
 public class Game implements EventTarget {
 
@@ -22,8 +23,10 @@ public class Game implements EventTarget {
 	private WorldMap map;
 	private EventCollection events;
 	private CountryCollection countries;
-	private LocaleMessageSource messageSource;
 	private Map<Integer, Army> armies;
+
+	private LocaleMessageSource messageSource;
+	private GameAlgorithms gameAlgorithms;
 
 	public List<Event> getEvents() {
 		return events.getEvents();
@@ -55,6 +58,10 @@ public class Game implements EventTarget {
 
 	public GameParams getGameParams() {
 		return data.getGameParams();
+	}
+
+	public GameAlgorithms getGameAlgorithms() {
+		return gameAlgorithms;
 	}
 
 	public Turn getTurn() {
@@ -209,9 +216,10 @@ public class Game implements EventTarget {
 		data.setTurn(turn);
 	}
 
-	public void buildFrom(DataGame dataGame, LocaleMessageSource messageSource) {
+	public void buildFrom(DataGame dataGame, LocaleMessageSource messageSource, GameAlgorithms gameAlgorithms) {
 		this.data = dataGame;
 		this.messageSource = messageSource;
+		this.gameAlgorithms = gameAlgorithms;
 
 		armies = new HashMap<>();
 

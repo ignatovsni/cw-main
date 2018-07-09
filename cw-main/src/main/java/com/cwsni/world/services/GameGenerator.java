@@ -24,12 +24,16 @@ import com.cwsni.world.model.data.DataWorldMap;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.data.Turn;
+import com.cwsni.world.services.algorithms.GameAlgorithms;
 
 @Component
 public class GameGenerator {
 
 	@Autowired
 	private LocaleMessageSource messageSource;
+
+	@Autowired
+	private GameAlgorithms gameAlgorithms;
 
 	private class TempData {
 		Map<Integer, DataProvince> provByIds = new HashMap<>();
@@ -54,7 +58,7 @@ public class GameGenerator {
 		fillPopulation(dataGame);
 		fillInfrastructure(dataGame);
 		Game game = new Game();
-		game.buildFrom(dataGame, messageSource);
+		game.buildFrom(dataGame, messageSource, getGameAlgorithms());
 		return game;
 	}
 
@@ -259,8 +263,7 @@ public class GameGenerator {
 		GameParams gParams = game.getGameParams();
 		game.getMap().getProvinces().stream().filter(p -> (p.getTerrainType().isPopulationPossible())).forEach(p -> {
 			int popsAmpount = p.getPopulation().stream().mapToInt(pop -> pop.getAmount()).sum();
-			p.setInfrastructure(
-					(int) (popsAmpount * gParams.getInfrastructureNaturalLimitFromPopulation()));
+			p.setInfrastructure((int) (popsAmpount * gParams.getInfrastructureNaturalLimitFromPopulation()));
 		});
 	}
 
@@ -270,6 +273,14 @@ public class GameGenerator {
 		gameParams.setRows(0);
 		gameParams.setColumns(0);
 		return createGame(gameParams);
+	}
+
+	public GameAlgorithms getGameAlgorithms() {
+		return gameAlgorithms;
+	}
+
+	public void setGameAlgorithms(GameAlgorithms gameAlgorithms) {
+		this.gameAlgorithms = gameAlgorithms;
 	}
 
 }

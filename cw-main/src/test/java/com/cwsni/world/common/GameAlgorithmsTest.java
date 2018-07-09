@@ -3,36 +3,33 @@ package com.cwsni.world.common;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.cwsni.world.model.Game;
-import com.cwsni.world.model.Province;
 import com.cwsni.world.model.WorldMap;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.services.GameGenerator;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
-import com.cwsni.world.services.algorithms.Node;
 
 public class GameAlgorithmsTest {
 
 	private Game game;
-	private GameAlgorithms gameAlg;
+	private GameAlgorithms gameAlgorithms;
 
 	@Before
 	public void init() {
+		gameAlgorithms = new GameAlgorithms();
 		GameGenerator gg = new GameGenerator();
+		gg.setGameAlgorithms(gameAlgorithms);
 		GameParams gameParams = new GameParams();
 		gameParams.setSeed(System.currentTimeMillis());
 		gameParams.setRows(10);
 		gameParams.setColumns(10);
 		gameParams.setOceanPercent(0);
 		game = gg.createGame(gameParams);
-		gameAlg = new GameAlgorithms();
 	}
 
 	@Test
@@ -62,29 +59,8 @@ public class GameAlgorithmsTest {
 		// System.out.println(path);
 	}
 
-	private class ProvinceNodeWrapper extends Node {
-
-		private Province p;
-
-		ProvinceNodeWrapper(Province p) {
-			this.p = p;
-		}
-
-		@Override
-		public Object getKey() {
-			return p.getId();
-		}
-
-		@Override
-		public Collection<Node> getNeighbors() {
-			return p.getNeighbors().stream().map(n -> new ProvinceNodeWrapper(n)).collect(Collectors.toList());
-		}
-
-	}
-
 	private List<Object> findShortestPath(WorldMap map, int fromId, int toId) {
-		return gameAlg.findShortestPath(new ProvinceNodeWrapper(map.findProvById(fromId)),
-				new ProvinceNodeWrapper(map.findProvById(toId)));
+		return map.findShortestPath(fromId, toId);
 	}
 
 }

@@ -1,14 +1,17 @@
 package com.cwsni.world.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.cwsni.world.model.data.DataWorldMap;
 import com.cwsni.world.model.events.Event;
+import com.cwsni.world.services.algorithms.Node;
 
 public class WorldMap {
 
@@ -54,8 +57,10 @@ public class WorldMap {
 	 * 
 	 */
 	public double findRelativeDistanceBetweenProvs(int provId1, int provId2) {
-		Province p1 = findProvById(provId1);
-		Province p2 = findProvById(provId2);
+		return findRelativeDistanceBetweenProvs(findProvById(provId1), findProvById(provId2));
+	}
+
+	private double findRelativeDistanceBetweenProvs(Province p1, Province p2) {
 		return Math.pow(p1.getCenter().getX() - p2.getCenter().getX(), 2)
 				+ Math.pow(p1.getCenter().getY() - p2.getCenter().getY(), 2);
 	}
@@ -97,6 +102,35 @@ public class WorldMap {
 			countriesBordersWasRefreshedAtTurn = game.getTurn().getTurn();
 		}
 		return countriesBorders;
+	}
+
+	public double findDistanceBetweenProvs(int fromId, int toId) {
+		return findShortestPath(fromId, toId).size() - 1;
+	}
+
+	public List<Object> findShortestPath(int fromId, int toId) {
+		return game.getGameAlgorithms().findShortestPath(new ProvinceNodeWrapper(findProvById(fromId)),
+				new ProvinceNodeWrapper(findProvById(toId)));
+	}
+
+	private class ProvinceNodeWrapper extends Node {
+
+		private Province p;
+
+		ProvinceNodeWrapper(Province p) {
+			this.p = p;
+		}
+
+		@Override
+		public Object getKey() {
+			return p.getId();
+		}
+
+		@Override
+		public Collection<Node> getNeighbors() {
+			return p.getNeighbors().stream().map(n -> new ProvinceNodeWrapper(n)).collect(Collectors.toList());
+		}
+
 	}
 
 }

@@ -4,7 +4,7 @@ import com.cwsni.world.client.desktop.util.DataFormatter;
 
 public class DataMoneyBudget {
 
-	private static double MAX_MONEY = Math.pow(1000, 2);
+	private static double MAX_MONEY = Math.pow(1000, 3);
 
 	private double savingsMoney;
 

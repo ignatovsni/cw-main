@@ -22,7 +22,6 @@ public class PGame {
 	private Country country;
 	private Map<Integer, PCountry> countries;
 	private Map<Integer, PProvince> provinces;
-	private Map<Integer, PArmy> armies;
 	private List<Command> commands;
 
 	/**
@@ -35,7 +34,6 @@ public class PGame {
 		this.country = country;
 		this.params = new PGameParams(game.getGameParams());
 		provinces = new HashMap<>();
-		armies = new HashMap<>();
 		countries = new HashMap<>(game.getCountries().size());
 		commands = new ArrayList<>();
 	}
@@ -47,7 +45,7 @@ public class PGame {
 	public Integer getCountryId() {
 		return country.getId();
 	}
-	
+
 	public PGameParams getParams() {
 		return params;
 	}
@@ -91,6 +89,10 @@ public class PGame {
 
 	public double relativeDistance(Integer fromId, Integer toId) {
 		return game.getMap().findRelativeDistanceBetweenProvs(fromId, toId);
+	}
+
+	public List<Object> findShortestPath(int fromId, int toId) {
+		return game.getMap().findShortestPath(fromId, toId);
 	}
 
 	public AIData4Country getAIData() {

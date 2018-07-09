@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.data.DataGame;
+import com.cwsni.world.services.algorithms.GameAlgorithms;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -24,6 +25,9 @@ public class GameRepository {
 
 	@Autowired
 	private LocaleMessageSource messageSource;
+
+	@Autowired
+	private GameAlgorithms gameAlgorithms;
 
 	public void quickSaveGame(Game game) {
 		logger.info("quick save : " + game.logDescription());
@@ -51,7 +55,7 @@ public class GameRepository {
 		try {
 			DataGame dataGame = objectMapper.readValue(new File(QUICK_SAVE_FILE_NAME), DataGame.class);
 			game = new Game();
-			game.buildFrom(dataGame, messageSource);
+			game.buildFrom(dataGame, messageSource, gameAlgorithms);
 			logger.info("quick load is successful : " + game.logDescription());
 		} catch (IOException e) {
 			e.printStackTrace();

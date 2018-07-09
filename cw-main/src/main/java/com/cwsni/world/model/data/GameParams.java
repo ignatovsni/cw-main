@@ -63,8 +63,8 @@ public class GameParams {
 	private double budgetBaseTaxPerPerson = 1;
 	private double budgetBaseTaxPerWealthPerson = 3;
 	private double budgetMaxWealthPerPerson = 10;
-	private double budgetBaseCostPerSoldier = 100;
-	private double budgetBaseHiringCostPerSoldier = 1000;
+	private double budgetBaseCostPerSoldier = 10;
+	private double budgetBaseHiringCostPerSoldier = 100;
 	
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;

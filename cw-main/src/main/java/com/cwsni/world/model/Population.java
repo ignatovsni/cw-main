@@ -55,7 +55,8 @@ public class Population {
 		culture.buildFrom(dpop.getCulture());
 	}
 
-	private Population createNewEmigrant(int migrantsCount) {
+	Population createNewPopFromThis(int migrantsCount) {
+		migrantsCount = Math.min(migrantsCount, data.getAmount());
 		Population newPop = new Population();
 		newPop.setWealth(migrantsCount / getAmount() * getWealth());
 		addWealth(-newPop.getWealth());
@@ -70,10 +71,11 @@ public class Population {
 		return newPop;
 	}
 
-	private void addPop(Population pop) {
+	void addPop(Population pop) {
 		getScience().mergeFrom(pop.getScience(), (double) getAmount() / (getAmount() + pop.getAmount()));
 		getCulture().mergeFrom(pop.getCulture(), (double) getAmount() / (getAmount() + pop.getAmount()));
 		setAmount(getAmount() + pop.getAmount());
+		setWealth(getWealth() + pop.getWealth());
 	}
 
 	public double getDiseaseResistance() {
@@ -141,7 +143,7 @@ public class Population {
 		from.getPopulation().forEach(fromPop -> {
 			int migrantsCount = (int) (fromPop.getAmount() * fractionFromEach);
 			if (migrantsCount > 0 && migrantsCount < fromPop.getAmount()) {
-				to.getImmigrants().add(fromPop.createNewEmigrant(migrantsCount));
+				to.getImmigrants().add(fromPop.createNewPopFromThis(migrantsCount));
 			}
 		});
 	}

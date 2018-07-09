@@ -21,6 +21,9 @@ public class DataScience {
 	}
 
 	public void setAmount(double amount) {
+		//if (amount < 0) {
+		//	System.out.println(amount);
+		//}
 		this.amount = DataFormatter.doubleWith3points(amount);
 		if (this.amount > max) {
 			max = this.amount;

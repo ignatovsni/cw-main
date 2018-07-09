@@ -204,7 +204,6 @@ public class Country {
 		}
 		GameParams gParams = game.getGameParams();
 		double baseHiringCostPerSoldier = gParams.getBudgetBaseHiringCostPerSoldier();
-		// TODO it is better to take money from military savings, not common savings...
 		if (soldiers * baseHiringCostPerSoldier > budget.getMoney()) {
 			soldiers = (int) (budget.getMoney() / baseHiringCostPerSoldier);
 		}
@@ -213,20 +212,26 @@ public class Country {
 					+ gParams.getArmyMinAllowedSoldiers());
 			return null;
 		}
-		budget.spendMoneyForArmy(soldiers * baseHiringCostPerSoldier);
 		Army a = new Army();
 		a.buildFrom(this, new DataArmy(game.nextArmyId()));
-		// TODO hire people from population
-		a.setSoldiers(soldiers);
 		a.setEquipment(1);
 		a.setOrganisation(100);
 		a.setTraining(50);
-		registerArmy(a);
-		a.setProvince(p);
-		return a;
+		p.hirePeopleForArmy(a, soldiers);
+		if (a.getSoldiers() > 0) {
+			budget.spendMoneyForArmy(a.getSoldiers() * baseHiringCostPerSoldier);
+			registerArmy(a);
+			a.setProvince(p);
+			return a;
+		} else {
+			return null;
+		}
 	}
 
 	public void processNewTurn() {
+		if (getCapitalId() == null) {
+			chooseNewCapital();
+		}
 		budget.processNewTurn();
 		processScienceNewTurn();
 	}
