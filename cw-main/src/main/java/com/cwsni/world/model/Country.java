@@ -197,6 +197,15 @@ public class Country {
 		unregisterArmy(a);
 	}
 
+	private Army createArmy() {
+		Army a = new Army();
+		a.buildFrom(this, new DataArmy(game.nextArmyId()));
+		a.setEquipment(1);
+		a.setOrganisation(100);
+		a.setTraining(50);
+		return a;
+	}
+
 	public Army createArmy(Province p, int soldiers) {
 		if (!ComparisonTool.isEqual(p.getCountryId(), getId())) {
 			logger.error("destination country id = " + p.getCountryId() + " but country.id = " + getId());
@@ -212,11 +221,7 @@ public class Country {
 					+ gParams.getArmyMinAllowedSoldiers());
 			return null;
 		}
-		Army a = new Army();
-		a.buildFrom(this, new DataArmy(game.nextArmyId()));
-		a.setEquipment(1);
-		a.setOrganisation(100);
-		a.setTraining(50);
+		Army a = createArmy();
 		p.hirePeopleForArmy(a, soldiers);
 		if (a.getSoldiers() > 0) {
 			budget.spendMoneyForArmy(a.getSoldiers() * baseHiringCostPerSoldier);
@@ -226,6 +231,26 @@ public class Country {
 		} else {
 			return null;
 		}
+	}
+
+	public Army splitArmy(Army army, int soldiers) {
+		GameParams gParams = game.getGameParams();
+		if (soldiers < gParams.getArmyMinAllowedSoldiers()) {
+			logger.warn("soldiers <= gParams.getArmyMinAllowedSoldiers() ; " + soldiers + " < "
+					+ gParams.getArmyMinAllowedSoldiers());
+			return null;
+		}
+		Army a = createArmy();
+		a.setSoldiers(soldiers);
+		army.setSoldiers(army.getSoldiers() - soldiers);
+		registerArmy(a);
+		a.setProvince(army.getLocation());
+		return a;
+	}
+
+	public void mergeArmy(Army army, Army armyFrom) {
+		army.setSoldiers(army.getSoldiers() + armyFrom.getSoldiers());
+		dismissArmy(armyFrom);
 	}
 
 	public void processNewTurn() {

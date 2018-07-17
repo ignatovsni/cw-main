@@ -4,6 +4,7 @@ public class DataArmy {
 	/*
 	 * TODO нужно запоминать состав армии - культуру, против своих сражаться будут
 	 * неохотно
+	 * DataPopulation can be used
 	 */
 
 	private int id;

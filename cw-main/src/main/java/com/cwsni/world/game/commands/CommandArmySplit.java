@@ -4,21 +4,18 @@ import com.cwsni.world.model.Army;
 import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 
-public class CommandArmyDismiss extends CommandArmy {
+public class CommandArmySplit extends CommandArmy {
 
-	/**
-	 * if < 0 then dismiss all
-	 */
-	private int howManySoldiers;
+	private int soldiersToNewArmy;
 
-	public CommandArmyDismiss(int armyId, int howManySoldiersNeedToDismiss) {
+	public CommandArmySplit(int armyId, int soldiersToNewArmy) {
 		super(armyId);
-		this.howManySoldiers = howManySoldiersNeedToDismiss;
+		this.soldiersToNewArmy = soldiersToNewArmy;
 	}
 
 	@Override
 	public void apply(Country country, CommandErrorHandler errorHandler) {
-		if (howManySoldiers == 0) {
+		if (soldiersToNewArmy <= 0) {
 			return;
 		}
 		Game game = country.getGame();
@@ -27,19 +24,18 @@ public class CommandArmyDismiss extends CommandArmy {
 			errorHandler.addError(this.toString() + ": army = null");
 			return;
 		}
-		if (howManySoldiers < 0 || howManySoldiers >= army.getSoldiers()) {
-			country.dismissArmy(army);
-		} else {
-			army.dismissSoldiers(howManySoldiers);
+		if (soldiersToNewArmy >= army.getSoldiers()) {
+			return;
 		}
+		country.splitArmy(army, soldiersToNewArmy);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(super.toString());
-		sb.append(" howManySoldiers:");
-		sb.append(howManySoldiers);
+		sb.append(" soldiersToNewArmy:");
+		sb.append(soldiersToNewArmy);
 		return sb.toString();
 	}
 

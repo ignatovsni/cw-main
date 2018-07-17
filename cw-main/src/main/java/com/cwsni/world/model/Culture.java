@@ -15,15 +15,15 @@ public class Culture {
 		this.data = culture;
 	}
 
-	public int getRed() {
+	public double getRed() {
 		return data.getRed();
 	}
 
-	public int getGreen() {
+	public double getGreen() {
 		return data.getGreen();
 	}
 
-	public int getBlue() {
+	public double getBlue() {
 		return data.getBlue();
 	}
 
@@ -50,8 +50,8 @@ public class Culture {
 		}
 	}
 
-	private int merge(int to, int from, double ownFraction) {
-		return (int) Math.round((to * ownFraction + from * (1 - ownFraction)));
+	private double merge(double to, double from, double ownFraction) {
+		return (to * ownFraction + from * (1 - ownFraction));
 	}
 
 	private void influenceOfCountry(Province p) {
@@ -59,7 +59,7 @@ public class Culture {
 		if (c == null || c.getCapitalId() == null) {
 			return;
 		}
-		double ownFraction = 0.99 - Math.min(0.01, Math.log10(c.getCapital().getScienceAdministration() + 1) / 100)
+		double ownFraction = 0.999 - Math.min(0.001, Math.log10(c.getCapital().getScienceAdministration() + 1) / 10000)
 				* p.getGovernmentInfluence();
 		Color color = c.getColor();
 		data.setRed(merge(data.getRed(), color.getR(), ownFraction));

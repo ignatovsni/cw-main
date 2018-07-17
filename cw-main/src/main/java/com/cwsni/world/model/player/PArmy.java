@@ -3,7 +3,9 @@ package com.cwsni.world.model.player;
 import java.util.List;
 
 import com.cwsni.world.game.commands.CommandArmyDismiss;
+import com.cwsni.world.game.commands.CommandArmyMerge;
 import com.cwsni.world.game.commands.CommandArmyMove;
+import com.cwsni.world.game.commands.CommandArmySplit;
 import com.cwsni.world.model.Army;
 
 public class PArmy {
@@ -12,7 +14,7 @@ public class PArmy {
 	private PGame game;
 	private PCountry country;
 	private CommandArmyMove moveCommand;
-	private CommandArmyDismiss dismissCommand;
+	private boolean isDismissed = false;
 
 	PArmy(PGame game, Army army) {
 		this.game = game;
@@ -58,7 +60,7 @@ public class PArmy {
 	}
 
 	private void moveTo(int destId) {
-		if (dismissCommand != null) {
+		if (isDismissed) {
 			return;
 		}
 		game.removeCommand(moveCommand);
@@ -88,16 +90,37 @@ public class PArmy {
 	 *            if < 0 then dismiss all
 	 */
 	public void dismissSoldiers(int howManySoldiersNeedToDismiss) {
-		if (howManySoldiersNeedToDismiss < 0) {
-			game.removeCommand(moveCommand);
+		if (howManySoldiersNeedToDismiss == 0) {
+			return;
 		}
-		game.removeCommand(dismissCommand);
-		dismissCommand = new CommandArmyDismiss(army.getId(), howManySoldiersNeedToDismiss);
+		if (howManySoldiersNeedToDismiss < 0 || howManySoldiersNeedToDismiss >= getSoldiers()) {
+			setupNonAvailable();
+		}
+		CommandArmyDismiss dismissCommand = new CommandArmyDismiss(army.getId(), howManySoldiersNeedToDismiss);
 		game.addCommand(dismissCommand);
 	}
 
+	private void setupNonAvailable() {
+		isDismissed = true;
+		game.removeCommand(moveCommand);
+	}
+
 	public boolean isAbleToWork() {
-		return army.isAbleToWork() && (dismissCommand == null || !dismissCommand.isFullDismiss());
+		return army.isAbleToWork() && !isDismissed;
+	}
+
+	public void splitArmy(int soldiersToNewArmy) {
+		if (soldiersToNewArmy <= 0 || soldiersToNewArmy >= getSoldiers()) {
+			return;
+		}
+		CommandArmySplit splitCommand = new CommandArmySplit(army.getId(), soldiersToNewArmy);
+		game.addCommand(splitCommand);
+	}
+
+	public void merge(PArmy fromArmy) {
+		CommandArmyMerge mergeCommand = new CommandArmyMerge(army.getId(), fromArmy.getId());
+		game.addCommand(mergeCommand);
+		fromArmy.setupNonAvailable();
 	}
 
 }
