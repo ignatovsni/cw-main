@@ -1,5 +1,6 @@
 package com.cwsni.world.client.desktop.game;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.client.desktop.UserPreferences;
 import com.cwsni.world.client.desktop.game.map.DWorldMap;
 import com.cwsni.world.client.desktop.game.map.MapMode;
+import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
@@ -26,6 +28,8 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
@@ -33,6 +37,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 @Component
@@ -40,6 +45,9 @@ import javafx.stage.Stage;
 public class GameScene extends Scene {
 
 	private static final Log logger = LogFactory.getLog(GameScene.class);
+
+	@Autowired
+	private LocaleMessageSource messageSource;
 
 	@Autowired
 	private GameRepository gameRepository;
@@ -152,14 +160,73 @@ public class GameScene extends Scene {
 		setupGame(gameGenerator.createEmptyGame());
 	}
 
+	private String getMessage(String code) {
+		return messageSource.getMessage(code);
+	}
+
 	public void quickSaveGame() {
-		if (game != null) {
-			runLocked(() -> gameRepository.quickSaveGame(game));
+		if (game == null) {
+			return;
+		}
+		runLocked(() -> saveFile(true));
+	}
+
+	public void saveGame() {
+		if (game == null) {
+			return;
+		}
+		runLocked(() -> saveFile(false));
+	}
+
+	private void saveFile(boolean isQuickSave) {
+		try {
+			if (isQuickSave) {
+				gameRepository.quickSaveGame(game);
+			} else {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle(getMessage("menu.save.window-title"));
+				fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Game files", "*.cw"));
+				fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+				File file = fileChooser.showSaveDialog(getWindow());
+				if (file != null) {
+					gameRepository.saveGame(game, file);
+				}
+			}
+		} catch (Exception e) {
+			Alert alert = new Alert(AlertType.ERROR, getMessage("error.msg.save") + ": " + e.getMessage());
+			alert.setTitle("");
+			alert.showAndWait();
 		}
 	}
 
 	public void quickLoadGame() {
-		Game newGame = gameRepository.quickLoadGame();
+		loadGame(true);
+	}
+
+	public void loadGame() {
+		loadGame(false);
+	}
+
+	private void loadGame(boolean isQuickLoad) {
+		Game newGame = null;
+		try {
+			if (isQuickLoad) {
+				newGame = gameRepository.quickLoadGame();
+			} else {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle(getMessage("menu.load.window-title"));
+				fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Game files", "*.cw"));
+				fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+				File file = fileChooser.showOpenDialog(getWindow());
+				if (file != null) {
+					newGame = gameRepository.loadGame(file);
+				}
+			}
+		} catch (Exception e) {
+			Alert alert = new Alert(AlertType.ERROR, getMessage("error.msg.load") + ": " + e.getMessage());
+			alert.setTitle("");
+			alert.showAndWait();
+		}
 		if (newGame != null) {
 			setupGame(newGame);
 		}

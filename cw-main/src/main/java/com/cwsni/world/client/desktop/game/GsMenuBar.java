@@ -33,6 +33,14 @@ public class GsMenuBar extends MenuBar {
 		MenuItem exitMenuItem = new MenuItem(getMessage("menu.exit"));
 		exitMenuItem.setOnAction(event -> gameScene.exitApp());
 
+		MenuItem saveMenuItem = new MenuItem(getMessage("menu.save"));
+		saveMenuItem.setOnAction(event -> gameScene.saveGame());
+		saveMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+
+		MenuItem loadMenuItem = new MenuItem(getMessage("menu.load"));
+		loadMenuItem.setOnAction(event -> gameScene.loadGame());
+		loadMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN));
+
 		MenuItem quickSaveMenuItem = new MenuItem(getMessage("menu.quick-save"));
 		quickSaveMenuItem.setOnAction(event -> gameScene.quickSaveGame());
 		quickSaveMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F5));
@@ -45,7 +53,8 @@ public class GsMenuBar extends MenuBar {
 		createTestGameMenuItem.setOnAction(event -> gameScene.createTestGame());
 		createTestGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
 
-		fileMenu.getItems().setAll(createTestGameMenuItem, quickSaveMenuItem, quickLoadMenuItem, exitMenuItem);
+		fileMenu.getItems().setAll(createTestGameMenuItem, loadMenuItem, saveMenuItem, quickLoadMenuItem,
+				quickSaveMenuItem, exitMenuItem);
 
 		getMenus().setAll(fileMenu);
 	}

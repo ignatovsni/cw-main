@@ -140,7 +140,7 @@ public class MainWindow extends Application {
 	}
 
 	static {
-		updateTooltipBehavior(100, 5000, 200, false);
+		//updateTooltipBehavior(100, 5000, 200, false);
 	}
 
 }

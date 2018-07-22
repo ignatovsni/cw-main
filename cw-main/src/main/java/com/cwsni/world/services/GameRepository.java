@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.cwsni.world.CwException;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.data.DataGame;
@@ -31,15 +32,21 @@ public class GameRepository {
 
 	public void quickSaveGame(Game game) {
 		logger.info("quick save : " + game.logDescription());
+		File file = new File(QUICK_SAVE_FILE_NAME);
+		saveGame(game, file);
+	}
+
+	public void saveGame(Game game, File file) {
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			// printToConsole(objectMapper);
 			objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-			objectMapper.writeValue(new File(QUICK_SAVE_FILE_NAME), game.getSaveData());
-			logger.info("quick save is successful : " + game.logDescription());
+			objectMapper.writeValue(file, game.getSaveData());
+			logger.info("saving is successful : " + game.logDescription());
 		} catch (IOException e) {
 			e.printStackTrace();
-			logger.info("quick save is failed : " + game.logDescription(), e);
+			logger.info("saving is failed : " + game.logDescription(), e);
+			throw new CwException(e.getMessage(), e);
 		}
 	}
 
@@ -49,18 +56,24 @@ public class GameRepository {
 	}
 
 	public Game quickLoadGame() {
+		File file = new File(QUICK_SAVE_FILE_NAME);
 		logger.info("quick load");
+		Game game = loadGame(file);
+		return game;
+	}
+
+	public Game loadGame(File file) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		Game game = null;
 		try {
-			DataGame dataGame = objectMapper.readValue(new File(QUICK_SAVE_FILE_NAME), DataGame.class);
+			DataGame dataGame = objectMapper.readValue(file, DataGame.class);
 			game = new Game();
 			game.buildFrom(dataGame, messageSource, gameAlgorithms);
-			logger.info("quick load is successful : " + game.logDescription());
+			logger.info("loading is successful : " + game.logDescription());
 		} catch (IOException e) {
 			e.printStackTrace();
-			logger.info("quick load is failed ", e);
-			game = null;
+			logger.info("loading is failed ", e);
+			throw new CwException(e.getMessage(), e);
 		}
 		return game;
 	}
