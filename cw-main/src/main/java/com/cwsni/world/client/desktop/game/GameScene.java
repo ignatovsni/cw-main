@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Semaphore;
 
 import org.apache.commons.logging.Log;
@@ -17,6 +18,7 @@ import com.cwsni.world.client.desktop.UserPreferences;
 import com.cwsni.world.client.desktop.game.map.DWorldMap;
 import com.cwsni.world.client.desktop.game.map.MapMode;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
+import com.cwsni.world.client.desktop.util.AlertWithStackTraceFactory;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
@@ -30,6 +32,8 @@ import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
@@ -85,6 +89,9 @@ public class GameScene extends Scene {
 	@Autowired
 	private GameHandler gameHadler;
 
+	@Autowired
+	private CreateGameWindow createGameWindow;
+
 	private ZoomableScrollPane mapPane;
 	private Text statusBarText;
 
@@ -117,6 +124,7 @@ public class GameScene extends Scene {
 		countryInfoPane.init(this);
 		provEventsInfoPane.init(this);
 		timeControl.init(this);
+		createGameWindow.init(this);
 
 		VBox rightInfoPanes = new VBox();
 		rightInfoPanes.getChildren().addAll(countryInfoPane, provInfoPane, provScienceInfoPane, provArmiesInfoPane,
@@ -175,6 +183,7 @@ public class GameScene extends Scene {
 		if (game == null) {
 			return;
 		}
+		pauseGame();
 		runLocked(() -> saveFile(false));
 	}
 
@@ -200,10 +209,12 @@ public class GameScene extends Scene {
 	}
 
 	public void quickLoadGame() {
+		pauseGame();
 		loadGame(true);
 	}
 
 	public void loadGame() {
+		pauseGame();
 		loadGame(false);
 	}
 
@@ -223,8 +234,10 @@ public class GameScene extends Scene {
 				}
 			}
 		} catch (Exception e) {
-			Alert alert = new Alert(AlertType.ERROR, getMessage("error.msg.load") + ": " + e.getMessage());
+			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("");
+			alert.setHeaderText(getMessage("error.msg.load"));
+			AlertWithStackTraceFactory.addStackTrace(alert, e);
 			alert.showAndWait();
 		}
 		if (newGame != null) {
@@ -259,9 +272,20 @@ public class GameScene extends Scene {
 	}
 
 	public void createTestGame() {
+		pauseGame();
 		Game game = gameGenerator.createTestGame();
 		setupGame(game);
 		refreshAllVisibleInfo();
+	}
+
+	public void createNewGame() {
+		pauseGame();
+		Optional<ButtonType> result = createGameWindow.showAndWait();
+		if (result.isPresent() && result.get().getButtonData() == ButtonData.OK_DONE) {
+			Game game = gameGenerator.createGame(createGameWindow.getGameParams());
+			setupGame(game);
+			refreshAllVisibleInfo();
+		}
 	}
 
 	public void selectProvince(Province province) {
@@ -371,8 +395,12 @@ public class GameScene extends Scene {
 		if (autoTurn) {
 			startProcessingNewTurn();
 		} else {
-			timeControl.enablePauseButton();
+			pauseGame();
 		}
+	}
+
+	private void pauseGame() {
+		timeControl.enablePauseButton();
 	}
 
 	private void logError(Exception e) {
