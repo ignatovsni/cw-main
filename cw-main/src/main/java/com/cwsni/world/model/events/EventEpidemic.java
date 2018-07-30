@@ -85,8 +85,10 @@ public class EventEpidemic extends Event {
 		e.setStartTurn(game.getTurn().getTurn());
 		e.setDuration(gParams.getEventEpidemicProtectionDuration());
 		// TODO LocaleMessageSource messageSource
-		e.setTitle("event.epidemic.protected.title");
-		e.setDescription("event.epidemic.protected.title");
+		e.setTitle("Protection against epidemics");
+		e.setDescription("Protection against epidemics");
+		//e.setTitle("event.epidemic.protected.title");
+		//e.setDescription("event.epidemic.protected.title");
 		game.addEvent(e);
 		p.getEvents().addEvent(e);
 	}

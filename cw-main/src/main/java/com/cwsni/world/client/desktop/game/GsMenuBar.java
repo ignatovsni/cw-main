@@ -53,7 +53,11 @@ public class GsMenuBar extends MenuBar {
 		createTestGameMenuItem.setOnAction(event -> gameScene.createTestGame());
 		createTestGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
 
-		fileMenu.getItems().setAll(createTestGameMenuItem, loadMenuItem, saveMenuItem, quickLoadMenuItem,
+		MenuItem createGameMenuItem = new MenuItem(getMessage("menu.game.create"));
+		createGameMenuItem.setOnAction(event -> gameScene.createNewGame());
+		createGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+		
+		fileMenu.getItems().setAll(createGameMenuItem, createTestGameMenuItem, loadMenuItem, saveMenuItem, quickLoadMenuItem,
 				quickSaveMenuItem, exitMenuItem);
 
 		getMenus().setAll(fileMenu);

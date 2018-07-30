@@ -44,6 +44,7 @@ public class PArmy {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!(obj instanceof PArmy)) {
 			return false;
 		}

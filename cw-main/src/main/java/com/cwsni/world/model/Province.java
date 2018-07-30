@@ -36,6 +36,7 @@ public class Province implements EventTarget {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!(obj instanceof Province)) {
 			return false;
 		}
