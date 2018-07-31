@@ -268,6 +268,10 @@ public class Country {
 			capital.spendMoneyForScience(budget.getAvailableMoneyForScience());
 		}
 	}
+	
+	public String getAiScriptName() {
+		return data.getAiScriptName();
+	}
 
 	// --------------------- static -------------------------------
 

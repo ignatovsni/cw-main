@@ -19,6 +19,7 @@ public class DataCountry {
 	private DataMoneyBudget budget;
 	private DataScienceBudget scienceBudget;
 	private boolean isAI = true;
+	private String aiScriptName = "default";
 
 	public int getId() {
 		return id;
@@ -98,6 +99,14 @@ public class DataCountry {
 
 	public void setScienceBudget(DataScienceBudget scienceBudget) {
 		this.scienceBudget = scienceBudget;
+	}
+
+	public String getAiScriptName() {
+		return aiScriptName;
+	}
+
+	public void setAiScriptName(String aiScriptName) {
+		this.aiScriptName = aiScriptName;
 	}
 
 }

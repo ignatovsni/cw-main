@@ -81,6 +81,10 @@ public class PCountry {
 		return budget;
 	}
 
+	public String getAiScriptName() {
+		return country.getAiScriptName();
+	}
+	
 	public List<PProvince> getNeighborsProvs() {
 		if (neighborsProvs == null) {
 			neighborsProvs = new ArrayList<>();
