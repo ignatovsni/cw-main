@@ -178,7 +178,8 @@ public class Country {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
+		if (this == obj)
+			return true;
 		if (!(obj instanceof Country)) {
 			return false;
 		}
@@ -268,9 +269,13 @@ public class Country {
 			capital.spendMoneyForScience(budget.getAvailableMoneyForScience());
 		}
 	}
-	
+
 	public String getAiScriptName() {
 		return data.getAiScriptName();
+	}
+
+	public void setName(String name) {
+		data.setName(name);
 	}
 
 	// --------------------- static -------------------------------

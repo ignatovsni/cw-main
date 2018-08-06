@@ -480,4 +480,8 @@ public class Province implements EventTarget {
 		}
 		a.setSoldiers(hiredSoldiers);
 	}
+
+	public void setName(String name) {
+		data.setName(name);
+	}
 }
