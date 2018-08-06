@@ -5,8 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -21,6 +26,11 @@ import groovy.lang.Script;
 @Qualifier("scriptAIHandler")
 public class ScriptAIHandler implements IAIHandler {
 
+	public static final String DEFAULT_SCRIPT = "default";
+	private static final String JAVA_INTERNAL_AI = "[java]";
+	private static final String AI_SCRIPTS_FOLDER_WITH_SLASH = "ai-scripts/";
+	private static final String AI_SCRIPTS_FOLDER = "ai-scripts";
+
 	private static final Log logger = LogFactory.getLog(ScriptAIHandler.class);
 
 	private Map<String, Script> scriptsCache;
@@ -30,6 +40,10 @@ public class ScriptAIHandler implements IAIHandler {
 	}
 
 	public boolean hasScript(AIData4Country data) {
+		String aiScriptName = data.getCountry().getAiScriptName();
+		if (aiScriptName == null || aiScriptName.isEmpty() || JAVA_INTERNAL_AI.equals(aiScriptName)) {
+			return false;
+		}
 		return getScript(data) != null;
 	}
 
@@ -38,6 +52,11 @@ public class ScriptAIHandler implements IAIHandler {
 		if (scriptName == null || scriptName.isEmpty()) {
 			return null;
 		}
+		scriptName = ".country" + scriptName;
+		return getScriptByName(scriptName);
+	}
+
+	private Script getScriptByName(String scriptName) {
 		Script script = scriptsCache.get(scriptName);
 		if (!scriptsCache.containsKey(scriptName)) {
 			try {
@@ -60,13 +79,13 @@ public class ScriptAIHandler implements IAIHandler {
 
 	private String loadScriptFromResources(String fileName) {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream in = classloader.getResourceAsStream("ai-scripts/" + fileName);
+		InputStream in = classloader.getResourceAsStream(AI_SCRIPTS_FOLDER_WITH_SLASH + fileName);
 		String scriptText = loadScript(in);
 		return scriptText;
 	}
 
 	private String loadScriptFromFile(String fileName) {
-		fileName = "ai-scripts/" + fileName;
+		fileName = AI_SCRIPTS_FOLDER_WITH_SLASH + fileName;
 		final File file = new File(fileName);
 		if (!file.exists() || file.isDirectory() || !file.canRead()) {
 			return null;
@@ -86,6 +105,10 @@ public class ScriptAIHandler implements IAIHandler {
 		return new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
 	}
 
+	public void clearCache() {
+		scriptsCache.clear();
+	}
+
 	private void invokeMethod(String methodName, AIData4Country data) {
 		Script script = getScript(data);
 		if (script != null) {
@@ -94,17 +117,29 @@ public class ScriptAIHandler implements IAIHandler {
 	}
 
 	@Override
-	public void processArmyBudget(AIData4Country data) {
-		invokeMethod("processArmyBudget", data);
+	public void processCountry(AIData4Country data) {
+		invokeMethod("processCountry", data);
 	}
 
-	@Override
-	public void processArmies(AIData4Country data) {
-		invokeMethod("processArmies", data);
+	public List<String> getListOfAvailableScripts() {
+		Set<String> setOfScriptsName = new HashSet<>();
+		final File file = new File(AI_SCRIPTS_FOLDER);
+		if (file.exists() && file.isDirectory() && file.canRead()) {
+			for (File app : file.listFiles()) {
+				String fileName = app.getName();
+				int idx = fileName.lastIndexOf(".country.groovy");
+				if (idx < 0) {
+					continue;
+				}
+				setOfScriptsName.add(fileName.substring(0, idx));
+			}
+		}
+		setOfScriptsName.remove(DEFAULT_SCRIPT);
+		List<String> names = new ArrayList<>(setOfScriptsName);
+		Collections.sort(names);
+		names.add(0, DEFAULT_SCRIPT);
+		names.add(1, JAVA_INTERNAL_AI);
+		System.out.println(names);
+		return names;
 	}
-
-	public void clearCache() {
-		scriptsCache.clear();
-	}
-
 }

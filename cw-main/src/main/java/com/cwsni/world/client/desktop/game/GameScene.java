@@ -20,6 +20,7 @@ import com.cwsni.world.client.desktop.game.map.MapMode;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.AlertWithStackTraceFactory;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
+import com.cwsni.world.game.ai.ScriptAIHandler;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.services.GameGenerator;
@@ -91,6 +92,9 @@ public class GameScene extends Scene {
 
 	@Autowired
 	private CreateGameWindow createGameWindow;
+	
+	@Autowired
+	private ScriptAIHandler scriptAIHandler; 
 
 	private ZoomableScrollPane mapPane;
 	private Text statusBarText;
@@ -166,6 +170,10 @@ public class GameScene extends Scene {
 		otherMaps = new HashMap<>();
 
 		setupGame(gameGenerator.createEmptyGame());
+	}
+
+	public LocaleMessageSource getMessageSource() {
+		return messageSource;
 	}
 
 	private String getMessage(String code) {
@@ -510,6 +518,10 @@ public class GameScene extends Scene {
 			window.setScene(scene);
 			window.show();
 		}
+	}
+	
+	public ScriptAIHandler getScriptAIHandler() {
+		return scriptAIHandler;
 	}
 
 }

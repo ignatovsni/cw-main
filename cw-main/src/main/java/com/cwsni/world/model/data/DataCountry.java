@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.game.ai.ScriptAIHandler;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({ "id", "name", "color", "capital", "firstCapital", "focus", "budget", "scienceBudget", "isAI" })
@@ -19,7 +20,7 @@ public class DataCountry {
 	private DataMoneyBudget budget;
 	private DataScienceBudget scienceBudget;
 	private boolean isAI = true;
-	private String aiScriptName = "default";
+	private String aiScriptName = ScriptAIHandler.DEFAULT_SCRIPT;
 
 	public int getId() {
 		return id;

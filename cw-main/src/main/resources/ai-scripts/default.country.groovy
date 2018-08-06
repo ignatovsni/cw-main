@@ -1,3 +1,8 @@
+def processCountry(AIData4Country data) {
+	processArmyBudget(data);
+	processArmies(data);
+}
+
 def processArmyBudget(AIData4Country data) {
 	PGameParams params = data.getGame().getParams();
 	PBudget budget = data.getCountry().getBudget();

@@ -6,20 +6,18 @@ import java.util.function.BiConsumer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.model.player.PCountry;
 import com.cwsni.world.model.player.PGame;
 
 @Component
-public class AIHandler implements IAIHandler {
+public class AIHandler {
 
 	private static final Log logger = LogFactory.getLog(AIHandler.class);
 
 	@Autowired
-	@Qualifier("javaAIHandler")
-	private IAIHandler javaAIHandler;
+	private JavaAIHandler javaAIHandler;
 
 	@Autowired
 	private ScriptAIHandler scriptAIHandler;
@@ -30,9 +28,8 @@ public class AIHandler implements IAIHandler {
 
 	private void processCountry(PGame game, PCountry c) {
 		AIData4Country data = game.getAIData();
-		data.initNewTurn(game, c);
-		processArmyBudget(data);
-		processArmies(data);
+		data.initNewTurn(game, c, javaAIHandler);
+		processMethod(data, (handler, d) -> handler.processCountry(d));
 	}
 
 	private void processMethod(AIData4Country data, BiConsumer<IAIHandler, AIData4Country> func) {
@@ -40,22 +37,12 @@ public class AIHandler implements IAIHandler {
 			try {
 				func.accept(scriptAIHandler, data);
 			} catch (Exception e) {
-				logger.warn("failed to execute script for processArmyBudget", e);
+				logger.warn("failed to execute script", e);
 				func.accept(javaAIHandler, data);
 			}
 		} else {
 			func.accept(javaAIHandler, data);
 		}
-	}
-
-	@Override
-	public void processArmyBudget(AIData4Country data) {
-		processMethod(data, (handler, d) -> handler.processArmyBudget(d));
-	}
-
-	@Override
-	public void processArmies(AIData4Country data) {
-		processMethod(data, (handler, d) -> handler.processArmies(d));
 	}
 
 }

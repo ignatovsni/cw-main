@@ -18,6 +18,11 @@ import com.cwsni.world.util.Heap;
 public class JavaAIHandler implements IAIHandler {
 
 	@Override
+	public void processCountry(AIData4Country data) {
+		processArmyBudget(data);
+		processArmies(data);
+	}
+
 	public void processArmyBudget(AIData4Country data) {
 		PGameParams params = data.getGame().getParams();
 		PBudget budget = data.getCountry().getBudget();
@@ -64,7 +69,6 @@ public class JavaAIHandler implements IAIHandler {
 		}
 	}
 
-	@Override
 	public void processArmies(AIData4Country data) {
 		List<PArmy> armies = data.getCountry().getArmies();
 		if (armies.isEmpty()) {
