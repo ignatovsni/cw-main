@@ -47,9 +47,9 @@ public class CreateGameWindow extends Dialog {
 	public void init(GameScene gameScene) {
 
 		setTitle(getMessage("window.create-game.title"));
-		ButtonType createNewGameButtonType = new ButtonType(getMessage("window.create-game.button.create"),
+		ButtonType okButtonType = new ButtonType(getMessage("window.create-game.button.ok"),
 				ButtonData.OK_DONE);
-		getDialogPane().getButtonTypes().add(createNewGameButtonType);
+		getDialogPane().getButtonTypes().add(okButtonType);
 		// getDialogPane().lookupButton(createNewGameButtonType).setDisable(disabled);
 		ButtonType cancelButtonType = new ButtonType(getMessage("window.create-game.button.cancel"),
 				ButtonData.CANCEL_CLOSE);

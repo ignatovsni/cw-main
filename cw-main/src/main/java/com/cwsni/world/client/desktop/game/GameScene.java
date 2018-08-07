@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Semaphore;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,12 +14,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.UserPreferences;
+import com.cwsni.world.client.desktop.game.CountriesPropertiesWindow.RowCountry;
 import com.cwsni.world.client.desktop.game.map.DWorldMap;
 import com.cwsni.world.client.desktop.game.map.MapMode;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.AlertWithStackTraceFactory;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
 import com.cwsni.world.game.ai.ScriptAIHandler;
+import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.services.GameGenerator;
@@ -92,9 +93,12 @@ public class GameScene extends Scene {
 
 	@Autowired
 	private CreateGameWindow createGameWindow;
-	
+
 	@Autowired
-	private ScriptAIHandler scriptAIHandler; 
+	private CountriesPropertiesWindow countriesPropertiesWindow;
+
+	@Autowired
+	private ScriptAIHandler scriptAIHandler;
 
 	private ZoomableScrollPane mapPane;
 	private Text statusBarText;
@@ -111,7 +115,7 @@ public class GameScene extends Scene {
 	private Map<MapMode, Stage> otherMapWindows;
 	private Map<MapMode, DWorldMap> otherMaps;
 
-	private Semaphore lockObj = new Semaphore(1);
+	private Object lockObj = new Object();
 
 	public GameScene() {
 		super(new BorderPane());
@@ -129,6 +133,7 @@ public class GameScene extends Scene {
 		provEventsInfoPane.init(this);
 		timeControl.init(this);
 		createGameWindow.init(this);
+		countriesPropertiesWindow.init(this);
 
 		VBox rightInfoPanes = new VBox();
 		rightInfoPanes.getChildren().addAll(countryInfoPane, provInfoPane, provScienceInfoPane, provArmiesInfoPane,
@@ -396,16 +401,20 @@ public class GameScene extends Scene {
 	}
 
 	private void refreshViewAndStartNewTurn() {
-		runLocked(() -> {
-			refreshAllVisibleInfo();
-			getWorldMap().setMapModeAndRedraw(mapMode);
-			otherMaps.forEach((mode, map) -> map.setMapModeAndRedraw(mode));
-		});
+		refreshViewsAndMaps();
 		if (autoTurn) {
 			startProcessingNewTurn();
 		} else {
 			pauseGame();
 		}
+	}
+
+	private void refreshViewsAndMaps() {
+		runLocked(() -> {
+			refreshAllVisibleInfo();
+			getWorldMap().setMapModeAndRedraw(mapMode);
+			otherMaps.forEach((mode, map) -> map.setMapModeAndRedraw(mode));
+		});
 	}
 
 	private void pauseGame() {
@@ -439,24 +448,9 @@ public class GameScene extends Scene {
 		});
 	}
 
-	public void lock() {
-		try {
-			lockObj.acquire();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void releaseLock() {
-		lockObj.release();
-	}
-
 	private void runLocked(Runnable r) {
-		lock();
-		try {
+		synchronized (lockObj) {
 			r.run();
-		} finally {
-			releaseLock();
 		}
 	}
 
@@ -519,9 +513,28 @@ public class GameScene extends Scene {
 			window.show();
 		}
 	}
-	
+
 	public ScriptAIHandler getScriptAIHandler() {
 		return scriptAIHandler;
+	}
+
+	public void editCountriesSettings() {
+		pauseGame();
+		runLocked(() -> {
+			countriesPropertiesWindow.reinit(game);
+			Optional<ButtonType> result = countriesPropertiesWindow.showAndWait();
+			if (result.isPresent() && result.get().getButtonData() == ButtonData.OK_DONE) {
+				List<RowCountry> countriesRows = countriesPropertiesWindow.getCountriesInfo();
+				for (RowCountry rc : countriesRows) {
+					Country country = game.findCountryById(rc.id);
+					country.getColor().setR(rc.color.getR());
+					country.getColor().setG(rc.color.getG());
+					country.getColor().setB(rc.color.getB());
+					country.setName(rc.name);
+				}
+			}
+		});
+		refreshViewsAndMaps();
 	}
 
 }

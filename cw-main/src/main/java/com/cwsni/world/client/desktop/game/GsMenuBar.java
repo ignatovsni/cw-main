@@ -28,39 +28,54 @@ public class GsMenuBar extends MenuBar {
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
+		Menu fileMenu = createFileMenu(gameScene);
+		Menu worldMenu = createWorldMenu(gameScene);
+		getMenus().setAll(fileMenu, worldMenu);
+	}
+
+	private Menu createFileMenu(GameScene gameScene) {
 		Menu fileMenu = new Menu(getMessage("menu.file"));
 
-		MenuItem exitMenuItem = new MenuItem(getMessage("menu.exit"));
+		MenuItem exitMenuItem = new MenuItem(getMessage("menu.file.exit"));
 		exitMenuItem.setOnAction(event -> gameScene.exitApp());
 
-		MenuItem saveMenuItem = new MenuItem(getMessage("menu.save"));
+		MenuItem saveMenuItem = new MenuItem(getMessage("menu.file.save"));
 		saveMenuItem.setOnAction(event -> gameScene.saveGame());
 		saveMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 
-		MenuItem loadMenuItem = new MenuItem(getMessage("menu.load"));
+		MenuItem loadMenuItem = new MenuItem(getMessage("menu.file.load"));
 		loadMenuItem.setOnAction(event -> gameScene.loadGame());
 		loadMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN));
 
-		MenuItem quickSaveMenuItem = new MenuItem(getMessage("menu.quick-save"));
+		MenuItem quickSaveMenuItem = new MenuItem(getMessage("menu.file.quick-save"));
 		quickSaveMenuItem.setOnAction(event -> gameScene.quickSaveGame());
 		quickSaveMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F5));
 
-		MenuItem quickLoadMenuItem = new MenuItem(getMessage("menu.quick-load"));
+		MenuItem quickLoadMenuItem = new MenuItem(getMessage("menu.file.quick-load"));
 		quickLoadMenuItem.setOnAction(event -> gameScene.quickLoadGame());
 		quickLoadMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
 
-		MenuItem createTestGameMenuItem = new MenuItem(getMessage("menu.game.create.test"));
+		MenuItem createTestGameMenuItem = new MenuItem(getMessage("menu.file.game.create.test"));
 		createTestGameMenuItem.setOnAction(event -> gameScene.createTestGame());
 		createTestGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
 
-		MenuItem createGameMenuItem = new MenuItem(getMessage("menu.game.create"));
+		MenuItem createGameMenuItem = new MenuItem(getMessage("menu.file.game.create"));
 		createGameMenuItem.setOnAction(event -> gameScene.createNewGame());
 		createGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-		
-		fileMenu.getItems().setAll(createGameMenuItem, createTestGameMenuItem, loadMenuItem, saveMenuItem, quickLoadMenuItem,
-				quickSaveMenuItem, exitMenuItem);
 
-		getMenus().setAll(fileMenu);
+		fileMenu.getItems().setAll(createGameMenuItem, createTestGameMenuItem, loadMenuItem, saveMenuItem,
+				quickLoadMenuItem, quickSaveMenuItem, exitMenuItem);
+		return fileMenu;
+	}
+
+	private Menu createWorldMenu(GameScene gameScene) {
+		Menu worldMenu = new Menu(getMessage("menu.world"));
+
+		MenuItem countriesMenuItem = new MenuItem(getMessage("menu.world.countries"));
+		countriesMenuItem.setOnAction(event -> gameScene.editCountriesSettings());
+
+		worldMenu.getItems().setAll(countriesMenuItem);
+		return worldMenu;
 	}
 
 }

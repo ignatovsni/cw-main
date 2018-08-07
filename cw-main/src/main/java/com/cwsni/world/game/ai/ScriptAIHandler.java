@@ -52,7 +52,7 @@ public class ScriptAIHandler implements IAIHandler {
 		if (scriptName == null || scriptName.isEmpty()) {
 			return null;
 		}
-		scriptName = ".country" + scriptName;
+		scriptName += ".country";
 		return getScriptByName(scriptName);
 	}
 
