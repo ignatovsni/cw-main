@@ -139,7 +139,7 @@ public class ScriptAIHandler implements IAIHandler {
 		Collections.sort(names);
 		names.add(0, DEFAULT_SCRIPT);
 		names.add(1, JAVA_INTERNAL_AI);
-		System.out.println(names);
+		//System.out.println(names);
 		return names;
 	}
 }

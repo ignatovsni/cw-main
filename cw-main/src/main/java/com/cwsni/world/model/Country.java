@@ -274,6 +274,10 @@ public class Country {
 		return data.getAiScriptName();
 	}
 
+	public void setAiScriptName(String aiScriptName) {
+		data.setAiScriptName(aiScriptName);
+	}
+
 	public void setName(String name) {
 		data.setName(name);
 	}

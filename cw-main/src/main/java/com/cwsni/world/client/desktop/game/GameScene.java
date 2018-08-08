@@ -518,10 +518,10 @@ public class GameScene extends Scene {
 		return scriptAIHandler;
 	}
 
-	public void editCountriesSettings() {
+	private void editCountriesSettings(List<Country> list4edit) {
 		pauseGame();
 		runLocked(() -> {
-			countriesPropertiesWindow.reinit(game);
+			countriesPropertiesWindow.reinit(list4edit);
 			Optional<ButtonType> result = countriesPropertiesWindow.showAndWait();
 			if (result.isPresent() && result.get().getButtonData() == ButtonData.OK_DONE) {
 				List<RowCountry> countriesRows = countriesPropertiesWindow.getCountriesInfo();
@@ -531,10 +531,21 @@ public class GameScene extends Scene {
 					country.getColor().setG(rc.color.getG());
 					country.getColor().setB(rc.color.getB());
 					country.setName(rc.name);
+					country.setAiScriptName(rc.script);
 				}
 			}
 		});
 		refreshViewsAndMaps();
+	}
+
+	public void editCountriesSettings() {
+		editCountriesSettings(game.getCountries());
+	}
+	
+	public void editCountriesSettings(Country country) {
+		List<Country> list = new ArrayList<>();
+		list.add(country);
+		editCountriesSettings(list);
 	}
 
 }

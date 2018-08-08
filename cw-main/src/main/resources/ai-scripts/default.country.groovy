@@ -1,4 +1,15 @@
 def processCountry(AIData4Country data) {
+	//processCountryWithScript(data);
+	processCountryWithJava(data);
+}
+
+// ------------------------------------------------
+def processCountryWithJava(AIData4Country data) {
+	data.javaAIHandler.processCountry(data);
+}
+// ------------------------------------------------
+
+def processCountryWithScript(AIData4Country data) {
 	processArmyBudget(data);
 	processArmies(data);
 }
@@ -119,3 +130,4 @@ def calculateImportanceOfProvinceByCountOfNeighborsPops(AIData4Country data, PPr
 	return p.getNeighbors().stream().filter({pn -> countryId.equals(pn.getCountryId())})
 			.mapToLong({pn -> pn.getPopulationAmount()}).sum();
 }
+

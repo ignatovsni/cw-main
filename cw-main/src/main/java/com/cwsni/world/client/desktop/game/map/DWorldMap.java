@@ -83,7 +83,7 @@ public class DWorldMap {
 			Country country = prov.getCountry();
 			ContextMenu cm = new ContextMenu();
 
-			MenuItem provinceRenameItem = new MenuItem(getMessage("map.province.context-menu.rename-province"));
+			MenuItem provinceRenameItem = new MenuItem(getMessage("map.province.context-menu.province.rename"));
 			provinceRenameItem.setOnAction(event -> {
 				// gameScene.getScriptAIHandler().getListOfAvailableScripts();
 				String newValue = DialogUtil.showTextInputDialog(provinceRenameItem.getText(),
@@ -95,13 +95,9 @@ public class DWorldMap {
 			cm.getItems().add(provinceRenameItem);
 
 			if (country != null) {
-				MenuItem countryRenameItem = new MenuItem(getMessage("map.province.context-menu.rename-country"));
+				MenuItem countryRenameItem = new MenuItem(getMessage("map.province.context-menu.country.settings"));
 				countryRenameItem.setOnAction(event -> {
-					String newValue = DialogUtil.showTextInputDialog(countryRenameItem.getText(),
-							getMessage("data-model.country.name.full"), country.getName());
-					if (newValue != null) {
-						country.setName(newValue);
-					}
+					gameScene.editCountriesSettings(country);
 				});
 				SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
 				cm.getItems().addAll(separatorMenuItem, countryRenameItem);
