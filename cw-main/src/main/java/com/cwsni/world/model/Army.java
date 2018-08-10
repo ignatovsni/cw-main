@@ -16,6 +16,10 @@ public class Army {
 		return data.getId();
 	}
 
+	void setId(int armyId) {
+		data.setId(armyId);
+	}
+
 	public Country getCountry() {
 		return country;
 	}
@@ -85,7 +89,8 @@ public class Army {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
+		if (this == obj)
+			return true;
 		if (!(obj instanceof Army)) {
 			return false;
 		}

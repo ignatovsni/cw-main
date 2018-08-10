@@ -5,6 +5,7 @@ import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 
 public class CommandArmySplit extends CommandArmy {
+	// TODO P-model does not use this command yet
 
 	private int soldiersToNewArmy;
 

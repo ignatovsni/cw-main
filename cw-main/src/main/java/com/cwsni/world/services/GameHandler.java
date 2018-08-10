@@ -122,11 +122,11 @@ public class GameHandler {
 	}
 
 	private void processCommands(Game game, List<PGame> pGames, CommandErrorHandler errorHandler) {
-		pGames.forEach(pg -> processCommands(game.findCountryById(pg.getCountryId()), pg.getCommands(), errorHandler));
-	}
-
-	private void processCommands(Country country, List<Command> commands, CommandErrorHandler errorHandler) {
-		commands.forEach(c -> c.apply(country, errorHandler));
+		pGames.forEach(pg -> {
+			Country country = game.findCountryById(pg.getCountryId());
+			pg.getCommands().forEach(c -> c.apply(country, errorHandler));
+			game.resetNewArmiesWithIdLessThanZero();
+		});
 	}
 
 	private void logError(Exception e) {

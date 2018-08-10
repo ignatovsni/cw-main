@@ -1,8 +1,9 @@
 package com.cwsni.world.model.player;
 
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.model.player.interfaces.IPGameParams;
 
-public class PGameParams {
+public class PGameParams implements IPGameParams {
 
 	private GameParams params;
 
@@ -10,14 +11,17 @@ public class PGameParams {
 		this.params = gameParams;
 	}
 
+	@Override
 	public double getBudgetBaseCostPerSoldier() {
 		return params.getBudgetBaseCostPerSoldier();
 	}
 
+	@Override
 	public int getArmyMinAllowedSoldiers() {
 		return params.getArmyMinAllowedSoldiers();
 	}
 
+	@Override
 	public double getBudgetBaseHiringCostPerSoldier() {
 		return params.getBudgetBaseHiringCostPerSoldier();
 	}

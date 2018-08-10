@@ -8,8 +8,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.model.player.PCountry;
 import com.cwsni.world.model.player.PGame;
+import com.cwsni.world.model.player.interfaces.IPCountry;
+import com.cwsni.world.model.player.interfaces.IPGame;
 
 @Component
 public class AIHandler {
@@ -26,7 +27,7 @@ public class AIHandler {
 		pGames.forEach(pg -> processCountry(pg, pg.getCountry()));
 	}
 
-	private void processCountry(PGame game, PCountry c) {
+	private void processCountry(IPGame game, IPCountry c) {
 		AIData4Country data = game.getAIData();
 		data.initNewTurn(game, c, javaAIHandler);
 		processMethod(data, (handler, d) -> handler.processCountry(d));

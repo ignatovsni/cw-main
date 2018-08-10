@@ -15,16 +15,16 @@ def processCountryWithScript(AIData4Country data) {
 }
 
 def processArmyBudget(AIData4Country data) {
-	PGameParams params = data.getGame().getParams();
-	PBudget budget = data.getCountry().getBudget();
+	IPGameParams params = data.getGame().getParams();
+	IPBudget budget = data.getCountry().getBudget();
 	double availableMoneyForArmy = budget.getAvailableMoneyForArmy();
-	List<PArmy> armies = data.getCountry().getArmies();
+	List<IPArmy> armies = data.getCountry().getArmies();
 	if (availableMoneyForArmy < 0 && !armies.isEmpty()) {
 		// we spend all money for existing armies
 		// try to dismiss some
-		Heap<PArmy> armiesByValues = new Heap<>( {x, y -> x.getSoldiers() - y.getSoldiers() });
+		Heap<IPArmy> armiesByValues = new Heap<>( {x, y -> x.getSoldiers() - y.getSoldiers() });
 		armies.forEach({a -> armiesByValues.put(a)});
-		PArmy weakestArmy = armiesByValues.poll();
+		IPArmy weakestArmy = armiesByValues.poll();
 		while (availableMoneyForArmy < 0 && weakestArmy != null) {
 			double costForSoldier = weakestArmy.getCostForSoldierPerYear();
 			double howManySoldiersNeedToDismiss = -availableMoneyForArmy / costForSoldier;
@@ -47,11 +47,11 @@ def processArmyBudget(AIData4Country data) {
 	double canAllowNewSoldiers = Math.min(availableMoneyForArmy / baseCostPerSoldier,
 			budget.getMoney() / baseHiringCostPerSoldier);
 
-	List<PProvince> provinces = data.getCountry().getProvinces();
+	List<IPProvince> provinces = data.getCountry().getProvinces();
 	if (canAllowNewSoldiers >= params.getArmyMinAllowedSoldiers() && !provinces.isEmpty()) {
-		Heap<PProvince> provsBySoldiers = new Heap<>({x, y -> y.getPopulationAmount() - x.getPopulationAmount()});
+		Heap<IPProvince> provsBySoldiers = new Heap<>({x, y -> y.getPopulationAmount() - x.getPopulationAmount()});
 		provinces.forEach({p -> provsBySoldiers.put(p)});
-		PProvince provForHiring = provsBySoldiers.poll();
+		IPProvince provForHiring = provsBySoldiers.poll();
 		data.getCountry().createArmy(provForHiring.getId(), (int) canAllowNewSoldiers);
 		// data.getCountry().createArmy(provForHiring.getId(), (int) Math.min(1000 +
 		// Math.sqrt(canAllowNewSoldiers), canAllowNewSoldiers));
@@ -59,14 +59,14 @@ def processArmyBudget(AIData4Country data) {
 }
 
 def processArmies(AIData4Country data) {
-	List<PArmy> armies = data.getCountry().getArmies();
+	List<IPArmy> armies = data.getCountry().getArmies();
 	if (armies.isEmpty()) {
 		return;
 	}
-	armies.stream().filter({a -> a.isAbleToWork()}).forEach({a -> processArmy(data, a)});
+	armies.stream().forEach({a -> processArmy(data, a)});
 }
 
-def processArmy(AIData4Country data, PArmy a) {
+def processArmy(AIData4Country data, IPArmy a) {
 	if (!ComparisonTool.isEqual(a.getCountry().getId(), a.getLocation().getCountryId())
 			&& !a.getLocation().getTerrainType().isWater()) {
 		// alien province, stay here
@@ -78,10 +78,10 @@ def processArmy(AIData4Country data, PArmy a) {
 	tryMovingArmyFurther(data, a);
 }
 
-def tryMovingArmyFurther(AIData4Country data, PArmy a) {
-	PProvince nearestProv = null;
+def tryMovingArmyFurther(AIData4Country data, IPArmy a) {
+	IPProvince nearestProv = null;
 	double minDistance = Double.MAX_VALUE;
-	for (PProvince p : data.getCountry().getNeighborsProvs()) {
+	for (IPProvince p : data.getCountry().getNeighborsProvs()) {
 		double distance = data.getGame().relativeDistance(a.getLocation(), p);
 		if (distance < minDistance) {
 			minDistance = distance;
@@ -94,11 +94,11 @@ def tryMovingArmyFurther(AIData4Country data, PArmy a) {
 	}
 }
 
-def tryMovingArmyToNeighbors(AIData4Country data, PArmy a) {
-	PProvince target = null;
+def tryMovingArmyToNeighbors(AIData4Country data, IPArmy a) {
+	IPProvince target = null;
 	double maxWeight = -1;
 	Integer armyCountryId = a.getCountry().getId();
-	for (PProvince neighbor : a.getLocation().getNeighbors()) {
+	for (IPProvince neighbor : a.getLocation().getNeighbors()) {
 		if (neighbor.getTerrainType().isPopulationPossible() && !armyCountryId.equals(neighbor.getCountryId())) {
 			double weight = calculateImportanceOfProvince(data, neighbor, a.getCountry());
 			if (weight > maxWeight) {
@@ -115,8 +115,8 @@ def tryMovingArmyToNeighbors(AIData4Country data, PArmy a) {
 	}
 }
 
-def calculateImportanceOfProvince(AIData4Country data, PProvince neighbor, PCountry pCountry) {
-	PProvince capital = pCountry.getCapital();
+def calculateImportanceOfProvince(AIData4Country data, IPProvince neighbor, IPCountry pCountry) {
+	IPProvince capital = pCountry.getCapital();
 	if (capital == null) {
 		capital = pCountry.getFirstCapital();
 	}
@@ -125,7 +125,7 @@ def calculateImportanceOfProvince(AIData4Country data, PProvince neighbor, PCoun
 	// pCountry.getId());
 }
 
-def calculateImportanceOfProvinceByCountOfNeighborsPops(AIData4Country data, PProvince p,
+def calculateImportanceOfProvinceByCountOfNeighborsPops(AIData4Country data, IPProvince p,
 		Integer countryId) {
 	return p.getNeighbors().stream().filter({pn -> countryId.equals(pn.getCountryId())})
 			.mapToLong({pn -> pn.getPopulationAmount()}).sum();

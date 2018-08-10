@@ -7,15 +7,20 @@ import java.util.List;
 import com.cwsni.world.game.commands.CommandArmyCreate;
 import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.Country;
+import com.cwsni.world.model.player.interfaces.IPArmy;
+import com.cwsni.world.model.player.interfaces.IPBudget;
+import com.cwsni.world.model.player.interfaces.IPCountry;
+import com.cwsni.world.model.player.interfaces.IPProvince;
 
-public class PCountry {
+public class PCountry implements IPCountry {
 
 	private Country country;
-	private PBudget budget;
-	private List<PArmy> armies;
-	private List<PProvince> provinces;
+	private IPBudget budget;
+	private List<IPArmy> armies;
+	private List<IPProvince> provinces;
 	private PGame game;
-	private List<PProvince> neighborsProvs;
+	private List<IPProvince> neighborsProvs;
+	private int nextArmyId = -1;
 
 	PCountry(PGame game, Country country) {
 		this.game = game;
@@ -28,7 +33,6 @@ public class PCountry {
 			army.setCountry(this);
 			armies.add(army);
 		});
-		armies = Collections.unmodifiableList(armies);
 
 		provinces = new ArrayList<>(country.getProvinces().size());
 		country.getProvinces().forEach(p -> provinces.add(game.getProvince(p)));
@@ -42,13 +46,15 @@ public class PCountry {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
+		if (this == obj)
+			return true;
 		if (!(obj instanceof PCountry)) {
 			return false;
 		}
-		return ((PCountry) obj).getId() == getId();
+		return ((IPCountry) obj).getId() == getId();
 	}
 
+	@Override
 	public int getId() {
 		return country.getId();
 	}
@@ -57,35 +63,43 @@ public class PCountry {
 		return country.isAI();
 	}
 
-	public List<PArmy> getArmies() {
+	@Override
+	public List<IPArmy> getArmies() {
 		return armies;
 	}
 
+	@Override
 	public Integer getCapitalId() {
 		return country.getCapitalId();
 	}
 
-	public PProvince getCapital() {
+	@Override
+	public IPProvince getCapital() {
 		return game.getProvince(getCapitalId());
 	}
 
-	public PProvince getFirstCapital() {
+	@Override
+	public IPProvince getFirstCapital() {
 		return game.getProvince(country.getFirstCapitalId());
 	}
 
-	public List<PProvince> getProvinces() {
+	@Override
+	public List<IPProvince> getProvinces() {
 		return provinces;
 	}
 
-	public PBudget getBudget() {
+	@Override
+	public IPBudget getBudget() {
 		return budget;
 	}
 
+	@Override
 	public String getAiScriptName() {
 		return country.getAiScriptName();
 	}
-	
-	public List<PProvince> getNeighborsProvs() {
+
+	@Override
+	public List<IPProvince> getNeighborsProvs() {
 		if (neighborsProvs == null) {
 			neighborsProvs = new ArrayList<>();
 			getProvinces().forEach(p -> {
@@ -100,8 +114,23 @@ public class PCountry {
 		return neighborsProvs;
 	}
 
+	@Override
 	public void createArmy(int provinceId, int soldiers) {
-		game.addCommand(new CommandArmyCreate(provinceId, soldiers));
+		game.addCommand(new CommandArmyCreate(nextArmyId--, provinceId, soldiers));
+	}
+
+	@Override
+	public IPArmy findArmyById(int armyId) {
+		for (IPArmy a : armies) {
+			if (a.getId() == armyId) {
+				return a;
+			}
+		}
+		return null;
+	}
+
+	public void cpDismissArmy(PArmy army) {
+		armies.remove(army);
 	}
 
 }

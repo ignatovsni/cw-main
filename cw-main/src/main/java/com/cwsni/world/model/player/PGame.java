@@ -1,7 +1,6 @@
 package com.cwsni.world.model.player;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -10,19 +9,26 @@ import java.util.Map;
 import com.cwsni.world.game.ai.AIData4Country;
 import com.cwsni.world.game.commands.Command;
 import com.cwsni.world.game.commands.CommandArmyMove;
+import com.cwsni.world.game.commands.CommandErrorHandler;
 import com.cwsni.world.model.Army;
 import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
+import com.cwsni.world.model.player.interfaces.IPCountry;
+import com.cwsni.world.model.player.interfaces.IPGame;
+import com.cwsni.world.model.player.interfaces.IPGameParams;
+import com.cwsni.world.model.player.interfaces.IPProvince;
 
-public class PGame {
+public class PGame implements IPGame {
 
 	private Game game;
-	private PGameParams params;
+	private IPGameParams params;
 	private Country country;
 	private Map<Integer, PCountry> countries;
 	private Map<Integer, PProvince> provinces;
+
 	private List<Command> commands;
+	private CommandErrorHandler errorHandler;
 
 	/**
 	 * Used by AI scripts. InMemoryOnly
@@ -36,25 +42,25 @@ public class PGame {
 		provinces = new HashMap<>();
 		countries = new HashMap<>(game.getCountries().size());
 		commands = new ArrayList<>();
+		errorHandler = new CommandErrorHandler();
 	}
 
-	public PCountry getCountry() {
+	@Override
+	public IPCountry getCountry() {
 		return getCountry(country);
 	}
 
+	@Override
 	public Integer getCountryId() {
 		return country.getId();
 	}
 
-	public PGameParams getParams() {
+	@Override
+	public IPGameParams getParams() {
 		return params;
 	}
 
-	public Collection<PCountry> getCountries() {
-		return Collections.unmodifiableCollection((countries.values()));
-	}
-
-	PCountry getCountry(Country c) {
+	private IPCountry getCountry(Country c) {
 		PCountry pc = countries.get(c.getId());
 		if (pc == null) {
 			pc = new PCountry(this, c);
@@ -79,22 +85,27 @@ public class PGame {
 		return new PArmy(this, a);
 	}
 
-	public PProvince getProvince(Integer id) {
+	@Override
+	public IPProvince getProvince(Integer id) {
 		return getProvince(game.getMap().findProvById(id));
 	}
 
-	public double relativeDistance(PProvince from, PProvince to) {
+	@Override
+	public double relativeDistance(IPProvince from, IPProvince to) {
 		return relativeDistance(from.getId(), to.getId());
 	}
 
+	@Override
 	public double relativeDistance(Integer fromId, Integer toId) {
 		return game.getMap().findRelativeDistanceBetweenProvs(fromId, toId);
 	}
 
+	@Override
 	public List<Object> findShortestPath(int fromId, int toId) {
 		return game.getMap().findShortestPath(fromId, toId);
 	}
 
+	@Override
 	public AIData4Country getAIData() {
 		if (aiData == null) {
 			aiData = new AIData4Country();
@@ -107,11 +118,8 @@ public class PGame {
 	}
 
 	public void addCommand(Command command) {
+		command.apply((PCountry) getCountry(country), errorHandler);
 		commands.add(command);
-	}
-
-	public void removeCommand(Command command) {
-		commands.remove(command);
 	}
 
 	public void removeCommands(List<CommandArmyMove> commandsForCancellation) {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.cwsni.world.CwException;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.data.GameParams;
@@ -24,6 +25,7 @@ public class Game implements EventTarget {
 	private EventCollection events;
 	private CountryCollection countries;
 	private Map<Integer, Army> armies;
+	private Map<Integer, Army> newArmiesWithIdLessThanZero;
 
 	private LocaleMessageSource messageSource;
 	private GameAlgorithms gameAlgorithms;
@@ -222,6 +224,7 @@ public class Game implements EventTarget {
 		this.gameAlgorithms = gameAlgorithms;
 
 		armies = new HashMap<>();
+		newArmiesWithIdLessThanZero = new HashMap<>();
 
 		events = new EventCollection();
 		events.buildFrom(this, data.getEvents());
@@ -258,7 +261,26 @@ public class Game implements EventTarget {
 	}
 
 	public Army findArmyById(Integer id) {
-		return armies.get(id);
+		if (id >= 0) {
+			return armies.get(id);
+		} else {
+			return newArmiesWithIdLessThanZero.get(id);
+		}
+	}
+
+	/**
+	 * Client side creates new armies with id < 0. After all commands are executed
+	 * we need to reset collection.
+	 */
+	public void resetNewArmiesWithIdLessThanZero() {
+		newArmiesWithIdLessThanZero.clear();
+	}
+
+	public void registerNewArmyWithIdLessThanZero(int armyId, Army army) {
+		if (armyId >= 0) {
+			throw new CwException("armyId for new army must be < 0");
+		}
+		newArmiesWithIdLessThanZero.put(armyId, army);
 	}
 
 }
