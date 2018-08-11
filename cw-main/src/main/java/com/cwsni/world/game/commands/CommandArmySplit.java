@@ -1,7 +1,6 @@
 package com.cwsni.world.game.commands;
 
 import com.cwsni.world.model.Army;
-import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 
 public class CommandArmySplit extends CommandArmy {
@@ -15,14 +14,14 @@ public class CommandArmySplit extends CommandArmy {
 	}
 
 	@Override
-	public void apply(Country country, CommandErrorHandler errorHandler) {
+	public void apply() {
 		if (soldiersToNewArmy <= 0) {
 			return;
 		}
 		Game game = country.getGame();
-		Army army = game.findArmyById(armyId);
+		Army army = game.findArmyByIdForCommand(country.getId(), armyId);
 		if (army == null) {
-			errorHandler.addError(this.toString() + ": army = null");
+			addError("army = null");
 			return;
 		}
 		if (soldiersToNewArmy >= army.getSoldiers()) {

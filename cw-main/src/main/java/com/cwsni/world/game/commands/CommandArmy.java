@@ -1,7 +1,5 @@
 package com.cwsni.world.game.commands;
 
-import com.cwsni.world.model.Country;
-
 abstract public class CommandArmy extends Command {
 
 	protected int armyId;
@@ -25,6 +23,6 @@ abstract public class CommandArmy extends Command {
 	}
 
 	@Override
-	abstract public void apply(Country country, CommandErrorHandler errorHandler);
+	abstract public void apply();
 
 }

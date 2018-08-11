@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.client.desktop.game.GsTimeMode;
 import com.cwsni.world.game.ai.AIHandler;
 import com.cwsni.world.game.commands.Command;
+import com.cwsni.world.game.commands.CommandArmyCreate;
 import com.cwsni.world.game.commands.CommandArmyMove;
 import com.cwsni.world.game.commands.CommandErrorHandler;
 import com.cwsni.world.model.Army;
@@ -57,9 +58,12 @@ public class GameHandler {
 	}
 
 	private void executeCommands(Game game, List<PGame> pGames) {
-		checkArmyMovementCollisions(game, pGames);
 		CommandErrorHandler errorHandler = new CommandErrorHandler();
-		processCommands(game, pGames, errorHandler);
+		preProcessCommands(game, pGames, errorHandler);
+		processCreateArmyCommands(game, pGames);
+		checkArmyMovementCollisions(game, pGames);
+		processCommands(game, pGames);
+		game.resetNewArmiesWithIdLessThanZero();
 		if (!errorHandler.isEmpty()) {
 			logger.info("command errors for " + game.toString());
 			errorHandler.getErrors().forEach(e -> logger.info("    " + e));
@@ -68,6 +72,29 @@ public class GameHandler {
 
 	private void getCommandsFromAI(List<PGame> pGames) {
 		aiHandler.processNewTurn(pGames);
+	}
+
+	private void preProcessCommands(Game game, List<PGame> pGames, CommandErrorHandler errorHandler) {
+		pGames.forEach(pg -> {
+			Country country = game.findCountryById(pg.getCountryId());
+			pg.getCommands().forEach(c -> {
+				c.setCountry(country);
+				c.setErrorHandler(errorHandler);
+			});
+		});
+	}
+
+	private void processCreateArmyCommands(Game game, List<PGame> pGames) {
+		pGames.forEach(pg -> {
+			List<Command> createArmyCommands = pg.getCommands().stream().filter(c -> c instanceof CommandArmyCreate)
+					.collect(Collectors.toList());
+			createArmyCommands.forEach(c -> c.apply());
+			pg.removeCommands(createArmyCommands);
+		});
+	}
+
+	private void processCommands(Game game, List<PGame> pGames) {
+		pGames.forEach(pg -> pg.getCommands().forEach(c -> c.apply()));
 	}
 
 	private void checkArmyMovementCollisions(Game game, List<PGame> pGames) {
@@ -80,7 +107,7 @@ public class GameHandler {
 					continue;
 				}
 				CommandArmyMove cmd = (CommandArmyMove) pgCmd;
-				Army army = game.findArmyById(cmd.getArmyId());
+				Army army = game.findArmyByIdForCommand(cmd.getCountryId(), cmd.getArmyId());
 				ProvinceBorder pb = new ProvinceBorder(cmd.getDestinationProvId(), army.getLocation().getId());
 				List<CommandArmyMove> movsFromToLocation = movings.get(pb);
 				if (movsFromToLocation == null) {
@@ -104,9 +131,9 @@ public class GameHandler {
 				}
 			});
 			for (CommandArmyMove cmd1 : list1) {
-				Army army1 = game.findArmyById(cmd1.getArmyId());
+				Army army1 = game.findArmyByIdForCommand(cmd1.getCountryId(), cmd1.getArmyId());
 				for (CommandArmyMove cmd2 : list2) {
-					Army army2 = game.findArmyById(cmd2.getArmyId());
+					Army army2 = game.findArmyByIdForCommand(cmd2.getCountryId(), cmd2.getArmyId());
 					if (!ComparisonTool.isEqual(army1.getCountry().getId(), army2.getCountry().getId())) {
 						if (army1.getOrganisation() > army2.getOrganisation()) {
 							commandsForCancellation.add(cmd2);
@@ -119,14 +146,6 @@ public class GameHandler {
 		}
 		// cancel commands
 		pGames.forEach(pg -> pg.removeCommands(commandsForCancellation));
-	}
-
-	private void processCommands(Game game, List<PGame> pGames, CommandErrorHandler errorHandler) {
-		pGames.forEach(pg -> {
-			Country country = game.findCountryById(pg.getCountryId());
-			pg.getCommands().forEach(c -> c.apply(country, errorHandler));
-			game.resetNewArmiesWithIdLessThanZero();
-		});
 	}
 
 	private void logError(Exception e) {

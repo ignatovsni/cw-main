@@ -25,7 +25,7 @@ public class Game implements EventTarget {
 	private EventCollection events;
 	private CountryCollection countries;
 	private Map<Integer, Army> armies;
-	private Map<Integer, Army> newArmiesWithIdLessThanZero;
+	private Map<Integer, Map<Integer, Army>> newArmiesWithIdLessThanZero;
 
 	private LocaleMessageSource messageSource;
 	private GameAlgorithms gameAlgorithms;
@@ -261,26 +261,39 @@ public class Game implements EventTarget {
 	}
 
 	public Army findArmyById(Integer id) {
-		if (id >= 0) {
-			return armies.get(id);
-		} else {
-			return newArmiesWithIdLessThanZero.get(id);
-		}
+		return armies.get(id);
 	}
 
 	/**
-	 * Client side creates new armies with id < 0. After all commands are executed
-	 * we need to reset collection.
+	 * Client side creates new armies with id < 0.
 	 */
-	public void resetNewArmiesWithIdLessThanZero() {
-		newArmiesWithIdLessThanZero.clear();
+	public Army findArmyByIdForCommand(Integer countryId, Integer armyId) {
+		if (armyId >= 0) {
+			return findArmyById(armyId);
+		} else {
+			Map<Integer, Army> idsForCountry = newArmiesWithIdLessThanZero.get(countryId);
+			if (idsForCountry != null) {
+				return idsForCountry.get(armyId);
+			} else {
+				return null;
+			}
+		}
 	}
 
-	public void registerNewArmyWithIdLessThanZero(int armyId, Army army) {
+	public void registerNewArmyWithIdLessThanZero(int countryId, int armyId, Army army) {
 		if (armyId >= 0) {
 			throw new CwException("armyId for new army must be < 0");
 		}
-		newArmiesWithIdLessThanZero.put(armyId, army);
+		Map<Integer, Army> idsForCountry = newArmiesWithIdLessThanZero.get(countryId);
+		if (idsForCountry == null) {
+			idsForCountry = new HashMap<>();
+			newArmiesWithIdLessThanZero.put(countryId, idsForCountry);
+		}
+		idsForCountry.put(armyId, army);
+	}
+
+	public void resetNewArmiesWithIdLessThanZero() {
+		newArmiesWithIdLessThanZero.clear();
 	}
 
 }

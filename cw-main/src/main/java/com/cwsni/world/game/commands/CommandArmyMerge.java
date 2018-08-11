@@ -1,7 +1,6 @@
 package com.cwsni.world.game.commands;
 
 import com.cwsni.world.model.Army;
-import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 
 public class CommandArmyMerge extends CommandArmy {
@@ -15,16 +14,16 @@ public class CommandArmyMerge extends CommandArmy {
 	}
 
 	@Override
-	public void apply(Country country, CommandErrorHandler errorHandler) {
+	public void apply() {
 		Game game = country.getGame();
-		Army army = game.findArmyById(armyId);
+		Army army = game.findArmyByIdForCommand(country.getId(), armyId);
 		if (army == null) {
-			errorHandler.addError(this.toString() + ": army = null");
+			addError("army = null");
 			return;
 		}
-		Army armyFrom = game.findArmyById(armyFromId);
+		Army armyFrom = game.findArmyByIdForCommand(country.getId(), armyFromId);
 		if (armyFrom == null) {
-			errorHandler.addError(this.toString() + ": armyFrom = null");
+			addError("armyFrom = null");
 			return;
 		}
 		country.mergeArmy(army, armyFrom);

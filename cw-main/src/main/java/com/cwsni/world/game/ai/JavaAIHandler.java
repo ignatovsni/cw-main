@@ -24,7 +24,7 @@ public class JavaAIHandler implements IAIHandler {
 	}
 
 	public void processArmyBudget(AIData4Country data) {
-		IPGameParams params = data.getGame().getParams();
+		IPGameParams params = data.getGame().getGameParams();
 		IPBudget budget = data.getCountry().getBudget();
 		double availableMoneyForArmy = budget.getAvailableMoneyForArmy();
 		List<IPArmy> armies = data.getCountry().getArmies();

@@ -1,7 +1,5 @@
 package com.cwsni.world;
 
-import java.io.IOException;
-
 public class CwException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
@@ -10,7 +8,7 @@ public class CwException extends RuntimeException {
 		super(msg);
 	}
 
-	public CwException(String msg, IOException e) {
+	public CwException(String msg, Exception e) {
 		super(msg, e);
 	}
 

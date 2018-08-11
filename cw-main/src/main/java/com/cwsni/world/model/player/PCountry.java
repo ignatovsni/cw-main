@@ -28,15 +28,16 @@ public class PCountry implements IPCountry {
 		this.budget = new PBudget(country.getBudget());
 
 		armies = new ArrayList<>(country.getArmies().size());
-		country.getArmies().forEach(a -> {
-			PArmy army = game.getArmy(a);
-			army.setCountry(this);
-			armies.add(army);
-		});
+		country.getArmies().forEach(a -> addArmy(new PArmy(game, a)));
 
 		provinces = new ArrayList<>(country.getProvinces().size());
 		country.getProvinces().forEach(p -> provinces.add(game.getProvince(p)));
 		provinces = Collections.unmodifiableList(provinces);
+	}
+
+	private void addArmy(PArmy army) {
+		army.setCountry(this);
+		armies.add(army);
 	}
 
 	@Override
@@ -131,6 +132,12 @@ public class PCountry implements IPCountry {
 
 	public void cpDismissArmy(PArmy army) {
 		armies.remove(army);
+	}
+
+	public PArmy cpCreateArmy(int armyId, Integer locationId, int soldiers) {
+		PArmy army = new PArmy(game, armyId, locationId, soldiers);
+		addArmy(army);
+		return army;
 	}
 
 }

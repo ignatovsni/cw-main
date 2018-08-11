@@ -8,9 +8,7 @@ import java.util.Map;
 
 import com.cwsni.world.game.ai.AIData4Country;
 import com.cwsni.world.game.commands.Command;
-import com.cwsni.world.game.commands.CommandArmyMove;
 import com.cwsni.world.game.commands.CommandErrorHandler;
-import com.cwsni.world.model.Army;
 import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
@@ -56,7 +54,7 @@ public class PGame implements IPGame {
 	}
 
 	@Override
-	public IPGameParams getParams() {
+	public IPGameParams getGameParams() {
 		return params;
 	}
 
@@ -79,10 +77,6 @@ public class PGame implements IPGame {
 			provinces.put(p.getId(), pp);
 		}
 		return pp;
-	}
-
-	PArmy getArmy(Army a) {
-		return new PArmy(this, a);
 	}
 
 	@Override
@@ -122,7 +116,7 @@ public class PGame implements IPGame {
 		commands.add(command);
 	}
 
-	public void removeCommands(List<CommandArmyMove> commandsForCancellation) {
+	public void removeCommands(List commandsForCancellation) {
 		commands.removeAll(commandsForCancellation);
 	}
 

@@ -13,23 +13,31 @@ import com.cwsni.world.model.player.interfaces.IPProvince;
 
 public class PArmy implements IPArmy {
 
-	private Army army;
 	private PGame game;
 	private IPCountry country;
 	private CommandArmyMove moveCommand;
-	private int dismissedSoldiers = 0;
+
+	private int id;
+	private Integer locationId;
+	private int soldiers = 0;
 
 	PArmy(PGame game, Army army) {
 		this.game = game;
-		this.army = army;
+		this.id = army.getId();
+		this.locationId = army.getLocationId();
+		this.soldiers = army.getSoldiers();
+	}
+
+	PArmy(PGame game, int id, Integer locationId, int soldiers) {
+		this.game = game;
+		this.id = id;
+		this.locationId = locationId;
+		this.soldiers = soldiers;
 	}
 
 	@Override
 	public IPProvince getLocation() {
-		if (army.getLocation() == null) {
-			System.out.println();
-		}
-		return game.getProvince(army.getLocation().getId());
+		return game.getProvince(locationId);
 	}
 
 	@Override
@@ -43,7 +51,7 @@ public class PArmy implements IPArmy {
 
 	@Override
 	public int getId() {
-		return army.getId();
+		return id;
 	}
 
 	@Override
@@ -53,7 +61,8 @@ public class PArmy implements IPArmy {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
+		if (this == obj)
+			return true;
 		if (!(obj instanceof PArmy)) {
 			return false;
 		}
@@ -62,7 +71,7 @@ public class PArmy implements IPArmy {
 
 	@Override
 	public int getSoldiers() {
-		return army.getSoldiers() - dismissedSoldiers;
+		return soldiers;
 	}
 
 	@Override
@@ -72,7 +81,7 @@ public class PArmy implements IPArmy {
 	}
 
 	private void moveTo(int destId) {
-		moveCommand = new CommandArmyMove(army.getId(), destId);
+		moveCommand = new CommandArmyMove(id, destId);
 		game.addCommand(moveCommand);
 	}
 
@@ -83,12 +92,12 @@ public class PArmy implements IPArmy {
 
 	@Override
 	public double getCostForSoldierPerYear() {
-		return army.getCostForSoldierPerYear();
+		return game.getGameParams().getBudgetBaseCostPerSoldier();
 	}
 
 	@Override
 	public double getCostPerYear() {
-		return army.getCostPerYear();
+		return getSoldiers() * getCostForSoldierPerYear();
 	}
 
 	@Override
@@ -106,7 +115,7 @@ public class PArmy implements IPArmy {
 		if (howManySoldiersNeedToDismiss == 0) {
 			return;
 		}
-		CommandArmyDismiss dismissCommand = new CommandArmyDismiss(army.getId(), howManySoldiersNeedToDismiss);
+		CommandArmyDismiss dismissCommand = new CommandArmyDismiss(id, howManySoldiersNeedToDismiss);
 		game.addCommand(dismissCommand);
 	}
 
@@ -115,18 +124,18 @@ public class PArmy implements IPArmy {
 		if (soldiersToNewArmy <= 0 || soldiersToNewArmy >= getSoldiers()) {
 			return;
 		}
-		CommandArmySplit splitCommand = new CommandArmySplit(army.getId(), soldiersToNewArmy);
+		CommandArmySplit splitCommand = new CommandArmySplit(id, soldiersToNewArmy);
 		game.addCommand(splitCommand);
 	}
 
 	@Override
 	public void merge(IPArmy fromArmy) {
-		CommandArmyMerge mergeCommand = new CommandArmyMerge(army.getId(), fromArmy.getId());
+		CommandArmyMerge mergeCommand = new CommandArmyMerge(id, fromArmy.getId());
 		game.addCommand(mergeCommand);
 	}
 
 	public void cpDismissSoldiers(int howManySoldiers) {
-		dismissedSoldiers += howManySoldiers;
+		soldiers -= howManySoldiers;
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.cwsni.world.game.commands;
 
 import com.cwsni.world.model.Army;
-import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 
@@ -19,22 +18,21 @@ public class CommandArmyMove extends CommandArmy {
 	}
 
 	@Override
-	public void apply(Country country, CommandErrorHandler errorHandler) {
+	public void apply() {
 		Game game = country.getGame();
-		Army army = game.findArmyById(armyId);
+		Army army = game.findArmyByIdForCommand(country.getId(), armyId);
 		if (army == null) {
 			// the army could be dismissed
-			errorHandler.addError(this.toString() + ": army = null");
+			addError("army = null");
 			return;
 		}
 		if (army.getCountry().getId() != country.getId()) {
-			errorHandler.addError(this.toString() + ": army.countryId = " + army.getCountry().getId()
-					+ " but countryId = " + country.getId());
+			addError("army.countryId = " + army.getCountry().getId() + " but countryId = " + country.getId());
 			return;
 		}
 		Province destination = game.getMap().findProvById(destinationProvId);
 		if (destination == null) {
-			errorHandler.addError(this.toString() + ": destination province not found. id = " + destinationProvId);
+			addError("destination province not found. id = " + destinationProvId);
 			return;
 		}
 		if (!army.getLocation().getNeighbors().contains(destination)) {

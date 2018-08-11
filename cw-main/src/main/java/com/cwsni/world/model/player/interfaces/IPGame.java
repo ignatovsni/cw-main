@@ -10,7 +10,7 @@ public interface IPGame {
 
 	Integer getCountryId();
 
-	IPGameParams getParams();
+	IPGameParams getGameParams();
 
 	IPProvince getProvince(Integer id);
 

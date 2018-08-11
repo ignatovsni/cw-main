@@ -7,14 +7,14 @@ public class CommandErrorHandler {
 
 	private List<String> errors = new ArrayList<>();
 
-	public void addError(String e) {
-		getErrors().add(e);
+	public void addError(Command cmd, String e) {
+		getErrors().add(cmd.toString() + " : " + e);
 	}
 
 	public List<String> getErrors() {
 		return errors;
 	}
-	
+
 	public boolean isEmpty() {
 		return errors.isEmpty();
 	}

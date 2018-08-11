@@ -57,7 +57,11 @@ public class Army {
 	}
 
 	public Province getLocation() {
-		return country.getGame().getMap().findProvById(data.getProvince());
+		return country.getGame().getMap().findProvById(getLocationId());
+	}
+
+	public Integer getLocationId() {
+		return data.getProvince();
 	}
 
 	public void setProvince(Province province) {

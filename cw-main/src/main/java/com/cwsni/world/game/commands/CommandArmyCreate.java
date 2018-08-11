@@ -3,7 +3,6 @@ package com.cwsni.world.game.commands;
 import com.cwsni.world.CwException;
 import com.cwsni.world.model.Army;
 import com.cwsni.world.model.ComparisonTool;
-import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.player.PCountry;
@@ -13,7 +12,7 @@ public class CommandArmyCreate extends CommandArmy {
 	private Integer destinationProvId;
 	private int soldiers;
 
-	public CommandArmyCreate(int armyId, int provinceId, int soldiers) {		
+	public CommandArmyCreate(int armyId, int provinceId, int soldiers) {
 		super(armyId);
 		if (armyId >= 0) {
 			throw new CwException("armyId for new army must be < 0");
@@ -27,29 +26,33 @@ public class CommandArmyCreate extends CommandArmy {
 	}
 
 	@Override
-	public void apply(Country country, CommandErrorHandler errorHandler) {
+	public void apply() {
 		if (armyId >= 0) {
-			// We need to check in apply method because command can be created by other application
-			throw new CwException("armyId for new army must be < 0");
+			addError("armyId for new army must be < 0");
+			return;
 		}
 		Game game = country.getGame();
+		Army createdArmy = game.findArmyByIdForCommand(country.getId(), armyId);
+		if (createdArmy != null) {
+			addError("army with id = " + armyId + " is already created");
+			return;
+		}
 		Province destination = game.getMap().findProvById(destinationProvId);
 		if (destination == null) {
-			errorHandler.addError(this.toString() + ": destination province not found. id = " + destinationProvId);
+			addError("destination province not found. id = " + destinationProvId);
 			return;
 		}
 		if (!ComparisonTool.isEqual(destination.getCountryId(), country.getId())) {
-			errorHandler.addError(this.toString() + ": destination country id = " + destination.getCountryId()
-					+ " but country.id = " + country.getId());
+			addError("destination country id = " + destination.getCountryId() + " but country.id = " + country.getId());
 			return;
 		}
 		Army army = country.createArmy(destination, soldiers);
-		country.getGame().registerNewArmyWithIdLessThanZero(armyId, army);
+		country.getGame().registerNewArmyWithIdLessThanZero(country.getId(), armyId, army);
 	}
-	
+
 	@Override
 	public void apply(PCountry country, CommandErrorHandler errorHandler) {
-		// TODO
+		country.cpCreateArmy(armyId, destinationProvId, soldiers);
 	}
 
 	@Override
