@@ -156,11 +156,13 @@ public class Army {
 			return;
 		}
 		// it is our land now!
-		if (locationCountry != null) {
-			currentProv.sufferFromInvading();
-			locationCountry.removeProvince(currentProv);
+		if (currentProv.getTerrainType().isPopulationPossible()) {
+			if (locationCountry != null) {
+				currentProv.sufferFromInvading();
+				locationCountry.removeProvince(currentProv);
+			}
+			getCountry().addProvince(currentProv);
 		}
-		getCountry().addProvince(currentProv);
 	}
 
 	private void retreat() {
