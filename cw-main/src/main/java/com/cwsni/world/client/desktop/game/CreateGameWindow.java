@@ -29,7 +29,8 @@ public class CreateGameWindow extends Dialog {
 
 	private static final String MAP_SMALL = "20x20";
 	private static final String MAP_MEDIUM = "30x40";
-	private static final String MAP_LARGE = "40x60";
+	private static final String MAP_LARGE = "50x60";
+	private static final String MAP_HUGE = "70x70";
 
 	@Autowired
 	private LocaleMessageSource messageSource;
@@ -55,7 +56,7 @@ public class CreateGameWindow extends Dialog {
 				ButtonData.CANCEL_CLOSE);
 		getDialogPane().getButtonTypes().add(cancelButtonType);
 
-		ObservableList<String> mapSizesList = FXCollections.observableArrayList(MAP_SMALL, MAP_MEDIUM, MAP_LARGE);
+		ObservableList<String> mapSizesList = FXCollections.observableArrayList(MAP_SMALL, MAP_MEDIUM, MAP_LARGE, MAP_HUGE);
 		cbMapSizes = new ComboBox<String>(mapSizesList);
 		cbMapSizes.setValue(MAP_MEDIUM);
 
@@ -89,8 +90,12 @@ public class CreateGameWindow extends Dialog {
 		gameParams.setSeed(tfRandomSeed.getText().isEmpty() ? 0 : Long.valueOf(tfRandomSeed.getText()));
 		gameParams.setOceanPercent(Double.valueOf(cbOceanFraction.getValue()) / 100);
 		switch (cbMapSizes.getValue()) {
+		case MAP_HUGE:
+			gameParams.setRows(70);
+			gameParams.setColumns(70);
+			break;
 		case MAP_LARGE:
-			gameParams.setRows(40);
+			gameParams.setRows(50);
 			gameParams.setColumns(60);
 			break;
 		case MAP_MEDIUM:
