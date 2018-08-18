@@ -130,12 +130,17 @@ public class PArmy implements IPArmy {
 
 	@Override
 	public void merge(IPArmy fromArmy) {
-		CommandArmyMerge mergeCommand = new CommandArmyMerge(id, fromArmy.getId());
+		merge(fromArmy, Integer.MAX_VALUE);
+	}
+
+	@Override
+	public void merge(IPArmy fromArmy, int soldiers) {
+		CommandArmyMerge mergeCommand = new CommandArmyMerge(id, fromArmy.getId(), soldiers);
 		game.addCommand(mergeCommand);
 	}
 
-	public void cmcDismissSoldiers(int howManySoldiers) {
-		soldiers -= howManySoldiers;
+	public void cmcAddSoldiers(int howManySoldiers) {
+		soldiers += howManySoldiers;
 	}
 
 }

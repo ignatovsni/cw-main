@@ -21,7 +21,7 @@ public class JavaAIHandler implements IAIHandler {
 	public void processCountry(AIData4Country data) {
 		checkCapital(data);
 		processArmyBudget(data);
-		processArmies(data);
+		moveArmies(data);
 	}
 
 	public void checkCapital(AIData4Country data) {
@@ -87,15 +87,15 @@ public class JavaAIHandler implements IAIHandler {
 		}
 	}
 
-	public void processArmies(AIData4Country data) {
+	public void moveArmies(AIData4Country data) {
 		List<IPArmy> armies = data.getCountry().getArmies();
 		if (armies.isEmpty()) {
 			return;
 		}
-		armies.stream().forEach(a -> processArmy(data, a));
+		armies.stream().forEach(a -> moveArmy(data, a));
 	}
 
-	private void processArmy(AIData4Country data, IPArmy a) {
+	private void moveArmy(AIData4Country data, IPArmy a) {
 		if (!ComparisonTool.isEqual(a.getCountry().getId(), a.getLocation().getCountryId())
 				&& !a.getLocation().getTerrainType().isWater()) {
 			// alien province, stay here

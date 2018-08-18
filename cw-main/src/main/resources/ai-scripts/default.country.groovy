@@ -12,7 +12,7 @@ def processCountryWithJava(AIData4Country data) {
 def processCountryWithScript(AIData4Country data) {
 	checkCapital(data);
 	processArmyBudget(data);
-	processArmies(data);
+	moveArmies(data);
 }
 
 def checkCapital(AIData4Country data) {
@@ -78,15 +78,15 @@ def processArmyBudget(AIData4Country data) {
 	}
 }
 
-def processArmies(AIData4Country data) {
+def moveArmies(AIData4Country data) {
 	List<IPArmy> armies = data.getCountry().getArmies();
 	if (armies.isEmpty()) {
 		return;
 	}
-	armies.stream().forEach({a -> processArmy(data, a)});
+	armies.stream().forEach({a -> moveArmy(data, a)});
 }
 
-def processArmy(AIData4Country data, IPArmy a) {
+def moveArmy(AIData4Country data, IPArmy a) {
 	if (!ComparisonTool.isEqual(a.getCountry().getId(), a.getLocation().getCountryId())
 			&& !a.getLocation().getTerrainType().isWater()) {
 		// alien province, stay here

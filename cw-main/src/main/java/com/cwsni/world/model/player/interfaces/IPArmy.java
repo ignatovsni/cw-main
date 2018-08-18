@@ -30,6 +30,8 @@ public interface IPArmy {
 	void splitArmy(int soldiersToNewArmy);
 
 	void merge(IPArmy fromArmy);
+	
+	void merge(IPArmy fromArmy, int soldiers);
 
 	int getId();
 

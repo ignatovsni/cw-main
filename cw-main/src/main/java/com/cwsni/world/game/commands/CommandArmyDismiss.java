@@ -38,19 +38,19 @@ public class CommandArmyDismiss extends CommandArmy {
 	@Override
 	public Object apply(PCountry country, CommandErrorHandler errorHandler) {
 		if (howManySoldiers == 0) {
-			return Boolean.FALSE;
+			return false;
 		}
 		PArmy army = (PArmy) country.findArmyById(armyId);
 		if (army == null) {
 			errorHandler.addError(this, "army = null");
-			return Boolean.FALSE;
+			return false;
 		}
 		if (howManySoldiers < 0 || howManySoldiers >= army.getSoldiers()) {
 			country.cmcDismissArmy(army);
 		} else {
-			army.cmcDismissSoldiers(howManySoldiers);
+			army.cmcAddSoldiers(-howManySoldiers);
 		}
-		return Boolean.TRUE;
+		return true;
 	}
 
 	@Override

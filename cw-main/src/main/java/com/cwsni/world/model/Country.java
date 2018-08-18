@@ -247,9 +247,13 @@ public class Country {
 		return a;
 	}
 
-	public void mergeArmy(Army army, Army armyFrom) {
-		army.setSoldiers(army.getSoldiers() + armyFrom.getSoldiers());
-		dismissArmy(armyFrom);
+	public void mergeArmy(Army army, Army armyFrom, int soldiers) {
+		soldiers = Math.min(soldiers, armyFrom.getSoldiers());
+		army.setSoldiers(army.getSoldiers() + soldiers);
+		armyFrom.setSoldiers(armyFrom.getSoldiers() - soldiers);
+		if (armyFrom.getSoldiers() <= 0) {
+			dismissArmy(armyFrom);
+		}
 	}
 
 	public void processNewTurn() {
