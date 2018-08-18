@@ -6,6 +6,8 @@ import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.player.PCountry;
+import com.cwsni.world.model.player.PGame;
+import com.cwsni.world.model.player.interfaces.IPProvince;
 
 public class CommandArmyCreate extends CommandArmy {
 
@@ -51,8 +53,22 @@ public class CommandArmyCreate extends CommandArmy {
 	}
 
 	@Override
-	public void apply(PCountry country, CommandErrorHandler errorHandler) {
-		country.cpCreateArmy(armyId, destinationProvId, soldiers);
+	public Object apply(PCountry country, CommandErrorHandler errorHandler) {
+		if (armyId >= 0) {
+			addError("armyId for new army must be < 0");
+			return null;
+		}
+		PGame game = country.getGame();
+		IPProvince destination = game.findProvById(destinationProvId);
+		if (destination == null) {
+			addError("destination province not found. id = " + destinationProvId);
+			return null;
+		}
+		if (!ComparisonTool.isEqual(destination.getCountryId(), country.getId())) {
+			addError("destination country id = " + destination.getCountryId() + " but country.id = " + country.getId());
+			return null;
+		}
+		return country.cmcCreateArmy(armyId, destinationProvId, soldiers);
 	}
 
 	@Override

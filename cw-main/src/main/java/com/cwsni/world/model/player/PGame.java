@@ -80,7 +80,7 @@ public class PGame implements IPGame {
 	}
 
 	@Override
-	public IPProvince getProvince(Integer id) {
+	public IPProvince findProvById(Integer id) {
 		return getProvince(game.getMap().findProvById(id));
 	}
 
@@ -111,9 +111,10 @@ public class PGame implements IPGame {
 		return Collections.unmodifiableList(commands);
 	}
 
-	public void addCommand(Command command) {
-		command.apply((PCountry) getCountry(country), errorHandler);
+	public Object addCommand(Command command) {
+		Object result = command.apply((PCountry) getCountry(country), errorHandler);
 		commands.add(command);
+		return result;
 	}
 
 	public void removeCommands(List commandsForCancellation) {

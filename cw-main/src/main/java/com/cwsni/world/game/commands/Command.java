@@ -10,7 +10,8 @@ public abstract class Command {
 
 	abstract public void apply();
 
-	public void apply(PCountry country, CommandErrorHandler errorHandler) {
+	public Object apply(PCountry country, CommandErrorHandler errorHandler) {
+		return null;
 	}
 
 	public void setCountry(Country country) {

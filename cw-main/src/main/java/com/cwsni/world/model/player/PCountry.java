@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cwsni.world.game.commands.CommandArmyCreate;
+import com.cwsni.world.game.commands.CommandProvinceSetCapital;
 import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.Country;
 import com.cwsni.world.model.player.interfaces.IPArmy;
@@ -21,11 +22,13 @@ public class PCountry implements IPCountry {
 	private PGame game;
 	private List<IPProvince> neighborsProvs;
 	private int nextArmyId = -1;
+	private IPProvince capital;
 
 	PCountry(PGame game, Country country) {
 		this.game = game;
 		this.country = country;
 		this.budget = new PBudget(country.getBudget());
+		this.capital = game.findProvById(country.getCapitalId());
 
 		armies = new ArrayList<>(country.getArmies().size());
 		country.getArmies().forEach(a -> addArmy(new PArmy(game, a)));
@@ -33,11 +36,16 @@ public class PCountry implements IPCountry {
 		provinces = new ArrayList<>(country.getProvinces().size());
 		country.getProvinces().forEach(p -> provinces.add(game.getProvince(p)));
 		provinces = Collections.unmodifiableList(provinces);
+
 	}
 
 	private void addArmy(PArmy army) {
 		army.setCountry(this);
 		armies.add(army);
+	}
+
+	public PGame getGame() {
+		return game;
 	}
 
 	@Override
@@ -70,18 +78,13 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
-	public Integer getCapitalId() {
-		return country.getCapitalId();
-	}
-
-	@Override
 	public IPProvince getCapital() {
-		return game.getProvince(getCapitalId());
+		return capital;
 	}
 
 	@Override
 	public IPProvince getFirstCapital() {
-		return game.getProvince(country.getFirstCapitalId());
+		return game.findProvById(country.getFirstCapitalId());
 	}
 
 	@Override
@@ -116,8 +119,8 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
-	public void createArmy(int provinceId, int soldiers) {
-		game.addCommand(new CommandArmyCreate(nextArmyId--, provinceId, soldiers));
+	public IPArmy createArmy(int provinceId, int soldiers) {
+		return (IPArmy) game.addCommand(new CommandArmyCreate(nextArmyId--, provinceId, soldiers));
 	}
 
 	@Override
@@ -130,14 +133,26 @@ public class PCountry implements IPCountry {
 		return null;
 	}
 
-	public void cpDismissArmy(PArmy army) {
+	@Override
+	public void setCapital(IPProvince capital) {
+		game.addCommand(new CommandProvinceSetCapital(capital.getId()));
+	}
+
+	/**
+	 * 'cmc' prefix means Client Model Changes
+	 */
+	public void cmcDismissArmy(PArmy army) {
 		armies.remove(army);
 	}
 
-	public PArmy cpCreateArmy(int armyId, Integer locationId, int soldiers) {
+	public PArmy cmcCreateArmy(int armyId, Integer locationId, int soldiers) {
 		PArmy army = new PArmy(game, armyId, locationId, soldiers);
 		addArmy(army);
 		return army;
+	}
+
+	public void cmcSetCapital(IPProvince capital) {
+		this.capital = capital;
 	}
 
 }

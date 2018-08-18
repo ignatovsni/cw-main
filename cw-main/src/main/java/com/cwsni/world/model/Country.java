@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.cwsni.world.CwException;
 import com.cwsni.world.model.data.Color;
 import com.cwsni.world.model.data.DataArmy;
 import com.cwsni.world.model.data.DataCountry;
@@ -79,8 +80,17 @@ public class Country {
 		return game.getMap().findProvById(data.getCapital());
 	}
 
-	public void setCapital(Province capital) {
-		data.setCapital(capital != null ? capital.getId() : null);
+	public void setCapital(Province province) {
+		if (province == null) {
+			data.setCapital(null);
+		} else {
+			if (ComparisonTool.isEqual(province.getCountryId(), getId())) {
+				data.setCapital(province.getId());
+			} else {
+				throw new CwException("Trying to set up capital in alien province: province country id = "
+						+ province.getCountryId() + " but country.id = " + province.getId());
+			}
+		}
 	}
 
 	public Integer getCapitalId() {
@@ -149,22 +159,9 @@ public class Country {
 	public void removeProvince(Province p) {
 		p.setCountry(null);
 		provinces.remove(p);
-		if (p.equals(getCapital())) {
-			chooseNewCapital();
+		if (ComparisonTool.isEqual(getCapitalId(), p.getId())) {
+			setCapital(null);
 		}
-	}
-
-	private void chooseNewCapital() {
-		int maxPop = -1;
-		Province candidate = null;
-		for (Province p : provinces) {
-			int popAmount = p.getPopulationAmount();
-			if (popAmount > maxPop) {
-				maxPop = popAmount;
-				candidate = p;
-			}
-		}
-		setCapital(candidate);
 	}
 
 	public Collection<Province> getProvinces() {
@@ -256,9 +253,6 @@ public class Country {
 	}
 
 	public void processNewTurn() {
-		if (getCapitalId() == null) {
-			chooseNewCapital();
-		}
 		budget.processNewTurn();
 		processScienceNewTurn();
 	}

@@ -22,7 +22,6 @@ public class CommandArmyMove extends CommandArmy {
 		Game game = country.getGame();
 		Army army = game.findArmyByIdForCommand(country.getId(), armyId);
 		if (army == null) {
-			// the army could be dismissed
 			addError("army = null");
 			return;
 		}

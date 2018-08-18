@@ -36,20 +36,21 @@ public class CommandArmyDismiss extends CommandArmy {
 	}
 
 	@Override
-	public void apply(PCountry country, CommandErrorHandler errorHandler) {
+	public Object apply(PCountry country, CommandErrorHandler errorHandler) {
 		if (howManySoldiers == 0) {
-			return;
+			return Boolean.FALSE;
 		}
 		PArmy army = (PArmy) country.findArmyById(armyId);
 		if (army == null) {
 			errorHandler.addError(this, "army = null");
-			return;
+			return Boolean.FALSE;
 		}
 		if (howManySoldiers < 0 || howManySoldiers >= army.getSoldiers()) {
-			country.cpDismissArmy(army);
+			country.cmcDismissArmy(army);
 		} else {
-			army.cpDismissSoldiers(howManySoldiers);
+			army.cmcDismissSoldiers(howManySoldiers);
 		}
+		return Boolean.TRUE;
 	}
 
 	@Override

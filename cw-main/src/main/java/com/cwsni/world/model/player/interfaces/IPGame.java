@@ -12,7 +12,7 @@ public interface IPGame {
 
 	IPGameParams getGameParams();
 
-	IPProvince getProvince(Integer id);
+	IPProvince findProvById(Integer id);
 
 	double relativeDistance(IPProvince from, IPProvince to);
 

@@ -10,12 +10,32 @@ def processCountryWithJava(AIData4Country data) {
 // ------------------------------------------------
 
 def processCountryWithScript(AIData4Country data) {
+	checkCapital(data);
 	processArmyBudget(data);
 	processArmies(data);
 }
 
+def checkCapital(AIData4Country data) {
+	IPCountry country = data.getCountry();
+	IPProvince capital = country.getCapital();
+	if (capital == null) {
+		int maxPop = -1;
+		IPProvince candidate = null;
+		for (IPProvince p : country.getProvinces()) {
+			int popAmount = p.getPopulationAmount();
+			if (popAmount > maxPop) {
+				maxPop = popAmount;
+				candidate = p;
+			}
+		}
+		if (candidate != null) {
+			country.setCapital(candidate);
+		}
+	}
+}
+
 def processArmyBudget(AIData4Country data) {
-	IPGameParams params = data.getGame().getParams();
+	IPGameParams params = data.getGame().getGameParams();
 	IPBudget budget = data.getCountry().getBudget();
 	double availableMoneyForArmy = budget.getAvailableMoneyForArmy();
 	List<IPArmy> armies = data.getCountry().getArmies();

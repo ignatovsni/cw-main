@@ -19,8 +19,28 @@ public class JavaAIHandler implements IAIHandler {
 
 	@Override
 	public void processCountry(AIData4Country data) {
+		checkCapital(data);
 		processArmyBudget(data);
 		processArmies(data);
+	}
+
+	public void checkCapital(AIData4Country data) {
+		IPCountry country = data.getCountry();
+		IPProvince capital = country.getCapital();
+		if (capital == null) {
+			int maxPop = -1;
+			IPProvince candidate = null;
+			for (IPProvince p : country.getProvinces()) {
+				int popAmount = p.getPopulationAmount();
+				if (popAmount > maxPop) {
+					maxPop = popAmount;
+					candidate = p;
+				}
+			}
+			if (candidate != null) {
+				country.setCapital(candidate);
+			}
+		}
 	}
 
 	public void processArmyBudget(AIData4Country data) {
@@ -64,8 +84,6 @@ public class JavaAIHandler implements IAIHandler {
 			provinces.forEach(p -> provsBySoldiers.put(p));
 			IPProvince provForHiring = provsBySoldiers.poll();
 			data.getCountry().createArmy(provForHiring.getId(), (int) canAllowNewSoldiers);
-			// data.getCountry().createArmy(provForHiring.getId(), (int) Math.min(1000 +
-			// Math.sqrt(canAllowNewSoldiers), canAllowNewSoldiers));
 		}
 	}
 

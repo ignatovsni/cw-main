@@ -37,7 +37,7 @@ public class PArmy implements IPArmy {
 
 	@Override
 	public IPProvince getLocation() {
-		return game.getProvince(locationId);
+		return game.findProvById(locationId);
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class PArmy implements IPArmy {
 		game.addCommand(mergeCommand);
 	}
 
-	public void cpDismissSoldiers(int howManySoldiers) {
+	public void cmcDismissSoldiers(int howManySoldiers) {
 		soldiers -= howManySoldiers;
 	}
 
