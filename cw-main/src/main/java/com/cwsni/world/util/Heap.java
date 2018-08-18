@@ -100,6 +100,10 @@ public class Heap<T> {
 		return size;
 	}
 
+	public boolean isEmpty() {
+		return size == 0;
+	}
+
 	@Override
 	public String toString() {
 		return "heap with size = " + size();

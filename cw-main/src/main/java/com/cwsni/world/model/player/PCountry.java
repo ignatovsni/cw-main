@@ -1,8 +1,10 @@
 package com.cwsni.world.model.player;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.cwsni.world.game.commands.CommandArmyCreate;
 import com.cwsni.world.game.commands.CommandProvinceSetCapital;
@@ -73,7 +75,7 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
-	public List<IPArmy> getArmies() {
+	public Collection<IPArmy> getArmies() {
 		return armies;
 	}
 
@@ -88,7 +90,7 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
-	public List<IPProvince> getProvinces() {
+	public Collection<IPProvince> getProvinces() {
 		return provinces;
 	}
 
@@ -103,7 +105,7 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
-	public List<IPProvince> getNeighborsProvs() {
+	public Collection<IPProvince> getNeighborsProvs() {
 		if (neighborsProvs == null) {
 			neighborsProvs = new ArrayList<>();
 			getProvinces().forEach(p -> {
@@ -131,6 +133,11 @@ public class PCountry implements IPCountry {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public Collection<IPArmy> findArmiesInProv(IPProvince prov) {
+		return armies.stream().filter(a -> prov.equals(a.getLocation())).collect(Collectors.toList());
 	}
 
 	@Override

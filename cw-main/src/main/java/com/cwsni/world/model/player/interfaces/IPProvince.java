@@ -1,6 +1,6 @@
 package com.cwsni.world.model.player.interfaces;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.cwsni.world.model.data.TerrainType;
 
@@ -8,12 +8,14 @@ public interface IPProvince {
 
 	int getId();
 
-	List<IPProvince> getNeighbors();
+	Collection<IPProvince> getNeighbors();
 
 	Integer getCountryId();
 
 	TerrainType getTerrainType();
 
 	int getPopulationAmount();
+
+	boolean isMyProvince();
 
 }

@@ -1,28 +1,30 @@
 package com.cwsni.world.model.player.interfaces;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface IPCountry {
 
 	int getId();
 
-	List<IPArmy> getArmies();
+	Collection<IPArmy> getArmies();
 
 	IPProvince getCapital();
 
 	IPProvince getFirstCapital();
 
-	List<IPProvince> getProvinces();
+	Collection<IPProvince> getProvinces();
 
 	IPBudget getBudget();
 
-	List<IPProvince> getNeighborsProvs();
+	Collection<IPProvince> getNeighborsProvs();
 
 	IPArmy createArmy(int provinceId, int soldiers);
 
 	String getAiScriptName();
 
 	IPArmy findArmyById(int armyId);
+
+	Collection<IPArmy> findArmiesInProv(IPProvince province);
 
 	void setCapital(IPProvince candidate);
 

@@ -1,6 +1,6 @@
 def processCountry(AIData4Country data) {
-	//processCountryWithScript(data);
-	processCountryWithJava(data);
+	processCountryWithScript(data);
+	//processCountryWithJava(data);
 }
 
 // ------------------------------------------------

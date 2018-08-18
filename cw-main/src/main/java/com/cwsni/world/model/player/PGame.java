@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.cwsni.world.game.ai.AIData4Country;
 import com.cwsni.world.game.commands.Command;
 import com.cwsni.world.game.commands.CommandErrorHandler;
@@ -18,6 +21,7 @@ import com.cwsni.world.model.player.interfaces.IPGameParams;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 
 public class PGame implements IPGame {
+	private static final Log logger = LogFactory.getLog(PGame.class);
 
 	private Game game;
 	private IPGameParams params;
@@ -40,7 +44,13 @@ public class PGame implements IPGame {
 		provinces = new HashMap<>();
 		countries = new HashMap<>(game.getCountries().size());
 		commands = new ArrayList<>();
-		errorHandler = new CommandErrorHandler();
+		errorHandler = new CommandErrorHandler() {
+			@Override
+			public void addError(Command cmd, String e) {
+				super.addError(cmd, e);
+				logger.warn(e);
+			}
+		};
 	}
 
 	@Override
@@ -112,6 +122,7 @@ public class PGame implements IPGame {
 	}
 
 	public Object addCommand(Command command) {
+		command.setErrorHandler(errorHandler);
 		Object result = command.apply((PCountry) getCountry(country), errorHandler);
 		commands.add(command);
 		return result;

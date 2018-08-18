@@ -49,7 +49,7 @@ public class CommandArmyMerge extends CommandArmy {
 		army.cmcAddSoldiers(realSoldiers);
 		armyFrom.cmcAddSoldiers(-realSoldiers);
 		if (armyFrom.getSoldiers() <= 0) {
-			country.cmcDismissArmy(army);
+			country.cmcDismissArmy(armyFrom);
 		}
 		return true;
 	}

@@ -1,8 +1,10 @@
 package com.cwsni.world.model.player;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.player.interfaces.IPProvince;
@@ -24,7 +26,7 @@ public class PProvince implements IPProvince {
 	}
 
 	@Override
-	public List<IPProvince> getNeighbors() {
+	public Collection<IPProvince> getNeighbors() {
 		if (neighbors == null) {
 			neighbors = new ArrayList<>(province.getNeighbors().size());
 			province.getNeighbors().forEach(n -> neighbors.add(game.getProvince(n)));
@@ -49,7 +51,8 @@ public class PProvince implements IPProvince {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
+		if (this == obj)
+			return true;
 		if (!(obj instanceof PProvince)) {
 			return false;
 		}
@@ -64,6 +67,11 @@ public class PProvince implements IPProvince {
 	@Override
 	public String toString() {
 		return "PProvince: " + getId();
+	}
+
+	@Override
+	public boolean isMyProvince() {
+		return ComparisonTool.isEqual(getCountryId(), game.getCountryId());
 	}
 
 }

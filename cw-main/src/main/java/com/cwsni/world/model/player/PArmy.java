@@ -16,6 +16,7 @@ public class PArmy implements IPArmy {
 	private PGame game;
 	private IPCountry country;
 	private CommandArmyMove moveCommand;
+	private boolean isCanMove;
 
 	private int id;
 	private Integer locationId;
@@ -26,6 +27,7 @@ public class PArmy implements IPArmy {
 		this.id = army.getId();
 		this.locationId = army.getLocationId();
 		this.soldiers = army.getSoldiers();
+		this.isCanMove = true;
 	}
 
 	PArmy(PGame game, int id, Integer locationId, int soldiers) {
@@ -75,14 +77,27 @@ public class PArmy implements IPArmy {
 	}
 
 	@Override
+	public int getStrength() {
+		// TODO organization, training. equipment
+		return getSoldiers();
+	}
+
+	@Override
+	public boolean isCanMove() {
+		return isCanMove;
+	}
+
+	@Override
 	public void moveTo(IPProvince destination) {
-		int destId = destination.getId();
-		moveTo(destId);
+		moveTo(destination.getId());
 	}
 
 	private void moveTo(int destId) {
-		moveCommand = new CommandArmyMove(id, destId);
-		game.addCommand(moveCommand);
+		if (isCanMove) {
+			moveCommand = new CommandArmyMove(id, destId);
+			game.addCommand(moveCommand);
+			isCanMove = false;
+		}
 	}
 
 	@Override
@@ -135,8 +150,10 @@ public class PArmy implements IPArmy {
 
 	@Override
 	public void merge(IPArmy fromArmy, int soldiers) {
-		CommandArmyMerge mergeCommand = new CommandArmyMerge(id, fromArmy.getId(), soldiers);
-		game.addCommand(mergeCommand);
+		if (!this.equals(fromArmy)) {
+			CommandArmyMerge mergeCommand = new CommandArmyMerge(id, fromArmy.getId(), soldiers);
+			game.addCommand(mergeCommand);
+		}
 	}
 
 	public void cmcAddSoldiers(int howManySoldiers) {
