@@ -34,11 +34,6 @@ public class CommandArmyMove extends CommandArmy {
 			addError("destination province not found. id = " + destinationProvId);
 			return;
 		}
-		if (!army.getLocation().getNeighbors().contains(destination)) {
-			// destination is not neighbor
-			// TODO find nearest province to move
-			// right now command has only neighbors target
-		}
 		army.moveTo(destination);
 	}
 

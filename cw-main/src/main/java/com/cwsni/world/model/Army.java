@@ -2,14 +2,20 @@ package com.cwsni.world.model;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.cwsni.world.model.data.DataArmy;
 import com.cwsni.world.model.data.GameParams;
 
 public class Army {
 
+	private static final Log logger = LogFactory.getLog(Army.class);
+
 	private DataArmy data;
 	private Country country;
 	private Province moveFrom;
+	private boolean isCanMoveThisTurn = true;
 	private boolean isCanFightThisTurn = true;
 
 	public int getId() {
@@ -135,9 +141,20 @@ public class Army {
 	}
 
 	public void moveTo(Province destination) {
-		moveFrom = getLocation();
-		changeOrganization(-2);
-		setProvince(destination);
+		if (isCanMoveThisTurn) {
+			if (!getLocation().getNeighbors().contains(destination)) {
+				// destination is not neighbor
+				// TODO find nearest province to move
+				// right now command has only neighbors target
+				return;
+			}
+			moveFrom = getLocation();
+			changeOrganization(-2);
+			setProvince(destination);
+			isCanMoveThisTurn = false;
+		} else {
+			logger.warn("someone is trying to move army a few times per turn");
+		}
 	}
 
 	private void processEffectivenessInNewTurn() {
@@ -146,6 +163,7 @@ public class Army {
 	}
 
 	public void processNewTurn() {
+		isCanMoveThisTurn = true;
 		isCanFightThisTurn = true;
 		moveFrom = null;
 		processEffectivenessInNewTurn();
