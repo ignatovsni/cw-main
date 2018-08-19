@@ -38,7 +38,7 @@ public class JavaAIHandler implements IAIHandler {
 
 	public void manageMoneyBudget(AIData4Country data) {
 		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
-		budget.setProvinceTax(0.5);
+		budget.setProvinceTax(0.7);
 		budget.setArmyWeight(1);
 		budget.setScienceWeight(1);
 		budget.setSavingWeight(1);
@@ -47,7 +47,7 @@ public class JavaAIHandler implements IAIHandler {
 	public void manageScienceBudget(AIData4Country data) {
 		IPScienceBudget budget = data.getCountry().getScienceBudget();
 		budget.setAdministrationWeight(1);
-		budget.setAgricultureWeight(1);
+		budget.setAgricultureWeight(2);
 		budget.setMedicineWeight(1);
 	}
 

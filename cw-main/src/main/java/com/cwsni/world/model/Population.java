@@ -113,7 +113,7 @@ public class Population {
 	static public void migrateNewTurn(Province from, Game game) {
 		GameParams gParams = game.getGameParams();
 		List<Province> provsTo = from.getNeighbors().stream()
-				.filter(n -> n.getTerrainType().isPopulationPossible() && n.getPopulationExcess() < 2)
+				.filter(n -> n.getTerrainType().isPopulationPossible() && n.getPopulationExcess() < 1)
 				.collect(Collectors.toList());
 		if (provsTo.size() == 0) {
 			return;
@@ -122,7 +122,7 @@ public class Population {
 		int maxPopulation = from.getMaxPopulation();
 		if (from.getPopulationAmount() > maxPopulation || from.getSoilFertility() < 1) {
 			// hunger migration
-			mPops = (int) (from.getPopulationAmount() * (gParams.getPopulationMaxExcess() - 1) / 2);
+			mPops = (int) (from.getPopulationAmount() * (gParams.getPopulationMaxExcess() - 1) / 10);
 		} else {
 			// regular migration
 			mPops = (int) (from.getPopulationAmount() * gParams.getPopulationBaseMigration());

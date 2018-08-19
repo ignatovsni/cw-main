@@ -43,12 +43,12 @@ public class GameParams {
 
 	private double scienceBaseIncreasePerTurnPerPerson = 0.01;
 	private double scienceNaturalGrowthLimitPerPerson = 0.01;
-	private double scienceExchangeWithMaxPerTurn = 0.05;
+	private double scienceExchangeWithMaxPerTurn = 0.02;
 	private double scienceExchangeFromNeighborsPercentFromMax = 0.7;
 
 	private double scienceAgricultureMultiplicatorForFertility = (double) 1 / 4000;
 
-	private double infrastructureNaturalLimitFromPopulation = 0.7;
+	private double infrastructureNaturalLimitFromPopulation = 0.8;
 	private double infrastructureNaturalLimitWithLocalGovernment = 1.0;
 	private double infrastructureMaxValue = 1.2;
 

@@ -231,12 +231,12 @@ public class Province implements EventTarget {
 		int currentFieldsArea = getSoilArea();
 		if (neededFieldsArea < currentFieldsArea) {
 			// degradation
-			double decreasing = Math.max(neededFieldsArea / currentFieldsArea, 0.98);
+			double decreasing = Math.max(neededFieldsArea / currentFieldsArea, 0.99);
 			setSoilArea((int) (decreasing * currentFieldsArea));
 		} else {
 			// improving
 			if (populationAmount > 0) {
-				double improving = Math.min(neededFieldsArea / currentFieldsArea, 1.002);
+				double improving = Math.min(neededFieldsArea / currentFieldsArea, 1.01);
 				int addSoilArea = (int) (currentFieldsArea * improving - currentFieldsArea);
 				addSoilArea = Math.max(addSoilArea, 100);
 				setSoilArea(currentFieldsArea + addSoilArea);
