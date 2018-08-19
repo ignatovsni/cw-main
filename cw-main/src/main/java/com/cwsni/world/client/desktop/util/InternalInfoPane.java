@@ -208,4 +208,19 @@ abstract public class InternalInfoPane extends BorderPane {
 		l.setVisible(true);
 	}
 
+	protected void setLabelText(RowValue l, String txt, Object valueTooltip) {
+		setLabelText(l, txt);
+		if (valueTooltip != null) {
+			l.setValueColumnTooltip(valueTooltip.toString());
+		}
+	}
+
+	protected void setLabelTextWithLongFormatterAndValueTooltip(RowValue l, Long value) {
+		setLabelText(l, DataFormatter.formatLongNumber(value), value);
+	}
+
+	protected void setLabelTextWithLongFormatterAndValueTooltip(RowValue l, Integer value) {
+		setLabelText(l, DataFormatter.formatLongNumber(Long.valueOf(value)), value);
+	}
+
 }

@@ -1,11 +1,11 @@
-package com.cwsni.world.client.desktop.game;
+package com.cwsni.world.client.desktop.game.infopanels;
 
 import java.util.ArrayList;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 import com.cwsni.world.model.Province;
 
@@ -43,9 +43,9 @@ public class GsProvScienceInfoPane extends InternalInfoPane {
 		Province prov = gameScene.getSelectedProvince();
 		switch (prov.getTerrainType()) {
 		case GRASSLAND:
-			setLabelText(valuesScienceAgriculture, DataFormatter.toLong(prov.getScienceAgriculture()));
-			setLabelText(valuesScienceMedicine, DataFormatter.toLong(prov.getScienceMedicine()));
-			setLabelText(valuesScienceAdministration, DataFormatter.toLong(prov.getScienceAdministration()));
+			setLabelTextWithLongFormatterAndValueTooltip(valuesScienceAgriculture, prov.getScienceAgriculture());
+			setLabelTextWithLongFormatterAndValueTooltip(valuesScienceMedicine, prov.getScienceMedicine());
+			setLabelTextWithLongFormatterAndValueTooltip(valuesScienceAdministration, prov.getScienceAdministration());
 			break;
 		case OCEAN:
 			break;

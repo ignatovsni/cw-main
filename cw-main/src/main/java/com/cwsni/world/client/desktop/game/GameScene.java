@@ -15,6 +15,12 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.UserPreferences;
 import com.cwsni.world.client.desktop.game.CountriesPropertiesWindow.RowCountry;
+import com.cwsni.world.client.desktop.game.infopanels.GsCountryInfoPane;
+import com.cwsni.world.client.desktop.game.infopanels.GsGlobalInfoPane;
+import com.cwsni.world.client.desktop.game.infopanels.GsProvArmiesInfoPane;
+import com.cwsni.world.client.desktop.game.infopanels.GsProvEventsInfoPane;
+import com.cwsni.world.client.desktop.game.infopanels.GsProvInfoPane;
+import com.cwsni.world.client.desktop.game.infopanels.GsProvScienceInfoPane;
 import com.cwsni.world.client.desktop.game.map.DWorldMap;
 import com.cwsni.world.client.desktop.game.map.MapMode;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;

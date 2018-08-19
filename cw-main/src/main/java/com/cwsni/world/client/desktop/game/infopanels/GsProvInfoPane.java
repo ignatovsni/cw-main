@@ -1,10 +1,11 @@
-package com.cwsni.world.client.desktop.game;
+package com.cwsni.world.client.desktop.game.infopanels;
 
 import java.util.ArrayList;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 import com.cwsni.world.model.Province;
@@ -59,11 +60,11 @@ public class GsProvInfoPane extends InternalInfoPane {
 		switch (prov.getTerrainType()) {
 		case GRASSLAND:
 			setLabelText(valuesSizeLabel, DataFormatter.toLong(prov.getSize()));
-			setLabelText(valuesPopsLabel, DataFormatter.toLong(prov.getPopulationAmount()));
-			setLabelText(valuesWealthLabel, DataFormatter.toLong((long) prov.getWealth()));
+			setLabelTextWithLongFormatterAndValueTooltip(valuesPopsLabel, prov.getPopulationAmount());
+			setLabelTextWithLongFormatterAndValueTooltip(valuesWealthLabel, (long) prov.getWealth());
 			setLabelText(valuesGovInfluenceLabel, DataFormatter.formatFractionNumber(prov.getGovernmentInfluence()));
 			setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
-			setLabelText(valuesSoilAreaLabel, DataFormatter.toLong(prov.getSoilArea()));
+			setLabelTextWithLongFormatterAndValueTooltip(valuesSoilAreaLabel, prov.getSoilArea());
 			setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));
 			break;
 		case OCEAN:

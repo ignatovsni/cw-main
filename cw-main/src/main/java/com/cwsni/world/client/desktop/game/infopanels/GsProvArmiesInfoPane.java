@@ -1,4 +1,4 @@
-package com.cwsni.world.client.desktop.game;
+package com.cwsni.world.client.desktop.game.infopanels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 import com.cwsni.world.model.Army;

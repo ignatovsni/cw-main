@@ -1,10 +1,11 @@
-package com.cwsni.world.client.desktop.game;
+package com.cwsni.world.client.desktop.game.infopanels;
 
 import java.util.ArrayList;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 
@@ -42,8 +43,8 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 	protected void refreshInfoInternal() {
 		setLabelText(valuesTurnLabel, DataFormatter.toString(gameScene.getGame().getTurn().getTurnTexToDisplay()));
 		setLabelText(valuesCountriesLabel, DataFormatter.toString(gameScene.getGame().getCountries().size()));
-		setLabelText(valuesTotalPopsLabel,
-				DataFormatter.toLong(gameScene.getGame().getGameTransientStats().getPopulationTotal()));
+		setLabelTextWithLongFormatterAndValueTooltip(valuesTotalPopsLabel,
+				gameScene.getGame().getGameTransientStats().getPopulationTotal());
 	}
 
 	@Override

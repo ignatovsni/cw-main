@@ -29,6 +29,8 @@ public class ProvinceBorder {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
 		if (!(obj instanceof ProvinceBorder)) {
 			return false;
 		}
