@@ -47,6 +47,8 @@ public class CommandArmyMerge extends CommandArmy {
 		sb.append(super.toString());
 		sb.append(" armyFromId:");
 		sb.append(armyFromId);
+		sb.append(" soldiers:");
+		sb.append(soldiers);
 		return sb.toString();
 	}
 

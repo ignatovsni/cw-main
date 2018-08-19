@@ -14,7 +14,9 @@ public interface IPCountry {
 
 	Collection<IPProvince> getProvinces();
 
-	IPBudget getBudget();
+	IPMoneyBudget getMoneyBudget();
+
+	IPScienceBudget getScienceBudget();
 
 	Collection<IPProvince> getNeighborsProvs();
 

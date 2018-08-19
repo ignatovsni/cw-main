@@ -11,14 +11,16 @@ import com.cwsni.world.game.commands.CommandProvinceSetCapital;
 import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.Country;
 import com.cwsni.world.model.player.interfaces.IPArmy;
-import com.cwsni.world.model.player.interfaces.IPBudget;
 import com.cwsni.world.model.player.interfaces.IPCountry;
+import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPProvince;
+import com.cwsni.world.model.player.interfaces.IPScienceBudget;
 
 public class PCountry implements IPCountry {
 
 	private Country country;
-	private IPBudget budget;
+	private IPMoneyBudget moneyBudget;
+	private PScienceBudget scienceBudget;
 	private List<IPArmy> armies;
 	private List<IPProvince> provinces;
 	private PGame game;
@@ -29,7 +31,8 @@ public class PCountry implements IPCountry {
 	PCountry(PGame game, Country country) {
 		this.game = game;
 		this.country = country;
-		this.budget = new PBudget(country.getBudget());
+		this.moneyBudget = new PMoneyBudget(this, country.getMoneyBudget());
+		this.scienceBudget = new PScienceBudget(this, country.getScienceBudget());
 		this.capital = game.findProvById(country.getCapitalId());
 
 		armies = new ArrayList<>(country.getArmies().size());
@@ -95,8 +98,13 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
-	public IPBudget getBudget() {
-		return budget;
+	public IPMoneyBudget getMoneyBudget() {
+		return moneyBudget;
+	}
+
+	@Override
+	public IPScienceBudget getScienceBudget() {
+		return scienceBudget;
 	}
 
 	@Override

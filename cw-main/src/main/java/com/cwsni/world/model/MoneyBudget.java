@@ -23,8 +23,24 @@ public class MoneyBudget {
 		return data.getArmyWeight();
 	}
 
+	public double getProvinceTax() {
+		return data.getProvinceTax();
+	}
+
+	public void setSavingWeight(double savingWeight) {
+		data.setSavingWeight(savingWeight);
+	}
+
+	public void setScienceWeight(double scienceWeight) {
+		data.setScienceWeight(scienceWeight);
+	}
+
 	public void setArmyWeight(double armyWeight) {
-		this.setArmyWeight(armyWeight);
+		data.setArmyWeight(armyWeight);
+	}
+
+	public void setProvinceTax(double provinceTax) {
+		data.setProvinceTax(provinceTax);
 	}
 
 	public void buildFrom(Country country, DataMoneyBudget budget) {
@@ -68,13 +84,9 @@ public class MoneyBudget {
 	public double getMoney() {
 		return data.getMoney();
 	}
-	
+
 	public double getIncome() {
 		return income;
-	}
-	
-	public double getProvinceTax() {
-		return data.getProvinceTax();
 	}
 
 }

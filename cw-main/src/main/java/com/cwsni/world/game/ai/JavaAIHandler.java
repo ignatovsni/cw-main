@@ -15,10 +15,11 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.player.interfaces.IPArmy;
-import com.cwsni.world.model.player.interfaces.IPBudget;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPGameParams;
+import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPProvince;
+import com.cwsni.world.model.player.interfaces.IPScienceBudget;
 import com.cwsni.world.util.Heap;
 
 @Component
@@ -28,9 +29,26 @@ public class JavaAIHandler implements IAIHandler {
 	@Override
 	public void processCountry(AIData4Country data) {
 		checkCapital(data);
+		manageMoneyBudget(data);
+		manageScienceBudget(data);
 		processArmyBudget(data);
 		mergeAndSplitArmies(data);
 		moveArmies(data);
+	}
+
+	public void manageMoneyBudget(AIData4Country data) {
+		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
+		budget.setProvinceTax(0.5);
+		budget.setArmyWeight(1);
+		budget.setScienceWeight(1);
+		budget.setSavingWeight(1);
+	}
+
+	public void manageScienceBudget(AIData4Country data) {
+		IPScienceBudget budget = data.getCountry().getScienceBudget();
+		budget.setAdministrationWeight(1);
+		budget.setAgricultureWeight(1);
+		budget.setMedicineWeight(1);
 	}
 
 	public void checkCapital(AIData4Country data) {
@@ -54,7 +72,7 @@ public class JavaAIHandler implements IAIHandler {
 
 	public void processArmyBudget(AIData4Country data) {
 		IPGameParams params = data.getGame().getGameParams();
-		IPBudget budget = data.getCountry().getBudget();
+		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
 		double availableMoneyForArmy = budget.getAvailableMoneyForArmy();
 		Collection<IPArmy> armies = data.getCountry().getArmies();
 		if (availableMoneyForArmy < 0 && !armies.isEmpty()) {
@@ -126,7 +144,8 @@ public class JavaAIHandler implements IAIHandler {
 						* data.getCountry().getArmySoldiersToPopulationForSubjugation());
 				newArmySize = Math.max(newArmySize, needMaxSoldiers);
 				Optional<IPArmy> bigArmy = armiesInProv.stream().max((x, y) -> x.getSoldiers() - y.getSoldiers());
-				while (country.getArmies().size() < 20 && needMoreArmies > 0 && bigArmy.get().getSoldiers() >= newArmySize * 2) {
+				while (country.getArmies().size() < 20 && needMoreArmies > 0
+						&& bigArmy.get().getSoldiers() >= newArmySize * 2) {
 					bigArmy.get().splitArmy(newArmySize);
 					--needMoreArmies;
 				}

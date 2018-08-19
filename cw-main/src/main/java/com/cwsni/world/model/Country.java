@@ -125,7 +125,7 @@ public class Country {
 		return data;
 	}
 
-	public MoneyBudget getBudget() {
+	public MoneyBudget getMoneyBudget() {
 		return budget;
 	}
 

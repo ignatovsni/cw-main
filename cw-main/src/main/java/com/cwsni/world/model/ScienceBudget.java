@@ -31,7 +31,7 @@ public class ScienceBudget {
 	}
 
 	public void setMedicineWeight(double medicineWeight) {
-		this.setMedicineWeight(medicineWeight);
+		data.setMedicineWeight(medicineWeight);
 	}
 
 	public double getTotalWeight() {

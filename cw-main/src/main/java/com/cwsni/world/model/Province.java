@@ -365,14 +365,14 @@ public class Province implements EventTarget {
 	}
 
 	public double getFederalIncomePerYear() {
-		return sumTaxForYear() * getCountry().getBudget().getProvinceTax() * getGovernmentInfluence();
+		return sumTaxForYear() * getCountry().getMoneyBudget().getProvinceTax() * getGovernmentInfluence();
 	}
 
 	private double getLocalIncomePerYear() {
 		if (getCountryId() == null) {
 			return sumTaxForYear() / 2;
 		} else {
-			return sumTaxForYear() * (1 - getCountry().getBudget().getProvinceTax() * getGovernmentInfluence());
+			return sumTaxForYear() * (1 - getCountry().getMoneyBudget().getProvinceTax() * getGovernmentInfluence());
 		}
 	}
 

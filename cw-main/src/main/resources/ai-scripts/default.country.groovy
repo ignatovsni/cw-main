@@ -36,7 +36,7 @@ def checkCapital(AIData4Country data) {
 
 def processArmyBudget(AIData4Country data) {
 	IPGameParams params = data.getGame().getGameParams();
-	IPBudget budget = data.getCountry().getBudget();
+	IPMoneyBudget budget = data.getCountry().getMoneyBudget();
 	double availableMoneyForArmy = budget.getAvailableMoneyForArmy();
 	Collection<IPArmy> armies = data.getCountry().getArmies();
 	if (availableMoneyForArmy < 0 && !armies.isEmpty()) {
