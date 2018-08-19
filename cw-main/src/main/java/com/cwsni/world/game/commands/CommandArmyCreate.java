@@ -67,8 +67,8 @@ public class CommandArmyCreate extends CommandArmy {
 		if (!ComparisonTool.isEqual(destination.getCountryId(), country.getId())) {
 			addError("destination country id = " + destination.getCountryId() + " but country.id = " + country.getId());
 			return null;
-		}
-		return country.cmcCreateArmy(armyId, destinationProvId, soldiers);
+		}		
+		return country.cmcCreateArmy(armyId, destination, soldiers);
 	}
 
 	@Override

@@ -1,5 +1,10 @@
 package com.cwsni.world.game.commands;
 
+import com.cwsni.world.model.Army;
+import com.cwsni.world.model.ComparisonTool;
+import com.cwsni.world.model.player.PArmy;
+import com.cwsni.world.model.player.PCountry;
+
 abstract public class CommandArmy extends Command {
 
 	protected int armyId;
@@ -24,5 +29,27 @@ abstract public class CommandArmy extends Command {
 
 	@Override
 	abstract public void apply();
+
+	protected Army getAndCheckArmy(int idOfArmy) {
+		Army army = country.getGame().findArmyByIdForCommand(country.getId(), idOfArmy);
+		if (army == null) {
+			addError("army = null");
+			return null;
+		}
+		if (!ComparisonTool.isEqual(army.getCountry().getId(), country.getId())) {
+			addError("army.countryId = " + army.getCountry().getId() + " but countryId = " + country.getId());
+			return null;
+		}
+		return army;
+	}
+
+	protected PArmy getAndCheckArmy(PCountry country, int idOfArmy) {
+		PArmy army = (PArmy) country.findArmyById(idOfArmy);
+		if (army == null) {
+			addError("army = null");
+			return null;
+		}
+		return army;
+	}
 
 }

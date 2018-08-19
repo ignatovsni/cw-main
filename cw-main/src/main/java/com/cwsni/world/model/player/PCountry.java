@@ -122,7 +122,11 @@ public class PCountry implements IPCountry {
 
 	@Override
 	public IPArmy createArmy(int provinceId, int soldiers) {
-		return (IPArmy) game.addCommand(new CommandArmyCreate(nextArmyId--, provinceId, soldiers));
+		return (IPArmy) game.addCommand(new CommandArmyCreate(getNewArmyId(), provinceId, soldiers));
+	}
+
+	int getNewArmyId() {
+		return nextArmyId--;
 	}
 
 	@Override
@@ -145,21 +149,35 @@ public class PCountry implements IPCountry {
 		game.addCommand(new CommandProvinceSetCapital(capital.getId()));
 	}
 
+	@Override
+	public double getArmySoldiersToPopulationForSubjugation() {
+		return country.getArmySoldiersToPopulationForSubjugation();
+	}
+
 	/**
 	 * 'cmc' prefix means Client Model Changes
 	 */
+	public void cmcSetCapital(IPProvince capital) {
+		this.capital = capital;
+	}
+
 	public void cmcDismissArmy(PArmy army) {
 		armies.remove(army);
 	}
 
-	public PArmy cmcCreateArmy(int armyId, Integer locationId, int soldiers) {
-		PArmy army = new PArmy(game, armyId, locationId, soldiers);
-		addArmy(army);
-		return army;
+	public PArmy cmcCreateArmy(int armyId, IPProvince destination, int soldiers) {
+		soldiers = Math.min(soldiers, destination.getPopulationAmount());
+		PArmy newArmy = new PArmy(game, armyId, destination.getId(), soldiers);
+		addArmy(newArmy);
+		((PProvince) destination).cmcAddPopulation(-soldiers);
+		return newArmy;
 	}
 
-	public void cmcSetCapital(IPProvince capital) {
-		this.capital = capital;
+	public Object cmcSplitArmy(PArmy army, int newArmyId, int soldiers) {
+		PArmy newArmy = new PArmy(game, newArmyId, army.getLocation().getId(), soldiers);
+		addArmy(newArmy);
+		army.cmcAddSoldiers(-soldiers);
+		return newArmy;
 	}
 
 }

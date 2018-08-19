@@ -132,12 +132,21 @@ public class Army {
 	}
 
 	public void dismiss() {
-		// TODO pops should return to home or stay in current province
 		setProvince(null);
+		dismissToCapital(getSoldiers());
 	}
 
 	public void dismissSoldiers(int howManySoldiersNeedToDismiss) {
 		setSoldiers(getSoldiers() - howManySoldiersNeedToDismiss);
+		dismissToCapital(howManySoldiersNeedToDismiss);
+	}
+
+	private void dismissToCapital(int soldiers) {
+		// TODO pops should return to home or stay in current province
+		Province capital = getCountry().getCapital();
+		if (capital != null) {
+			capital.addPopulationFromArmy(soldiers);
+		}
 	}
 
 	public void moveTo(Province destination) {
@@ -173,13 +182,20 @@ public class Army {
 			// our land, doing nothing
 			return;
 		}
-		// it is our land now!
+		// it is our land now! Probably... we need to check
 		if (currentProv.getTerrainType().isPopulationPossible()) {
-			if (locationCountry != null) {
-				currentProv.sufferFromInvading();
-				locationCountry.removeProvince(currentProv);
+			long totalSoldiers = currentProv.getArmies().stream()
+					.filter(a -> ComparisonTool.isEqual(a.getCountry().getId(), getCountry().getId()))
+					.mapToLong(a -> a.getSoldiers()).sum();
+			double successfulInvasion = totalSoldiers
+					/ (currentProv.getPopulationAmount() * getCountry().getArmySoldiersToPopulationForSubjugation());
+			currentProv.sufferFromInvasion(getSoldiers(), successfulInvasion);
+			if (successfulInvasion >= 1) {
+				if (locationCountry != null) {
+					locationCountry.removeProvince(currentProv);
+				}
+				getCountry().addProvince(currentProv);
 			}
-			getCountry().addProvince(currentProv);
 		}
 	}
 

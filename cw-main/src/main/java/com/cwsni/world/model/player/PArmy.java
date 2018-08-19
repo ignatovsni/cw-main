@@ -23,11 +23,7 @@ public class PArmy implements IPArmy {
 	private int soldiers = 0;
 
 	PArmy(PGame game, Army army) {
-		this.game = game;
-		this.id = army.getId();
-		this.locationId = army.getLocationId();
-		this.soldiers = army.getSoldiers();
-		this.isCanMove = true;
+		this(game, army.getId(), army.getLocationId(), army.getSoldiers());
 	}
 
 	PArmy(PGame game, int id, Integer locationId, int soldiers) {
@@ -35,6 +31,7 @@ public class PArmy implements IPArmy {
 		this.id = id;
 		this.locationId = locationId;
 		this.soldiers = soldiers;
+		this.isCanMove = true;
 	}
 
 	@Override
@@ -102,7 +99,9 @@ public class PArmy implements IPArmy {
 
 	@Override
 	public void moveTo(List<Object> path) {
-		moveTo((Integer) path.get(1));
+		if (path.size() > 1) {
+			moveTo((Integer) path.get(1));
+		}
 	}
 
 	@Override
@@ -135,12 +134,13 @@ public class PArmy implements IPArmy {
 	}
 
 	@Override
-	public void splitArmy(int soldiersToNewArmy) {
+	public IPArmy splitArmy(int soldiersToNewArmy) {
 		if (soldiersToNewArmy <= 0 || soldiersToNewArmy >= getSoldiers()) {
-			return;
+			return null;
 		}
-		CommandArmySplit splitCommand = new CommandArmySplit(id, soldiersToNewArmy);
-		game.addCommand(splitCommand);
+		CommandArmySplit splitCommand = new CommandArmySplit(id, ((PCountry) country).getNewArmyId(),
+				soldiersToNewArmy);
+		return (IPArmy) game.addCommand(splitCommand);
 	}
 
 	@Override

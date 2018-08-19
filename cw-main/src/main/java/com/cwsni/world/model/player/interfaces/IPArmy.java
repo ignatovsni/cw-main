@@ -9,13 +9,13 @@ public interface IPArmy {
 	IPCountry getCountry();
 
 	int getSoldiers();
-	
+
 	int getStrength();
 
 	void moveTo(IPProvince destination);
 
 	void moveTo(List<Object> path);
-	
+
 	boolean isCanMove();
 
 	double getCostForSoldierPerYear();
@@ -31,7 +31,7 @@ public interface IPArmy {
 	 */
 	void dismissSoldiers(int howManySoldiersNeedToDismiss);
 
-	void splitArmy(int soldiersToNewArmy);
+	IPArmy splitArmy(int soldiersToNewArmy);
 
 	void merge(IPArmy fromArmy);
 

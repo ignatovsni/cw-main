@@ -1,12 +1,10 @@
 package com.cwsni.world.game.commands;
 
 import com.cwsni.world.model.Army;
-import com.cwsni.world.model.Game;
 import com.cwsni.world.model.player.PArmy;
 import com.cwsni.world.model.player.PCountry;
 
 public class CommandArmyMerge extends CommandArmy {
-	// TODO P-model does not use this command yet
 
 	private int armyFromId;
 	private int soldiers;
@@ -19,15 +17,9 @@ public class CommandArmyMerge extends CommandArmy {
 
 	@Override
 	public void apply() {
-		Game game = country.getGame();
-		Army army = game.findArmyByIdForCommand(country.getId(), armyId);
-		if (army == null) {
-			addError("army = null");
-			return;
-		}
-		Army armyFrom = game.findArmyByIdForCommand(country.getId(), armyFromId);
-		if (armyFrom == null) {
-			addError("armyFrom = null");
+		Army army = getAndCheckArmy(armyId);
+		Army armyFrom = getAndCheckArmy(armyFromId);
+		if (army == null || armyFrom == null) {
 			return;
 		}
 		country.mergeArmy(army, armyFrom, soldiers);
@@ -35,14 +27,9 @@ public class CommandArmyMerge extends CommandArmy {
 
 	@Override
 	public Object apply(PCountry country, CommandErrorHandler errorHandler) {
-		PArmy army = (PArmy) country.findArmyById(armyId);
-		if (army == null) {
-			addError("army = null");
-			return false;
-		}
-		PArmy armyFrom = (PArmy) country.findArmyById(armyFromId);
-		if (armyFrom == null) {
-			addError("armyFrom = null");
+		PArmy army = getAndCheckArmy(country, armyId);
+		PArmy armyFrom = getAndCheckArmy(country, armyFromId);
+		if (army == null || armyFrom == null) {
 			return false;
 		}
 		int realSoldiers = Math.min(soldiers, armyFrom.getSoldiers());

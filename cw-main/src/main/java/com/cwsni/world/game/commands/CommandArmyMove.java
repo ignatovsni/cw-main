@@ -20,13 +20,8 @@ public class CommandArmyMove extends CommandArmy {
 	@Override
 	public void apply() {
 		Game game = country.getGame();
-		Army army = game.findArmyByIdForCommand(country.getId(), armyId);
+		Army army = getAndCheckArmy(armyId);
 		if (army == null) {
-			addError("army = null");
-			return;
-		}
-		if (army.getCountry().getId() != country.getId()) {
-			addError("army.countryId = " + army.getCountry().getId() + " but countryId = " + country.getId());
 			return;
 		}
 		Province destination = game.getMap().findProvById(destinationProvId);

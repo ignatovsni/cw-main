@@ -1,7 +1,6 @@
 package com.cwsni.world.game.commands;
 
 import com.cwsni.world.model.Army;
-import com.cwsni.world.model.Game;
 import com.cwsni.world.model.player.PArmy;
 import com.cwsni.world.model.player.PCountry;
 
@@ -22,10 +21,8 @@ public class CommandArmyDismiss extends CommandArmy {
 		if (howManySoldiers == 0) {
 			return;
 		}
-		Game game = country.getGame();
-		Army army = game.findArmyByIdForCommand(country.getId(), armyId);
+		Army army = getAndCheckArmy(armyId);
 		if (army == null) {
-			addError("army = null");
 			return;
 		}
 		if (howManySoldiers < 0 || howManySoldiers >= army.getSoldiers()) {
@@ -40,9 +37,8 @@ public class CommandArmyDismiss extends CommandArmy {
 		if (howManySoldiers == 0) {
 			return false;
 		}
-		PArmy army = (PArmy) country.findArmyById(armyId);
+		PArmy army = getAndCheckArmy(country, armyId);
 		if (army == null) {
-			errorHandler.addError(this, "army = null");
 			return false;
 		}
 		if (howManySoldiers < 0 || howManySoldiers >= army.getSoldiers()) {

@@ -56,8 +56,9 @@ public class GameParams {
 	private double armyFightBasePercentOfLoss = 0.2;
 	private int armyMinAllowedOrganization = 10;
 	private int armyMinAllowedSoldiers = 50;
+	private double armySoldiersToPopulationForSubjugation = 0.1;
 
-	private double provinceLossFromFight = 0.2;
+	private double provinceLossFromFight = 0.1;
 	private double provinceInfluenceFromCapitalWithDistanceDecrease = 0.8;
 
 	private double budgetBaseTaxPerPerson = 1;
@@ -515,6 +516,14 @@ public class GameParams {
 	public void setProvinceInfluenceFromCapitalWithDistanceDecrease(
 			double provinceInfluenceFromCapitalWithDistanceDecrease) {
 		this.provinceInfluenceFromCapitalWithDistanceDecrease = provinceInfluenceFromCapitalWithDistanceDecrease;
+	}
+
+	public double getArmySoldiersToPopulationForSubjugation() {
+		return armySoldiersToPopulationForSubjugation;
+	}
+
+	public void setArmySoldiersToPopulationForSubjugation(double armySoldiersToPopulationForSubjugation) {
+		this.armySoldiersToPopulationForSubjugation = armySoldiersToPopulationForSubjugation;
 	}
 
 }

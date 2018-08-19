@@ -64,10 +64,6 @@ public class ScienceCollection {
 		DataScience maxScienceType = getter4Science.apply(maxScience);
 		GameParams gParams = game.getGameParams();
 
-		/*
-		 * if (p.getId() == 1743) { System.out.println(1); }
-		 */
-
 		// natural pops science
 		double scienceIncrease = Math.max(1,
 				+(Math.log10((double) p.getPopulationAmount() * gParams.getScienceBaseIncreasePerTurnPerPerson())));

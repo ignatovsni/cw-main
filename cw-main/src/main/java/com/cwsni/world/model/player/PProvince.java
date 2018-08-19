@@ -14,10 +14,12 @@ public class PProvince implements IPProvince {
 	private Province province;
 	private PGame game;
 	private List<IPProvince> neighbors;
+	private int populationAmount;
 
 	PProvince(PGame game, Province province) {
 		this.game = game;
 		this.province = province;
+		this.populationAmount = province.getPopulationAmount();
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class PProvince implements IPProvince {
 
 	@Override
 	public int getPopulationAmount() {
-		return province.getPopulationAmount();
+		return populationAmount;
 	}
 
 	@Override
@@ -72,6 +74,10 @@ public class PProvince implements IPProvince {
 	@Override
 	public boolean isMyProvince() {
 		return ComparisonTool.isEqual(getCountryId(), game.getCountryId());
+	}
+
+	public void cmcAddPopulation(int delta) {
+		populationAmount += delta;
 	}
 
 }

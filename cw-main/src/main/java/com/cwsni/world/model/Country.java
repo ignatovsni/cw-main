@@ -233,10 +233,19 @@ public class Country {
 	}
 
 	public Army splitArmy(Army army, int soldiers) {
+		if (soldiers >= army.getSoldiers()) {
+			logger.warn("soldiers >= army.getSoldiers() ; " + soldiers + " >= " + army.getSoldiers());
+			return null;
+		}
 		GameParams gParams = game.getGameParams();
 		if (soldiers < gParams.getArmyMinAllowedSoldiers()) {
 			logger.warn("soldiers <= gParams.getArmyMinAllowedSoldiers() ; " + soldiers + " < "
 					+ gParams.getArmyMinAllowedSoldiers());
+			return null;
+		}
+		if ((army.getSoldiers() - soldiers) < gParams.getArmyMinAllowedSoldiers()) {
+			logger.warn("(army.getSoldiers()-soldiers) <= gParams.getArmyMinAllowedSoldiers() ; "
+					+ (army.getSoldiers() - soldiers) + " < " + gParams.getArmyMinAllowedSoldiers());
 			return null;
 		}
 		Army a = createArmy();
@@ -278,6 +287,11 @@ public class Country {
 
 	public void setName(String name) {
 		data.setName(name);
+	}
+	
+	public double getArmySoldiersToPopulationForSubjugation() {
+		// it can depend on country science development
+		return game.getGameParams().getArmySoldiersToPopulationForSubjugation();
 	}
 
 	// --------------------- static -------------------------------

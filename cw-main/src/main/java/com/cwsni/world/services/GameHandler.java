@@ -17,6 +17,7 @@ import com.cwsni.world.game.ai.AIHandler;
 import com.cwsni.world.game.commands.Command;
 import com.cwsni.world.game.commands.CommandArmyCreate;
 import com.cwsni.world.game.commands.CommandArmyMove;
+import com.cwsni.world.game.commands.CommandArmySplit;
 import com.cwsni.world.game.commands.CommandErrorHandler;
 import com.cwsni.world.model.Army;
 import com.cwsni.world.model.ComparisonTool;
@@ -59,15 +60,18 @@ public class GameHandler {
 
 	private void executeCommands(Game game, List<PGame> pGames) {
 		CommandErrorHandler errorHandler = new CommandErrorHandler();
-		preProcessCommands(game, pGames, errorHandler);
-		processCreateArmyCommands(game, pGames);
-		checkArmyMovementCollisions(game, pGames);
-		processCommands(game, pGames);
-		game.resetNewArmiesWithIdLessThanZero();
-		if (!errorHandler.isEmpty()) {
-			logger.info("command errors for " + game.toString());
-			errorHandler.getErrors().forEach(e -> logger.info("    " + e));
+		try {
+			preProcessCommands(game, pGames, errorHandler);
+			processNewArmyCommands(game, pGames);
+			checkArmyMovementCollisions(game, pGames, errorHandler);
+			processCommands(game, pGames);
+		} finally {
+			if (!errorHandler.isEmpty()) {
+				logger.info("command errors for " + game.toString());
+				errorHandler.getErrors().forEach(e -> logger.info("    " + e));
+			}
 		}
+		game.resetNewArmiesWithIdLessThanZero();
 	}
 
 	private void getCommandsFromAI(List<PGame> pGames) {
@@ -84,9 +88,10 @@ public class GameHandler {
 		});
 	}
 
-	private void processCreateArmyCommands(Game game, List<PGame> pGames) {
+	private void processNewArmyCommands(Game game, List<PGame> pGames) {
 		pGames.forEach(pg -> {
-			List<Command> createArmyCommands = pg.getCommands().stream().filter(c -> c instanceof CommandArmyCreate)
+			List<Command> createArmyCommands = pg.getCommands().stream()
+					.filter(c -> (c instanceof CommandArmyCreate) || (c instanceof CommandArmySplit))
 					.collect(Collectors.toList());
 			createArmyCommands.forEach(c -> c.apply());
 			pg.removeCommands(createArmyCommands);
@@ -97,7 +102,7 @@ public class GameHandler {
 		pGames.forEach(pg -> pg.getCommands().forEach(c -> c.apply()));
 	}
 
-	private void checkArmyMovementCollisions(Game game, List<PGame> pGames) {
+	private void checkArmyMovementCollisions(Game game, List<PGame> pGames, CommandErrorHandler errorHandler) {
 		List<CommandArmyMove> commandsForCancellation = new ArrayList<>();
 		Map<ProvinceBorder, List<CommandArmyMove>> movings = new HashMap<>();
 		// fill movings
@@ -108,6 +113,10 @@ public class GameHandler {
 				}
 				CommandArmyMove cmd = (CommandArmyMove) pgCmd;
 				Army army = game.findArmyByIdForCommand(cmd.getCountryId(), cmd.getArmyId());
+				if (army == null) {
+					errorHandler.addError(cmd, "army not found in checkArmyMovementCollisions");
+					continue;
+				}
 				ProvinceBorder pb = new ProvinceBorder(cmd.getDestinationProvId(), army.getLocation().getId());
 				List<CommandArmyMove> movsFromToLocation = movings.get(pb);
 				if (movsFromToLocation == null) {

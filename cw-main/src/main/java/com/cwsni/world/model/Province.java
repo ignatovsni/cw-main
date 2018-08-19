@@ -36,7 +36,8 @@ public class Province implements EventTarget {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
+		if (this == obj)
+			return true;
 		if (!(obj instanceof Province)) {
 			return false;
 		}
@@ -441,15 +442,17 @@ public class Province implements EventTarget {
 		if (populationAmount > 0) {
 			int attackerSoldiers = attackerArmies.stream().mapToInt(a -> a.getSoldiers()).sum();
 			int defenderSoldiers = defenderArmies.stream().mapToInt(a -> a.getSoldiers()).sum();
-			loss = Math.min(0.9, loss + (attackerSoldiers + defenderSoldiers) / populationAmount);
+			loss = Math.min(0.5, loss * (attackerSoldiers + defenderSoldiers / 10) / populationAmount);
 			for (Population p : getPopulation()) {
 				p.sufferFromWar(loss);
 			}
 		}
 	}
 
-	void sufferFromInvading() {
+	void sufferFromInvasion(int soldiers, double successfulInvasion) {
 		double loss = map.getGame().getGameParams().getProvinceLossFromFight();
+		loss = Math.min(0.1, loss * soldiers / getPopulationAmount() * successfulInvasion);
+		//System.out.println("loss: " + loss);
 		setWealth(data.getWealth() * (1 - loss));
 		setInfrastructure((int) (getInfrastructure() * (1 - loss)));
 		for (Population p : getPopulation()) {
@@ -483,5 +486,9 @@ public class Province implements EventTarget {
 
 	public void setName(String name) {
 		data.setName(name);
+	}
+
+	public void addPopulationFromArmy(int soldiers) {
+		Population.addPopulationFromArmy(this, soldiers);
 	}
 }

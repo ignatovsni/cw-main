@@ -229,4 +229,9 @@ public class Population {
 		}
 	}
 
+	public static void addPopulationFromArmy(Province p, int soldiers) {
+		double fraction = 1.0 * soldiers / p.getPopulationAmount();
+		p.getPopulation().forEach(pop -> pop.setAmount((int) (pop.getAmount() + pop.getAmount() * fraction)));
+	}
+
 }

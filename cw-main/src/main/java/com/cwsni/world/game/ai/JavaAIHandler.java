@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class JavaAIHandler implements IAIHandler {
 	public void checkCapital(AIData4Country data) {
 		IPCountry country = data.getCountry();
 		IPProvince capital = country.getCapital();
-		if (capital == null) {
+		if (capital == null || capital.getPopulationAmount() == 0) {
 			int maxPop = -1;
 			IPProvince candidate = null;
 			for (IPProvince p : country.getProvinces()) {
@@ -77,7 +78,7 @@ public class JavaAIHandler implements IAIHandler {
 			}
 		}
 
-		if (armies.size() >= 10) {
+		if (armies.size() >= 20) {
 			return;
 		}
 		// new armies
@@ -109,35 +110,53 @@ public class JavaAIHandler implements IAIHandler {
 				continue;
 			}
 			Collection<IPArmy> armiesInProv = country.findArmiesInProv(location);
-			if (armiesInProv.size() < 2) {
-				continue;
-			}
+			processed.addAll(armiesInProv);
 			List<IPProvince> alienNeighbors = army.getLocation().getNeighbors().stream()
 					.filter(n -> n.getTerrainType().isPopulationPossible() && !n.isMyProvince())
 					.collect(Collectors.toList());
-			if (alienNeighbors.size() < 2) {
-				for (IPArmy a : armiesInProv) {
-					if (a != army) {
-						army.merge(a);
-					}
+			if (armiesInProv.size() < alienNeighbors.size()) {
+				// split
+				int needMoreArmies = alienNeighbors.size() - armiesInProv.size();
+				long totalSoldiers = armiesInProv.stream().mapToLong(a -> a.getSoldiers()).sum();
+				int newArmySize = (int) Math.max(totalSoldiers / alienNeighbors.size(),
+						data.getGame().getGameParams().getArmyMinAllowedSoldiers() * 2);
+				long maxPopInAlienNeighbors = alienNeighbors.stream().mapToLong(p -> p.getPopulationAmount()).max()
+						.getAsLong();
+				int needMaxSoldiers = (int) (maxPopInAlienNeighbors
+						* data.getCountry().getArmySoldiersToPopulationForSubjugation());
+				newArmySize = Math.max(newArmySize, needMaxSoldiers);
+				Optional<IPArmy> bigArmy = armiesInProv.stream().max((x, y) -> x.getSoldiers() - y.getSoldiers());
+				while (country.getArmies().size() < 20 && needMoreArmies > 0 && bigArmy.get().getSoldiers() >= newArmySize * 2) {
+					bigArmy.get().splitArmy(newArmySize);
+					--needMoreArmies;
 				}
 			} else {
-				Heap<IPArmy> weakArmies = new Heap<>((x, y) -> x.getSoldiers() - y.getSoldiers());
-				armiesInProv.forEach(a -> weakArmies.put(a));
-				while (weakArmies.size() > alienNeighbors.size()) {
-					IPArmy weakestArmy1 = weakArmies.poll();
-					IPArmy weakestArmy2 = weakArmies.poll();
-					weakestArmy2.merge(weakestArmy1);
-					weakArmies.put(weakestArmy2);
+				// merge
+				if (armiesInProv.size() < 2) {
+					continue;
+				}
+				if (alienNeighbors.size() < 2) {
+					for (IPArmy a : armiesInProv) {
+						if (a != army) {
+							army.merge(a);
+						}
+					}
+				} else {
+					Heap<IPArmy> weakArmies = new Heap<>((x, y) -> x.getSoldiers() - y.getSoldiers());
+					armiesInProv.forEach(a -> weakArmies.put(a));
+					while (weakArmies.size() > alienNeighbors.size()) {
+						IPArmy weakestArmy1 = weakArmies.poll();
+						IPArmy weakestArmy2 = weakArmies.poll();
+						weakestArmy2.merge(weakestArmy1);
+						weakArmies.put(weakestArmy2);
+					}
 				}
 			}
-			// TODO split
-			processed.addAll(armiesInProv);
 		}
 	}
 
 	public void moveArmies(AIData4Country data) {
-		Collection<IPArmy> armies = data.getCountry().getArmies();
+		Collection<IPArmy> armies = new ArrayList<>(data.getCountry().getArmies());
 		if (armies.isEmpty()) {
 			return;
 		}
@@ -148,10 +167,20 @@ public class JavaAIHandler implements IAIHandler {
 		if (!army.isCanMove()) {
 			return;
 		}
-		if (!ComparisonTool.isEqual(army.getCountry().getId(), army.getLocation().getCountryId())
-				&& !army.getLocation().getTerrainType().isWater()) {
-			// alien province, stay here
-			return;
+		IPProvince location = army.getLocation();
+		if (!ComparisonTool.isEqual(army.getCountry().getId(), location.getCountryId())
+				&& !location.getTerrainType().isWater()) {
+			if (army.getSoldiers() > location.getPopulationAmount()
+					* data.getCountry().getArmySoldiersToPopulationForSubjugation()) {
+				// alien province and army is able to subjugate it, stay here
+				return;
+			} else {
+				// return to home
+				if (data.getCountry().getCapital() != null && data.getCountry().getProvinces().size() > 10) {
+					army.dismiss();
+					return;
+				}
+			}
 		}
 		if (tryMovingArmyToNeighbors(data, army)) {
 			return;
@@ -206,6 +235,9 @@ public class JavaAIHandler implements IAIHandler {
 		IPProvince nearestProv = null;
 		double minDistance = Double.MAX_VALUE;
 		for (IPProvince p : data.getCountry().getNeighborsProvs()) {
+			if (p.equals(a.getLocation())) {
+				continue;
+			}
 			double distance = data.getGame().relativeDistance(a.getLocation(), p);
 			if (distance < minDistance) {
 				minDistance = distance;

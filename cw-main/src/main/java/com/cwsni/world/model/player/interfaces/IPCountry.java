@@ -26,6 +26,8 @@ public interface IPCountry {
 
 	Collection<IPArmy> findArmiesInProv(IPProvince province);
 
+	double getArmySoldiersToPopulationForSubjugation();
+
 	void setCapital(IPProvince candidate);
 
 }

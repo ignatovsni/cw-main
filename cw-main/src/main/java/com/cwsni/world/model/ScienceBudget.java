@@ -35,11 +35,19 @@ public class ScienceBudget {
 	}
 
 	public double getTotalWeight() {
-		return data.getAgricultureWeight() + data.getAdministrationWeight() + data.getMedicineWeight();
+		double tw = data.getAgricultureWeight() + data.getAdministrationWeight() + data.getMedicineWeight();
+		if (tw<=0) {
+			tw = 1;
+		}
+		return tw;
 	}
 
 	private double calcHowToIncreaseScience(double v) {
-		return Math.log(v);
+		if (v > 0) {
+			return Math.log(v);
+		} else {
+			return 0;
+		}
 	}
 
 	public double getAdministrationFraction(double money) {

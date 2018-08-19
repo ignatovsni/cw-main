@@ -21,10 +21,13 @@ public class DataScience {
 	}
 
 	public void setAmount(double amount) {
-		//if (amount < 0) {
-		//	System.out.println(amount);
-		//}
+		if (amount < 0) {
+			System.out.println("DataScience: amount < 0");
+		}
 		this.amount = DataFormatter.doubleWith3points(amount);
+		if (this.amount > 100000) {
+			System.out.println("DataScience: amount > 100,000");
+		}
 		if (this.amount > max) {
 			max = this.amount;
 		}
