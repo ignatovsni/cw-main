@@ -25,6 +25,7 @@ public class Province implements EventTarget {
 	private WorldMap map;
 	private EventCollection events;
 	private List<Population> immigrants;
+	private Country country;
 	private List<Army> armies;
 	private Integer oldCapitalId;
 	private double distanceToCapital;
@@ -83,19 +84,15 @@ public class Province implements EventTarget {
 	}
 
 	public Country getCountry() {
-		if (data.getCountry() == null) {
-			return null;
-		} else {
-			return getMap().getGame().findCountryById(data.getCountry());
-		}
+		return country;
 	}
 
 	public Integer getCountryId() {
-		return data.getCountry();
+		return country != null ? country.getId() : null;
 	}
 
 	public void setCountry(Country c) {
-		data.setCountry(c != null ? c.getId() : null);
+		this.country = c;
 	}
 
 	public double getSoilFertility() {
@@ -369,7 +366,7 @@ public class Province implements EventTarget {
 	}
 
 	private double getLocalIncomePerYear() {
-		if (getCountryId() == null) {
+		if (getCountry() == null) {
 			return sumTaxForYear() / 2;
 		} else {
 			return sumTaxForYear() * (1 - getCountry().getMoneyBudget().getProvinceTax() * getGovernmentInfluence());
@@ -419,7 +416,7 @@ public class Province implements EventTarget {
 		}
 
 		// infrastructure
-		if (getCountryId() != null) {
+		if (getCountry() != null) {
 			double newInfrastructure = Math.min(getInfrastructure() + wealthForInfrastructure,
 					getPopulationAmount() * gParams.getInfrastructureNaturalLimitWithLocalGovernment());
 			setInfrastructure((int) newInfrastructure);
@@ -452,7 +449,7 @@ public class Province implements EventTarget {
 	void sufferFromInvasion(int soldiers, double successfulInvasion) {
 		double loss = map.getGame().getGameParams().getProvinceLossFromFight();
 		loss = Math.min(0.1, loss * soldiers / getPopulationAmount() * successfulInvasion);
-		//System.out.println("loss: " + loss);
+		// System.out.println("loss: " + loss);
 		setWealth(data.getWealth() * (1 - loss));
 		setInfrastructure((int) (getInfrastructure() * (1 - loss)));
 		for (Population p : getPopulation()) {

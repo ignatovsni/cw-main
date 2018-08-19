@@ -37,8 +37,11 @@ public class Country {
 		budget = new MoneyBudget();
 		scienceBudget = new ScienceBudget();
 
-		game.getMap().getProvinces().stream().filter(p -> p.getCountryId() != null && p.getCountryId() == data.getId())
-				.forEach(p -> provinces.add(game.getMap().findProvById(p.getId())));
+		data.getProvinces().forEach(pId -> {
+			Province province = game.getMap().findProvById(pId);
+			province.setCountry(this);
+			provinces.add(province);
+		});
 
 		dc.getArmies().forEach(da -> {
 			Army a = new Army();
@@ -84,7 +87,7 @@ public class Country {
 		if (province == null) {
 			data.setCapital(null);
 		} else {
-			if (ComparisonTool.isEqual(province.getCountryId(), getId())) {
+			if (this.equals(province.getCountry())) {
 				data.setCapital(province.getId());
 			} else {
 				throw new CwException("Trying to set up capital in alien province: province country id = "
@@ -153,12 +156,14 @@ public class Country {
 		if (p.getTerrainType().isPopulationPossible()) {
 			p.setCountry(this);
 			provinces.add(p);
+			data.getProvinces().add(p.getId());
 		}
 	}
 
 	public void removeProvince(Province p) {
 		p.setCountry(null);
 		provinces.remove(p);
+		data.getProvinces().remove(p.getId());
 		if (ComparisonTool.isEqual(getCapitalId(), p.getId())) {
 			setCapital(null);
 		}
@@ -206,7 +211,7 @@ public class Country {
 	}
 
 	public Army createArmy(Province p, int soldiers) {
-		if (!ComparisonTool.isEqual(p.getCountryId(), getId())) {
+		if (!this.equals(p.getCountry())) {
 			logger.error("destination country id = " + p.getCountryId() + " but country.id = " + getId());
 			return null;
 		}
@@ -288,7 +293,7 @@ public class Country {
 	public void setName(String name) {
 		data.setName(name);
 	}
-	
+
 	public double getArmySoldiersToPopulationForSubjugation() {
 		// it can depend on country science development
 		return game.getGameParams().getArmySoldiersToPopulationForSubjugation();

@@ -21,7 +21,6 @@ public class DataProvince {
 
 	// --------------- data section -------------------
 
-	private Integer country;
 	/**
 	 * current area
 	 */
@@ -134,14 +133,6 @@ public class DataProvince {
 
 	public void setInfrastructure(int infrastructure) {
 		this.infrastructure = infrastructure;
-	}
-
-	public Integer getCountry() {
-		return country;
-	}
-
-	public void setCountry(Integer country) {
-		this.country = country;
 	}
 
 	public double getWealth() {

@@ -1,7 +1,9 @@
 package com.cwsni.world.model.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.game.ai.ScriptAIHandler;
@@ -16,6 +18,7 @@ public class DataCountry {
 	private Integer capital;
 	private Integer firstCapital;
 	private double focus;
+	private Set<Integer> provinces = new HashSet<>();
 	private List<DataArmy> armies = new ArrayList<>();
 	private DataMoneyBudget budget;
 	private DataScienceBudget scienceBudget;
@@ -108,6 +111,14 @@ public class DataCountry {
 
 	public void setAiScriptName(String aiScriptName) {
 		this.aiScriptName = aiScriptName;
+	}
+
+	public Set<Integer> getProvinces() {
+		return provinces;
+	}
+
+	public void setProvinces(Set<Integer> provinces) {
+		this.provinces = provinces;
 	}
 
 }
