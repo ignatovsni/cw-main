@@ -1,5 +1,7 @@
 package com.cwsni.world.model.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Color {
 
 	private int r;
@@ -37,6 +39,11 @@ public class Color {
 
 	public void setB(int blue) {
 		this.b = blue;
+	}
+
+	@JsonIgnore
+	public javafx.scene.paint.Color getJavaFxColor() {
+		return new javafx.scene.paint.Color(getR() / 255.0, getG() / 255.0, getB() / 255.0, 1);
 	}
 
 }

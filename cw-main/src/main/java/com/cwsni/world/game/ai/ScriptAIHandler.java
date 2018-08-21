@@ -22,6 +22,14 @@ import org.springframework.stereotype.Component;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
+/**
+ * Add scripts for:
+ * - fights
+ * - states creating
+ * - country creating ???
+ * 
+ */
+
 @Component
 @Qualifier("scriptAIHandler")
 public class ScriptAIHandler implements IAIHandler {

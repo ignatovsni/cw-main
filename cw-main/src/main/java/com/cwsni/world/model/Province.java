@@ -26,9 +26,12 @@ public class Province implements EventTarget {
 	private EventCollection events;
 	private List<Population> immigrants;
 	private Country country;
+	private State state;
 	private List<Army> armies;
 	private Integer oldCapitalId;
 	private double distanceToCapital;
+	private Integer oldStateCapitalId;
+	private double distanceToStateCapital;
 
 	@Override
 	public int hashCode() {
@@ -93,6 +96,18 @@ public class Province implements EventTarget {
 
 	public void setCountry(Country c) {
 		this.country = c;
+	}
+
+	public void setState(State state) {
+		this.state = state;
+	}
+
+	public State getState() {
+		return state;
+	}
+
+	public Integer getStateId() {
+		return state != null ? state.getId() : null;
 	}
 
 	public double getSoilFertility() {
@@ -175,7 +190,15 @@ public class Province implements EventTarget {
 	}
 
 	public int getMaxPopulation() {
-		return (int) (getSoilArea() * getSoilFertility());
+		double defaultMax = getSoilArea() * getSoilFertility();
+		if (getCountry() != null && this.equals(getCountry().getCapital())) {
+			defaultMax *= getMap().getGame().getGameParams().getPopulationMaxInCapital();
+		} else {
+			if (getState() != null && this.equals(getState().getCapital())) {
+				defaultMax *= getMap().getGame().getGameParams().getPopulationMaxInStateCapital();
+			}
+		}
+		return (int) defaultMax;
 	}
 
 	public double getPopulationExcess() {
@@ -339,10 +362,69 @@ public class Province implements EventTarget {
 
 	public double getGovernmentInfluence() {
 		Country country = getCountry();
-		if (country == null || country.getCapitalId() == null) {
+		if (country == null) {
 			return 0;
 		}
+		double capitalInfluence = getCapitalInfluence();
+		if (getState() == null) {
+			return capitalInfluence;
+		}
+		GameParams gParams = map.getGame().getGameParams();
+		if (this.equals(getState().getCapital())) {
+			// it is a state capital
+			if (country.getCapital() == null) {
+				return capitalInfluence;
+			}
+			double distToCapital = getDistanceToCapital();
+			if (distToCapital < 1) {
+				return capitalInfluence;
+			}
+			double adminScience = 1 + getScienceAdministration() + country.getCapital().getScienceAdministration();
+			double coeffWithDist = gParams.getProvinceInfluenceFromCapitalForStateWithDistanceDecrease();
+			double stateInfluence = Math.pow(coeffWithDist, distToCapital / Math.log10(adminScience) * 2);
+			return Math.max(stateInfluence, capitalInfluence);
+		} else {
+			if (getState().getCapital() == null || !country.equals(getState().getCapital().getCountry())) {
+				// no state capital or capital belongs to another country
+				return capitalInfluence;
+			} else {
+				double distToStateCapital = getDistanceToStateCapital();
+				double stateInfluence = getState().getCapital().getGovernmentInfluence()
+						* Math.pow(gParams.getProvinceInfluenceFromCapitalWithDistanceDecrease(), distToStateCapital);
+				return Math.max(stateInfluence, capitalInfluence);
+			}
+		}
+	}
+
+	private double getCapitalInfluence() {
+		Country country = getCountry();
+		if (country == null) {
+			return 0;
+		}
+		GameParams gParams = map.getGame().getGameParams();
+		if (country.getCapitalId() == null) {
+			return gParams.getProvinceInfluenceFromCapitalWithoutCapital();
+		}
+		double adminScience = getScienceAdministration() + country.getCapital().getScienceAdministration();
+		double effectiveDistanceToCapital = getDistanceToCapital() - Math.log10(adminScience) / 3;
+		if (effectiveDistanceToCapital <= 0) {
+			return 1;
+		} else {
+			double influence = Math.pow(gParams.getProvinceInfluenceFromCapitalWithDistanceDecrease(),
+					effectiveDistanceToCapital);
+			influence = Math.max(influence, gParams.getProvinceInfluenceFromCapitalWithoutCapital());
+			return influence;
+		}
+	}
+
+	private double getDistanceToCapital() {
+		if (getCountry() == null) {
+			return -1;
+		}
 		Integer capitalId = country.getCapitalId();
+		if (capitalId == null) {
+			return -1;
+		}
 		if (!ComparisonTool.isEqual(oldCapitalId, capitalId)) {
 			if (ComparisonTool.isEqual(capitalId, getId())) {
 				distanceToCapital = 0;
@@ -351,14 +433,26 @@ public class Province implements EventTarget {
 			}
 			oldCapitalId = capitalId;
 		}
-		double adminScience = getScienceAdministration() + country.getCapital().getScienceAdministration();
-		double effectiveDistanceToCapital = distanceToCapital - Math.log10(adminScience);
-		if (effectiveDistanceToCapital <= 0) {
-			return 1;
-		} else {
-			return Math.pow(map.getGame().getGameParams().getProvinceInfluenceFromCapitalWithDistanceDecrease(),
-					effectiveDistanceToCapital);
+		return distanceToCapital;
+	}
+
+	private double getDistanceToStateCapital() {
+		if (getState() == null) {
+			return -1;
 		}
+		Integer capitalId = getState().getCapitalId();
+		if (capitalId == null) {
+			return -1;
+		}
+		if (!ComparisonTool.isEqual(oldStateCapitalId, capitalId)) {
+			if (ComparisonTool.isEqual(capitalId, getId())) {
+				distanceToStateCapital = 0;
+			} else {
+				distanceToStateCapital = map.findDistanceBetweenProvs(capitalId, getId());
+			}
+			oldStateCapitalId = capitalId;
+		}
+		return distanceToStateCapital;
 	}
 
 	public double getFederalIncomePerYear() {
@@ -488,4 +582,5 @@ public class Province implements EventTarget {
 	public void addPopulationFromArmy(int soldiers) {
 		Population.addPopulationFromArmy(this, soldiers);
 	}
+
 }

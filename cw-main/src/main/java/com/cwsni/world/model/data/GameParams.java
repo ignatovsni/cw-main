@@ -35,6 +35,8 @@ public class GameParams {
 	private double populationBaseGrowth = 0.01;
 	private double populationBaseMigration = 0.0005;
 	private double populationMaxExcess = 1.2;
+	private double populationMaxInCapital = 2;
+	private double populationMaxInStateCapital = 1.2;
 	private int populationLimitWithoutGovernment = 10000;
 
 	private int newCountryPopulationMin = 10000;
@@ -60,12 +62,16 @@ public class GameParams {
 
 	private double provinceLossFromFight = 0.1;
 	private double provinceInfluenceFromCapitalWithDistanceDecrease = 0.8;
+	private double provinceInfluenceFromCapitalWithoutCapital = 0.05;
+	private double provinceInfluenceFromCapitalForStateWithDistanceDecrease = 0.9;
 
 	private double budgetBaseTaxPerPerson = 1;
 	private double budgetBaseTaxPerWealthPerson = 3;
 	private double budgetMaxWealthPerPerson = 10;
 	private double budgetBaseCostPerSoldier = 10;
 	private double budgetBaseHiringCostPerSoldier = 100;
+
+	private int stateCreateWithMinProvinces = 4;
 
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
@@ -524,6 +530,47 @@ public class GameParams {
 
 	public void setArmySoldiersToPopulationForSubjugation(double armySoldiersToPopulationForSubjugation) {
 		this.armySoldiersToPopulationForSubjugation = armySoldiersToPopulationForSubjugation;
+	}
+
+	public int getStateCreateWithMinProvinces() {
+		return stateCreateWithMinProvinces;
+	}
+
+	public void setStateCreateWithMinProvinces(int stateCreateWithMinProvinces) {
+		this.stateCreateWithMinProvinces = stateCreateWithMinProvinces;
+	}
+
+	public double getProvinceInfluenceFromCapitalWithoutCapital() {
+		return provinceInfluenceFromCapitalWithoutCapital;
+	}
+
+	public void setProvinceInfluenceFromCapitalWithoutCapital(double provinceInfluenceFromCapitalWithoutCapital) {
+		this.provinceInfluenceFromCapitalWithoutCapital = provinceInfluenceFromCapitalWithoutCapital;
+	}
+
+	public double getProvinceInfluenceFromCapitalForStateWithDistanceDecrease() {
+		return provinceInfluenceFromCapitalForStateWithDistanceDecrease;
+	}
+
+	public void setProvinceInfluenceFromCapitalForStateWithDistanceDecrease(
+			double provinceInfluenceFromCapitalForStateWithDistanceDecrease) {
+		this.provinceInfluenceFromCapitalForStateWithDistanceDecrease = provinceInfluenceFromCapitalForStateWithDistanceDecrease;
+	}
+
+	public double getPopulationMaxInCapital() {
+		return populationMaxInCapital;
+	}
+
+	public void setPopulationMaxInCapital(double populationMaxInCapital) {
+		this.populationMaxInCapital = populationMaxInCapital;
+	}
+
+	public double getPopulationMaxInStateCapital() {
+		return populationMaxInStateCapital;
+	}
+
+	public void setPopulationMaxInStateCapital(double populationMaxInStateCapital) {
+		this.populationMaxInStateCapital = populationMaxInStateCapital;
 	}
 
 }

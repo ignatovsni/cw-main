@@ -1,4 +1,4 @@
-package com.cwsni.world.client.desktop.game;
+package com.cwsni.world.client.desktop.game.map;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.game.map.MapMode;
+import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 
 import javafx.scene.control.Button;
@@ -37,6 +37,7 @@ public class GsMapToolBar extends ToolBar {
 
 		addButton("geo", MapMode.GEO).setEffect(new Lighting());
 		addButton("political", MapMode.POLITICAL);
+		addButton("states", MapMode.STATES);
 		addButton("population", MapMode.POPULATION);
 		addButton("government-influence", MapMode.GOVERNMENT_INFLUENCE);
 		addButton("wealth", MapMode.WEALTH);

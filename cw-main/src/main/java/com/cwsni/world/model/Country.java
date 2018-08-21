@@ -50,7 +50,7 @@ public class Country {
 			game.registerArmy(a);
 		});
 
-		// budget is initialized last to calculate actual numbers
+		// budget must be initialized last to calculate actual numbers
 		budget.buildFrom(this, dc.getBudget());
 		scienceBudget.buildFrom(this, dc.getScienceBudget());
 	}
@@ -91,7 +91,7 @@ public class Country {
 				data.setCapital(province.getId());
 			} else {
 				throw new CwException("Trying to set up capital in alien province: province country id = "
-						+ province.getCountryId() + " but country.id = " + province.getId());
+						+ province.getCountryId() + " but country.id = " + getId());
 			}
 		}
 	}

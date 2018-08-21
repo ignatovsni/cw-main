@@ -110,6 +110,13 @@ public class JavaAIHandler implements IAIHandler {
 			Heap<IPProvince> provsBySoldiers = new Heap<>((x, y) -> y.getPopulationAmount() - x.getPopulationAmount());
 			provinces.forEach(p -> provsBySoldiers.put(p));
 			IPProvince provForHiring = provsBySoldiers.poll();
+			if (provForHiring.equals(data.getCountry().getCapital()) && !provsBySoldiers.isEmpty()) {
+				// we don't want to hire in capital
+				IPProvince anotherProv = provsBySoldiers.poll();
+				if (anotherProv.getPopulationAmount() > canAllowNewSoldiers / 3) {
+					provForHiring = anotherProv;
+				}
+			}
 			data.getCountry().createArmy(provForHiring.getId(), (int) canAllowNewSoldiers);
 		}
 	}

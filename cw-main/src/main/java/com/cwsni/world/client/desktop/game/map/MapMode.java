@@ -3,6 +3,7 @@ package com.cwsni.world.client.desktop.game.map;
 public enum MapMode {
 	GEO,
 	POLITICAL,
+	STATES,
 	POPULATION,
 	POPULATION_2,
 	GOVERNMENT_INFLUENCE,

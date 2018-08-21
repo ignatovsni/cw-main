@@ -22,6 +22,7 @@ import com.cwsni.world.client.desktop.game.infopanels.GsProvEventsInfoPane;
 import com.cwsni.world.client.desktop.game.infopanels.GsProvInfoPane;
 import com.cwsni.world.client.desktop.game.infopanels.GsProvScienceInfoPane;
 import com.cwsni.world.client.desktop.game.map.DWorldMap;
+import com.cwsni.world.client.desktop.game.map.GsMapToolBar;
 import com.cwsni.world.client.desktop.game.map.MapMode;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.AlertWithStackTraceFactory;

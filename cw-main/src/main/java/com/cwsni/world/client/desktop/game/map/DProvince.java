@@ -12,6 +12,7 @@ import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Culture;
 import com.cwsni.world.model.GameTransientStats;
 import com.cwsni.world.model.Province;
+import com.cwsni.world.model.State;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.events.Event;
@@ -98,6 +99,9 @@ class DProvince extends Group {
 			case POPULATION_2:
 				drawPopulationMode(polygon);
 				break;
+			case STATES:
+				drawStatesMode(polygon);
+				break;
 			case WEALTH:
 				drawWealthMode(polygon);
 				break;
@@ -160,7 +164,7 @@ class DProvince extends Group {
 				p.getPoints().addAll(capitalPoints);
 				p.setStrokeWidth(2);
 				p.setStroke(Color.BLACK);
-				p.setFill(getCountryColor(province.getCountry()));
+				p.setFill(province.getCountry().getColor().getJavaFxColor());
 				capitalPolygon = p;
 				getChildren().add(capitalPolygon);
 				capitalPolygon.setOnMouseClicked(e -> {
@@ -194,7 +198,7 @@ class DProvince extends Group {
 				});
 			}
 			if (province.getArmies().size() == 1) {
-				armyPolygon.setFill(getCountryColor(province.getArmies().get(0).getCountry()));
+				armyPolygon.setFill(province.getArmies().get(0).getCountry().getColor().getJavaFxColor());
 			} else {
 				armyPolygon.setFill(Color.BLACK);
 			}
@@ -209,7 +213,7 @@ class DProvince extends Group {
 		Country country = province.getCountry();
 		Color color;
 		if (country != null) {
-			color = getCountryColor(country);
+			color = country.getColor().getJavaFxColor();
 		} else {
 			if (province.getPopulationAmount() == 0) {
 				color = COLOR_NONE;
@@ -220,9 +224,15 @@ class DProvince extends Group {
 		fillPolygon(polygon, color);
 	}
 
-	private Color getCountryColor(Country country) {
-		com.cwsni.world.model.data.Color cc = country.getColor();
-		return new Color(cc.getR() / 255.0, cc.getG() / 255.0, cc.getB() / 255.0, 1);
+	private void drawStatesMode(Polygon polygon) {
+		State state = province.getState();
+		Color color;
+		if (state != null) {
+			color = state.getColor().getJavaFxColor();
+		} else {
+			color = COLOR_NONE;
+		}
+		fillPolygon(polygon, color);
 	}
 
 	private void drawCultureMode(Polygon polygon) {

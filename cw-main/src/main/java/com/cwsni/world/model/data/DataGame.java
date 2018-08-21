@@ -6,7 +6,7 @@ import java.util.List;
 import com.cwsni.world.model.events.Event;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "version", "turn", "gameParams", "gameStats", "countries", "map" })
+@JsonPropertyOrder({ "version", "turn", "gameParams", "gameStats", "countries", "states", "map" })
 public class DataGame {
 
 	final static String CURRENT_VERSION = "0.1";
@@ -16,9 +16,11 @@ public class DataGame {
 	private DataWorldMap map;
 	private Turn turn;
 	private List<DataCountry> countries = new ArrayList<>();
+	private List<DataState> states = new ArrayList<>();
 	private List<Event> events = new ArrayList<>();
 	private int lastEventId;
 	private int lastCountryId;
+	private int lastStateId;
 	private int lastArmyId;
 
 	private GameStats gameStats = new GameStats();
@@ -123,9 +125,29 @@ public class DataGame {
 	public void setLastArmyId(int lastArmyId) {
 		this.lastArmyId = lastArmyId;
 	}
-	
+
 	public int nextArmyId() {
 		return ++lastArmyId;
+	}
+
+	public int getLastStateId() {
+		return lastStateId;
+	}
+
+	public void setLastStateId(int lastStateId) {
+		this.lastStateId = lastStateId;
+	}
+
+	public int nextStateId() {
+		return ++lastStateId;
+	}
+
+	public List<DataState> getStates() {
+		return states;
+	}
+
+	public void setStates(List<DataState> states) {
+		this.states = states;
 	}
 
 }

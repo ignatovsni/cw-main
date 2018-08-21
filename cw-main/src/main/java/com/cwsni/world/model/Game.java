@@ -24,6 +24,7 @@ public class Game implements EventTarget {
 	private WorldMap map;
 	private EventCollection events;
 	private CountryCollection countries;
+	private StateCollection states;
 	private Map<Integer, Army> armies;
 	private Map<Integer, Map<Integer, Army>> newArmiesWithIdLessThanZero;
 
@@ -40,6 +41,10 @@ public class Game implements EventTarget {
 
 	public int nextCountryId() {
 		return data.nextCountryId();
+	}
+
+	public int nextStateId() {
+		return data.nextStateId();
 	}
 
 	public int nextArmyId() {
@@ -113,6 +118,24 @@ public class Game implements EventTarget {
 		return countries.findCountryById(countryId);
 	}
 
+	public List<State> getStates() {
+		return states.getStates();
+	}
+
+	public void registerState(State c) {
+		data.getStates().add(c.getStateData());
+		states.addState(c);
+	}
+
+	public void unregisterState(State c) {
+		data.getStates().remove(c.getStateData());
+		states.removeState(c);
+	}
+
+	public State findStateById(Integer stateId) {
+		return states.findStateById(stateId);
+	}
+
 	private void calcGameStats() {
 		GameTransientStats stats = new GameTransientStats(this);
 		setGameTransientStats(stats);
@@ -133,10 +156,12 @@ public class Game implements EventTarget {
 		armies.values().forEach(a -> a.processNewTurn());
 		processNewProbablyCountries();
 		dismissEmptyCountries();
+		processNewProbablyStates();
 		map.getProvinces().forEach(p -> p.processNewTurn());
 		Event.processEvents(this, messageSource);
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
 		countries.getCountries().forEach(c -> c.processNewTurn());
+		states.getStates().forEach(c -> c.processNewTurn());
 		calcGameStats();
 	}
 
@@ -179,8 +204,8 @@ public class Game implements EventTarget {
 	private void dismissEmptyCountries() {
 		List<Country> countryList = new ArrayList<>(countries.getCountries());
 		countryList.forEach(c -> {
-			if (c.getProvinces().isEmpty() || c.getProvinces().stream().mapToLong(p -> p.getPopulationAmount())
-					.sum() <= getGameParams().getNewCountryPopulationMin() / 2) {
+			if ((c.getProvinces().isEmpty() || c.getProvinces().stream().mapToLong(p -> p.getPopulationAmount())
+					.sum() <= getGameParams().getNewCountryPopulationMin() / 2) && c.getArmies().isEmpty()) {
 				c.dismiss();
 				unregisterCountry(c);
 			}
@@ -204,6 +229,12 @@ public class Game implements EventTarget {
 						Country.createNewCountry(this, p);
 					}
 				});
+	}
+
+	private void processNewProbablyStates() {
+		for (Country country : getCountries()) {
+			State.createOrGrowthStates(country);
+		}
 	}
 
 	public GameStats getGameStats() {
@@ -240,6 +271,9 @@ public class Game implements EventTarget {
 				a.getLocation().addArmy(a);
 			});
 		});
+
+		states = new StateCollection();
+		states.buildFrom(this, data.getStates());
 
 		calcGameStats();
 	}
