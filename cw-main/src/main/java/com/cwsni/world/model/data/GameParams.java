@@ -35,8 +35,8 @@ public class GameParams {
 	private double populationBaseGrowth = 0.01;
 	private double populationBaseMigration = 0.0005;
 	private double populationMaxExcess = 1.2;
-	private double populationMaxInCapital = 2;
-	private double populationMaxInStateCapital = 1.2;
+	private double populationMaxInCapital = 1.3;
+	private double populationMaxInStateCapital = 1.1;
 	private int populationLimitWithoutGovernment = 10000;
 
 	private int newCountryPopulationMin = 10000;

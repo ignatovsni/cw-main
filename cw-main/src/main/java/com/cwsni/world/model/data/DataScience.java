@@ -25,8 +25,8 @@ public class DataScience {
 			System.out.println("DataScience: amount < 0");
 		}
 		this.amount = DataFormatter.doubleWith3points(amount);
-		if (this.amount > 100000) {
-			System.out.println("DataScience: amount > 100,000");
+		if (this.amount > 1000000) {
+			System.out.println("DataScience: amount > 1,000,000");
 		}
 		if (this.amount > max) {
 			max = this.amount;
