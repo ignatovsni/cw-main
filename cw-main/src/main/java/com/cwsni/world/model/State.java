@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import com.cwsni.world.CwException;
 import com.cwsni.world.model.data.Color;
+import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataState;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.util.CwRandom;
@@ -126,7 +127,8 @@ public class State {
 			Country country = capital.getCountry();
 			if (country != null) {
 				MoneyBudget moneyBudget = country.getMoneyBudget();
-				capital.spendMoneyForScience(moneyBudget.getAvailableMoneyForScience() * capital.getGovernmentInfluence()/10);
+				capital.spendMoneyForScience(
+						moneyBudget.getAvailableMoneyForScience() * capital.getGovernmentInfluence() / 10);
 			}
 		}
 	}
@@ -193,7 +195,10 @@ public class State {
 		dc.setColor(createNewColorForState(game));
 		State state = new State();
 		state.buildFrom(game, dc);
-		provs.forEach(p -> state.addProvince(p));
+		provs.forEach(p -> {
+			state.addProvince(p);
+			p.addStateLoyalty(state.getId(), DataPopulation.LOYALTY_MAX);
+		});
 		state.setCapital(prov);
 		game.registerState(state);
 	}

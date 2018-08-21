@@ -59,6 +59,7 @@ public class GameGenerator {
 		fillInfrastructure(dataGame);
 		Game game = new Game();
 		game.buildFrom(dataGame, messageSource, getGameAlgorithms());
+		gameParams.getRandom().resetWithSeed(gameParams.getSeed());
 		return game;
 	}
 
@@ -163,7 +164,7 @@ public class GameGenerator {
 		// initialize area attributes and find all terrain provinces
 		map.getProvinces().stream().filter(p -> p.getTerrainType().isSoilPossible()).forEach(p -> {
 			p.setSize(100);
-			//p.setSize((int) (50 + 100 * gParams.getRandom().nextNormalDouble()));
+			// p.setSize((int) (50 + 100 * gParams.getRandom().nextNormalDouble()));
 			p.setSoilArea(p.getSize() * gParams.getSoilAreaPerSize() / 10);
 			p.setSoilFertility(gParams.getSoilFertilityAtStartMin());
 			terrain.add(p);

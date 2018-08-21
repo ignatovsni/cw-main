@@ -111,6 +111,12 @@ class DProvince extends Group {
 			case GOVERNMENT_INFLUENCE:
 				drawGovInfluenceMode(polygon);
 				break;
+			case LOYALTY:
+				drawLoyaltyMode(polygon);
+				break;
+			case LOYALTY_DANGEROUS:
+				drawLoyaltyDangerousMode(polygon);
+				break;
 			case CULTURE:
 				drawCultureMode(polygon);
 				break;
@@ -244,6 +250,15 @@ class DProvince extends Group {
 			color = COLOR_NONE;
 		}
 		fillPolygon(polygon, color);
+	}
+	
+	private void drawLoyaltyMode(Polygon polygon) {
+		drawGradientMode(polygon, 100.0, province.getCountryLoyalty(), false);
+	}
+
+	private void drawLoyaltyDangerousMode(Polygon polygon) {
+		double danger = Math.min(Math.max(province.getStateLoyalty() - province.getCountryLoyalty(), 0), 70);
+		drawGradientMode(polygon, 70.0, danger, false);
 	}
 
 	private void drawInfrastructureMode(Polygon polygon) {

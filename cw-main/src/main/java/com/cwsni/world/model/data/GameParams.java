@@ -38,6 +38,14 @@ public class GameParams {
 	private double populationMaxInCapital = 1.3;
 	private double populationMaxInStateCapital = 1.1;
 	private int populationLimitWithoutGovernment = 10000;
+	
+	private double populationLoyaltyDecreasingDefault = -1.0;
+	private double populationLoyaltyDecreasingEpidemic = -0.2;
+	private double populationLoyaltyDecreasingOverpopulation = -0.05;
+	private double populationLoyaltyIncreasingGovernmnentCoeff = 1.0;
+	private double populationLoyaltyIncreasingCapital = 0.5;
+	private double populationLoyaltyWealthThreshold = 0.5;
+	private double populationLoyaltyWealthThresholdCoeff = 1.0;
 
 	private int newCountryPopulationMin = 10000;
 	private int newCountryScienceAdministrationMin = 100;
@@ -67,6 +75,7 @@ public class GameParams {
 
 	private double budgetBaseTaxPerPerson = 1;
 	private double budgetBaseTaxPerWealthPerson = 3;
+	private double budgetSpendMoneyPerPerson = 0.5;
 	private double budgetMaxWealthPerPerson = 10;
 	private double budgetBaseCostPerSoldier = 10;
 	private double budgetBaseHiringCostPerSoldier = 100;
@@ -571,6 +580,70 @@ public class GameParams {
 
 	public void setPopulationMaxInStateCapital(double populationMaxInStateCapital) {
 		this.populationMaxInStateCapital = populationMaxInStateCapital;
+	}
+
+	public double getPopulationLoyaltyDecreasingDefault() {
+		return populationLoyaltyDecreasingDefault;
+	}
+
+	public void setPopulationLoyaltyDecreasingDefault(double populationLoyaltyDecreasingDefault) {
+		this.populationLoyaltyDecreasingDefault = populationLoyaltyDecreasingDefault;
+	}
+
+	public double getPopulationLoyaltyDecreasingEpidemic() {
+		return populationLoyaltyDecreasingEpidemic;
+	}
+
+	public void setPopulationLoyaltyDecreasingEpidemic(double populationLoyaltyDecreasingEpidemic) {
+		this.populationLoyaltyDecreasingEpidemic = populationLoyaltyDecreasingEpidemic;
+	}
+
+	public double getPopulationLoyaltyDecreasingOverpopulation() {
+		return populationLoyaltyDecreasingOverpopulation;
+	}
+
+	public void setPopulationLoyaltyDecreasingOverpopulation(double populationLoyaltyDecreasingOverpopulation) {
+		this.populationLoyaltyDecreasingOverpopulation = populationLoyaltyDecreasingOverpopulation;
+	}
+
+	public double getPopulationLoyaltyIncreasingGovernmnentCoeff() {
+		return populationLoyaltyIncreasingGovernmnentCoeff;
+	}
+
+	public void setPopulationLoyaltyIncreasingGovernmnentCoeff(double populationLoyaltyIncreasingGovernmnentCoeff) {
+		this.populationLoyaltyIncreasingGovernmnentCoeff = populationLoyaltyIncreasingGovernmnentCoeff;
+	}
+
+	public double getPopulationLoyaltyIncreasingCapital() {
+		return populationLoyaltyIncreasingCapital;
+	}
+
+	public void setPopulationLoyaltyIncreasingCapital(double populationLoyaltyIncreasingCapital) {
+		this.populationLoyaltyIncreasingCapital = populationLoyaltyIncreasingCapital;
+	}
+
+	public double getBudgetSpendMoneyPerPerson() {
+		return budgetSpendMoneyPerPerson;
+	}
+
+	public void setBudgetSpendMoneyPerPerson(double budgetSpendMoneyPerPerson) {
+		this.budgetSpendMoneyPerPerson = budgetSpendMoneyPerPerson;
+	}
+
+	public double getPopulationLoyaltyWealthThreshold() {
+		return populationLoyaltyWealthThreshold;
+	}
+
+	public void setPopulationLoyaltyWealthThreshold(double populationLoyaltyWealthThreshold) {
+		this.populationLoyaltyWealthThreshold = populationLoyaltyWealthThreshold;
+	}
+
+	public double getPopulationLoyaltyWealthThresholdCoeff() {
+		return populationLoyaltyWealthThresholdCoeff;
+	}
+
+	public void setPopulationLoyaltyWealthThresholdCoeff(double populationLoyaltyWealthThresholdCoeff) {
+		this.populationLoyaltyWealthThresholdCoeff = populationLoyaltyWealthThresholdCoeff;
 	}
 
 }

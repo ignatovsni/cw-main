@@ -218,7 +218,7 @@ public class JavaAIHandler implements IAIHandler {
 				// alien province and army is able to subjugate it, stay here
 				return;
 			} else {
-				// return to home
+				// return to home !!! army.dismiss() can work in different way in next versions
 				if (data.getCountry().getCapital() != null && data.getCountry().getProvinces().size() > 10) {
 					army.dismiss();
 					return;

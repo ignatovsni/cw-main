@@ -14,6 +14,7 @@ import com.cwsni.world.model.data.Color;
 import com.cwsni.world.model.data.DataArmy;
 import com.cwsni.world.model.data.DataCountry;
 import com.cwsni.world.model.data.DataMoneyBudget;
+import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataScienceBudget;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.util.CwRandom;
@@ -153,6 +154,9 @@ public class Country {
 	}
 
 	public void addProvince(Province p) {
+		if (p.getCountry() != null) {
+			p.getCountry().removeProvince(p);
+		}
 		if (p.getTerrainType().isPopulationPossible()) {
 			p.setCountry(this);
 			provinces.add(p);
@@ -317,6 +321,7 @@ public class Country {
 		c.setCapital(p);
 		c.setFirstCapital(p);
 		c.setFocus(100);
+		c.getCapital().addCountryLoyalty(c.getId(), DataPopulation.LOYALTY_MAX);
 		game.registerCountry(c);
 
 		// randomize parameters

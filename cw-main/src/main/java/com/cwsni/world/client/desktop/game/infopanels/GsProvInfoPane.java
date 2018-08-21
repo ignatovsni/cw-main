@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
+import com.cwsni.world.model.Population;
 import com.cwsni.world.model.Province;
 
 import javafx.scene.layout.GridPane;
@@ -25,6 +26,8 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesPopsLabel;
 	private RowValue valuesWealthLabel;
 	private RowValue valuesGovInfluenceLabel;
+	private RowValue valuesCountryLoyalty;
+	private RowValue valuesStateLoyalty;
 	private RowValue valuesInfrastructureLabel;
 	private RowValue valuesSoilAreaLabel;
 	private RowValue valuesSoilFertilityLabel;
@@ -46,6 +49,8 @@ public class GsProvInfoPane extends InternalInfoPane {
 		valuesPopsLabel = addRow("info.pane.prov.population", grid, idx++);
 		valuesWealthLabel = addRow("info.pane.prov.wealth", grid, idx++);
 		valuesGovInfluenceLabel = addRow("info.pane.prov.government-influence", grid, idx++);
+		valuesCountryLoyalty = addRow("info.pane.prov.country.loyalty", grid, idx++);
+		valuesStateLoyalty = addRow("info.pane.prov.state.loyalty", grid, idx++);
 		valuesInfrastructureLabel = addRow("info.pane.prov.infrastructure", grid, idx++);
 		valuesSoilAreaLabel = addRow("info.pane.prov.soil.area", grid, idx++);
 		valuesSoilFertilityLabel = addRow("info.pane.prov.soil.fertility", grid, idx++);
@@ -63,6 +68,9 @@ public class GsProvInfoPane extends InternalInfoPane {
 			setLabelTextWithLongFormatterAndValueTooltip(valuesPopsLabel, prov.getPopulationAmount());
 			setLabelTextWithLongFormatterAndValueTooltip(valuesWealthLabel, (long) prov.getWealth());
 			setLabelText(valuesGovInfluenceLabel, DataFormatter.formatFractionNumber(prov.getGovernmentInfluence()));
+			setLabelText(valuesCountryLoyalty, DataFormatter.formatFractionNumber(prov.getCountryLoyalty()),
+					Population.createDescriptionForLoyaltyChanges(gameScene.getGame(), prov, getMessageSource()));
+			setLabelText(valuesStateLoyalty, DataFormatter.formatFractionNumber(prov.getStateLoyalty()));
 			setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
 			setLabelTextWithLongFormatterAndValueTooltip(valuesSoilAreaLabel, prov.getSoilArea());
 			setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));

@@ -37,6 +37,7 @@ public class GsMapToolBar extends ToolBar {
 
 		addButton("geo", MapMode.GEO).setEffect(new Lighting());
 		addButton("political", MapMode.POLITICAL);
+		addButton("loyalty", MapMode.LOYALTY);
 		addButton("culture", MapMode.CULTURE);
 		addButton("population", MapMode.POPULATION);
 		addButton("states", MapMode.STATES);
@@ -93,6 +94,17 @@ public class GsMapToolBar extends ToolBar {
 				break;
 			case SOIL_2:
 				mapMode = MapMode.SOIL;
+				break;
+			default:
+				break;
+			}
+		}else if (MapMode.LOYALTY.equals(mapMode)) {
+			switch (gameScene.getWorldMap().getMapMode()) {
+			case LOYALTY:
+				mapMode = MapMode.LOYALTY_DANGEROUS;
+				break;
+			case LOYALTY_DANGEROUS:
+				mapMode = MapMode.LOYALTY;
 				break;
 			default:
 				break;

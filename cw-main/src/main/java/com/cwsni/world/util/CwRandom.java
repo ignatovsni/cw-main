@@ -7,6 +7,10 @@ public class CwRandom {
 	private Random random;
 
 	public CwRandom(long seed) {
+		resetWithSeed(seed);
+	}
+	
+	public void resetWithSeed(long seed) {
 		random = new Random(seed);
 	}
 

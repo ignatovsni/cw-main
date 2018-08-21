@@ -139,12 +139,13 @@ public class Province implements EventTarget {
 	}
 
 	private int getScienceTypeValue(Function<ScienceCollection, DataScience> getter4Science) {
-		if (getPopulationAmount() == 0) {
+		int populationAmount = getPopulationAmount();
+		if (populationAmount == 0) {
 			return 0;
 		}
 		long scienceValue = (long) (getPopulation().stream()
 				.mapToDouble(pop -> pop.getAmount() * getter4Science.apply(pop.getScience()).getAmount()).sum()
-				/ getPopulationAmount());
+				/ populationAmount);
 		return (int) scienceValue;
 	}
 
@@ -192,9 +193,11 @@ public class Province implements EventTarget {
 	public int getMaxPopulation() {
 		double defaultMax = getSoilArea() * getSoilFertility();
 		if (getCountry() != null && this.equals(getCountry().getCapital())) {
+			// capital can support more population
 			defaultMax *= getMap().getGame().getGameParams().getPopulationMaxInCapital();
 		} else {
 			if (getState() != null && this.equals(getState().getCapital())) {
+				// capital can support more population
 				defaultMax *= getMap().getGame().getGameParams().getPopulationMaxInStateCapital();
 			}
 		}
@@ -327,6 +330,7 @@ public class Province implements EventTarget {
 			ScienceCollection.growScienceNewTurn(this, map.getGame());
 			Population.migrateNewTurn(this, map.getGame());
 			Population.growPopulationNewTurn(this, map.getGame());
+			Population.processLoyaltyNewTurn(this, map.getGame());
 			Culture.influenceOfCountry(this, map.getGame());
 		}
 		Population.processEventsNewTurn(this, map.getGame());
@@ -357,7 +361,18 @@ public class Province implements EventTarget {
 	}
 
 	public double getWealth() {
-		return getPopulation().stream().mapToDouble(p -> p.getWealth()).sum() + data.getWealth();
+		return getWealthOfPopulation() + getWealthOfProvince();
+	}
+
+	private double getWealthOfPopulation() {
+		return getPopulation().stream().mapToDouble(p -> p.getWealth()).sum();
+	}
+
+	public double getWealthOfProvince() {
+		// if the province lost population, then wealth can be much more than current
+		// pops, so we should ignore too much wealth
+		return Math.min(data.getWealth(),
+				getPopulationAmount() * map.getGame().getGameParams().getBudgetMaxWealthPerPerson());
 	}
 
 	public double getGovernmentInfluence() {
@@ -461,9 +476,10 @@ public class Province implements EventTarget {
 
 	private double getLocalIncomePerYear() {
 		if (getCountry() == null) {
-			return sumTaxForYear() / 2;
+			return sumTaxForYear() * 0.5;
 		} else {
-			return sumTaxForYear() * (1 - getCountry().getMoneyBudget().getProvinceTax() * getGovernmentInfluence());
+			return sumTaxForYear() * (1 - getCountry().getMoneyBudget().getProvinceTax() * getGovernmentInfluence())
+					* 0.8;
 		}
 	}
 
@@ -478,9 +494,6 @@ public class Province implements EventTarget {
 		// wealth people
 		income += getWealth() / gParams.getBudgetMaxWealthPerPerson() / 2
 				* (gParams.getBudgetBaseTaxPerWealthPerson() - gParams.getBudgetBaseTaxPerPerson());
-		// if the province lost population, then wealth can be much more than current
-		// pops, so we should ignore too much wealth
-		income = Math.min(income, populationAmount * gParams.getBudgetBaseTaxPerWealthPerson());
 		return income;
 	}
 
@@ -505,6 +518,10 @@ public class Province implements EventTarget {
 				double addWealth = Math.min(Math.max(maxWealth - p.getWealth(), 0),
 						wealthForPops / populationAmount * p.getAmount());
 				p.addWealth(addWealth);
+				// people need money to support their life style
+				double spendMoneyPerPerson = gParams.getBudgetSpendMoneyPerPerson() * p.getWealth() / p.getAmount()
+						/ gParams.getBudgetMaxWealthPerPerson();
+				p.addWealth(-p.getAmount() * spendMoneyPerPerson);
 				income -= addWealth;
 			}
 		}
@@ -587,6 +604,48 @@ public class Province implements EventTarget {
 
 	public void addPopulationFromArmy(int soldiers) {
 		Population.addPopulationFromArmy(this, soldiers);
+	}
+
+	public void addCountryLoyalty(int id, Double delta) {
+		getPopulation().forEach(p -> p.addCountryLoyalty(id, delta));
+	}
+
+	public void addStateLoyalty(int id, Double delta) {
+		getPopulation().forEach(p -> p.addStateLoyalty(id, delta));
+	}
+
+	public void addAllCountriesLoyalty(double delta) {
+		getPopulation().forEach(p -> p.addAllCountriesLoyalty(delta));
+	}
+
+	public void addAllStateLoyalty(double delta) {
+		getPopulation().forEach(p -> p.addAllStatesLoyalty(delta));
+	}
+
+	public double getCountryLoyalty() {
+		Country c = getCountry();
+		if (c == null) {
+			return 0;
+		}
+		int populationAmount = getPopulationAmount();
+		if (populationAmount == 0) {
+			return 0;
+		}
+		return getPopulation().stream().mapToDouble(pop -> pop.getAmount() * pop.getCountryLoyalty(c.getId())).sum()
+				/ populationAmount;
+	}
+
+	public double getStateLoyalty() {
+		State c = getState();
+		if (c == null) {
+			return 0;
+		}
+		int populationAmount = getPopulationAmount();
+		if (populationAmount == 0) {
+			return 0;
+		}
+		return getPopulation().stream().mapToDouble(pop -> pop.getAmount() * pop.getStateLoyalty(c.getId())).sum()
+				/ populationAmount;
 	}
 
 }

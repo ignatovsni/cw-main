@@ -65,6 +65,10 @@ abstract public class InternalInfoPane extends BorderPane {
 	protected String getMessage(String code) {
 		return messageSource.getMessage(code);
 	}
+	
+	protected LocaleMessageSource getMessageSource() {
+		return messageSource;
+	}
 
 	public void init(String title, Pane internalPane) {
 		this.internalPane = internalPane;
