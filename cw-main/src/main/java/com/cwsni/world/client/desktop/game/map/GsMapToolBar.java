@@ -37,11 +37,11 @@ public class GsMapToolBar extends ToolBar {
 
 		addButton("geo", MapMode.GEO).setEffect(new Lighting());
 		addButton("political", MapMode.POLITICAL);
-		addButton("states", MapMode.STATES);
+		addButton("culture", MapMode.CULTURE);
 		addButton("population", MapMode.POPULATION);
+		addButton("states", MapMode.STATES);
 		addButton("government-influence", MapMode.GOVERNMENT_INFLUENCE);
 		addButton("wealth", MapMode.WEALTH);
-		addButton("culture", MapMode.CULTURE);
 		addButton("infrastructure", MapMode.INFRASTRUCTURE);
 		addButton("soil", MapMode.SOIL);
 		addButton("disease", MapMode.DISEASE);

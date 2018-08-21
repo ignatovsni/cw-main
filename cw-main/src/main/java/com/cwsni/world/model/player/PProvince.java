@@ -8,6 +8,7 @@ import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.player.interfaces.IPProvince;
+import com.cwsni.world.model.player.interfaces.IPState;
 
 public class PProvince implements IPProvince {
 
@@ -74,6 +75,15 @@ public class PProvince implements IPProvince {
 	@Override
 	public boolean isMyProvince() {
 		return ComparisonTool.isEqual(getCountryId(), game.getCountryId());
+	}
+
+	@Override
+	public IPState getState() {
+		if (province.getStateId() != null) {
+			return game.findStateById(province.getStateId());
+		} else {
+			return null;
+		}
 	}
 
 	public void cmcAddPopulation(int delta) {

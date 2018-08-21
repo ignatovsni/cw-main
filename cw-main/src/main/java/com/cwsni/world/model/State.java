@@ -126,7 +126,7 @@ public class State {
 			Country country = capital.getCountry();
 			if (country != null) {
 				MoneyBudget moneyBudget = country.getMoneyBudget();
-				capital.spendMoneyForScience(moneyBudget.getAvailableMoneyForScience() * 0.5);
+				capital.spendMoneyForScience(moneyBudget.getAvailableMoneyForScience() * capital.getGovernmentInfluence()/10);
 			}
 		}
 	}

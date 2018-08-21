@@ -54,17 +54,34 @@ public class JavaAIHandler implements IAIHandler {
 	public void checkCapital(AIData4Country data) {
 		IPCountry country = data.getCountry();
 		IPProvince capital = country.getCapital();
-		if (capital == null || capital.getPopulationAmount() == 0) {
+		IPProvince firstCapital = country.getFirstCapital();
+		if (firstCapital != null && !firstCapital.equals(capital)) {
+			if (ComparisonTool.isEqual(country.getId(), firstCapital.getCountryId()) && firstCapital.getState() != null
+					&& firstCapital.equals(firstCapital.getState().getCapital())) {
+				country.setCapital(firstCapital);
+				return;
+			}
+		}
+		if (capital == null || capital.getPopulationAmount() == 0
+				|| (capital.getState() != null && !capital.equals(capital.getState().getCapital()))) {
 			int maxPop = -1;
+			int maxPopStateCapital = -1;
 			IPProvince candidate = null;
+			IPProvince candidateStateCapital = null;
 			for (IPProvince p : country.getProvinces()) {
 				int popAmount = p.getPopulationAmount();
 				if (popAmount > maxPop) {
 					maxPop = popAmount;
 					candidate = p;
 				}
+				if (popAmount > maxPopStateCapital) {
+					maxPopStateCapital = popAmount;
+					candidateStateCapital = p;
+				}
 			}
-			if (candidate != null) {
+			if (candidateStateCapital != null && candidateStateCapital.getPopulationAmount() > 0) {
+				country.setCapital(candidateStateCapital);
+			} else if (candidate != null) {
 				country.setCapital(candidate);
 			}
 		}
@@ -113,7 +130,7 @@ public class JavaAIHandler implements IAIHandler {
 			if (provForHiring.equals(data.getCountry().getCapital()) && !provsBySoldiers.isEmpty()) {
 				// we don't want to hire in capital
 				IPProvince anotherProv = provsBySoldiers.poll();
-				if (anotherProv.getPopulationAmount() > canAllowNewSoldiers / 3) {
+				if (anotherProv.getPopulationAmount() > params.getArmyMinAllowedSoldiers() * 2) {
 					provForHiring = anotherProv;
 				}
 			}

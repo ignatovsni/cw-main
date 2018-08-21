@@ -17,5 +17,7 @@ public interface IPProvince {
 	int getPopulationAmount();
 
 	boolean isMyProvince();
+	
+	IPState getState();
 
 }

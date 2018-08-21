@@ -15,10 +15,12 @@ import com.cwsni.world.game.commands.CommandErrorHandler;
 import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
+import com.cwsni.world.model.State;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPGameParams;
 import com.cwsni.world.model.player.interfaces.IPProvince;
+import com.cwsni.world.model.player.interfaces.IPState;
 
 public class PGame implements IPGame {
 	private static final Log logger = LogFactory.getLog(PGame.class);
@@ -27,6 +29,7 @@ public class PGame implements IPGame {
 	private IPGameParams params;
 	private Country country;
 	private Map<Integer, PCountry> countries;
+	private Map<Integer, PState> states;
 	private Map<Integer, PProvince> provinces;
 
 	private List<Command> commands;
@@ -43,6 +46,7 @@ public class PGame implements IPGame {
 		this.params = new PGameParams(game.getGameParams());
 		provinces = new HashMap<>();
 		countries = new HashMap<>(game.getCountries().size());
+		states = new HashMap<>(game.getStates().size());
 		commands = new ArrayList<>();
 		errorHandler = new CommandErrorHandler() {
 			@Override
@@ -75,6 +79,18 @@ public class PGame implements IPGame {
 			countries.put(c.getId(), pc);
 		}
 		return pc;
+	}
+
+	IPState findStateById(Integer stateId) {
+		PState ps = states.get(stateId);
+		if (ps == null) {
+			State state = game.findStateById(stateId);
+			if (state != null) {
+				ps = new PState(this, state);
+				states.put(stateId, ps);
+			}
+		}
+		return ps;
 	}
 
 	PProvince getProvince(Province p) {

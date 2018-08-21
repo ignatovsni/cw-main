@@ -494,7 +494,7 @@ public class Province implements EventTarget {
 
 		// province wealth
 		double maxWealthForProv = populationAmount * gParams.getBudgetMaxWealthPerPerson();
-		double addWealthForProv = Math.min(maxWealthForProv - data.getWealth(), wealthForProvince);
+		double addWealthForProv = Math.min(Math.max(maxWealthForProv - data.getWealth(), 0), wealthForProvince);
 		addWealth(addWealthForProv);
 		income -= addWealthForProv;
 
@@ -502,7 +502,7 @@ public class Province implements EventTarget {
 		for (Population p : getPopulation()) {
 			if (p.getAmount() > 0) {
 				double maxWealth = p.getAmount() * gParams.getBudgetMaxWealthPerPerson();
-				double addWealth = Math.min(maxWealth - p.getWealth(),
+				double addWealth = Math.min(Math.max(maxWealth - p.getWealth(), 0),
 						wealthForPops / populationAmount * p.getAmount());
 				p.addWealth(addWealth);
 				income -= addWealth;
@@ -513,7 +513,13 @@ public class Province implements EventTarget {
 		if (getCountry() != null) {
 			double newInfrastructure = Math.min(getInfrastructure() + wealthForInfrastructure,
 					getPopulationAmount() * gParams.getInfrastructureNaturalLimitWithLocalGovernment());
+			income -= Math.max(newInfrastructure - getInfrastructure(), 0);
 			setInfrastructure((int) newInfrastructure);
+		}
+
+		if (income > 0) {
+			// probably we have unused money (income variable)
+			// TODO ?
 		}
 	}
 
