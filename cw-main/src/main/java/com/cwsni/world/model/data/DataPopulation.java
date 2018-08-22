@@ -9,14 +9,14 @@ import com.cwsni.world.client.desktop.util.DataFormatter;
 
 public class DataPopulation {
 
-	public static Double LOYALTY_MAX = 100.0;
+	public static Double LOYALTY_MAX = 1.0;
 
 	private int amount;
 	private DataScienceCollection science = new DataScienceCollection();
 	private DataCulture culture = new DataCulture();
 	private double wealth;
 	/**
-	 * loyalty 0..100
+	 * loyalty 0..1
 	 */
 	private Map<Integer, Double> countriesLoyalty = new HashMap<>();
 	private Map<Integer, Double> statesLoyalty = new HashMap<>();
@@ -83,7 +83,7 @@ public class DataPopulation {
 			currentLoyalty = 0.0;
 		}
 		currentLoyalty = Math.min(Math.max(currentLoyalty + delta, 0), LOYALTY_MAX);
-		currentLoyalty = DataFormatter.doubleWith2points(currentLoyalty);
+		currentLoyalty = DataFormatter.doubleWith4points(currentLoyalty);
 		if (currentLoyalty <= LOYALTY_MAX / 1000) {			
 			loyalties.remove(id);
 		} else {

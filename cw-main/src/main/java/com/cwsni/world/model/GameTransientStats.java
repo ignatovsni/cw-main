@@ -26,9 +26,6 @@ public class GameTransientStats {
 	private InternalFutureTask<DoubleSummaryStatistics> govInfluenceInProvince;
 	private InternalFutureTask<Double> govInfluenceMedianInProvince;
 
-	private InternalFutureTask<DoubleSummaryStatistics> wealthInProvince;
-	private InternalFutureTask<Double> wealthMedianInProvince;
-
 	private InternalFutureTask<DoubleSummaryStatistics> infrastructureInProvince;
 	private InternalFutureTask<Double> infrastructureMedianInProvince;
 
@@ -67,17 +64,6 @@ public class GameTransientStats {
 			double v = new MedianFinder()
 					.findMedianDouble(getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 0)
 							.map(p -> p.getGovernmentInfluence()).collect(Collectors.toList()));
-			return v;
-		}, 0.0);
-
-		wealthInProvince = new InternalFutureTask<>(() -> {
-			return getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 0)
-					.mapToDouble(p -> p.getWealth()).summaryStatistics();
-		}, new DoubleSummaryStatistics());
-
-		wealthMedianInProvince = new InternalFutureTask<>(() -> {
-			double v = new MedianFinder().findMedianDouble(getPopulationPossibleProvinces()
-					.filter(p -> p.getPopulationAmount() > 0).map(p -> p.getWealth()).collect(Collectors.toList()));
 			return v;
 		}, 0.0);
 
@@ -229,18 +215,6 @@ public class GameTransientStats {
 
 	public int getScienceAdministrationMedianInProvince() {
 		return scienceAdministrationMedianInProvince.get();
-	}
-
-	public double getWealthMaxInProvince() {
-		return wealthInProvince.get().getMax();
-	}
-
-	public double getWealthAvgInProvince() {
-		return wealthInProvince.get().getAverage();
-	}
-
-	public double getWealthMedianInProvince() {
-		return wealthMedianInProvince.get();
 	}
 
 	public double getGovInfluenceMaxInProvince() {

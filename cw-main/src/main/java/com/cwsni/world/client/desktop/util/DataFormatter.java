@@ -43,6 +43,10 @@ public class DataFormatter {
 		return Math.round(d * 1000) / 1000.0;
 	}
 
+	public static double doubleWith4points(double d) {
+		return Math.round(d * 10000) / 10000.0;
+	}
+
 	public static String toString(Object o) {
 		return String.valueOf(o);
 	}

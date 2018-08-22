@@ -13,6 +13,7 @@ import com.cwsni.world.model.Culture;
 import com.cwsni.world.model.GameTransientStats;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.State;
+import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.events.Event;
@@ -253,7 +254,7 @@ class DProvince extends Group {
 	}
 	
 	private void drawLoyaltyMode(Polygon polygon) {
-		drawGradientMode(polygon, 100.0, province.getCountryLoyalty(), false);
+		drawGradientMode(polygon, DataPopulation.LOYALTY_MAX, province.getCountryLoyalty(), false);
 	}
 
 	private void drawLoyaltyDangerousMode(Polygon polygon) {
@@ -338,9 +339,7 @@ class DProvince extends Group {
 	}
 
 	private void drawWealthMode(Polygon polygon) {
-		drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getWealthMaxInProvince(),
-				map.getGame().getGameTransientStats().getWealthAvgInProvince(),
-				map.getGame().getGameTransientStats().getWealthMedianInProvince(), province.getWealth());
+		drawGradientMode(polygon, 1.0, province.getWealthLevel(), false);
 	}
 
 	private void drawSoilQualityMode(Polygon polygon) {

@@ -3,9 +3,12 @@ package com.cwsni.world.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -119,6 +122,40 @@ public class State {
 
 	public void processNewTurn() {
 		processScienceNewTurn();
+		processRebels();
+	}
+
+	private void processRebels() {
+		Province capital = getCapital();
+		if (capital == null) {
+			return;
+		}
+		Collection<Province> provs = getProvinces();
+		Optional<Province> checkCountryCapital = provs.stream()
+				.filter(p -> p.getCountryId() != null && p.equals(p.getCountry().getCapital())).findFirst();
+		if (checkCountryCapital.isPresent()) {
+			// if a state has country capital, it can not rebel
+			return;
+		}
+		double stateLoyalty = 0;
+		long statePopulation = 0;
+		Map<Country, List<Province>> countriesProvs = new HashMap<>();
+		for (Province p : provs) {
+			Country country = p.getCountry();
+			if (country != null) {
+				List<Province> provsInCountry = countriesProvs.get(country);
+				if (provsInCountry == null) {
+					provsInCountry = new ArrayList<>();
+					countriesProvs.put(country, provsInCountry);
+				}
+				provsInCountry.add(p);
+			}
+			long provincePopulation = p.getPopulationAmount();
+			statePopulation += provincePopulation;
+			stateLoyalty += p.getStateLoyalty() * provincePopulation;
+		}
+		stateLoyalty /= statePopulation;
+		// TODO
 	}
 
 	private void processScienceNewTurn() {
@@ -212,7 +249,7 @@ public class State {
 			int r = minValue + random.nextInt(255 - minValue);
 			int g = minValue + random.nextInt(255 - minValue);
 			int b = minValue + random.nextInt(255 - minValue);
-			// TODO match with colors of others states
+			// TODO ? match with colors of others states
 			if (Math.abs(r - g) >= minDiff && Math.abs(r - b) >= minDiff && Math.abs(b - g) >= minDiff) {
 				color = new Color(r, g, b);
 			}

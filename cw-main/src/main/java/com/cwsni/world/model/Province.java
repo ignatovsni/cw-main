@@ -360,19 +360,36 @@ public class Province implements EventTarget {
 		armies.remove(a);
 	}
 
-	public double getWealth() {
+	private double getWealth() {
 		return getWealthOfPopulation() + getWealthOfProvince();
+	}
+
+	public double getWealthLevel() {
+		int populationAmount = getPopulationAmount();
+		if (populationAmount == 0) {
+			return 0;
+		}
+		return getWealth() / populationAmount / map.getGame().getGameParams().getBudgetMaxWealthPerPerson() / 2;
 	}
 
 	private double getWealthOfPopulation() {
 		return getPopulation().stream().mapToDouble(p -> p.getWealth()).sum();
 	}
 
-	public double getWealthOfProvince() {
+	private double getWealthOfProvince() {
 		// if the province lost population, then wealth can be much more than current
 		// pops, so we should ignore too much wealth
 		return Math.min(data.getWealth(),
 				getPopulationAmount() * map.getGame().getGameParams().getBudgetMaxWealthPerPerson());
+	}
+
+	public double getWealthLevelOfProvince() {
+		return getWealthOfProvince() / getPopulationAmount()
+				/ map.getGame().getGameParams().getBudgetMaxWealthPerPerson();
+	}
+
+	public double getRawWealthOfProvince() {
+		return data.getWealth();
 	}
 
 	public double getGovernmentInfluence() {
@@ -475,11 +492,12 @@ public class Province implements EventTarget {
 	}
 
 	private double getLocalIncomePerYear() {
+		double minInfluence = map.getGame().getGameParams().getProvinceInfluenceFromStateForTaxes();
 		if (getCountry() == null) {
-			return sumTaxForYear() * 0.5;
+			return sumTaxForYear() * minInfluence;
 		} else {
-			return sumTaxForYear() * (1 - getCountry().getMoneyBudget().getProvinceTax() * getGovernmentInfluence())
-					* 0.8;
+			return sumTaxForYear() * (1 - getCountry().getMoneyBudget().getProvinceTax())
+					* Math.max(getGovernmentInfluence(), minInfluence);
 		}
 	}
 
@@ -511,7 +529,16 @@ public class Province implements EventTarget {
 		addWealth(addWealthForProv);
 		income -= addWealthForProv;
 
+		// infrastructure
+		if (getCountry() != null) {
+			double newInfrastructure = Math.min(getInfrastructure() + wealthForInfrastructure,
+					getPopulationAmount() * gParams.getInfrastructureNaturalLimitWithLocalGovernment());
+			income -= Math.max(newInfrastructure - getInfrastructure(), 0);
+			setInfrastructure((int) newInfrastructure);
+		}
+
 		// population wealth
+		wealthForPops = wealthForPops + Math.max(income, 0) / 2;
 		for (Population p : getPopulation()) {
 			if (p.getAmount() > 0) {
 				double maxWealth = p.getAmount() * gParams.getBudgetMaxWealthPerPerson();
@@ -524,14 +551,6 @@ public class Province implements EventTarget {
 				p.addWealth(-p.getAmount() * spendMoneyPerPerson);
 				income -= addWealth;
 			}
-		}
-
-		// infrastructure
-		if (getCountry() != null) {
-			double newInfrastructure = Math.min(getInfrastructure() + wealthForInfrastructure,
-					getPopulationAmount() * gParams.getInfrastructureNaturalLimitWithLocalGovernment());
-			income -= Math.max(newInfrastructure - getInfrastructure(), 0);
-			setInfrastructure((int) newInfrastructure);
 		}
 
 		if (income > 0) {
@@ -631,8 +650,27 @@ public class Province implements EventTarget {
 		if (populationAmount == 0) {
 			return 0;
 		}
-		return getPopulation().stream().mapToDouble(pop -> pop.getAmount() * pop.getCountryLoyalty(c.getId())).sum()
-				/ populationAmount;
+		double loyalty = getPopulation().stream().mapToDouble(pop -> pop.getAmount() * pop.getCountryLoyalty(c.getId()))
+				.sum() / populationAmount;
+		double countryLoyaltyFromArmy = getCountryLoyaltyFromArmy();
+		loyalty = Math.max(loyalty, Math.min(loyalty + countryLoyaltyFromArmy,
+				map.getGame().getGameParams().getPopulationLoyaltyArmyMax()));
+		return loyalty;
+	}
+
+	public double getCountryLoyaltyFromArmy() {
+		Country c = getCountry();
+		if (c == null) {
+			return 0;
+		}
+		long soldiers = getArmies().stream().filter(a -> c.equals(a.getCountry())).mapToLong(a -> a.getSoldiers())
+				.sum();
+		if (soldiers == 0) {
+			return 0;
+		}
+		double loyltyFromArmy = 1.0 * soldiers / getPopulationAmount()
+				/ map.getGame().getGameParams().getPopulationLoyaltyArmySoldiersToPopulationThreshold();
+		return Math.min(loyltyFromArmy, map.getGame().getGameParams().getPopulationLoyaltyArmyMax());
 	}
 
 	public double getStateLoyalty() {

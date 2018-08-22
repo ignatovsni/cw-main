@@ -66,11 +66,12 @@ public class GsProvInfoPane extends InternalInfoPane {
 		case GRASSLAND:
 			setLabelText(valuesSizeLabel, DataFormatter.toLong(prov.getSize()));
 			setLabelTextWithLongFormatterAndValueTooltip(valuesPopsLabel, prov.getPopulationAmount());
-			setLabelTextWithLongFormatterAndValueTooltip(valuesWealthLabel, (long) prov.getWealth());
-			setLabelText(valuesGovInfluenceLabel, DataFormatter.formatFractionNumber(prov.getGovernmentInfluence()));
-			setLabelText(valuesCountryLoyalty, DataFormatter.formatFractionNumber(prov.getCountryLoyalty()),
+			setLabelText(valuesWealthLabel, createTextForWealth(prov));
+			setLabelText(valuesGovInfluenceLabel,
+					String.valueOf(Math.round(prov.getGovernmentInfluence() * 100)) + "%");
+			setLabelText(valuesCountryLoyalty, String.valueOf(Math.round(prov.getCountryLoyalty() * 100)) + "%",
 					Population.createDescriptionForLoyaltyChanges(gameScene.getGame(), prov, getMessageSource()));
-			setLabelText(valuesStateLoyalty, DataFormatter.formatFractionNumber(prov.getStateLoyalty()));
+			setLabelText(valuesStateLoyalty, String.valueOf(Math.round(prov.getStateLoyalty() * 100)) + "%");
 			setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
 			setLabelTextWithLongFormatterAndValueTooltip(valuesSoilAreaLabel, prov.getSoilArea());
 			setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));
@@ -80,9 +81,17 @@ public class GsProvInfoPane extends InternalInfoPane {
 		}
 	}
 
+	private String createTextForWealth(Province prov) {
+		if (prov.getPopulationAmount() > 0) {
+			return String.valueOf(Math.round(prov.getWealthLevel() * 100)) + "%";
+		} else {
+			return "[" + DataFormatter.toLong((long) prov.getRawWealthOfProvince()) + "]";
+		}
+	}
+
 	private String createTextForInfrastructure(Province prov) {
 		double infr = prov.getInfrastructurePercent();
-		return DataFormatter.toFraction(infr * 100) + " (" + DataFormatter.toLong(prov.getInfrastructure()) + ")";
+		return DataFormatter.toFraction(infr * 100) + "% (" + DataFormatter.toLong(prov.getInfrastructure()) + ")";
 	}
 
 	@Override

@@ -39,13 +39,15 @@ public class GameParams {
 	private double populationMaxInStateCapital = 1.1;
 	private int populationLimitWithoutGovernment = 10000;
 	
-	private double populationLoyaltyDecreasingDefault = -1.0;
-	private double populationLoyaltyDecreasingEpidemic = -0.2;
-	private double populationLoyaltyDecreasingOverpopulation = -0.05;
-	private double populationLoyaltyIncreasingGovernmnentCoeff = 1.0;
-	private double populationLoyaltyIncreasingCapital = 0.5;
+	private double populationLoyaltyDecreasingDefault = -0.005;
+	private double populationLoyaltyDecreasingEpidemic = -0.002;
+	private double populationLoyaltyDecreasingOverpopulation = -0.001;
+	private double populationLoyaltyIncreasingGovernmnentCoeff = 0.01;
+	private double populationLoyaltyIncreasingCapital = 0.005;
 	private double populationLoyaltyWealthThreshold = 0.5;
-	private double populationLoyaltyWealthThresholdCoeff = 1.0;
+	private double populationLoyaltyWealthThresholdCoeff = 0.01;
+	private double populationLoyaltyArmySoldiersToPopulationThreshold = 0.1;
+	private double populationLoyaltyArmyMax = 0.8;
 
 	private int newCountryPopulationMin = 10000;
 	private int newCountryScienceAdministrationMin = 100;
@@ -72,10 +74,11 @@ public class GameParams {
 	private double provinceInfluenceFromCapitalWithDistanceDecrease = 0.8;
 	private double provinceInfluenceFromCapitalWithoutCapital = 0.05;
 	private double provinceInfluenceFromCapitalForStateWithDistanceDecrease = 0.9;
+	private double provinceInfluenceFromStateForTaxes = 0.5;
 
 	private double budgetBaseTaxPerPerson = 1;
 	private double budgetBaseTaxPerWealthPerson = 3;
-	private double budgetSpendMoneyPerPerson = 0.5;
+	private double budgetSpendMoneyPerPerson = 0.7;
 	private double budgetMaxWealthPerPerson = 10;
 	private double budgetBaseCostPerSoldier = 10;
 	private double budgetBaseHiringCostPerSoldier = 100;
@@ -644,6 +647,31 @@ public class GameParams {
 
 	public void setPopulationLoyaltyWealthThresholdCoeff(double populationLoyaltyWealthThresholdCoeff) {
 		this.populationLoyaltyWealthThresholdCoeff = populationLoyaltyWealthThresholdCoeff;
+	}
+
+	public double getProvinceInfluenceFromStateForTaxes() {
+		return provinceInfluenceFromStateForTaxes;
+	}
+
+	public void setProvinceInfluenceFromStateForTaxes(double provinceInfluenceFromStateForTaxes) {
+		this.provinceInfluenceFromStateForTaxes = provinceInfluenceFromStateForTaxes;
+	}
+
+	public double getPopulationLoyaltyArmySoldiersToPopulationThreshold() {
+		return populationLoyaltyArmySoldiersToPopulationThreshold;
+	}
+
+	public void setPopulationLoyaltyArmySoldiersToPopulationThreshold(
+			double populationLoyaltyArmySoldiersToPopulationThreshold) {
+		this.populationLoyaltyArmySoldiersToPopulationThreshold = populationLoyaltyArmySoldiersToPopulationThreshold;
+	}
+
+	public double getPopulationLoyaltyArmyMax() {
+		return populationLoyaltyArmyMax;
+	}
+
+	public void setPopulationLoyaltyArmyMax(double populationLoyaltyArmyMax) {
+		this.populationLoyaltyArmyMax = populationLoyaltyArmyMax;
 	}
 
 }
