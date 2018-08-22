@@ -28,7 +28,7 @@ import javafx.scene.layout.GridPane;
 
 @Component
 @Scope("prototype")
-public class CountriesPropertiesWindow extends Dialog {
+public class CountriesPropertiesWindow extends Dialog<ButtonType> {
 
 	public class RowCountry {
 		int id;
@@ -47,7 +47,7 @@ public class CountriesPropertiesWindow extends Dialog {
 	private List<Integer> countryIds;
 	private List<ColorPicker> countryСolors;
 	private List<TextField> countryNames;
-	private List<ComboBox> countryScripts;
+	private List<ComboBox<String>> countryScripts;
 	private List<String> listOfScripts;
 
 	private String getMessage(String code) {
@@ -128,7 +128,7 @@ public class CountriesPropertiesWindow extends Dialog {
 		TextField countryName = new TextField();
 		countryName.setText(c.getName());
 
-		ComboBox countryScript = new ComboBox();		
+		ComboBox<String> countryScript = new ComboBox<>();		
 		listOfScripts.forEach(s -> countryScript.getItems().add(s));
 		countryScript.setValue(c.getAiScriptName());
 

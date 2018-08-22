@@ -20,14 +20,11 @@ public class GsMenuBar extends MenuBar {
 	@Autowired
 	private LocaleMessageSource messageSource;
 
-	private GameScene gameScene;
-
 	private String getMessage(String code) {
 		return messageSource.getMessage(code);
 	}
 
 	public void init(GameScene gameScene) {
-		this.gameScene = gameScene;
 		Menu fileMenu = createFileMenu(gameScene);
 		Menu worldMenu = createWorldMenu(gameScene);
 		getMenus().setAll(fileMenu, worldMenu);

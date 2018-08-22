@@ -25,7 +25,7 @@ import javafx.scene.layout.GridPane;
 
 @Component
 @Scope("prototype")
-public class CreateGameWindow extends Dialog {
+public class CreateGameWindow extends Dialog<ButtonType> {
 
 	private static final String MAP_SMALL = "20x20";
 	private static final String MAP_MEDIUM = "30x40";

@@ -268,12 +268,6 @@ public class JavaAIHandler implements IAIHandler {
 		// pCountry.getId());
 	}
 
-	private double calculateImportanceOfProvinceByCountOfNeighborsPops(AIData4Country data, IPProvince p,
-			Integer countryId) {
-		return p.getNeighbors().stream().filter(pn -> countryId.equals(pn.getCountryId()))
-				.mapToLong(pn -> pn.getPopulationAmount()).sum();
-	}
-
 	private void tryMovingArmyFurther(AIData4Country data, IPArmy a) {
 		IPProvince nearestProv = null;
 		double minDistance = Double.MAX_VALUE;
