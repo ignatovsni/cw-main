@@ -13,7 +13,6 @@ import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -50,10 +49,12 @@ public class GameRepository {
 		}
 	}
 
-	private void printToConsole(ObjectMapper objectMapper) throws JsonProcessingException {
-		String jsonInString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
-		System.out.println("JSON is\n" + jsonInString);
-	}
+	/*
+	 * private void printToConsole(ObjectMapper objectMapper) throws
+	 * JsonProcessingException { String jsonInString =
+	 * objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+	 * System.out.println("JSON is\n" + jsonInString); }
+	 */
 
 	public Game quickLoadGame() {
 		File file = new File(QUICK_SAVE_FILE_NAME);

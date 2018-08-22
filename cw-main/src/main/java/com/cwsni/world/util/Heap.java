@@ -36,6 +36,7 @@ public class Heap<T> {
 		rise(size - 1);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void rise(int idx) {
 		if (idx == 0) {
 			return;
@@ -58,6 +59,7 @@ public class Heap<T> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public T poll() {
 		if (size == 0) {
 			return null;
@@ -70,6 +72,7 @@ public class Heap<T> {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	public T peek() {
 		if (size == 0) {
 			return null;
@@ -77,6 +80,7 @@ public class Heap<T> {
 		return (T) elements[0];
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void sink(int parentIdx) {
 		int rightIdx = parentIdx * 2 + 1;
 		int leftIdx = rightIdx + 1;

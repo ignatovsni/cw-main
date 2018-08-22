@@ -144,7 +144,7 @@ public class PGame implements IPGame {
 		return result;
 	}
 
-	public void removeCommands(List commandsForCancellation) {
+	public void removeCommands(@SuppressWarnings("rawtypes") List commandsForCancellation) {
 		commands.removeAll(commandsForCancellation);
 	}
 
