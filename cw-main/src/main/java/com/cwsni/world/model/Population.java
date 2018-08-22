@@ -151,19 +151,43 @@ public class Population {
 	}
 
 	public void addCountryLoyalty(int id, double delta) {
-		data.addCountryLoyalty(id, delta);
+		addLoyalty(data.getCountriesLoyalty(), id, delta);
 	}
 
 	public void addStateLoyalty(int id, double delta) {
-		data.addStateLoyalty(id, delta);
+		addLoyalty(data.getStatesLoyalty(), id, delta);
+	}
+
+	private void addLoyalty(Map<Integer, Double> loyalties, int id, double delta) {
+		Double currentLoyalty = loyalties.get(id);
+		if (currentLoyalty == null) {
+			currentLoyalty = 0.0;
+		}
+		currentLoyalty = Math.min(Math.max(currentLoyalty + delta, 0), DataPopulation.LOYALTY_MAX);
+		currentLoyalty = DataFormatter.doubleWith4points(currentLoyalty);
+		if (currentLoyalty <= DataPopulation.LOYALTY_MAX / 1000) {
+			loyalties.remove(id);
+		} else {
+			loyalties.put(id, currentLoyalty);
+		}
 	}
 
 	public void addAllCountriesLoyalty(double delta) {
-		data.addAllCountriesLoyalty(delta);
+		// We need new List because DataPopulation::addCountryLoyalty can remove
+		// elements from collection.
+		List<Integer> ids = new ArrayList<>(data.getCountriesLoyalty().keySet());
+		for (Integer id : ids) {
+			addCountryLoyalty(id, delta);
+		}
 	}
 
 	public void addAllStatesLoyalty(double delta) {
-		data.addAllStatesLoyalty(delta);
+		// We need new List because DataPopulation::addCountryLoyalty can remove
+		// elements from collection.
+		List<Integer> ids = new ArrayList<>(data.getStatesLoyalty().keySet());
+		for (Integer id : ids) {
+			addStateLoyalty(id, delta);
+		}
 	}
 
 	public Map<Integer, Double> getCountriesLoyalty() {
@@ -171,11 +195,21 @@ public class Population {
 	}
 
 	public Double getCountryLoyalty(Integer id) {
-		return data.getCountryLoyalty(id);
+		Double loyalty = data.getCountriesLoyalty().get(id);
+		if (loyalty != null) {
+			return loyalty;
+		} else {
+			return 0.0;
+		}
 	}
 
 	public Double getStateLoyalty(Integer id) {
-		return data.getStateLoyalty(id);
+		Double loyalty = data.getStatesLoyalty().get(id);
+		if (loyalty != null) {
+			return loyalty;
+		} else {
+			return 0.0;
+		}
 	}
 
 	public Map<Integer, Double> getStatesLoyalty() {
