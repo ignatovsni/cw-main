@@ -88,9 +88,14 @@ public class MoneyBudget {
 	public double getIncome() {
 		return income;
 	}
-	
+
 	void resetBudgetForRestoredCountry() {
 		data.setMoney(0.0);
+	}
+
+	public void addMoneyForNewRebelCountry(int populationLoyaltyRebelNewCountriesTakeMoneyForYears) {
+		calculateBudget();
+		data.setMoney(income * populationLoyaltyRebelNewCountriesTakeMoneyForYears);
 	}
 
 }

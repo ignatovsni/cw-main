@@ -77,7 +77,7 @@ public class Game implements EventTarget {
 	public Turn getTurn() {
 		return data.getTurn();
 	}
-	
+
 	public History getHistory() {
 		return history;
 	}
@@ -175,9 +175,15 @@ public class Game implements EventTarget {
 		Event.processEvents(this, messageSource);
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
 		countries.getCountries().forEach(c -> c.processNewTurn());
-		states.getStates().forEach(c -> c.processNewTurn());
+		processStates();
 		history.processNewTurn();
 		calcGameStats();
+	}
+
+	private void processStates() {
+		states.getStates().forEach(c -> c.processNewTurn());
+		states.getStates().forEach(c -> c.resetFlagRevoltSuccessfulThisTurn());
+		states.getStates().forEach(c -> c.processRebels());
 	}
 
 	private void processFights() {

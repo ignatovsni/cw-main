@@ -22,11 +22,14 @@ public class State {
 	private DataState data;
 	private Game game;
 	private Collection<Province> provinces;
+	private Set<State> neighbors;
+	private boolean isRevoltSuccessfulThisTurn;
 
 	public void buildFrom(Game game, DataState ds) {
 		this.game = game;
 		this.data = ds;
-		provinces = new HashSet<>();
+		this.provinces = new HashSet<>();
+		this.neighbors = new HashSet<>();
 
 		data.getProvinces().forEach(pId -> {
 			Province province = game.getMap().findProvById(pId);
@@ -80,6 +83,7 @@ public class State {
 			p.setState(this);
 			provinces.add(p);
 			data.getProvinces().add(p.getId());
+			initializeNeighbors();
 		}
 	}
 
@@ -93,10 +97,19 @@ public class State {
 		if (ComparisonTool.isEqual(getCapitalId(), p.getId())) {
 			setCapital(null);
 		}
+		initializeNeighbors();
 	}
 
 	public Collection<Province> getProvinces() {
 		return Collections.unmodifiableCollection(provinces);
+	}
+
+	public Set<State> getNeighbors() {
+		return Collections.unmodifiableSet(neighbors);
+	}
+
+	void setNeighbors(Set<State> neighbors) {
+		this.neighbors = neighbors;
 	}
 
 	DataState getStateData() {
@@ -120,10 +133,20 @@ public class State {
 
 	public void processNewTurn() {
 		processScienceNewTurn();
-		processRebels();
 	}
 
-	private void processRebels() {
+	public void processRebels() {
+		processRebels(null);
+	}
+
+	public void resetFlagRevoltSuccessfulThisTurn() {
+		isRevoltSuccessfulThisTurn = false;
+	}
+
+	private void processRebels(Country revoltAttractionToCountry) {
+		if (isRevoltSuccessfulThisTurn) {
+			return;
+		}
 		Province stateCapital = getCapital();
 		if (stateCapital == null) {
 			return;
@@ -148,14 +171,28 @@ public class State {
 
 		double loyaltyToCountryOfStateCapital = getLoayltyToCountry(countryOfStateCapital.getId(), statePopulation);
 		Set<Integer> countriesIds = getCountriesWithLoyalty();
+		if (revoltAttractionToCountry != null) {
+			countriesIds.add(revoltAttractionToCountry.getId());
+		}
 		for (int countryId : countriesIds) {
 			if (!ComparisonTool.isEqual(countryId, countryOfStateCapital.getId())) {
 				double loyaltyToCountry = getLoayltyToCountry(countryId, statePopulation);
 				double diffLoaylty = loyaltyToCountry - loyaltyToCountryOfStateCapital
 						- gParams.getPopulationLoyaltyRebelToCountryThreshold();
+				if (revoltAttractionToCountry != null
+						&& ComparisonTool.isEqual(revoltAttractionToCountry.getId(), countryId)) {
+					diffLoaylty += gParams.getPopulationLoyaltyRebelChainAdditionalLoyalty();
+					diffLoaylty *= gParams.getPopulationLoyaltyRebelChainProbabilityMultiplicator();
+				}
 				if (diffLoaylty > 0 && diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > gParams
 						.getRandom().nextDouble()) {
+					if (revoltAttractionToCountry != null
+							&& ComparisonTool.isEqual(revoltAttractionToCountry.getId(), countryId)) {
+						System.out.println("chain revolution to " + revoltAttractionToCountry);
+					}
 					if (revoltToCountry(countryId, stateCapital)) {
+						isRevoltSuccessfulThisTurn = true;
+						getNeighbors().forEach(n -> n.processRebels(stateCapital.getCountry()));
 						return;
 					}
 				}
@@ -168,6 +205,10 @@ public class State {
 		if (diffLoaylty > 0
 				&& diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > gParams.getRandom().nextDouble()) {
 			if (revoltToState(stateCapital)) {
+				isRevoltSuccessfulThisTurn = true;
+				getNeighbors().forEach(n -> n.processRebels(stateCapital.getCountry()));
+				stateCapital.getCountry().getProvinces()
+						.forEach(p -> p.addLoyaltyToCountry(stateCapital.getCountryId(), p.getLoyaltyToState()));
 				return;
 			}
 			return;
@@ -191,7 +232,8 @@ public class State {
 						.forEach(p -> countryTo.addProvince(p));
 				countryTo.setCapital(stateCapital);
 				countryTo.getMoneyBudget().getAvailableMoneyForScience();
-				countryTo.getMoneyBudget().processNewTurn();
+				countryTo.getMoneyBudget().addMoneyForNewRebelCountry(
+						game.getGameParams().getPopulationLoyaltyRebelNewCountriesTakeMoneyForYears());
 				game.getGameEventListener().event(game, "Rebels restored the country " + countryTo.getName()
 						+ " with a state capital " + stateCapital.getName());
 				return true;
@@ -219,9 +261,9 @@ public class State {
 		getProvinces().stream().filter(p -> ComparisonTool.isEqual(countryFrom.getId(), p.getCountryId()))
 				.forEach(p -> countryTo.addProvince(p));
 		countryTo.setCapital(stateCapital);
-		countryTo.getProvinces().forEach(p -> p.addLoyaltyToCountry(countryTo.getId(), p.getLoyaltyToState()));
 		countryTo.getMoneyBudget().getAvailableMoneyForScience();
-		countryTo.getMoneyBudget().processNewTurn();
+		countryTo.getMoneyBudget().addMoneyForNewRebelCountry(
+				game.getGameParams().getPopulationLoyaltyRebelNewCountriesTakeMoneyForYears());
 		data.setLastRebelCountryId(countryTo.getId());
 		// TODO clean up non actual lastRebelCountryId
 		return true;
@@ -344,6 +386,16 @@ public class State {
 			}
 		}
 		return color;
+	}
+
+	void initializeNeighbors() {
+		neighbors.forEach(n -> n.neighbors.remove(this));
+		neighbors.clear();
+		for (Province p : getProvinces()) {
+			neighbors.addAll(p.getNeighbors().stream().filter(n -> n.getState() != null && !this.equals(n.getState()))
+					.map(n -> n.getState()).collect(Collectors.toSet()));
+		}
+		neighbors.forEach(n -> n.neighbors.add(this));
 	}
 
 }

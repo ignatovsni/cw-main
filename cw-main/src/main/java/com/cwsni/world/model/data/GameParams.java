@@ -51,6 +51,9 @@ public class GameParams {
 	private double populationLoyaltyRebelChanceCoeff = 0.1;
 	private double populationLoyaltyRebelToStateThreshold = 0.3;
 	private double populationLoyaltyRebelToCountryThreshold = 0.1;
+	private double populationLoyaltyRebelChainAdditionalLoyalty = 0.5;
+	private double populationLoyaltyRebelChainProbabilityMultiplicator = 5.0;
+	private int populationLoyaltyRebelNewCountriesTakeMoneyForYears = 5;
 
 	private int newCountryPopulationMin = 10000;
 	private int newCountryScienceAdministrationMin = 100;
@@ -699,6 +702,32 @@ public class GameParams {
 
 	public void setPopulationLoyaltyRebelToCountryThreshold(double populationLoyaltyRebelToCountryThreshold) {
 		this.populationLoyaltyRebelToCountryThreshold = populationLoyaltyRebelToCountryThreshold;
+	}
+
+	public double getPopulationLoyaltyRebelChainAdditionalLoyalty() {
+		return populationLoyaltyRebelChainAdditionalLoyalty;
+	}
+
+	public void setPopulationLoyaltyRebelChainAdditionalLoyalty(double populationLoyaltyRebelChainAdditionalLoyalty) {
+		this.populationLoyaltyRebelChainAdditionalLoyalty = populationLoyaltyRebelChainAdditionalLoyalty;
+	}
+
+	public double getPopulationLoyaltyRebelChainProbabilityMultiplicator() {
+		return populationLoyaltyRebelChainProbabilityMultiplicator;
+	}
+
+	public void setPopulationLoyaltyRebelChainProbabilityMultiplicator(
+			double populationLoyaltyRebelChainProbabilityMultiplicator) {
+		this.populationLoyaltyRebelChainProbabilityMultiplicator = populationLoyaltyRebelChainProbabilityMultiplicator;
+	}
+
+	public int getPopulationLoyaltyRebelNewCountriesTakeMoneyForYears() {
+		return populationLoyaltyRebelNewCountriesTakeMoneyForYears;
+	}
+
+	public void setPopulationLoyaltyRebelNewCountriesTakeMoneyForYears(
+			int populationLoyaltyRebelNewCountriesTakeMoneyForYears) {
+		this.populationLoyaltyRebelNewCountriesTakeMoneyForYears = populationLoyaltyRebelNewCountriesTakeMoneyForYears;
 	}
 
 }

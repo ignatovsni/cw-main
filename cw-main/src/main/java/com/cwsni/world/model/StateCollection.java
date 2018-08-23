@@ -22,6 +22,7 @@ public class StateCollection {
 			statesById.put(dc.getId(), c);
 			c.buildFrom(game, dc);
 		});
+		states.forEach(s -> s.initializeNeighbors());
 	}
 
 	public List<State> getStates() {
@@ -31,6 +32,7 @@ public class StateCollection {
 	public void addState(State c) {
 		states.add(c);
 		statesById.put(c.getId(), c);
+		c.initializeNeighbors();
 	}
 
 	public void removeState(State c) {

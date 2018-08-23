@@ -91,7 +91,7 @@ public class Country {
 			if (this.equals(province.getCountry())) {
 				data.setCapital(province.getId());
 				if (data.getFirstCapital() == null) {
-					data.setFirstCapital(data.getFirstCapital());
+					data.setFirstCapital(data.getCapital());
 				}
 			} else {
 				throw new CwException("Trying to set up capital in alien province: province country id = "
