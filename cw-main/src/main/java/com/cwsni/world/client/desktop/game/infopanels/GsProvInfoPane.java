@@ -69,9 +69,9 @@ public class GsProvInfoPane extends InternalInfoPane {
 			setLabelText(valuesWealthLabel, createTextForWealth(prov));
 			setLabelText(valuesGovInfluenceLabel,
 					String.valueOf(Math.round(prov.getGovernmentInfluence() * 100)) + "%");
-			setLabelText(valuesCountryLoyalty, String.valueOf(Math.round(prov.getCountryLoyalty() * 100)) + "%",
+			setLabelText(valuesCountryLoyalty, String.valueOf(Math.round(prov.getLoyaltyToCountry() * 100)) + "%",
 					Population.createDescriptionForLoyaltyChanges(gameScene.getGame(), prov, getMessageSource()));
-			setLabelText(valuesStateLoyalty, String.valueOf(Math.round(prov.getStateLoyalty() * 100)) + "%");
+			setLabelText(valuesStateLoyalty, String.valueOf(Math.round(prov.getLoyaltyToState() * 100)) + "%");
 			setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
 			setLabelTextWithLongFormatterAndValueTooltip(valuesSoilAreaLabel, prov.getSoilArea());
 			setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));

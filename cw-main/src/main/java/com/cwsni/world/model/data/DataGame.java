@@ -16,6 +16,7 @@ public class DataGame {
 	private DataWorldMap map;
 	private Turn turn;
 	private List<DataCountry> countries = new ArrayList<>();
+	private HistoryData history = new HistoryData();
 	private List<DataState> states = new ArrayList<>();
 	private List<Event> events = new ArrayList<>();
 	private int lastEventId;
@@ -148,6 +149,14 @@ public class DataGame {
 
 	public void setStates(List<DataState> states) {
 		this.states = states;
+	}
+
+	public HistoryData getHistory() {
+		return history;
+	}
+
+	public void setHistory(HistoryData history) {
+		this.history = history;
 	}
 
 }

@@ -11,8 +11,8 @@ public class DataPopulation {
 	private DataScienceCollection science = new DataScienceCollection();
 	private DataCulture culture = new DataCulture();
 	private double wealth;
-	private Map<Integer, Double> countriesLoyalty = new HashMap<>();
-	private Map<Integer, Double> statesLoyalty = new HashMap<>();
+	private Map<Integer, Double> loyaltyToCountries = new HashMap<>();
+	private Map<Integer, Double> loyaltyToStates = new HashMap<>();
 
 	public int getAmount() {
 		return amount;
@@ -46,20 +46,20 @@ public class DataPopulation {
 		this.wealth = wealth;
 	}
 
-	public Map<Integer, Double> getCountriesLoyalty() {
-		return countriesLoyalty;
+	public Map<Integer, Double> getLoyaltyToCountries() {
+		return loyaltyToCountries;
 	}
 
-	public void setCountriesLoyalty(Map<Integer, Double> countriesLoyalty) {
-		this.countriesLoyalty = countriesLoyalty;
+	public void setLoyaltyToCountries(Map<Integer, Double> loyaltyToCountries) {
+		this.loyaltyToCountries = loyaltyToCountries;
 	}
 
-	public Map<Integer, Double> getStatesLoyalty() {
-		return statesLoyalty;
+	public Map<Integer, Double> getLoyaltyToStates() {
+		return loyaltyToStates;
 	}
 
-	public void setStatesLoyalty(Map<Integer, Double> statesLoyalty) {
-		this.statesLoyalty = statesLoyalty;
+	public void setLoyaltyToStates(Map<Integer, Double> loyaltyToStates) {
+		this.loyaltyToStates = loyaltyToStates;
 	}
 
 }

@@ -2,8 +2,10 @@ package com.cwsni.world.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import com.cwsni.world.CwException;
@@ -488,6 +490,9 @@ public class Province implements EventTarget {
 	}
 
 	public double getFederalIncomePerYear() {
+		if(getCountry() == null) {
+			System.out.println("!!! getCountry() == null for province " + getId());
+		}
 		return sumTaxForYear() * getCountry().getMoneyBudget().getProvinceTax() * getGovernmentInfluence();
 	}
 
@@ -625,40 +630,54 @@ public class Province implements EventTarget {
 		Population.addPopulationFromArmy(this, soldiers);
 	}
 
-	public void addCountryLoyalty(int id, Double delta) {
-		getPopulation().forEach(p -> p.addCountryLoyalty(id, delta));
+	public void addLoyaltyToCountry(int id, Double delta) {
+		getPopulation().forEach(p -> p.addLoyaltyToCountry(id, delta));
 	}
 
-	public void addStateLoyalty(int id, Double delta) {
-		getPopulation().forEach(p -> p.addStateLoyalty(id, delta));
+	public void addLoyaltyToState(int id, Double delta) {
+		getPopulation().forEach(p -> p.addLoyaltyToState(id, delta));
 	}
 
-	public void addAllCountriesLoyalty(double delta) {
-		getPopulation().forEach(p -> p.addAllCountriesLoyalty(delta));
+	public void addLoyaltyToAllCountries(double delta) {
+		getPopulation().forEach(p -> p.addLoyaltyToAllCountries(delta));
 	}
 
-	public void addAllStateLoyalty(double delta) {
-		getPopulation().forEach(p -> p.addAllStatesLoyalty(delta));
+	public void addLoyaltyToAllState(double delta) {
+		getPopulation().forEach(p -> p.addLoyaltyToAllState(delta));
 	}
 
-	public double getCountryLoyalty() {
-		Country c = getCountry();
-		if (c == null) {
+	public double getLoyaltyToCountry() {
+		return getLoyaltyToCountry(getCountryId());
+	}
+
+	double getLoyaltyToCountry(Integer countryId) {
+		if (countryId == null) {
 			return 0;
 		}
-		int populationAmount = getPopulationAmount();
-		if (populationAmount == 0) {
+		return getLoyaltyToCountry(countryId, getPopulationAmount());
+	}
+
+	double getLoyaltyToCountry(Integer countryId, int provincePopulation) {
+		if (provincePopulation == 0) {
 			return 0;
 		}
-		double loyalty = getPopulation().stream().mapToDouble(pop -> pop.getAmount() * pop.getCountryLoyalty(c.getId()))
-				.sum() / populationAmount;
-		double countryLoyaltyFromArmy = getCountryLoyaltyFromArmy();
-		loyalty = Math.max(loyalty, Math.min(loyalty + countryLoyaltyFromArmy,
-				map.getGame().getGameParams().getPopulationLoyaltyArmyMax()));
+		double loyalty = getPopulation().stream()
+				.mapToDouble(pop -> pop.getAmount() * pop.getLoyaltyToCountry(countryId)).sum() / provincePopulation;
+		if (ComparisonTool.isEqual(countryId, getCountryId())) {
+			double countryLoyaltyFromArmy = getLoyaltyToCountryFromArmy();
+			loyalty = Math.max(loyalty, Math.min(loyalty + countryLoyaltyFromArmy,
+					map.getGame().getGameParams().getPopulationLoyaltyArmyMax()));
+		}
 		return loyalty;
 	}
 
-	public double getCountryLoyaltyFromArmy() {
+	Set<Integer> getCountriesWithLoyalty() {
+		Set<Integer> countriesIds = new HashSet<>();
+		getPopulation().forEach(pop -> countriesIds.addAll(pop.getLoyaltyToCountries().keySet()));
+		return countriesIds;
+	}
+
+	public double getLoyaltyToCountryFromArmy() {
 		Country c = getCountry();
 		if (c == null) {
 			return 0;
@@ -673,7 +692,7 @@ public class Province implements EventTarget {
 		return Math.min(loyltyFromArmy, map.getGame().getGameParams().getPopulationLoyaltyArmyMax());
 	}
 
-	public double getStateLoyalty() {
+	public double getLoyaltyToState() {
 		State c = getState();
 		if (c == null) {
 			return 0;
@@ -682,7 +701,7 @@ public class Province implements EventTarget {
 		if (populationAmount == 0) {
 			return 0;
 		}
-		return getPopulation().stream().mapToDouble(pop -> pop.getAmount() * pop.getStateLoyalty(c.getId())).sum()
+		return getPopulation().stream().mapToDouble(pop -> pop.getAmount() * pop.getLoyaltyToState(c.getId())).sum()
 				/ populationAmount;
 	}
 

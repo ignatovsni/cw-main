@@ -15,6 +15,7 @@ import com.cwsni.world.model.data.Turn;
 import com.cwsni.world.model.events.Event;
 import com.cwsni.world.model.events.EventCollection;
 import com.cwsni.world.model.events.EventTarget;
+import com.cwsni.world.services.GameEventListener;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
 
 public class Game implements EventTarget {
@@ -22,6 +23,7 @@ public class Game implements EventTarget {
 	private DataGame data;
 	private GameTransientStats gameTransientStats;
 	private WorldMap map;
+	private History history;
 	private EventCollection events;
 	private CountryCollection countries;
 	private StateCollection states;
@@ -30,6 +32,7 @@ public class Game implements EventTarget {
 
 	private LocaleMessageSource messageSource;
 	private GameAlgorithms gameAlgorithms;
+	private GameEventListener gameEventListener;
 
 	public List<Event> getEvents() {
 		return events.getEvents();
@@ -74,9 +77,17 @@ public class Game implements EventTarget {
 	public Turn getTurn() {
 		return data.getTurn();
 	}
+	
+	public History getHistory() {
+		return history;
+	}
 
 	public String logDescription() {
 		return data.logDescription();
+	}
+
+	public GameEventListener getGameEventListener() {
+		return gameEventListener;
 	}
 
 	@Override
@@ -105,6 +116,9 @@ public class Game implements EventTarget {
 	}
 
 	public void registerCountry(Country c) {
+		if (countries.findCountryById(c.getId()) != null) {
+			throw new CwException("country is already registered, id = " + c.getId() + "; " + c);
+		}
 		data.getCountries().add(c.getCountryData());
 		countries.addCountry(c);
 	}
@@ -162,6 +176,7 @@ public class Game implements EventTarget {
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
 		countries.getCountries().forEach(c -> c.processNewTurn());
 		states.getStates().forEach(c -> c.processNewTurn());
+		history.processNewTurn();
 		calcGameStats();
 	}
 
@@ -208,6 +223,7 @@ public class Game implements EventTarget {
 					.sum() <= getGameParams().getNewCountryPopulationMin() / 2) && c.getArmies().isEmpty()) {
 				c.dismiss();
 				unregisterCountry(c);
+				history.removeCountry(c);
 			}
 		});
 	}
@@ -249,10 +265,12 @@ public class Game implements EventTarget {
 		data.setTurn(turn);
 	}
 
-	public void buildFrom(DataGame dataGame, LocaleMessageSource messageSource, GameAlgorithms gameAlgorithms) {
+	public void buildFrom(DataGame dataGame, LocaleMessageSource messageSource, GameAlgorithms gameAlgorithms,
+			GameEventListener gameEventListener) {
 		this.data = dataGame;
 		this.messageSource = messageSource;
 		this.gameAlgorithms = gameAlgorithms;
+		this.gameEventListener = gameEventListener;
 
 		armies = new HashMap<>();
 		newArmiesWithIdLessThanZero = new HashMap<>();
@@ -274,6 +292,9 @@ public class Game implements EventTarget {
 
 		states = new StateCollection();
 		states.buildFrom(this, data.getStates());
+
+		history = new History();
+		history.buildFrom(this, data.getHistory());
 
 		calcGameStats();
 	}

@@ -3,11 +3,9 @@ package com.cwsni.world.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -126,36 +124,127 @@ public class State {
 	}
 
 	private void processRebels() {
-		Province capital = getCapital();
-		if (capital == null) {
+		Province stateCapital = getCapital();
+		if (stateCapital == null) {
 			return;
 		}
-		Collection<Province> provs = getProvinces();
-		Optional<Province> checkCountryCapital = provs.stream()
+		GameParams gParams = game.getGameParams();
+		long statePopulation = getPopulationAmount();
+		if (statePopulation < gParams.getNewCountryPopulationMin() * 2) {
+			return;
+		}
+
+		Country countryOfStateCapital = stateCapital.getCountry();
+		if (countryOfStateCapital == null) {
+			return;
+		}
+		Collection<Province> stateProvinces = getProvinces();
+		Optional<Province> checkCountryCapital = stateProvinces.stream()
 				.filter(p -> p.getCountryId() != null && p.equals(p.getCountry().getCapital())).findFirst();
 		if (checkCountryCapital.isPresent()) {
 			// if a state has country capital, it can not rebel
 			return;
 		}
-		double stateLoyalty = 0;
-		long statePopulation = 0;
-		Map<Country, List<Province>> countriesProvs = new HashMap<>();
-		for (Province p : provs) {
-			Country country = p.getCountry();
-			if (country != null) {
-				List<Province> provsInCountry = countriesProvs.get(country);
-				if (provsInCountry == null) {
-					provsInCountry = new ArrayList<>();
-					countriesProvs.put(country, provsInCountry);
+
+		double loyaltyToCountryOfStateCapital = getLoayltyToCountry(countryOfStateCapital.getId(), statePopulation);
+		Set<Integer> countriesIds = getCountriesWithLoyalty();
+		for (int countryId : countriesIds) {
+			if (!ComparisonTool.isEqual(countryId, countryOfStateCapital.getId())) {
+				double loyaltyToCountry = getLoayltyToCountry(countryId, statePopulation);
+				double diffLoaylty = loyaltyToCountry - loyaltyToCountryOfStateCapital
+						- gParams.getPopulationLoyaltyRebelToCountryThreshold();
+				if (diffLoaylty > 0 && diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > gParams
+						.getRandom().nextDouble()) {
+					if (revoltToCountry(countryId, stateCapital)) {
+						return;
+					}
 				}
-				provsInCountry.add(p);
 			}
-			long provincePopulation = p.getPopulationAmount();
-			statePopulation += provincePopulation;
-			stateLoyalty += p.getStateLoyalty() * provincePopulation;
 		}
-		stateLoyalty /= statePopulation;
-		// TODO
+
+		double stateLoyalty = getLoayltyToState(statePopulation);
+		double diffLoaylty = stateLoyalty - loyaltyToCountryOfStateCapital
+				- gParams.getPopulationLoyaltyRebelToStateThreshold();
+		if (diffLoaylty > 0
+				&& diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > gParams.getRandom().nextDouble()) {
+			if (revoltToState(stateCapital)) {
+				return;
+			}
+			return;
+		}
+	}
+
+	private boolean revoltToCountry(Integer countryToId, Province stateCapital) {
+		Country countryFrom = stateCapital.getCountry();
+		Country country2 = game.findCountryById(countryToId);
+		if (country2 != null) {
+			final Country countryTo = country2;
+			getProvinces().stream().filter(p -> ComparisonTool.isEqual(countryFrom.getId(), p.getCountryId()))
+					.forEach(p -> countryTo.addProvince(p));
+			game.getGameEventListener().event(game, "Rebels provinces join to the country " + countryTo.getName()
+					+ " with a state capital " + stateCapital.getName());
+			return true;
+		} else {
+			Country countryTo = Country.restoreCountry(game, game.getHistory().findCountry(countryToId));
+			if (countryTo != null) {
+				getProvinces().stream().filter(p -> ComparisonTool.isEqual(countryFrom.getId(), p.getCountryId()))
+						.forEach(p -> countryTo.addProvince(p));
+				countryTo.setCapital(stateCapital);
+				countryTo.getMoneyBudget().getAvailableMoneyForScience();
+				countryTo.getMoneyBudget().processNewTurn();
+				game.getGameEventListener().event(game, "Rebels restored the country " + countryTo.getName()
+						+ " with a state capital " + stateCapital.getName());
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean revoltToState(Province stateCapital) {
+		Country countryFrom = stateCapital.getCountry();
+		Country country2 = null;
+		if (data.getLastRebelCountryId() != null) {
+			country2 = Country.restoreCountry(game, game.getHistory().findCountry(data.getLastRebelCountryId()));
+			if (country2 != null) {
+				game.getGameEventListener().event(game, "Rebels restored the country " + country2.getName()
+						+ " with a state capital " + stateCapital.getName());
+			}
+		}
+		if (country2 == null) {
+			country2 = Country.createNewCountryForRebelState(game, stateCapital);
+			game.getGameEventListener().event(game, "Rebels created new country " + country2.getName()
+					+ " with a state capital " + stateCapital.getName());
+		}
+		Country countryTo = country2;
+		getProvinces().stream().filter(p -> ComparisonTool.isEqual(countryFrom.getId(), p.getCountryId()))
+				.forEach(p -> countryTo.addProvince(p));
+		countryTo.setCapital(stateCapital);
+		countryTo.getProvinces().forEach(p -> p.addLoyaltyToCountry(countryTo.getId(), p.getLoyaltyToState()));
+		countryTo.getMoneyBudget().getAvailableMoneyForScience();
+		countryTo.getMoneyBudget().processNewTurn();
+		data.setLastRebelCountryId(countryTo.getId());
+		// TODO clean up non actual lastRebelCountryId
+		return true;
+	}
+
+	private double getLoayltyToState(long statePopulation) {
+		return getProvinces().stream().mapToDouble(p -> p.getLoyaltyToState() * p.getPopulationAmount()).sum()
+				/ statePopulation;
+	}
+
+	private double getLoayltyToCountry(int countryId, long statePopulation) {
+		return getProvinces().stream().mapToDouble(p -> p.getLoyaltyToCountry(countryId) * p.getPopulationAmount())
+				.sum() / statePopulation;
+	}
+
+	private long getPopulationAmount() {
+		return getProvinces().stream().mapToLong(p -> p.getPopulationAmount()).sum();
+	}
+
+	Set<Integer> getCountriesWithLoyalty() {
+		Set<Integer> countriesIds = new HashSet<>();
+		getProvinces().forEach(p -> countriesIds.addAll(p.getCountriesWithLoyalty()));
+		return countriesIds;
 	}
 
 	private void processScienceNewTurn() {
@@ -234,7 +323,7 @@ public class State {
 		state.buildFrom(game, dc);
 		provs.forEach(p -> {
 			state.addProvince(p);
-			p.addStateLoyalty(state.getId(), DataPopulation.LOYALTY_MAX);
+			p.addLoyaltyToState(state.getId(), DataPopulation.LOYALTY_MAX);
 		});
 		state.setCapital(prov);
 		game.registerState(state);

@@ -17,6 +17,10 @@ public class Color {
 		this.b = blue;
 	}
 
+	public Color(Color c) {
+		this(c.getR(), c.getG(), c.getB());
+	}
+
 	public int getR() {
 		return r;
 	}

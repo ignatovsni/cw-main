@@ -88,5 +88,9 @@ public class MoneyBudget {
 	public double getIncome() {
 		return income;
 	}
+	
+	void resetBudgetForRestoredCountry() {
+		data.setMoney(0.0);
+	}
 
 }

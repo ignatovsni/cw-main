@@ -34,6 +34,9 @@ public class GameGenerator {
 
 	@Autowired
 	private GameAlgorithms gameAlgorithms;
+	
+	@Autowired
+	private GameEventListener gameEventListener;
 
 	private class TempData {
 		Map<Integer, DataProvince> provByIds = new HashMap<>();
@@ -58,7 +61,7 @@ public class GameGenerator {
 		fillPopulation(dataGame);
 		fillInfrastructure(dataGame);
 		Game game = new Game();
-		game.buildFrom(dataGame, messageSource, getGameAlgorithms());
+		game.buildFrom(dataGame, messageSource, getGameAlgorithms(), gameEventListener);
 		gameParams.getRandom().resetWithSeed(gameParams.getSeed());
 		return game;
 	}

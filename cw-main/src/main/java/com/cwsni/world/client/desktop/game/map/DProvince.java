@@ -254,11 +254,11 @@ class DProvince extends Group {
 	}
 	
 	private void drawLoyaltyMode(Polygon polygon) {
-		drawGradientMode(polygon, DataPopulation.LOYALTY_MAX, province.getCountryLoyalty(), false);
+		drawGradientMode(polygon, DataPopulation.LOYALTY_MAX, province.getLoyaltyToCountry(), false);
 	}
 
 	private void drawLoyaltyDangerousMode(Polygon polygon) {
-		double danger = Math.min(Math.max(province.getStateLoyalty() - province.getCountryLoyalty(), 0), 70);
+		double danger = Math.min(Math.max(province.getLoyaltyToState() - province.getLoyaltyToCountry(), 0), 70);
 		drawGradientMode(polygon, 70.0, danger, false);
 	}
 

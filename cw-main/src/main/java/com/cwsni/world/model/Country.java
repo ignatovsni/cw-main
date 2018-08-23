@@ -1,10 +1,9 @@
 package com.cwsni.world.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +16,7 @@ import com.cwsni.world.model.data.DataMoneyBudget;
 import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataScienceBudget;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.model.data.HistoryDataCountry;
 import com.cwsni.world.util.CwRandom;
 
 public class Country {
@@ -90,6 +90,9 @@ public class Country {
 		} else {
 			if (this.equals(province.getCountry())) {
 				data.setCapital(province.getId());
+				if (data.getFirstCapital() == null) {
+					data.setFirstCapital(data.getFirstCapital());
+				}
 			} else {
 				throw new CwException("Trying to set up capital in alien province: province country id = "
 						+ province.getCountryId() + " but country.id = " + getId());
@@ -154,10 +157,13 @@ public class Country {
 	}
 
 	public void addProvince(Province p) {
-		if (p.getCountry() != null) {
-			p.getCountry().removeProvince(p);
+		if (provinces.contains(p)) {
+			return;
 		}
 		if (p.getTerrainType().isPopulationPossible()) {
+			if (p.getCountry() != null) {
+				p.getCountry().removeProvince(p);
+			}
 			p.setCountry(this);
 			provinces.add(p);
 			data.getProvinces().add(p.getId());
@@ -165,6 +171,9 @@ public class Country {
 	}
 
 	public void removeProvince(Province p) {
+		if (!provinces.contains(p)) {
+			return;
+		}
 		p.setCountry(null);
 		provinces.remove(p);
 		data.getProvinces().remove(p.getId());
@@ -192,12 +201,14 @@ public class Country {
 		return ((Country) obj).getId() == getId();
 	}
 
+	@Override
+	public String toString() {
+		return "Country with id " + getId();
+	}
+
 	public void dismiss() {
-		getProvinces().forEach(p -> p.setCountry(null));
-		List<Army> listArmies = new LinkedList<>(getArmies());
-		listArmies.forEach(a -> {
-			dismissArmy(a);
-		});
+		new ArrayList<>(getProvinces()).forEach(p -> removeProvince(p));
+		new ArrayList<>(getArmies()).forEach(a -> dismissArmy(a));
 	}
 
 	public void dismissArmy(Army a) {
@@ -305,25 +316,54 @@ public class Country {
 
 	// --------------------- static -------------------------------
 
-	public static void createNewCountry(Game game, Province p) {
+	public static Country createNewCountry(Game game, Province p) {
 		if (p.getCountry() != null) {
-			return;
+			return null;
 		}
-		DataCountry dc = new DataCountry();
+		DataCountry dc = createDefaultDataCountry(game);
 		dc.setId(game.nextCountryId());
 		dc.setName("#" + String.valueOf(dc.getId()));
-		dc.setColor(createNewColorForCountry(game));
-		dc.setBudget(new DataMoneyBudget());
-		dc.setScienceBudget(new DataScienceBudget());
+		
 		Country c = new Country();
 		c.buildFrom(game, dc);
 		c.addProvince(p);
 		c.setCapital(p);
 		c.setFirstCapital(p);
 		c.setFocus(100);
-		c.getCapital().addCountryLoyalty(c.getId(), DataPopulation.LOYALTY_MAX);
+		c.getCapital().addLoyaltyToCountry(c.getId(), DataPopulation.LOYALTY_MAX);
 		game.registerCountry(c);
 
+		return c;
+	}
+
+	public static Country restoreCountry(Game game, HistoryDataCountry hdc) {
+		if (hdc == null) {
+			return null;
+		}
+		if (game.findCountryById(hdc.getId()) != null) {
+			// country is active
+			return null;
+		}
+		DataCountry dc = createDefaultDataCountry(game);
+		hdc.copyTo(dc);
+		
+		Country c = new Country();
+		c.buildFrom(game, dc);
+		c.setFocus(100);
+		game.registerCountry(c);
+		return c;
+	}
+
+	public static Country createNewCountryForRebelState(Game game, Province stateCapital) {
+		stateCapital.getCountry().removeProvince(stateCapital);
+		return createNewCountry(game, stateCapital);
+	}
+
+	private static DataCountry createDefaultDataCountry(Game game) {
+		DataCountry dc = new DataCountry();
+		dc.setColor(createNewColorForCountry(game));
+		dc.setBudget(new DataMoneyBudget());
+		dc.setScienceBudget(new DataScienceBudget());
 		// randomize parameters
 		dc.getBudget().setProvinceTax(game.getGameParams().getRandom().nextDouble());
 		dc.getBudget().setArmyWeight(game.getGameParams().getRandom().nextDouble());
@@ -332,6 +372,7 @@ public class Country {
 		dc.getScienceBudget().setAdministrationWeight(game.getGameParams().getRandom().nextDouble());
 		dc.getScienceBudget().setAgricultureWeight(game.getGameParams().getRandom().nextDouble());
 		dc.getScienceBudget().setMedicineWeight(game.getGameParams().getRandom().nextDouble());
+		return dc;
 	}
 
 	private static Color createNewColorForCountry(Game game) {

@@ -121,4 +121,24 @@ public class DataCountry {
 		this.provinces = provinces;
 	}
 
+	@Override
+	public int hashCode() {
+		return getId();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof DataCountry)) {
+			return false;
+		}
+		return ((DataCountry) obj).getId() == getId();
+	}
+
+	@Override
+	public String toString() {
+		return "Country with id " + getId();
+	}
+
 }

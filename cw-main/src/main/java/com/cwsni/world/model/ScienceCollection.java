@@ -136,7 +136,7 @@ public class ScienceCollection {
 			scienceTypeMax
 					.setAmount(listNPops.stream()
 							.mapToInt(pop -> (int) (getter4Science.apply(pop.getScience().getScienceData()).getAmount()
-									* game.getGameParams().getScienceExchangeFromNeighborsPercentFromMax()))
+									* game.getGameParams().getScienceExchangeFromNeighborsFractionFromMax()))
 							.max().getAsInt());
 		}
 

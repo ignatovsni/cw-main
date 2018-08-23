@@ -12,6 +12,7 @@ public class DataState {
 	private Color color;
 	private Integer capital;
 	private Set<Integer> provinces = new HashSet<>();
+	private Integer lastRebelCountryId;
 
 	public int getId() {
 		return id;
@@ -51,6 +52,14 @@ public class DataState {
 
 	public void setProvinces(Set<Integer> provinces) {
 		this.provinces = provinces;
+	}
+
+	public Integer getLastRebelCountryId() {
+		return lastRebelCountryId;
+	}
+
+	public void setLastRebelCountryId(Integer lastRebelCountryId) {
+		this.lastRebelCountryId = lastRebelCountryId;
 	}
 
 }

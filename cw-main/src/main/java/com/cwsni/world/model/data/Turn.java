@@ -53,5 +53,10 @@ public class Turn {
 	public void increment() {
 		turn++;
 	}
+	
+	@Override
+	public String toString() {
+		return getTurnTexToDisplay();
+	}
 
 }

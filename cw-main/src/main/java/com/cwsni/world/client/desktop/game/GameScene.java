@@ -548,7 +548,7 @@ public class GameScene extends Scene {
 	public void editCountriesSettings() {
 		editCountriesSettings(game.getCountries());
 	}
-	
+
 	public void editCountriesSettings(Country country) {
 		List<Country> list = new ArrayList<>();
 		list.add(country);

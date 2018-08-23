@@ -28,6 +28,9 @@ public class GameRepository {
 
 	@Autowired
 	private GameAlgorithms gameAlgorithms;
+	
+	@Autowired
+	private GameEventListener gameEventListener;
 
 	public void quickSaveGame(Game game) {
 		logger.info("quick save : " + game.logDescription());
@@ -69,7 +72,7 @@ public class GameRepository {
 		try {
 			DataGame dataGame = objectMapper.readValue(file, DataGame.class);
 			game = new Game();
-			game.buildFrom(dataGame, messageSource, gameAlgorithms);
+			game.buildFrom(dataGame, messageSource, gameAlgorithms, gameEventListener);
 			logger.info("loading is successful : " + game.logDescription());
 		} catch (IOException e) {
 			e.printStackTrace();
