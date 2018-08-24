@@ -123,7 +123,7 @@ public class Army {
 		data.setSoldiers(Math.max(0, data.getSoldiers() + delta));
 	}
 
-	private double getEffectiveness() {
+	public double getEffectiveness() {
 		return 1.0 * data.getOrganisation() / 100 * data.getTraining() / 100;
 	}
 

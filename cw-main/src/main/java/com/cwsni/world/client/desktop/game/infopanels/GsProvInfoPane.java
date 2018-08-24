@@ -82,11 +82,14 @@ public class GsProvInfoPane extends InternalInfoPane {
 	}
 
 	private String createTextForWealth(Province prov) {
+		StringBuilder sb = new StringBuilder();
 		if (prov.getPopulationAmount() > 0) {
-			return String.valueOf(Math.round(prov.getWealthLevel() * 100)) + "%";
-		} else {
-			return "[" + DataFormatter.toLong((long) prov.getRawWealthOfProvince()) + "]";
+			sb.append(String.valueOf(Math.round(prov.getWealthLevel() * 100))).append("%");
 		}
+		sb.append(" (")
+				.append(DataFormatter.toLong((long) (prov.getRawWealthOfProvince() + prov.getWealthOfPopulation())))
+				.append(")");
+		return sb.toString();
 	}
 
 	private String createTextForInfrastructure(Province prov) {

@@ -143,6 +143,10 @@ public class State {
 		isRevoltSuccessfulThisTurn = false;
 	}
 
+	private enum TypeOfRebelCountry {
+		CREATED, RESTORED, JOINED
+	}
+
 	private void processRebels(Country revoltAttractionToCountry) {
 		if (isRevoltSuccessfulThisTurn) {
 			return;
@@ -186,13 +190,14 @@ public class State {
 				}
 				if (diffLoaylty > 0 && diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > gParams
 						.getRandom().nextDouble()) {
-					if (revoltAttractionToCountry != null
-							&& ComparisonTool.isEqual(revoltAttractionToCountry.getId(), countryId)) {
-						System.out.println("chain revolution to " + revoltAttractionToCountry);
-					}
-					if (revoltToCountry(countryId, stateCapital)) {
+					TypeOfRebelCountry typeC = revoltToCountry(countryId, stateCapital);
+					if (typeC != null) {
 						isRevoltSuccessfulThisTurn = true;
 						getNeighbors().forEach(n -> n.processRebels(stateCapital.getCountry()));
+						if (TypeOfRebelCountry.RESTORED.equals(typeC)) {
+							stateCapital.getCountry().getProvinces().forEach(
+									p -> p.addLoyaltyToCountry(stateCapital.getCountryId(), p.getLoyaltyToState()));
+						}
 						return;
 					}
 				}
@@ -204,7 +209,8 @@ public class State {
 				- gParams.getPopulationLoyaltyRebelToStateThreshold();
 		if (diffLoaylty > 0
 				&& diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > gParams.getRandom().nextDouble()) {
-			if (revoltToState(stateCapital)) {
+			TypeOfRebelCountry typeC = revoltToState(stateCapital);
+			if (typeC != null) {
 				isRevoltSuccessfulThisTurn = true;
 				getNeighbors().forEach(n -> n.processRebels(stateCapital.getCountry()));
 				stateCapital.getCountry().getProvinces()
@@ -215,7 +221,7 @@ public class State {
 		}
 	}
 
-	private boolean revoltToCountry(Integer countryToId, Province stateCapital) {
+	private TypeOfRebelCountry revoltToCountry(Integer countryToId, Province stateCapital) {
 		Country countryFrom = stateCapital.getCountry();
 		Country country2 = game.findCountryById(countryToId);
 		if (country2 != null) {
@@ -224,7 +230,7 @@ public class State {
 					.forEach(p -> countryTo.addProvince(p));
 			game.getGameEventListener().event(game, "Rebels provinces join to the country " + countryTo.getName()
 					+ " with a state capital " + stateCapital.getName());
-			return true;
+			return TypeOfRebelCountry.JOINED;
 		} else {
 			Country countryTo = Country.restoreCountry(game, game.getHistory().findCountry(countryToId));
 			if (countryTo != null) {
@@ -236,24 +242,27 @@ public class State {
 						game.getGameParams().getPopulationLoyaltyRebelNewCountriesTakeMoneyForYears());
 				game.getGameEventListener().event(game, "Rebels restored the country " + countryTo.getName()
 						+ " with a state capital " + stateCapital.getName());
-				return true;
+				return TypeOfRebelCountry.RESTORED;
 			}
 		}
-		return false;
+		return null;
 	}
 
-	private boolean revoltToState(Province stateCapital) {
+	private TypeOfRebelCountry revoltToState(Province stateCapital) {
+		TypeOfRebelCountry typeOfRebelCountry = null;
 		Country countryFrom = stateCapital.getCountry();
 		Country country2 = null;
 		if (data.getLastRebelCountryId() != null) {
 			country2 = Country.restoreCountry(game, game.getHistory().findCountry(data.getLastRebelCountryId()));
 			if (country2 != null) {
+				typeOfRebelCountry = TypeOfRebelCountry.RESTORED;
 				game.getGameEventListener().event(game, "Rebels restored the country " + country2.getName()
 						+ " with a state capital " + stateCapital.getName());
 			}
 		}
 		if (country2 == null) {
 			country2 = Country.createNewCountryForRebelState(game, stateCapital);
+			typeOfRebelCountry = TypeOfRebelCountry.CREATED;
 			game.getGameEventListener().event(game, "Rebels created new country " + country2.getName()
 					+ " with a state capital " + stateCapital.getName());
 		}
@@ -266,7 +275,7 @@ public class State {
 				game.getGameParams().getPopulationLoyaltyRebelNewCountriesTakeMoneyForYears());
 		data.setLastRebelCountryId(countryTo.getId());
 		// TODO clean up non actual lastRebelCountryId
-		return true;
+		return typeOfRebelCountry;
 	}
 
 	private double getLoayltyToState(long statePopulation) {

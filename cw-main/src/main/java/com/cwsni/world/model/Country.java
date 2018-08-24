@@ -29,6 +29,7 @@ public class Country {
 	private Collection<Army> armies;
 	private MoneyBudget budget;
 	private ScienceBudget scienceBudget;
+	private CountryFocus focus;
 
 	public void buildFrom(Game game, DataCountry dc) {
 		this.game = game;
@@ -37,6 +38,7 @@ public class Country {
 		provinces = new HashSet<>();
 		budget = new MoneyBudget();
 		scienceBudget = new ScienceBudget();
+		focus = new CountryFocus(dc);
 
 		data.getProvinces().forEach(pId -> {
 			Province province = game.getMap().findProvById(pId);
@@ -79,7 +81,7 @@ public class Country {
 	public void setAI(boolean isAI) {
 		data.setAI(isAI);
 	}
-
+	
 	public Province getCapital() {
 		return game.getMap().findProvById(data.getCapital());
 	}
@@ -120,8 +122,8 @@ public class Country {
 		return budget.getIncome();
 	}
 
-	public double getFocus() {
-		return data.getFocus();
+	public CountryFocus getFocus() {
+		return focus;
 	}
 
 	public void setFocus(double focus) {

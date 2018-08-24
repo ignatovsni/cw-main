@@ -39,11 +39,13 @@ public class GameParams {
 	private double populationMaxInStateCapital = 1.1;
 	private int populationLimitWithoutGovernment = 10000;
 	
-	private double populationLoyaltyDecreasingDefault = -0.005;
+	private double populationLoyaltyDecreasingCoeffDefault = 0.99;
 	private double populationLoyaltyDecreasingEpidemic = -0.002;
 	private double populationLoyaltyDecreasingOverpopulation = -0.001;
 	private double populationLoyaltyIncreasingGovernmnentCoeff = 0.01;
 	private double populationLoyaltyIncreasingCapital = 0.005;
+	private double populationLoyaltyIncreasingForLifeInTheCountry = 0.001;
+	private double populationLoyaltyIncreasingForState = 0.02;
 	private double populationLoyaltyWealthThreshold = 0.5;
 	private double populationLoyaltyWealthThresholdCoeff = 0.01;
 	private double populationLoyaltyArmySoldiersToPopulationThreshold = 0.1;
@@ -52,7 +54,7 @@ public class GameParams {
 	private double populationLoyaltyRebelToStateThreshold = 0.3;
 	private double populationLoyaltyRebelToCountryThreshold = 0.1;
 	private double populationLoyaltyRebelChainAdditionalLoyalty = 0.5;
-	private double populationLoyaltyRebelChainProbabilityMultiplicator = 5.0;
+	private double populationLoyaltyRebelChainProbabilityMultiplicator = 10.0;
 	private int populationLoyaltyRebelNewCountriesTakeMoneyForYears = 5;
 
 	private int newCountryPopulationMin = 10000;
@@ -62,7 +64,7 @@ public class GameParams {
 	private double scienceBaseIncreasePerTurnPerPerson = 0.01;
 	private double scienceNaturalGrowthLimitPerPerson = 0.01;
 	private double scienceExchangeWithMaxPerTurn = 0.02;
-	private double scienceExchangeFromNeighborsFractionFromMax = 0.7;
+	private double scienceExchangeFromNeighborsFractionFromMax = 0.9;
 
 	private double scienceAgricultureMultiplicatorForFertility = (double) 1 / 4000;
 
@@ -591,14 +593,6 @@ public class GameParams {
 		this.populationMaxInStateCapital = populationMaxInStateCapital;
 	}
 
-	public double getPopulationLoyaltyDecreasingDefault() {
-		return populationLoyaltyDecreasingDefault;
-	}
-
-	public void setPopulationLoyaltyDecreasingDefault(double populationLoyaltyDecreasingDefault) {
-		this.populationLoyaltyDecreasingDefault = populationLoyaltyDecreasingDefault;
-	}
-
 	public double getPopulationLoyaltyDecreasingEpidemic() {
 		return populationLoyaltyDecreasingEpidemic;
 	}
@@ -728,6 +722,30 @@ public class GameParams {
 	public void setPopulationLoyaltyRebelNewCountriesTakeMoneyForYears(
 			int populationLoyaltyRebelNewCountriesTakeMoneyForYears) {
 		this.populationLoyaltyRebelNewCountriesTakeMoneyForYears = populationLoyaltyRebelNewCountriesTakeMoneyForYears;
+	}
+
+	public double getPopulationLoyaltyIncreasingForState() {
+		return populationLoyaltyIncreasingForState;
+	}
+
+	public void setPopulationLoyaltyIncreasingForState(double populationLoyaltyIncreasingForState) {
+		this.populationLoyaltyIncreasingForState = populationLoyaltyIncreasingForState;
+	}
+
+	public double getPopulationLoyaltyIncreasingForLifeInTheCountry() {
+		return populationLoyaltyIncreasingForLifeInTheCountry;
+	}
+
+	public void setPopulationLoyaltyIncreasingForLifeInTheCountry(double populationLoyaltyIncreasingForLifeInTheCountry) {
+		this.populationLoyaltyIncreasingForLifeInTheCountry = populationLoyaltyIncreasingForLifeInTheCountry;
+	}
+
+	public double getPopulationLoyaltyDecreasingCoeffDefault() {
+		return populationLoyaltyDecreasingCoeffDefault;
+	}
+
+	public void setPopulationLoyaltyDecreasingCoeffDefault(double populationLoyaltyDecreasingCoeffDefault) {
+		this.populationLoyaltyDecreasingCoeffDefault = populationLoyaltyDecreasingCoeffDefault;
 	}
 
 }

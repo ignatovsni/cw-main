@@ -123,6 +123,8 @@ public class GameScene extends Scene {
 	private Map<MapMode, DWorldMap> otherMaps;
 
 	private Object lockObj = new Object();
+	// private ExecutorService executorService =
+	// Executors.newSingleThreadExecutor();
 
 	public GameScene() {
 		super(new BorderPane());
@@ -405,6 +407,8 @@ public class GameScene extends Scene {
 		Thread th = new Thread(task);
 		th.setName("turn processing");
 		th.start();
+
+		// Future<?> f = executorService.submit(task);
 	}
 
 	private void refreshViewAndStartNewTurn() {

@@ -144,7 +144,7 @@ public class GameHandler {
 				for (CommandArmyMove cmd2 : list2) {
 					Army army2 = game.findArmyByIdForCommand(cmd2.getCountryId(), cmd2.getArmyId());
 					if (!ComparisonTool.isEqual(army1.getCountry().getId(), army2.getCountry().getId())) {
-						if (army1.getOrganisation() > army2.getOrganisation()) {
+						if (army1.getStrength() > army2.getStrength()) {
 							commandsForCancellation.add(cmd2);
 						} else {
 							commandsForCancellation.add(cmd1);

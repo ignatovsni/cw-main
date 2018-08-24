@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -84,18 +86,23 @@ public class Population {
 		});
 		newPop.data.setLoyaltyToCountries(new HashMap<>(getLoyaltyToCountries()));
 		newPop.data.setLoyaltyToStates(new HashMap<>(getLoyaltyToStates()));
+		newPop.data.setLifeInCountries(new HashMap<>(data.getLifeInCountries()));
 		return newPop;
 	}
 
 	void addPop(Population pop) {
 		double ownFraction = (double) getAmount() / (getAmount() + pop.getAmount());
-		getScience().mergeFrom(pop.getScience(), ownFraction);
-		getCulture().mergeFrom(pop.getCulture(), ownFraction);
 		setAmount(getAmount() + pop.getAmount());
 		setWealth(getWealth() + pop.getWealth());
-		mergeLoyalty(ownFraction, getLoyaltyToCountries(), pop.getLoyaltyToCountries(),
-				(x, y) -> addLoyaltyToCountry(x, y));
-		mergeLoyalty(ownFraction, getLoyaltyToStates(), pop.getLoyaltyToStates(), (x, y) -> addLoyaltyToState(x, y));
+		getScience().mergeFrom(pop.getScience(), ownFraction);
+		getCulture().mergeFrom(pop.getCulture(), ownFraction);
+		if (ownFraction < 0.95) {
+			mergeLoyalty(ownFraction, getLoyaltyToCountries(), pop.getLoyaltyToCountries(),
+					(x, y) -> addLoyaltyToCountry(x, y));
+			mergeLoyalty(ownFraction, getLoyaltyToStates(), pop.getLoyaltyToStates(),
+					(x, y) -> addLoyaltyToState(x, y));
+			mergeLifeInCountries(ownFraction, data.getLifeInCountries(), pop.data.getLifeInCountries());
+		}
 	}
 
 	private void mergeLoyalty(double ownFraction, Map<Integer, Double> mergeTo, Map<Integer, Double> mergeFrom,
@@ -115,6 +122,26 @@ public class Population {
 			}
 			newLoyalty = thisL * ownFraction + otherL * (1 - ownFraction);
 			func.accept(id, newLoyalty - thisL);
+		}
+	}
+
+	private void mergeLifeInCountries(double ownFraction, Map<Integer, Integer> mergeTo,
+			Map<Integer, Integer> mergeFrom) {
+		Set<Integer> ids = new HashSet<>();
+		ids.addAll(mergeTo.keySet());
+		ids.addAll(mergeFrom.keySet());
+		for (Integer id : ids) {
+			int newLoyalty = 0;
+			Integer thisL = mergeTo.get(id);
+			Integer otherL = mergeFrom.get(id);
+			if (thisL == null) {
+				thisL = 0;
+			}
+			if (otherL == null) {
+				otherL = 0;
+			}
+			newLoyalty = (int) (thisL * ownFraction + otherL * (1 - ownFraction));
+			mergeTo.put(id, newLoyalty - thisL);
 		}
 	}
 
@@ -166,28 +193,36 @@ public class Population {
 		}
 		currentLoyalty = Math.min(Math.max(currentLoyalty + delta, 0), DataPopulation.LOYALTY_MAX);
 		currentLoyalty = DataFormatter.doubleWith4points(currentLoyalty);
-		if (currentLoyalty <= DataPopulation.LOYALTY_MAX / 1000) {
+		if (currentLoyalty < DataPopulation.LOYALTY_MAX / 120 && delta < 0) {
 			loyalties.remove(id);
 		} else {
 			loyalties.put(id, currentLoyalty);
 		}
 	}
 
-	public void addLoyaltyToAllCountries(double delta) {
+	public void decreaseLoyaltyToAllCountries(double coeff) {
 		// We need new List because DataPopulation::addCountryLoyalty can remove
 		// elements from collection.
 		List<Integer> ids = new ArrayList<>(data.getLoyaltyToCountries().keySet());
 		for (Integer id : ids) {
-			addLoyaltyToCountry(id, delta);
+			Double loyalty = getLoyaltyToCountry(id);
+			if (loyalty != null) {
+				double newLoyalty = loyalty * coeff;
+				addLoyaltyToCountry(id, newLoyalty - loyalty);
+			}
 		}
 	}
 
-	public void addLoyaltyToAllState(double delta) {
+	public void decreaseLoyaltyToAllStates(double coeff) {
 		// We need new List because DataPopulation::addCountryLoyalty can remove
 		// elements from collection.
 		List<Integer> ids = new ArrayList<>(data.getLoyaltyToStates().keySet());
 		for (Integer id : ids) {
-			addLoyaltyToState(id, delta);
+			Double loyalty = getLoyaltyToState(id);
+			if (loyalty != null) {
+				double newLoyalty = loyalty * coeff;
+				addLoyaltyToState(id, newLoyalty - loyalty);
+			}
 		}
 	}
 
@@ -338,120 +373,170 @@ public class Population {
 		}
 	}
 
+	public void processLifeInTheCountryNewTurn() {
+		Integer countryId = province.getCountryId();
+		if (countryId != null) {
+			Integer value = data.getLifeInCountries().get(countryId);
+			value = 2 + (value != null ? value : 0);
+			data.getLifeInCountries().put(countryId, value);
+		}
+		Iterator<Entry<Integer, Integer>> iter = data.getLifeInCountries().entrySet().iterator();
+		while (iter.hasNext()) {
+			Entry<Integer, Integer> entry = iter.next();
+			int value = entry.getValue() - 1;
+			if (value > 0) {
+				data.getLifeInCountries().put(entry.getKey(), value);
+			} else {
+				iter.remove();
+			}
+		}
+	}
+
 	public static void processLoyaltyNewTurn(Province p, Game game) {
-		if (p.getPopulationAmount() == 0) {
+		int provPopulationAmount = p.getPopulationAmount();
+		if (provPopulationAmount == 0) {
 			return;
 		}
 		Country country = p.getCountry();
 		State state = p.getState();
 		GameParams gParams = game.getGameParams();
 
-		// decreasing - regular (mostly for other countries and states)
-		p.addLoyaltyToAllCountries(gParams.getPopulationLoyaltyDecreasingDefault());
-		p.addLoyaltyToAllState(gParams.getPopulationLoyaltyDecreasingDefault());
-
-		// decreasing - diseases
-		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
-			if (country != null) {
-				p.addLoyaltyToCountry(country.getId(), gParams.getPopulationLoyaltyDecreasingEpidemic());
-			}
-			if (state != null) {
+		if (state != null) {
+			p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyIncreasingForState());
+			if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
 				p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyDecreasingEpidemic());
 			}
 		}
 
+		// decreasing - regular (mostly for other countries and states)
+		p.decreaseLoyaltyToAllCountries(gParams.getPopulationLoyaltyDecreasingCoeffDefault());
+		p.decreaseLoyaltyToAllStates(gParams.getPopulationLoyaltyDecreasingCoeffDefault());
+
+		if (country == null) {
+			return;
+		}
+
+		// decreasing - diseases
+		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
+			p.addLoyaltyToCountry(country.getId(), gParams.getPopulationLoyaltyDecreasingEpidemic());
+		}
+
 		// decreasing - overpopulation
-		if (p.getPopulationExcess() > 1 && country != null) {
+		if (p.getPopulationExcess() > 1) {
 			p.addLoyaltyToCountry(country.getId(),
 					gParams.getPopulationLoyaltyDecreasingOverpopulation() * p.getPopulationExcess());
 		}
 
 		// increasing/decreasing - wealth
-		if (country != null) {
-			double provinceWealthLevel = p.getWealthLevelOfProvince();
-			for (Population pop : p.getPopulation()) {
-				double wealthLevel = (pop.getWealthLevel() + provinceWealthLevel) / 2;
-				if (wealthLevel > 1) {
-					logger.warn("wealthLevel must not be > 1, but it is " + wealthLevel);
-					wealthLevel = 1;
-				}
-				double delta = (wealthLevel - gParams.getPopulationLoyaltyWealthThreshold())
-						* gParams.getPopulationLoyaltyWealthThresholdCoeff();
-				pop.addLoyaltyToCountry(country.getId(), delta);
+		double provinceWealthLevel = p.getWealthLevelOfProvince();
+		for (Population pop : p.getPopulation()) {
+			double wealthLevel = (pop.getWealthLevel() + provinceWealthLevel) / 2;
+			if (wealthLevel > 1) {
+				logger.warn("wealthLevel must not be > 1, but it is " + wealthLevel);
+				wealthLevel = 1;
 			}
+			double delta = (wealthLevel - gParams.getPopulationLoyaltyWealthThreshold())
+					* gParams.getPopulationLoyaltyWealthThresholdCoeff();
+			pop.addLoyaltyToCountry(country.getId(), delta);
 		}
 
 		// increasing - government influence
-		if (country != null) {
-			p.addLoyaltyToCountry(country.getId(),
-					p.getGovernmentInfluence() * gParams.getPopulationLoyaltyIncreasingGovernmnentCoeff());
-			// increasing - capital influence
-			if (p.equals(country.getCapital())) {
-				p.addLoyaltyToCountry(country.getId(), gParams.getPopulationLoyaltyIncreasingCapital());
-			}
-		}
-		if (state != null) {
-			p.addLoyaltyToState(state.getId(), 0.02);
+		p.addLoyaltyToCountry(country.getId(),
+				p.getGovernmentInfluence() * gParams.getPopulationLoyaltyIncreasingGovernmnentCoeff());
+		// increasing - capital influence
+		if (p.equals(country.getCapital())) {
+			p.addLoyaltyToCountry(country.getId(), gParams.getPopulationLoyaltyIncreasingCapital());
 		}
 
+		// increasing - life in the country
+		double lifeInTheCountry = p.getPopulation().stream().mapToDouble(pop -> {
+			Integer value = pop.data.getLifeInCountries().get(country.getId());
+			if (value == null) {
+				return 0.0;
+			} else {
+				return value * pop.getAmount();
+			}
+		}).sum() / provPopulationAmount;
+		if (lifeInTheCountry > 0) {
+			double delta = Math.log10(lifeInTheCountry) * gParams.getPopulationLoyaltyIncreasingForLifeInTheCountry();
+			p.addLoyaltyToCountry(country.getId(), delta);
+		}
 	}
 
 	public static String createDescriptionForLoyaltyChanges(Game game, Province p, LocaleMessageSource messageSource) {
+		int provPopulationAmount = p.getPopulationAmount();
+		if (provPopulationAmount == 0) {
+			return null;
+		}
+		Country country = p.getCountry();
+		if (country == null) {
+			return null;
+		}
 		StringBuilder sb = new StringBuilder();
 		GameParams gParams = game.getGameParams();
-		Country country = p.getCountry();
 
 		// decreasing - regular (mostly for other countries and states)
-		sb.append(gParams.getPopulationLoyaltyDecreasingDefault() * 100 + " "
-				+ messageSource.getMessage("info.pane.prov.country.loyalty.description.default-decreasing"))
+		sb.append("-"
+				+ DataFormatter.doubleWith2points(p.getLoyaltyToCountry(country.getId())
+						* (1 - gParams.getPopulationLoyaltyDecreasingCoeffDefault()) * 100)
+				+ " " + messageSource.getMessage("info.pane.prov.country.loyalty.description.default-decreasing"))
 				.append("\n");
 
 		// decreasing - diseases
 		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
-			if (country != null) {
-				sb.append(gParams.getPopulationLoyaltyDecreasingEpidemic() * 100 + " "
-						+ messageSource.getMessage("info.pane.prov.country.loyalty.description.epidemic")).append("\n");
-			}
+			sb.append(gParams.getPopulationLoyaltyDecreasingEpidemic() * 100 + " "
+					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.epidemic")).append("\n");
 		}
 
 		// decreasing - overpopulation
 		if (p.getPopulationExcess() > 1) {
-			double delta = DataFormatter.doubleWith2points(
-					gParams.getPopulationLoyaltyDecreasingOverpopulation() * p.getPopulationExcess() * 100);
-			sb.append(
-					delta + " " + messageSource.getMessage("info.pane.prov.country.loyalty.description.overpopulation"))
+			double delta = gParams.getPopulationLoyaltyDecreasingOverpopulation() * p.getPopulationExcess();
+			sb.append(DataFormatter.doubleWith2points(delta * 100) + " "
+					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.overpopulation"))
 					.append("\n");
 		}
 
 		// increasing/decreasing - wealth
-		if (country != null) {
-			int provincePopulation = p.getPopulationAmount();
-			double provinceWealthLevel = p.getWealthLevelOfProvince();
-			double delta = 0;
-			for (Population pop : p.getPopulation()) {
-				double wealthLevel = (pop.getWealthLevel() + provinceWealthLevel) / 2;
-				delta += (wealthLevel - gParams.getPopulationLoyaltyWealthThreshold())
-						* gParams.getPopulationLoyaltyWealthThresholdCoeff() * pop.getAmount();
-			}
-			delta /= provincePopulation;
-			if (delta > 0) {
-				sb.append("+");
-			}
-			sb.append(DataFormatter.doubleWith2points(delta * 100) + " "
-					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.wealth")).append("\n");
+		int provincePopulation = p.getPopulationAmount();
+		double provinceWealthLevel = p.getWealthLevelOfProvince();
+		double delta = 0;
+		for (Population pop : p.getPopulation()) {
+			double wealthLevel = (pop.getWealthLevel() + provinceWealthLevel) / 2;
+			delta += (wealthLevel - gParams.getPopulationLoyaltyWealthThreshold())
+					* gParams.getPopulationLoyaltyWealthThresholdCoeff() * pop.getAmount();
 		}
+		delta /= provincePopulation;
+		if (delta > 0) {
+			sb.append("+");
+		}
+		sb.append(DataFormatter.doubleWith2points(delta * 100) + " "
+				+ messageSource.getMessage("info.pane.prov.country.loyalty.description.wealth")).append("\n");
 
 		// increasing - government influence
-		if (country != null) {
-			double delta = DataFormatter.doubleWith2points(
-					p.getGovernmentInfluence() * gParams.getPopulationLoyaltyIncreasingGovernmnentCoeff() * 100);
-			sb.append("+" + delta + " "
-					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.government-influence"))
-					.append("\n");
-			if (p.equals(country.getCapital())) {
-				sb.append("+" + gParams.getPopulationLoyaltyIncreasingCapital() * 100 + " "
-						+ messageSource.getMessage("info.pane.prov.country.loyalty.description.capital")).append("\n");
+		delta = p.getGovernmentInfluence() * gParams.getPopulationLoyaltyIncreasingGovernmnentCoeff();
+		sb.append("+" + DataFormatter.doubleWith2points(delta * 100) + " "
+				+ messageSource.getMessage("info.pane.prov.country.loyalty.description.government-influence"))
+				.append("\n");
+		if (p.equals(country.getCapital())) {
+			sb.append("+" + gParams.getPopulationLoyaltyIncreasingCapital() * 100 + " "
+					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.capital")).append("\n");
+		}
+
+		// increasing - life in the country
+		double lifeInTheCountry = p.getPopulation().stream().mapToDouble(pop -> {
+			Integer value = pop.data.getLifeInCountries().get(country.getId());
+			if (value == null) {
+				return 0.0;
+			} else {
+				return 1.0 * value * pop.getAmount();
 			}
+		}).sum() / provPopulationAmount;
+		if (lifeInTheCountry > 0) {
+			delta = Math.log10(lifeInTheCountry) * gParams.getPopulationLoyaltyIncreasingForLifeInTheCountry();
+			sb.append("+" + DataFormatter.doubleWith2points(delta * 100) + " "
+					+ messageSource
+							.getMessage("info.pane.prov.country.loyalty.description.population.life-in-the-country"))
+					.append("\n");
 		}
 
 		// increasing - temporary from army

@@ -258,8 +258,8 @@ class DProvince extends Group {
 	}
 
 	private void drawLoyaltyDangerousMode(Polygon polygon) {
-		double danger = Math.min(Math.max(province.getLoyaltyToState() - province.getLoyaltyToCountry(), 0), 70);
-		drawGradientMode(polygon, 70.0, danger, false);
+		double danger = Math.min(Math.max(province.getLoyaltyToState() - province.getLoyaltyToCountry(), 0), DataPopulation.LOYALTY_MAX);
+		drawGradientMode(polygon, DataPopulation.LOYALTY_MAX, danger, false);
 	}
 
 	private void drawInfrastructureMode(Polygon polygon) {
@@ -468,6 +468,9 @@ class DProvince extends Group {
 
 	public void drawCountryBorder() {
 		// work based on features of updatePoints()
+		
+		// TODO need to cache border.
+		// getChildren().add(line); - spends too much time
 		getChildren().removeAll(borders);
 		borders.clear();
 		countriesBordersWithProvId.stream().map(id -> map.getGame().getMap().findProvById(id)).forEach(neighbor -> {

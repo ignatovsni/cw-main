@@ -231,7 +231,7 @@ public class JavaAIHandler implements IAIHandler {
 		tryMovingArmyFurther(data, army);
 	}
 
-	private boolean tryMovingArmyToNeighbors(AIData4Country data, IPArmy army) {
+	private boolean tryMovingArmyToNeighbors(AIData4Country data, IPArmy army) {		
 		Map<IPProvince, Double> importanceOfProvinces = new HashMap<>();
 		for (IPProvince neighbor : army.getLocation().getNeighbors()) {
 			if (neighbor.getTerrainType().isPopulationPossible() && !neighbor.isMyProvince()) {

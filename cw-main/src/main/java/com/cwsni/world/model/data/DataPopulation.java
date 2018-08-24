@@ -13,6 +13,7 @@ public class DataPopulation {
 	private double wealth;
 	private Map<Integer, Double> loyaltyToCountries = new HashMap<>();
 	private Map<Integer, Double> loyaltyToStates = new HashMap<>();
+	private Map<Integer, Integer> lifeInCountries = new HashMap<>();
 
 	public int getAmount() {
 		return amount;
@@ -60,6 +61,14 @@ public class DataPopulation {
 
 	public void setLoyaltyToStates(Map<Integer, Double> loyaltyToStates) {
 		this.loyaltyToStates = loyaltyToStates;
+	}
+
+	public Map<Integer, Integer> getLifeInCountries() {
+		return lifeInCountries;
+	}
+
+	public void setLifeInCountries(Map<Integer, Integer> lifeInCountries) {
+		this.lifeInCountries = lifeInCountries;
 	}
 
 }

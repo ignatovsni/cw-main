@@ -337,10 +337,16 @@ public class Province implements EventTarget {
 		}
 		Population.processEventsNewTurn(this, map.getGame());
 		processNaturalInfrastructure();
+		removeDiedPops();
+		processLifeInTheCountryNewTurn();
 		if (getPopulationAmount() != 0) {
 			processTaxesAndOthersInNewTurn();
 		}
-		removeDiedPops();
+	}
+
+	private void processLifeInTheCountryNewTurn() {
+		// TODO the same for province
+		getPopulation().forEach(pop -> pop.processLifeInTheCountryNewTurn());
 	}
 
 	private void removeDiedPops() {
@@ -362,7 +368,7 @@ public class Province implements EventTarget {
 		armies.remove(a);
 	}
 
-	private double getWealth() {
+	public double getEffectiveWealth() {
 		return getWealthOfPopulation() + getWealthOfProvince();
 	}
 
@@ -371,10 +377,10 @@ public class Province implements EventTarget {
 		if (populationAmount == 0) {
 			return 0;
 		}
-		return getWealth() / populationAmount / map.getGame().getGameParams().getBudgetMaxWealthPerPerson() / 2;
+		return getEffectiveWealth() / populationAmount / map.getGame().getGameParams().getBudgetMaxWealthPerPerson() / 2;
 	}
 
-	private double getWealthOfPopulation() {
+	public double getWealthOfPopulation() {
 		return getPopulation().stream().mapToDouble(p -> p.getWealth()).sum();
 	}
 
@@ -515,7 +521,7 @@ public class Province implements EventTarget {
 		// absolutely poor people
 		double income = populationAmount * gParams.getBudgetBaseTaxPerPerson();
 		// wealth people
-		income += getWealth() / gParams.getBudgetMaxWealthPerPerson() / 2
+		income += getEffectiveWealth() / gParams.getBudgetMaxWealthPerPerson() / 2
 				* (gParams.getBudgetBaseTaxPerWealthPerson() - gParams.getBudgetBaseTaxPerPerson());
 		return income;
 	}
@@ -638,12 +644,12 @@ public class Province implements EventTarget {
 		getPopulation().forEach(p -> p.addLoyaltyToState(id, delta));
 	}
 
-	public void addLoyaltyToAllCountries(double delta) {
-		getPopulation().forEach(p -> p.addLoyaltyToAllCountries(delta));
+	public void decreaseLoyaltyToAllCountries(double coeff) {
+		getPopulation().forEach(p -> p.decreaseLoyaltyToAllCountries(coeff));
 	}
 
-	public void addLoyaltyToAllState(double delta) {
-		getPopulation().forEach(p -> p.addLoyaltyToAllState(delta));
+	public void decreaseLoyaltyToAllStates(double coeff) {
+		getPopulation().forEach(p -> p.decreaseLoyaltyToAllStates(coeff));
 	}
 
 	public double getLoyaltyToCountry() {

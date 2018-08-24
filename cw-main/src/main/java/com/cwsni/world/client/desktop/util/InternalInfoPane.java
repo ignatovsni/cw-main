@@ -47,7 +47,11 @@ abstract public class InternalInfoPane extends BorderPane {
 		}
 
 		public void setValueColumnTooltip(String txt) {
-			valueNode.setTooltip(new Tooltip(txt));
+			if (txt!=null) {
+				valueNode.setTooltip(new Tooltip(txt));
+			} else {
+				valueNode.setTooltip(null);
+			}
 		}
 
 	}
@@ -216,6 +220,8 @@ abstract public class InternalInfoPane extends BorderPane {
 		setLabelText(l, txt);
 		if (valueTooltip != null) {
 			l.setValueColumnTooltip(valueTooltip.toString());
+		} else {
+			l.setValueColumnTooltip(null);
 		}
 	}
 
