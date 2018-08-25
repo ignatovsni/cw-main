@@ -539,11 +539,22 @@ public class Population {
 					.append("\n");
 		}
 
+		sb.append("---------------\n");
 		// increasing - temporary from army
 		long lfa = Math.round(p.getLoyaltyToCountryFromArmy() * 100);
-		if (lfa > 0) {
-			sb.append("---------------\n+" + lfa + " "
-					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.army")).append("\n");
+		if (lfa != 0) {
+			sb.append("+" + lfa + " " + messageSource.getMessage("info.pane.prov.country.loyalty.description.army"))
+					.append("\n");
+		}
+
+		// increasing - temporary from focus
+		double countryFocus = DataFormatter.doubleWith2points(country.getFocus().getLoyaltyFlatBonus() * 100);
+		if (countryFocus != 0) {
+			if (countryFocus > 0) {
+				sb.append("+");
+			}
+			sb.append(countryFocus + " " + messageSource.getMessage("info.pane.prov.country.loyalty.description.focus"))
+					.append("\n");
 		}
 
 		return sb.toString();

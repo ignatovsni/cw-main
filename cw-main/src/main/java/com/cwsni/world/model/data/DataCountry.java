@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.game.ai.ScriptAIHandler;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -17,7 +16,7 @@ public class DataCountry {
 	private Color color;
 	private Integer capital;
 	private Integer firstCapital;
-	private double focus;
+	private DataCountryFocus focus;
 	private Set<Integer> provinces = new HashSet<>();
 	private List<DataArmy> armies = new ArrayList<>();
 	private DataMoneyBudget budget;
@@ -81,14 +80,6 @@ public class DataCountry {
 		this.firstCapital = firstCapital;
 	}
 
-	public double getFocus() {
-		return focus;
-	}
-
-	public void setFocus(double focus) {
-		this.focus = DataFormatter.doubleWith3points(focus);
-	}
-
 	public DataMoneyBudget getBudget() {
 		return budget;
 	}
@@ -139,6 +130,14 @@ public class DataCountry {
 	@Override
 	public String toString() {
 		return "Country with id " + getId();
+	}
+
+	public DataCountryFocus getFocus() {
+		return focus;
+	}
+
+	public void setFocus(DataCountryFocus focus) {
+		this.focus = focus;
 	}
 
 }

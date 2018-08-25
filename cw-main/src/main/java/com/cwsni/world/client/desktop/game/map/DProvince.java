@@ -361,6 +361,9 @@ class DProvince extends Group {
 			if (mode2) {
 				fraction = Math.sqrt(fraction);
 			}
+			if (fraction < 0) {
+				System.out.println("---- fraction < 0");
+			}
 			pValue = new Color(Math.min(fraction * 2, 1), Math.min(fraction * 2, 1), 0, 1);
 		} else {
 			if (mode2) {

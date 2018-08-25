@@ -7,6 +7,7 @@ public class DataArmy {
 	 * DataPopulation can be used
 	 */
 
+
 	private int id;
 	private int soldiers;
 	private int training;

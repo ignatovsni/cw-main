@@ -38,7 +38,9 @@ public class Country {
 		provinces = new HashSet<>();
 		budget = new MoneyBudget();
 		scienceBudget = new ScienceBudget();
-		focus = new CountryFocus(dc);
+		focus = new CountryFocus();
+		
+		focus.buildFrom(this, dc.getFocus());
 
 		data.getProvinces().forEach(pId -> {
 			Province province = game.getMap().findProvById(pId);
@@ -81,7 +83,7 @@ public class Country {
 	public void setAI(boolean isAI) {
 		data.setAI(isAI);
 	}
-	
+
 	public Province getCapital() {
 		return game.getMap().findProvById(data.getCapital());
 	}
@@ -124,10 +126,6 @@ public class Country {
 
 	public CountryFocus getFocus() {
 		return focus;
-	}
-
-	public void setFocus(double focus) {
-		data.setFocus(focus);
 	}
 
 	DataCountry getCountryData() {
@@ -290,6 +288,7 @@ public class Country {
 	public void processNewTurn() {
 		budget.processNewTurn();
 		processScienceNewTurn();
+		focus.processNewTurn();
 	}
 
 	private void processScienceNewTurn() {
@@ -325,13 +324,12 @@ public class Country {
 		DataCountry dc = createDefaultDataCountry(game);
 		dc.setId(game.nextCountryId());
 		dc.setName("#" + String.valueOf(dc.getId()));
-		
+
 		Country c = new Country();
 		c.buildFrom(game, dc);
 		c.addProvince(p);
 		c.setCapital(p);
 		c.setFirstCapital(p);
-		c.setFocus(100);
 		c.getCapital().addLoyaltyToCountry(c.getId(), DataPopulation.LOYALTY_MAX);
 		game.registerCountry(c);
 
@@ -348,10 +346,9 @@ public class Country {
 		}
 		DataCountry dc = createDefaultDataCountry(game);
 		hdc.copyTo(dc);
-		
+
 		Country c = new Country();
 		c.buildFrom(game, dc);
-		c.setFocus(100);
 		game.registerCountry(c);
 		return c;
 	}
@@ -364,6 +361,7 @@ public class Country {
 	private static DataCountry createDefaultDataCountry(Game game) {
 		DataCountry dc = new DataCountry();
 		dc.setColor(createNewColorForCountry(game));
+		dc.setFocus(CountryFocus.createFocusForNewCountry(game));
 		dc.setBudget(new DataMoneyBudget());
 		dc.setScienceBudget(new DataScienceBudget());
 		// randomize parameters

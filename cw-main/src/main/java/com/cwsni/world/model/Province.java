@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import com.cwsni.world.CwException;
+import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataProvince;
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.GameParams;
@@ -377,7 +378,8 @@ public class Province implements EventTarget {
 		if (populationAmount == 0) {
 			return 0;
 		}
-		return getEffectiveWealth() / populationAmount / map.getGame().getGameParams().getBudgetMaxWealthPerPerson() / 2;
+		return getEffectiveWealth() / populationAmount / map.getGame().getGameParams().getBudgetMaxWealthPerPerson()
+				/ 2;
 	}
 
 	public double getWealthOfPopulation() {
@@ -401,6 +403,15 @@ public class Province implements EventTarget {
 	}
 
 	public double getGovernmentInfluence() {
+		Country country = getCountry();
+		if (country == null) {
+			return 0;
+		}
+		return Math.max(map.getGame().getGameParams().getProvinceInfluenceFromCapitalWithoutCapital(),
+				getRawGovernmentInfluence() + country.getFocus().getGovernmentFlatBonus());
+	}
+
+	private double getRawGovernmentInfluence() {
 		Country country = getCountry();
 		if (country == null) {
 			return 0;
@@ -446,12 +457,12 @@ public class Province implements EventTarget {
 			return gParams.getProvinceInfluenceFromCapitalWithoutCapital();
 		}
 		double adminScience = getScienceAdministration() + country.getCapital().getScienceAdministration();
-		double effectiveDistanceToCapital = getDistanceToCapital() - Math.log10(adminScience) / 3;
-		if (effectiveDistanceToCapital <= 0) {
+		double distanceToCapitalWithScience = getDistanceToCapital() - Math.log10(adminScience) / 3;
+		if (distanceToCapitalWithScience <= 0) {
 			return 1;
 		} else {
 			double influence = Math.pow(gParams.getProvinceInfluenceFromCapitalWithDistanceDecrease(),
-					effectiveDistanceToCapital);
+					distanceToCapitalWithScience / country.getFocus().getGovernmentInfluenceOnDistance());
 			influence = Math.max(influence, gParams.getProvinceInfluenceFromCapitalWithoutCapital());
 			return influence;
 		}
@@ -496,7 +507,7 @@ public class Province implements EventTarget {
 	}
 
 	public double getFederalIncomePerYear() {
-		if(getCountry() == null) {
+		if (getCountry() == null) {
 			System.out.println("!!! getCountry() == null for province " + getId());
 		}
 		return sumTaxForYear() * getCountry().getMoneyBudget().getProvinceTax() * getGovernmentInfluence();
@@ -523,6 +534,10 @@ public class Province implements EventTarget {
 		// wealth people
 		income += getEffectiveWealth() / gParams.getBudgetMaxWealthPerPerson() / 2
 				* (gParams.getBudgetBaseTaxPerWealthPerson() - gParams.getBudgetBaseTaxPerPerson());
+		Country country = getCountry();
+		if (country != null) {
+			income *= country.getFocus().getTaxInfluence();
+		}
 		return income;
 	}
 
@@ -673,8 +688,9 @@ public class Province implements EventTarget {
 			double countryLoyaltyFromArmy = getLoyaltyToCountryFromArmy();
 			loyalty = Math.max(loyalty, Math.min(loyalty + countryLoyaltyFromArmy,
 					map.getGame().getGameParams().getPopulationLoyaltyArmyMax()));
+			loyalty += country.getFocus().getLoyaltyFlatBonus();
 		}
-		return loyalty;
+		return Math.max(0, Math.min(loyalty, DataPopulation.LOYALTY_MAX));
 	}
 
 	Set<Integer> getCountriesWithLoyalty() {

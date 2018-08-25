@@ -15,14 +15,14 @@ public class History {
 	private HistoryData data;
 	private Game game;
 	private Map<Integer, HistoryDataCountry> countries;
-	private int internalTurn;
+	private int lastCleaningTurn;
 
 	public void buildFrom(Game game, HistoryData history) {
 		this.game = game;
 		this.data = history;
 		this.countries = new HashMap<>();
-		data.getCountries().forEach(dc -> countries.put(dc.getId(), dc));
-		this.internalTurn = 0;
+		this.data.getCountries().forEach(dc -> countries.put(dc.getId(), dc));
+		this.lastCleaningTurn = 0;
 	}
 
 	void removeCountry(Country c) {
@@ -36,9 +36,10 @@ public class History {
 	}
 
 	public void processNewTurn() {
-		if (++internalTurn % 10 != 0) {
+		if (lastCleaningTurn < game.getTurn().getTurn() - 10) {
 			return;
 		}
+		lastCleaningTurn = game.getTurn().getTurn();
 		int turnToDelete = game.getTurn().getTurn() - MAX_AGE_OF_COUNTRY_RECORD;
 		Iterator<Entry<Integer, HistoryDataCountry>> iter = countries.entrySet().iterator();
 		while (iter.hasNext()) {

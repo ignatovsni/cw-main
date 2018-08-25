@@ -124,7 +124,7 @@ public class Army {
 	}
 
 	public double getEffectiveness() {
-		return 1.0 * data.getOrganisation() / 100 * data.getTraining() / 100;
+		return 1.0 * data.getOrganisation() / 100 * data.getTraining() / 100 * country.getFocus().getArmyStrengthInfluence();
 	}
 
 	public double getStrength() {
