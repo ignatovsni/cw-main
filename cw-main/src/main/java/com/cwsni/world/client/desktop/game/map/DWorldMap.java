@@ -2,8 +2,10 @@ package com.cwsni.world.client.desktop.game.map;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.cwsni.world.client.desktop.game.GameScene;
@@ -15,6 +17,7 @@ import com.cwsni.world.model.ProvinceBorder;
 import com.cwsni.world.model.WorldMap;
 
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
@@ -31,6 +34,8 @@ public class DWorldMap {
 	private DProvince selectedProvince;
 	private GameScene gameScene;
 	private MapMode mapMode = MapMode.GEO;
+	private Map<ProvinceBorder, Node> cacheBorderLines;
+	private Map<ProvinceBorder, Node> activeCountriesBorderLines;
 
 	private Map<String, ImagePattern> textures;
 
@@ -45,6 +50,8 @@ public class DWorldMap {
 		List<Province> pvs = map.getProvinces();
 		provinces = new ArrayList<>(pvs.size());
 		provincesById = new HashMap<>(pvs.size());
+		cacheBorderLines = new HashMap<>();
+		activeCountriesBorderLines = new HashMap<>();
 		pvs.forEach(p -> {
 			DProvince dProvince = DProvince.createDProvince(this, p, game.getGameParams().getProvinceRadius());
 			provinces.add(dProvince);
@@ -118,8 +125,7 @@ public class DWorldMap {
 		if (selectedProvince != null) {
 			selectedProvince.selectProvince(false);
 			// refresh borders because polygon.stroke can overlap them
-			selectedProvince.getProvince().getNeighbors()
-					.forEach(n -> provincesById.get(n.getId()).drawCountryBorder());
+			bordersToFront(selectedProvince.getProvince());
 		}
 		this.selectedProvince = dProvince;
 		if (selectedProvince != null) {
@@ -146,13 +152,43 @@ public class DWorldMap {
 	}
 
 	private void drawCountryBorders() {
-		provinces.forEach(p -> p.resetCountriesBorders());
+		Map<ProvinceBorder, Node> newLines = new HashMap<>();
 		Set<ProvinceBorder> countriesBorders = game.getMap().getCountriesBorders();
-		countriesBorders.forEach(pb -> {
-			provincesById.get(pb.getFirst()).addCountryBorderWith(pb.getSecond());
-			provincesById.get(pb.getSecond()).addCountryBorderWith(pb.getFirst());
-		});
-		provinces.forEach(p -> p.drawCountryBorder());
+		for (ProvinceBorder border : countriesBorders) {
+			Node line = cacheBorderLines.get(border);
+			if (line == null) {
+				DProvince p1 = provincesById.get(border.getFirst());
+				DProvince p2 = provincesById.get(border.getSecond());
+				line = p1.createBorderLine(p2.getProvince());
+				cacheBorderLines.put(border, line);
+			}
+			newLines.put(border, line);
+		}
+		Iterator<Entry<ProvinceBorder, Node>> iter = activeCountriesBorderLines.entrySet().iterator();
+		while (iter.hasNext()) {
+			Entry<ProvinceBorder, Node> entry = iter.next();
+			if (!newLines.keySet().contains(entry.getKey())) {
+				iter.remove();
+				mapGroup.getChildren().remove(entry.getValue());
+			}
+		}
+		iter = newLines.entrySet().iterator();
+		while (iter.hasNext()) {
+			Entry<ProvinceBorder, Node> entry = iter.next();
+			if (!activeCountriesBorderLines.keySet().contains(entry.getKey())) {
+				mapGroup.getChildren().add(entry.getValue());
+				activeCountriesBorderLines.put(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
+	private void bordersToFront(Province p) {
+		for (Province n : p.getNeighbors()) {
+			Node border = activeCountriesBorderLines.get(new ProvinceBorder(p.getId(), n.getId()));
+			if (border != null) {
+				border.toFront();
+			}
+		}
 	}
 
 }

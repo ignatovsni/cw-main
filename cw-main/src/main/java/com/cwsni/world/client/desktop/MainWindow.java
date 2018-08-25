@@ -1,5 +1,8 @@
 package com.cwsni.world.client.desktop;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -26,6 +29,8 @@ public class MainWindow extends Application {
 	 * successfully
 	 */
 	private boolean successfulStart;
+	
+	private ExecutorService aiExecutorService;
 
 	static private String[] args;
 
@@ -36,6 +41,7 @@ public class MainWindow extends Application {
 
 	@Override
 	public void init() throws Exception {
+		aiExecutorService = Executors.newSingleThreadExecutor();
 		springContext = SpringApplication.run(MainWindow.class, args);
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/main.fxml"));
 		fxmlLoader.setControllerFactory(springContext::getBean);
@@ -44,6 +50,7 @@ public class MainWindow extends Application {
 
 	@Override
 	public void stop() throws Exception {
+		aiExecutorService.shutdownNow();
 		setUserPreferences();
 		getUserProperties().saveUserProperties();
 		springContext.stop();
@@ -77,7 +84,7 @@ public class MainWindow extends Application {
 
 	private void createGameScene(Stage stage) {
 		GameScene gameScene = getGameScene();
-		gameScene.init();
+		gameScene.init(aiExecutorService);
 		stage.setScene(gameScene);
 	}
 

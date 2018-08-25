@@ -1,10 +1,6 @@
 package com.cwsni.world.client.desktop.game.map;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import com.cwsni.world.model.ComparisonTool;
@@ -64,16 +60,11 @@ class DProvince extends Group {
 
 	private MapMode prevMode;
 
-	private Set<Integer> countriesBordersWithProvId;
-	private List<Line> borders;
-
 	private DProvince(DWorldMap map, Province province, double provinceRadius) {
 		this.map = map;
 		this.province = province;
 		this.center = new Point2D(province.getCenter().getX(), province.getCenter().getY());
 		this.radius = provinceRadius;
-		this.countriesBordersWithProvId = new HashSet<>();
-		this.borders = new ArrayList<>();
 		updatePoints();
 		createVisualElements();
 	}
@@ -252,13 +243,14 @@ class DProvince extends Group {
 		}
 		fillPolygon(polygon, color);
 	}
-	
+
 	private void drawLoyaltyMode(Polygon polygon) {
 		drawGradientMode(polygon, DataPopulation.LOYALTY_MAX, province.getLoyaltyToCountry(), false);
 	}
 
 	private void drawLoyaltyDangerousMode(Polygon polygon) {
-		double danger = Math.min(Math.max(province.getLoyaltyToState() - province.getLoyaltyToCountry(), 0), DataPopulation.LOYALTY_MAX);
+		double danger = Math.min(Math.max(province.getLoyaltyToState() - province.getLoyaltyToCountry(), 0),
+				DataPopulation.LOYALTY_MAX);
 		drawGradientMode(polygon, DataPopulation.LOYALTY_MAX, danger, false);
 	}
 
@@ -442,7 +434,6 @@ class DProvince extends Group {
 				timeline.stop();
 			}
 			polygon.setStroke(STROKE_DEFAULT_COLOR);
-			borders.forEach(b -> b.toFront());
 		}
 	}
 
@@ -461,32 +452,15 @@ class DProvince extends Group {
 		prevColor = color;
 	}
 
-	void resetCountriesBorders() {
-		countriesBordersWithProvId = new HashSet<>();
-	}
-
-	public void addCountryBorderWith(int neighborId) {
-		countriesBordersWithProvId.add(neighborId);
-	}
-
-	public void drawCountryBorder() {
-		// work based on features of updatePoints()
-		
-		// TODO need to cache border.
-		// getChildren().add(line); - spends too much time
-		getChildren().removeAll(borders);
-		borders.clear();
-		countriesBordersWithProvId.stream().map(id -> map.getGame().getMap().findProvById(id)).forEach(neighbor -> {
-			int neighborPosition = whatNeighborPosition(neighbor);
-			int borderFromIdx = neighborPosition;
-			int borderToIdx = (neighborPosition + 1) % SIDES;
-			Line line = new Line(points[borderFromIdx].getX(), points[borderFromIdx].getY(), points[borderToIdx].getX(),
-					points[borderToIdx].getY());
-			line.setStroke(BORDER_COLOR);
-			line.getStrokeDashArray().addAll(2d);
-			borders.add(line);
-			getChildren().add(line);
-		});
+	Line createBorderLine(Province neighbor) {
+		int neighborPosition = whatNeighborPosition(neighbor);
+		int borderFromIdx = neighborPosition;
+		int borderToIdx = (neighborPosition + 1) % SIDES;
+		Line line = new Line(points[borderFromIdx].getX(), points[borderFromIdx].getY(), points[borderToIdx].getX(),
+				points[borderToIdx].getY());
+		line.setStroke(BORDER_COLOR);
+		line.getStrokeDashArray().addAll(2d);
+		return line;
 	}
 
 	private int whatNeighborPosition(Province neighbor) {

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -123,14 +125,14 @@ public class GameScene extends Scene {
 	private Map<MapMode, DWorldMap> otherMaps;
 
 	private Object lockObj = new Object();
-	// private ExecutorService executorService =
-	// Executors.newSingleThreadExecutor();
+	private ExecutorService aiExecutorService;
 
 	public GameScene() {
 		super(new BorderPane());
 	}
 
-	public void init() {
+	public void init(ExecutorService aiExecutorService) {
+		this.aiExecutorService = aiExecutorService;
 		mapPane = new ZoomableScrollPane();
 		mapToolBar.init(this);
 		menuBar.init(this);
@@ -404,11 +406,12 @@ public class GameScene extends Scene {
 				return null;
 			}
 		};
-		Thread th = new Thread(task);
-		th.setName("turn processing");
-		th.start();
+		/*
+		 * Thread th = new Thread(task); th.setName("turn processing"); th.start();
+		 */
 
-		// Future<?> f = executorService.submit(task);
+		// TODO It is not fully correct. We need to wait until task will be finished.
+		Future<?> f = aiExecutorService.submit(task);
 	}
 
 	private void refreshViewAndStartNewTurn() {
