@@ -1,5 +1,7 @@
 package com.cwsni.world.model.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Turn {
 	/*
 	 * maybe make coefficient for lesser period of time (population growth & so
@@ -57,6 +59,14 @@ public class Turn {
 	@Override
 	public String toString() {
 		return getTurnTexToDisplay();
+	}
+
+	/**
+	 * Size of last step 
+	 */
+	@JsonIgnore
+	public int getLastStep() {
+		return 1;
 	}
 
 }

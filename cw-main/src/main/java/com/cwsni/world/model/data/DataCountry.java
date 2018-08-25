@@ -23,6 +23,8 @@ public class DataCountry {
 	private DataScienceBudget scienceBudget;
 	private boolean isAI = true;
 	private String aiScriptName = ScriptAIHandler.DEFAULT_SCRIPT;
+	private int turnOfCreation;
+	private int turnsOfExistence;
 
 	public int getId() {
 		return id;
@@ -139,5 +141,22 @@ public class DataCountry {
 	public void setFocus(DataCountryFocus focus) {
 		this.focus = focus;
 	}
+
+	public int getTurnOfCreation() {
+		return turnOfCreation;
+	}
+
+	public void setTurnOfCreation(int turnOfCreation) {
+		this.turnOfCreation = turnOfCreation;
+	}
+
+	public int getTurnsOfExistence() {
+		return turnsOfExistence;
+	}
+
+	public void setTurnsOfExistence(int turnsOfExistence) {
+		this.turnsOfExistence = turnsOfExistence;
+	}
+
 
 }

@@ -7,7 +7,11 @@ public class DataArmy {
 	 * DataPopulation can be used
 	 */
 
-
+	
+/**
+ * Maybe id should be string as "country-id" + "-" +"army-id" - to avoid constantly increasing of {@link DataGame#lastArmyId}
+ * Or I can search min value while the game is loading and then make 1) min--; 2) find max; 3) max++; 
+ */
 	private int id;
 	private int soldiers;
 	private int training;

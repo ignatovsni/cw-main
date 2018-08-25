@@ -230,6 +230,10 @@ public class Population {
 		return Collections.unmodifiableMap(data.getLoyaltyToCountries());
 	}
 
+	public Map<Integer, Integer> getLifeInCountries() {
+		return Collections.unmodifiableMap(data.getLifeInCountries());
+	}
+
 	public Double getLoyaltyToCountry(Integer id) {
 		Double loyalty = data.getLoyaltyToCountries().get(id);
 		if (loyalty != null) {

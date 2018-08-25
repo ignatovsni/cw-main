@@ -3,6 +3,8 @@ package com.cwsni.world.model.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cwsni.world.client.desktop.util.DataFormatter;
+
 public class DataPopulation {
 
 	public static Double LOYALTY_MAX = 1.0;
@@ -44,7 +46,7 @@ public class DataPopulation {
 	}
 
 	public void setWealth(double wealth) {
-		this.wealth = wealth;
+		this.wealth = DataFormatter.doubleWith2points(wealth);
 	}
 
 	public Map<Integer, Double> getLoyaltyToCountries() {

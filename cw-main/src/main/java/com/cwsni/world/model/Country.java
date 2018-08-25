@@ -39,7 +39,7 @@ public class Country {
 		budget = new MoneyBudget();
 		scienceBudget = new ScienceBudget();
 		focus = new CountryFocus();
-		
+
 		focus.buildFrom(this, dc.getFocus());
 
 		data.getProvinces().forEach(pId -> {
@@ -286,6 +286,7 @@ public class Country {
 	}
 
 	public void processNewTurn() {
+		data.setTurnsOfExistence(data.getTurnsOfExistence() + game.getTurn().getLastStep());
 		budget.processNewTurn();
 		processScienceNewTurn();
 		focus.processNewTurn();
@@ -361,6 +362,7 @@ public class Country {
 	private static DataCountry createDefaultDataCountry(Game game) {
 		DataCountry dc = new DataCountry();
 		dc.setColor(createNewColorForCountry(game));
+		dc.setTurnOfCreation(game.getTurn().getTurn());
 		dc.setFocus(CountryFocus.createFocusForNewCountry(game));
 		dc.setBudget(new DataMoneyBudget());
 		dc.setScienceBudget(new DataScienceBudget());

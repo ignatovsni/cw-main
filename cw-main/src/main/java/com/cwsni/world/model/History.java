@@ -10,8 +10,6 @@ import com.cwsni.world.model.data.HistoryDataCountry;
 
 public class History {
 
-	private static final int MAX_AGE_OF_COUNTRY_RECORD = 200;
-
 	private HistoryData data;
 	private Game game;
 	private Map<Integer, HistoryDataCountry> countries;
@@ -26,26 +24,35 @@ public class History {
 	}
 
 	void removeCountry(Country c) {
-		HistoryDataCountry hdc = new HistoryDataCountry(c.getCountryData(), game.getTurn().getTurn());
-		data.getCountries().add(hdc);
-		countries.put(c.getId(), hdc);
+		HistoryDataCountry hdc = findCountry(c.getId());
+		if (hdc == null) {
+			hdc = new HistoryDataCountry();
+			hdc.update(c.getCountryData(), game.getTurn().getTurn());
+			data.getCountries().add(hdc);
+			countries.put(c.getId(), hdc);
+		} else {
+			hdc.update(c.getCountryData(), game.getTurn().getTurn());
+		}
 	}
 
 	public HistoryDataCountry findCountry(int countryId) {
 		return countries.get(countryId);
 	}
 
+	public boolean containsCountry(int countryId) {
+		return countries.containsKey(countryId);
+	}
+
 	public void processNewTurn() {
-		if (lastCleaningTurn < game.getTurn().getTurn() - 10) {
+		if (lastCleaningTurn > game.getTurn().getTurn() - 10) {
 			return;
 		}
 		lastCleaningTurn = game.getTurn().getTurn();
-		int turnToDelete = game.getTurn().getTurn() - MAX_AGE_OF_COUNTRY_RECORD;
 		Iterator<Entry<Integer, HistoryDataCountry>> iter = countries.entrySet().iterator();
 		while (iter.hasNext()) {
 			Entry<Integer, HistoryDataCountry> entry = iter.next();
 			HistoryDataCountry hdc = entry.getValue();
-			if (hdc.getTurnOfRecord() < turnToDelete) {
+			if (hdc.isCanBeRemoved(game.getTurn())) {
 				iter.remove();
 				data.getCountries().remove(hdc);
 			}

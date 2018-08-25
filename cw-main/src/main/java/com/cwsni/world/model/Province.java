@@ -2,9 +2,12 @@ package com.cwsni.world.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -698,6 +701,23 @@ public class Province implements EventTarget {
 		Set<Integer> countriesIds = new HashSet<>();
 		getPopulation().forEach(pop -> countriesIds.addAll(pop.getLoyaltyToCountries().keySet()));
 		return countriesIds;
+	}
+
+	Map<Integer, Integer> getLifeInCountries() {
+		Map<Integer, Integer> lifeInCountries = new HashMap<>();
+		int provincePopulation = getPopulationAmount();
+		for (Population pop : getPopulation()) {
+			Map<Integer, Integer> lInCs = pop.getLifeInCountries();
+			for (Entry<Integer, Integer> entry : lInCs.entrySet()) {
+				Integer years = lifeInCountries.get(entry.getKey());
+				if (years == null) {
+					years = 0;
+				}
+				lifeInCountries.put(entry.getKey(),
+						(int) (years + 1.0 * entry.getValue() * pop.getAmount() / provincePopulation));
+			}
+		}
+		return lifeInCountries;
 	}
 
 	public double getLoyaltyToCountryFromArmy() {

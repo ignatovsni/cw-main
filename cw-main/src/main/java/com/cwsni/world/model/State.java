@@ -3,9 +3,12 @@ package com.cwsni.world.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -178,6 +181,7 @@ public class State {
 		if (revoltAttractionToCountry != null) {
 			countriesIds.add(revoltAttractionToCountry.getId());
 		}
+		CwRandom random = gParams.getRandom();
 		for (int countryId : countriesIds) {
 			if (!ComparisonTool.isEqual(countryId, countryOfStateCapital.getId())) {
 				double loyaltyToCountry = getLoayltyToCountry(countryId, statePopulation);
@@ -188,8 +192,8 @@ public class State {
 					diffLoaylty += gParams.getPopulationLoyaltyRebelChainAdditionalLoyalty();
 					diffLoaylty *= gParams.getPopulationLoyaltyRebelChainProbabilityMultiplicator();
 				}
-				if (diffLoaylty > 0 && diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > gParams
-						.getRandom().nextDouble()) {
+				if (diffLoaylty > 0
+						&& diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > random.nextDouble()) {
 					TypeOfRebelCountry typeC = revoltToCountry(countryId, stateCapital);
 					if (typeC != null) {
 						isRevoltSuccessfulThisTurn = true;
@@ -207,9 +211,8 @@ public class State {
 		double stateLoyalty = getLoayltyToState(statePopulation);
 		double diffLoaylty = stateLoyalty - loyaltyToCountryOfStateCapital
 				- gParams.getPopulationLoyaltyRebelToStateThreshold();
-		if (diffLoaylty > 0
-				&& diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > gParams.getRandom().nextDouble()) {
-			TypeOfRebelCountry typeC = revoltToState(stateCapital);
+		if (diffLoaylty > 0 && diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > random.nextDouble()) {
+			TypeOfRebelCountry typeC = revoltToState(stateCapital, random);
 			if (typeC != null) {
 				isRevoltSuccessfulThisTurn = true;
 				getNeighbors().forEach(n -> n.processRebels(stateCapital.getCountry()));
@@ -248,19 +251,37 @@ public class State {
 		return null;
 	}
 
-	private TypeOfRebelCountry revoltToState(Province stateCapital) {
+	private TypeOfRebelCountry revoltToState(Province stateCapital, CwRandom random) {
 		TypeOfRebelCountry typeOfRebelCountry = null;
 		Country countryFrom = stateCapital.getCountry();
 		Country country2 = null;
-		if (data.getLastRebelCountryId() != null) {
-			country2 = Country.restoreCountry(game, game.getHistory().findCountry(data.getLastRebelCountryId()));
-			if (country2 != null) {
-				typeOfRebelCountry = TypeOfRebelCountry.RESTORED;
-				game.getGameEventListener().event(game, "Rebels restored the country " + country2.getName()
-						+ " with a state capital " + stateCapital.getName());
+		// old disappeared country
+		List<Entry<Integer, Integer>> lifeInCountries = new ArrayList<>(getLifeInCountries().entrySet().stream()
+				.filter(e -> game.getHistory().containsCountry(e.getKey())).collect(Collectors.toList()));
+		long totalYears = lifeInCountries.stream().mapToLong(e -> e.getValue()).sum();
+		int countOfIteraion = 0;
+		if (totalYears > 0) {
+			Collections.sort(lifeInCountries, (x, y) -> y.getValue() - x.getValue());
+			while (country2 == null) {
+				for (Map.Entry<Integer, Integer> e : lifeInCountries) {
+					double nextDouble = random.nextDouble();
+					if (1.0 * e.getValue() / totalYears > nextDouble) {
+						country2 = Country.restoreCountry(game, game.getHistory().findCountry(e.getKey()));
+						if (country2 != null) {
+							break;
+						}
+					}
+				}
+				if (countOfIteraion++ > 10) {
+					break;
+				}
 			}
 		}
-		if (country2 == null) {
+		if (country2 != null) {
+			typeOfRebelCountry = TypeOfRebelCountry.RESTORED;
+			game.getGameEventListener().event(game, "Rebels restored the country " + country2.getName()
+					+ " with a state capital " + stateCapital.getName());
+		} else {
 			country2 = Country.createNewCountryForRebelState(game, stateCapital);
 			typeOfRebelCountry = TypeOfRebelCountry.CREATED;
 			game.getGameEventListener().event(game, "Rebels created new country " + country2.getName()
@@ -273,8 +294,6 @@ public class State {
 		countryTo.getMoneyBudget().getAvailableMoneyForScience();
 		countryTo.getMoneyBudget().addMoneyForNewRebelCountry(
 				game.getGameParams().getPopulationLoyaltyRebelNewCountriesTakeMoneyForYears());
-		data.setLastRebelCountryId(countryTo.getId());
-		// TODO clean up non actual lastRebelCountryId
 		return typeOfRebelCountry;
 	}
 
@@ -296,6 +315,24 @@ public class State {
 		Set<Integer> countriesIds = new HashSet<>();
 		getProvinces().forEach(p -> countriesIds.addAll(p.getCountriesWithLoyalty()));
 		return countriesIds;
+	}
+
+	private Map<Integer, Integer> getLifeInCountries() {
+		Map<Integer, Integer> lifeInCountries = new HashMap<>();
+		long statePopulation = getPopulationAmount();
+		for (Province p : getProvinces()) {
+			int provincePopulation = p.getPopulationAmount();
+			Map<Integer, Integer> lInCs = p.getLifeInCountries();
+			for (Entry<Integer, Integer> entry : lInCs.entrySet()) {
+				Integer years = lifeInCountries.get(entry.getKey());
+				if (years == null) {
+					years = 0;
+				}
+				lifeInCountries.put(entry.getKey(),
+						(int) (years + 1.0 * entry.getValue() * provincePopulation / statePopulation));
+			}
+		}
+		return lifeInCountries;
 	}
 
 	private void processScienceNewTurn() {
