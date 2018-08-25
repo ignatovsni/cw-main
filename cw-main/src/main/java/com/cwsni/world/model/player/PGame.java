@@ -111,13 +111,13 @@ public class PGame implements IPGame {
 	}
 
 	@Override
-	public double relativeDistance(IPProvince from, IPProvince to) {
-		return relativeDistance(from.getId(), to.getId());
+	public double findDistance(IPProvince from, IPProvince to) {
+		return game.getMap().findDistanceBetweenProvs(from.getId(), to.getId());
 	}
 
 	@Override
-	public double relativeDistance(Integer fromId, Integer toId) {
-		return game.getMap().findRelativeDistanceBetweenProvs(fromId, toId);
+	public double findDistance(Integer fromId, Integer toId) {
+		return game.getMap().findDistanceBetweenProvs(fromId, toId);
 	}
 
 	@Override

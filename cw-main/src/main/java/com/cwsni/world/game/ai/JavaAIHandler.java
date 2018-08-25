@@ -265,7 +265,7 @@ public class JavaAIHandler implements IAIHandler {
 		if (capital == null) {
 			capital = pCountry.getFirstCapital();
 		}
-		return 1 / Math.max(data.getGame().relativeDistance(neighbor, capital), 1);
+		return 1 / Math.max(data.getGame().findDistance(neighbor, capital), 1);
 		// return calculateImportanceOfProvinceByCountOfNeighborsPops(data, neighbor,
 		// pCountry.getId());
 	}
@@ -277,7 +277,7 @@ public class JavaAIHandler implements IAIHandler {
 			if (p.equals(a.getLocation())) {
 				continue;
 			}
-			double distance = data.getGame().relativeDistance(a.getLocation(), p);
+			double distance = data.getGame().findDistance(a.getLocation(), p);
 			if (distance < minDistance) {
 				minDistance = distance;
 				nearestProv = p;

@@ -346,7 +346,7 @@ public class Province implements EventTarget {
 	}
 
 	private void processLifeInTheCountryNewTurn() {
-		// TODO the same for province
+		// TODO ? the same for province ?
 		getPopulation().forEach(pop -> pop.processLifeInTheCountryNewTurn());
 	}
 
@@ -472,7 +472,7 @@ public class Province implements EventTarget {
 		if (getCountry() == null) {
 			return -1;
 		}
-		Integer capitalId = country.getCapitalId();
+		Integer capitalId = getCountry().getCapitalId();
 		if (capitalId == null) {
 			return -1;
 		}
@@ -480,7 +480,7 @@ public class Province implements EventTarget {
 			if (ComparisonTool.isEqual(capitalId, getId())) {
 				distanceToCapital = 0;
 			} else {
-				distanceToCapital = map.findDistanceBetweenProvs(capitalId, getId());
+				distanceToCapital = map.findDistanceForGovernmentInfluence(country.getCapital(), this);
 			}
 			oldCapitalId = capitalId;
 		}
@@ -499,7 +499,7 @@ public class Province implements EventTarget {
 			if (ComparisonTool.isEqual(capitalId, getId())) {
 				distanceToStateCapital = 0;
 			} else {
-				distanceToStateCapital = map.findDistanceBetweenProvs(capitalId, getId());
+				distanceToStateCapital = map.findDistanceForGovernmentInfluence(getState().getCapital(), this);
 			}
 			oldStateCapitalId = capitalId;
 		}
@@ -564,6 +564,7 @@ public class Province implements EventTarget {
 		}
 
 		// population wealth
+		// we use income if it is not empty after others things
 		wealthForPops = wealthForPops + Math.max(income, 0) / 2;
 		for (Population p : getPopulation()) {
 			if (p.getAmount() > 0) {

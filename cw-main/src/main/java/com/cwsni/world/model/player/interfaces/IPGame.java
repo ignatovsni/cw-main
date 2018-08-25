@@ -14,9 +14,9 @@ public interface IPGame {
 
 	IPProvince findProvById(Integer id);
 
-	double relativeDistance(IPProvince from, IPProvince to);
+	double findDistance(IPProvince from, IPProvince to);
 
-	double relativeDistance(Integer fromId, Integer toId);
+	double findDistance(Integer fromId, Integer toId);
 
 	List<Object> findShortestPath(int fromId, int toId);
 

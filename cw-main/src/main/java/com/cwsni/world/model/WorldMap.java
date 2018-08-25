@@ -56,13 +56,25 @@ public class WorldMap {
 	 * Find distance quickly just for comparison
 	 * 
 	 */
-	public double findRelativeDistanceBetweenProvs(int provId1, int provId2) {
-		return findRelativeDistanceBetweenProvs(findProvById(provId1), findProvById(provId2));
+	public double findDistanceBetweenProvs(int provId1, int provId2) {
+		return findDistanceBetweenProvs(findProvById(provId1), findProvById(provId2));
 	}
 
-	private double findRelativeDistanceBetweenProvs(Province p1, Province p2) {
-		return Math.pow(p1.getCenter().getX() - p2.getCenter().getX(), 2)
-				+ Math.pow(p1.getCenter().getY() - p2.getCenter().getY(), 2);
+	public double findDistanceBetweenProvs(Province p1, Province p2) {
+		return Math.sqrt(Math.pow(p1.getCenter().getX() - p2.getCenter().getX(), 2)
+				+ Math.pow(p1.getCenter().getY() - p2.getCenter().getY(), 2));
+	}
+
+	/**
+	 * It must count provinces!! not just distance
+	 */
+	public double findDistanceForGovernmentInfluence(Province p1, Province p2) {
+		// We use hexagons with known radius, so we can use it.
+		// TODO (!) We can do better - use real math for hexagons.
+		return Math
+				.sqrt(Math.pow(p1.getCenter().getX() - p2.getCenter().getX(), 2)
+						+ Math.pow(p1.getCenter().getY() - p2.getCenter().getY(), 2))
+				/ game.getGameParams().getProvinceRadius();
 	}
 
 	private Set<ProvinceBorder> refreshCountriesBorders() {
@@ -104,7 +116,7 @@ public class WorldMap {
 		return countriesBorders;
 	}
 
-	public double findDistanceBetweenProvs(int fromId, int toId) {
+	public double findCountOfProvsBetweenProvs(int fromId, int toId) {
 		return findShortestPath(fromId, toId).size() - 1;
 	}
 

@@ -61,7 +61,8 @@ public class GsTimeControl extends BorderPane {
 		pauseButton.setOnAction(e -> {
 			pressButton(pauseButton, GsTimeMode.PAUSE);
 		});
-		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT0), () -> pauseButton.fire());
+		//gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT0), () -> pauseButton.fire());
+		gameScene.putHotKey(new KeyCodeCombination(KeyCode.SPACE), () -> pauseButton.fire());
 		pauseButton.setEffect(new Lighting());
 
 		Button startButton = new Button(getMessage(">"));
