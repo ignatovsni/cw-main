@@ -1,6 +1,7 @@
 package com.cwsni.world.model;
 
 import com.cwsni.world.model.data.DataCountryFocus;
+import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.util.CwRandom;
 
 public class CountryFocus {
@@ -47,19 +48,27 @@ public class CountryFocus {
 	}
 
 	public void processNewTurn() {
-		CwRandom rnd = country.getGame().getGameParams().getRandom();
+		GameParams gParams = country.getGame().getGameParams();
+		CwRandom rnd = gParams.getRandom();
 		double chance = rnd.nextDouble();
 		double focus = getValue();
 		if (chance > 0.999) {
 			data.setFocus(focus + (rnd.nextNormalDouble() - 0.5) * 2);
 			data.setGoal(DataCountryFocus.BASE_VALUE);
-			data.setStep(createStep(rnd, 0.01));
-		} else if (chance > 0.99) {
-			data.setGoal(createNewGoal(rnd));
+			data.setStep(createStep(gParams, rnd, 0.01));
+		} else if (chance > 0.997) {
+			data.setGoal(createNewGoal(gParams, rnd));
 			if (rnd.nextDouble() > 0.9) {
-				data.setStep(createStep(rnd, 0.01));
+				data.setStep(createStep(gParams, rnd, 0.005));
 			} else {
-				data.setStep(createStep(rnd, 0.001));
+				data.setStep(createStep(gParams, rnd, 0.01));
+			}
+		} else if (chance > 0.995) {
+			data.setGoal((createNewGoal(gParams, rnd) + DataCountryFocus.BASE_VALUE) / 2);
+			if (rnd.nextDouble() > 0.9) {
+				data.setStep(createStep(gParams, rnd, 0.0025));
+			} else {
+				data.setStep(createStep(gParams, rnd, 0.01));
 			}
 		} else if (data.getStep() > 0) {
 			double diff = data.getGoal() - focus;
@@ -75,13 +84,9 @@ public class CountryFocus {
 			} else {
 				// the goal is reached, we must come back to base
 				data.setGoal(DataCountryFocus.BASE_VALUE);
-				data.setStep(createStep(rnd, 0.01));
+				data.setStep(createStep(gParams, rnd, 0.01));
 			}
 		}
-	}
-
-	private double createStep(CwRandom rnd, double maxStep) {
-		return Math.min(maxStep, rnd.nextDouble() * maxStep + DataCountryFocus.MIN_STEP);
 	}
 
 	// -------------------------- static section ----------------------
@@ -92,7 +97,8 @@ public class CountryFocus {
 		double chance = rnd.nextDouble();
 		double focus;
 		if (chance > 0.99) {
-			focus = createNewGoal(rnd);
+			focus = createNewGoal(game.getGameParams(), rnd);
+			dcf.setStep(createStep(game.getGameParams(), rnd, 0.01));
 		} else {
 			focus = DataCountryFocus.BASE_VALUE;
 		}
@@ -101,10 +107,20 @@ public class CountryFocus {
 		return dcf;
 	}
 
-	private static double createNewGoal(CwRandom rnd) {
-		double pg = (rnd.nextNormalDouble() - 0.5) * DataCountryFocus.GOAL_MAX_VALUE / DataCountryFocus.BASE_VALUE
-				+ DataCountryFocus.BASE_VALUE;
-		return Math.min(DataCountryFocus.GOAL_MAX_VALUE, Math.max(DataCountryFocus.GOAL_MIN_VALUE, pg));
+	private static double createStep(GameParams gParams, CwRandom rnd, double maxStep) {
+		return Math.min(maxStep, rnd.nextDouble() * maxStep + gParams.getFocusMinStep());
+	}
+
+	private static double createNewGoal(GameParams gParams, CwRandom rnd) {
+		double rndValue = rnd.nextNormalDouble();
+		double pg;
+		if (rndValue > 0.5) {
+			pg = (rndValue - 0.5) * (gParams.getFocusMaxGoal() - 1) * 2 / DataCountryFocus.BASE_VALUE
+					+ DataCountryFocus.BASE_VALUE;
+		} else {
+			pg = gParams.getFocusMinGoal() + rndValue * 2 * (DataCountryFocus.BASE_VALUE - gParams.getFocusMinGoal());
+		}
+		return Math.min(gParams.getFocusMaxGoal(), Math.max(gParams.getFocusMinGoal(), pg));
 	}
 
 }

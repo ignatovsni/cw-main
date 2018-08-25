@@ -38,7 +38,7 @@ public class GameParams {
 	private double populationMaxInCapital = 1.3;
 	private double populationMaxInStateCapital = 1.1;
 	private int populationLimitWithoutGovernment = 10000;
-	
+
 	private double populationLoyaltyDecreasingCoeffDefault = 0.99;
 	private double populationLoyaltyDecreasingEpidemic = -0.002;
 	private double populationLoyaltyDecreasingOverpopulation = -0.001;
@@ -56,6 +56,10 @@ public class GameParams {
 	private double populationLoyaltyRebelChainAdditionalLoyalty = 0.5;
 	private double populationLoyaltyRebelChainProbabilityMultiplicator = 10.0;
 	private int populationLoyaltyRebelNewCountriesTakeMoneyForYears = 5;
+
+	private double focusMinGoal = 0.5;
+	private double focusMaxGoal = 3.0;
+	private double focusMinStep = 0.0001;
 
 	private int newCountryPopulationMin = 10000;
 	private int newCountryScienceAdministrationMin = 100;
@@ -736,7 +740,8 @@ public class GameParams {
 		return populationLoyaltyIncreasingForLifeInTheCountry;
 	}
 
-	public void setPopulationLoyaltyIncreasingForLifeInTheCountry(double populationLoyaltyIncreasingForLifeInTheCountry) {
+	public void setPopulationLoyaltyIncreasingForLifeInTheCountry(
+			double populationLoyaltyIncreasingForLifeInTheCountry) {
 		this.populationLoyaltyIncreasingForLifeInTheCountry = populationLoyaltyIncreasingForLifeInTheCountry;
 	}
 
@@ -746,6 +751,30 @@ public class GameParams {
 
 	public void setPopulationLoyaltyDecreasingCoeffDefault(double populationLoyaltyDecreasingCoeffDefault) {
 		this.populationLoyaltyDecreasingCoeffDefault = populationLoyaltyDecreasingCoeffDefault;
+	}
+
+	public double getFocusMinGoal() {
+		return focusMinGoal;
+	}
+
+	public void setFocusMinGoal(double focusMinGoal) {
+		this.focusMinGoal = DataCountryFocus.normalizeFocus(focusMinGoal);
+	}
+
+	public double getFocusMaxGoal() {
+		return focusMaxGoal;
+	}
+
+	public void setFocusMaxGoal(double focusMaxGoal) {
+		this.focusMaxGoal = DataCountryFocus.normalizeFocus(focusMaxGoal);
+	}
+
+	public double getFocusMinStep() {
+		return focusMinStep;
+	}
+
+	public void setFocusMinStep(double focusMinStep) {
+		this.focusMinStep = focusMinStep;
 	}
 
 }

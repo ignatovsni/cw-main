@@ -26,6 +26,8 @@ import com.cwsni.world.util.Heap;
 @Qualifier("javaAIHandler")
 public class JavaAIHandler implements IAIHandler {
 
+	private static final int MAX_ARMIES = 30;
+
 	@Override
 	public void processCountry(AIData4Country data) {
 		checkCapital(data);
@@ -88,7 +90,6 @@ public class JavaAIHandler implements IAIHandler {
 	}
 
 	public void processArmyBudget(AIData4Country data) {
-		int max_armies = 20;
 		IPGameParams params = data.getGame().getGameParams();
 		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
 		double availableMoneyForArmy = budget.getAvailableMoneyForArmy();
@@ -114,7 +115,7 @@ public class JavaAIHandler implements IAIHandler {
 			}
 		}
 
-		if (armies.size() >= max_armies) {
+		if (armies.size() >= MAX_ARMIES) {
 			return;
 		}
 		// new armies
@@ -140,7 +141,6 @@ public class JavaAIHandler implements IAIHandler {
 	}
 
 	public void mergeAndSplitArmies(AIData4Country data) {
-		int max_armies = 20;
 		IPCountry country = data.getCountry();
 		List<IPArmy> armies = new ArrayList<>(country.getArmies());
 		Set<IPArmy> processed = new HashSet<>();
@@ -170,7 +170,7 @@ public class JavaAIHandler implements IAIHandler {
 						* data.getCountry().getArmySoldiersToPopulationForSubjugation());
 				newArmySize = Math.max(newArmySize, needMaxSoldiers);
 				Optional<IPArmy> bigArmy = armiesInProv.stream().max((x, y) -> x.getSoldiers() - y.getSoldiers());
-				while (country.getArmies().size() < max_armies && needMoreArmies > 0
+				while (country.getArmies().size() < MAX_ARMIES && needMoreArmies > 0
 						&& bigArmy.get().getSoldiers() >= newArmySize * 2) {
 					bigArmy.get().splitArmy(newArmySize);
 					--needMoreArmies;

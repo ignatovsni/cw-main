@@ -7,8 +7,6 @@ public class DataCountryFocus {
 	public static final double BASE_VALUE = 1;
 	public static final double MIN_VALUE = 0;
 	public static final double MAX_VALUE = 10;
-	public static final double GOAL_MIN_VALUE = 0.5;
-	public static final double GOAL_MAX_VALUE = 2;
 	public static final double MIN_STEP = 0.0001;
 
 	private double focus;
@@ -21,10 +19,6 @@ public class DataCountryFocus {
 
 	public void setFocus(double focus) {
 		this.focus = normalizeFocus(focus);
-	}
-
-	private double normalizeFocus(double value) {
-		return DataFormatter.doubleWith4points(Math.min(MAX_VALUE, Math.max(MIN_VALUE, value)));
 	}
 
 	public double getGoal() {
@@ -40,7 +34,7 @@ public class DataCountryFocus {
 	}
 
 	public void setStep(double step) {
-		this.step = DataFormatter.doubleWith4points(step);
+		this.step = DataFormatter.doubleWith4points(Math.max(DataCountryFocus.MIN_STEP, step));
 	}
 
 	@Override
@@ -55,6 +49,10 @@ public class DataCountryFocus {
 		sb.append(step);
 		sb.append("]");
 		return sb.toString();
+	}
+
+	public static double normalizeFocus(double value) {
+		return DataFormatter.doubleWith4points(Math.min(MAX_VALUE, Math.max(MIN_VALUE, value)));
 	}
 
 }
