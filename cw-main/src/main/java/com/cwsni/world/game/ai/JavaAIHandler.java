@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.model.ComparisonTool;
+import com.cwsni.world.model.player.SimplePair;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPGameParams;
@@ -272,26 +273,38 @@ public class JavaAIHandler implements IAIHandler {
 	}
 
 	private void tryMovingArmyFurther(AIData4Country data, IPArmy a) {
-		IPProvince nearestProv = null;
-		double minDistance = Double.MAX_VALUE;
-		for (IPProvince p : data.getCountry().getNeighborsProvs()) {
-			if (p.equals(a.getLocation())) {
-				continue;
-			}
-			double distance = data.getGame().findDistance(a.getLocation(), p);
-			if (distance < minDistance) {
-				minDistance = distance;
-				nearestProv = p;
-			}
-		}
-		if (nearestProv != null) {
-			List<Object> path = data.getGame().findShortestPath(a.getLocation().getId(), nearestProv.getId(), a);
+		SimplePair<IPProvince, Double> nearestLandProv = findNearestProvince(data, a.getLocation(),
+				data.getCountry().getReachableLandBorderAlienProvs());
+		SimplePair<IPProvince, Double> nearestLandProvThroughWater = findNearestProvince(data, a.getLocation(),
+				data.getCountry().getReachableLandAlienProvincesThroughWater());
+		SimplePair<IPProvince, Double> nearestProv = nearestLandProv.b <= nearestLandProvThroughWater.b
+				? nearestLandProv
+				: nearestLandProvThroughWater;
+		if (nearestProv.a != null) {
+			List<Object> path = data.getGame().findShortestPath(a.getLocation().getId(), nearestProv.a.getId(), a);
 			// path.size = 0 means that army can't reach target province
 			// path.size = 1 means that path contains only from province
 			if (path.size() > 1) {
 				a.moveTo(path);
 			}
 		}
+	}
+
+	private SimplePair<IPProvince, Double> findNearestProvince(AIData4Country data, IPProvince province,
+			Set<IPProvince> provinces) {
+		IPProvince nearestProv = null;
+		double minDistance = Double.MAX_VALUE;
+		for (IPProvince p : provinces) {
+			if (p.equals(province)) {
+				continue;
+			}
+			double distance = data.getGame().findDistance(province, p);
+			if (distance < minDistance) {
+				minDistance = distance;
+				nearestProv = p;
+			}
+		}
+		return new SimplePair<IPProvince, Double>(nearestProv, minDistance);
 	}
 
 }

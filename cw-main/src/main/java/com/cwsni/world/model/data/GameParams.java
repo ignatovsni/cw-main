@@ -51,14 +51,14 @@ public class GameParams {
 	private double populationLoyaltyArmySoldiersToPopulationThreshold = 0.1;
 	private double populationLoyaltyArmyMax = 0.8;
 	private double populationLoyaltyRebelChanceCoeff = 0.1;
-	private double populationLoyaltyRebelToStateThreshold = 0.3;
+	private double populationLoyaltyRebelToStateThreshold = 0.0;
 	private double populationLoyaltyRebelToCountryThreshold = 0.1;
 	private double populationLoyaltyRebelChainAdditionalLoyalty = 0.5;
 	private double populationLoyaltyRebelChainProbabilityMultiplicator = 10.0;
 	private int populationLoyaltyRebelNewCountriesTakeMoneyForYears = 5;
 
 	private double focusMinGoal = 0.5;
-	private double focusMaxGoal = 3.0;
+	private double focusMaxGoal = 5.0;
 	private double focusMinStep = 0.0001;
 
 	private int newCountryPopulationMin = 10000;

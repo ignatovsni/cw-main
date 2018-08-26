@@ -179,19 +179,24 @@ public class Population {
 	}
 
 	public void addLoyaltyToCountry(int id, double delta) {
-		addLoyalty(data.getLoyaltyToCountries(), id, delta);
+		addLoyalty(data.getLoyaltyToCountries(), id, delta, null);
 	}
 
 	public void addLoyaltyToState(int id, double delta) {
-		addLoyalty(data.getLoyaltyToStates(), id, delta);
+		addLoyaltyToState(id, delta, null);
 	}
 
-	private void addLoyalty(Map<Integer, Double> loyalties, int id, double delta) {
+	public void addLoyaltyToState(int id, double delta, Double maxStateLoyalty) {
+		addLoyalty(data.getLoyaltyToStates(), id, delta, maxStateLoyalty);
+	}
+
+	private void addLoyalty(Map<Integer, Double> loyalties, int id, double delta, Double maxLoyalty) {
 		Double currentLoyalty = loyalties.get(id);
 		if (currentLoyalty == null) {
 			currentLoyalty = 0.0;
 		}
-		currentLoyalty = Math.min(Math.max(currentLoyalty + delta, 0), DataPopulation.LOYALTY_MAX);
+		currentLoyalty = Math.min(Math.max(currentLoyalty + delta, 0),
+				maxLoyalty != null ? maxLoyalty : DataPopulation.LOYALTY_MAX);
 		currentLoyalty = DataFormatter.doubleWith4points(currentLoyalty);
 		if (currentLoyalty < DataPopulation.LOYALTY_MAX / 120 && delta < 0) {
 			loyalties.remove(id);
@@ -405,16 +410,21 @@ public class Population {
 		State state = p.getState();
 		GameParams gParams = game.getGameParams();
 
-		if (state != null) {
-			p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyIncreasingForState());
-			if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
-				p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyDecreasingEpidemic());
-			}
-		}
-
 		// decreasing - regular (mostly for other countries and states)
 		p.decreaseLoyaltyToAllCountries(gParams.getPopulationLoyaltyDecreasingCoeffDefault());
 		p.decreaseLoyaltyToAllStates(gParams.getPopulationLoyaltyDecreasingCoeffDefault());
+
+		if (state != null) {
+			Double maxStateLoyalty = state.getMaxStateLoyalty();
+			// TODO Loyalty should depend on (state population) / (capital state
+			// population).
+			// It will allow to have big countries with low populated provinces (like Russia
+			// with Sibir).
+			p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyIncreasingForState(), maxStateLoyalty);
+			if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
+				p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyDecreasingEpidemic(), maxStateLoyalty);
+			}
+		}
 
 		if (country == null) {
 			return;

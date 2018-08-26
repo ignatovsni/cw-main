@@ -24,7 +24,13 @@ public class AIHandler {
 	private ScriptAIHandler scriptAIHandler;
 
 	public void processNewTurn(List<PGame> pGames) {
-		pGames.forEach(pg -> processCountry(pg, pg.getCountry()));
+		for (PGame pg : pGames) {
+			try {
+				processCountry(pg, pg.getCountry());
+			} catch (Exception e) {
+				logger.error("Failed to process AI for country with id=" + pg.getCountryId(), e);
+			}
+		}
 	}
 
 	private void processCountry(IPGame game, IPCountry c) {

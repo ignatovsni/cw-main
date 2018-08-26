@@ -3,7 +3,6 @@ package com.cwsni.world.model.player;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,7 +11,6 @@ import com.cwsni.world.game.commands.CommandArmyCreate;
 import com.cwsni.world.game.commands.CommandProvinceSetCapital;
 import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.Country;
-import com.cwsni.world.model.Province;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
@@ -27,7 +25,6 @@ public class PCountry implements IPCountry {
 	private List<IPArmy> armies;
 	private List<IPProvince> provinces;
 	private PGame game;
-	private Set<IPProvince> neighborsProvs;
 	private int nextArmyId = -1;
 	private IPProvince capital;
 
@@ -116,47 +113,28 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
-	public Collection<IPProvince> getNeighborsProvs() {
-		if (neighborsProvs == null) {
-			neighborsProvs = new HashSet<>();
-			getProvinces().forEach(p -> {
-				p.getNeighbors().forEach(n -> {
-					if (n.getTerrainType().isWater()) {
-						neighborsProvs.addAll(getNeighborsThroughWater(n));
-					} else if (!ComparisonTool.isEqual(n.getCountryId(), getId())) {
-						neighborsProvs.add(n);
-					}
-				});
-			});
-		}
-		return neighborsProvs;
+	public Set<IPProvince> getReachableLandBorderAlienProvs() {
+		return findProvinces(country.getReachableLandBorderAlienProvs());
 	}
 
-	private Collection<IPProvince> getNeighborsThroughWater(IPProvince province) {
-		Collection<IPProvince> neighbors = new HashSet<>();
-		Set<Integer> visitedWaterProvsIds = new HashSet<>();
-		List<IPProvince> waterProvs = new ArrayList<>();
-		waterProvs.add(province);
-		visitedWaterProvsIds.add(province.getId());
-		int idx = 0;
-		while (idx < waterProvs.size()) {
-			IPProvince prov = waterProvs.get(idx);
-			for (IPProvince n : prov.getNeighbors()) {
-				if (n.getTerrainType().isWater()) {
-					if (!visitedWaterProvsIds.contains(n.getId())) {
-						visitedWaterProvsIds.add(n.getId());
-						Province realProv = country.getGame().getMap().findProvById(n.getId());
-						if (realProv.isPassable(country)) {
-							waterProvs.add(n);
-						}
-					}
-				} else if (!ComparisonTool.isEqual(n.getCountryId(), getId())) {
-					neighbors.add(n);
-				}
-			}
-			idx++;
-		}
-		return neighbors;
+	@Override
+	public Set<IPProvince> getReachableWaterProvinces() {
+		return findProvinces(country.getReachableWaterProvinces());
+	}
+
+	@Override
+	public Set<IPProvince> getReachableLandProvincesThroughWater() {
+		return findProvinces(country.getReachableLandProvincesThroughWater());
+	}
+
+	@Override
+	public Set<IPProvince> getReachableLandAlienProvincesThroughWater() {
+		return getReachableLandProvincesThroughWater().stream()
+				.filter(p -> !ComparisonTool.isEqual(getId(), p.getCountryId())).collect(Collectors.toSet());
+	}
+
+	private Set<IPProvince> findProvinces(Set<Integer> provinces) {
+		return provinces.stream().map(provId -> game.findProvById(provId)).collect(Collectors.toSet());
 	}
 
 	@Override

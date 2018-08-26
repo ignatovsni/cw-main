@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +32,13 @@ public class Country {
 	private MoneyBudget budget;
 	private ScienceBudget scienceBudget;
 	private CountryFocus focus;
-	private double passability;
+	private int waterMaxDistance;
+	private boolean isNeedRefreshLandReachableBorderAlienProvs;
+	private Set<Integer> reachableLandBorderAlienProvs;
+	private boolean isNeedRefreshReachableProvincesThroughWater;
+	private Set<Integer> reachableLandProvincesThroughWater;
+	private Set<Integer> reachableWaterProvinces;
+	private Set<Integer> coastProvinces;
 
 	public void buildFrom(Game game, DataCountry dc) {
 		this.game = game;
@@ -40,6 +48,10 @@ public class Country {
 		budget = new MoneyBudget();
 		scienceBudget = new ScienceBudget();
 		focus = new CountryFocus();
+		reachableLandBorderAlienProvs = new HashSet<>();
+		reachableLandProvincesThroughWater = new HashSet<>();
+		reachableWaterProvinces = new HashSet<>();
+		coastProvinces = new HashSet<>();
 
 		focus.buildFrom(this, dc.getFocus());
 
@@ -59,7 +71,8 @@ public class Country {
 		// budget must be initialized last to calculate actual numbers
 		budget.buildFrom(this, dc.getBudget());
 		scienceBudget.buildFrom(this, dc.getScienceBudget());
-		refreshPassability();
+		refreshLandReachableBorderAlienProvs();
+		refreshWaterMaxDistance();
 	}
 
 	public int getId() {
@@ -169,6 +182,10 @@ public class Country {
 			p.setCountry(this);
 			provinces.add(p);
 			data.getProvinces().add(p.getId());
+			isNeedRefreshLandReachableBorderAlienProvs = true;
+			if (p.hasWaterNeighbor()) {
+				isNeedRefreshReachableProvincesThroughWater = true;
+			}
 		}
 	}
 
@@ -181,6 +198,10 @@ public class Country {
 		data.getProvinces().remove(p.getId());
 		if (ComparisonTool.isEqual(getCapitalId(), p.getId())) {
 			setCapital(null);
+		}
+		isNeedRefreshLandReachableBorderAlienProvs = true;
+		if (p.hasWaterNeighbor()) {
+			isNeedRefreshReachableProvincesThroughWater = true;
 		}
 	}
 
@@ -292,10 +313,32 @@ public class Country {
 		budget.processNewTurn();
 		processScienceNewTurn();
 		focus.processNewTurn();
-		refreshPassability();
+		refreshWaterMaxDistance();
+		if (isNeedRefreshLandReachableBorderAlienProvs) {
+			refreshLandReachableBorderAlienProvs();
+			isNeedRefreshLandReachableBorderAlienProvs = false;
+		}
+		if (isNeedRefreshReachableProvincesThroughWater) {
+			refreshListOfReachableProvincesThroughWater();
+			isNeedRefreshReachableProvincesThroughWater = false;
+		}
 	}
 
-	private void refreshPassability() {
+	private void refreshLandReachableBorderAlienProvs() {
+		reachableLandBorderAlienProvs.clear();
+		coastProvinces.clear();
+		getProvinces().forEach(p -> {
+			if (p.hasWaterNeighbor()) {
+				coastProvinces.add(p.getId());
+			}
+			p.getNeighbors().stream()
+					.filter(n -> !n.getTerrainType().isWater() && !ComparisonTool.isEqual(n.getCountryId(), getId()))
+					.forEach(n -> reachableLandBorderAlienProvs.add(n.getId()));
+		});
+
+	}
+
+	private void refreshWaterMaxDistance() {
 		int science = 0;
 		if (getCapital() != null) {
 			science = getCapital().getScienceAdministration();
@@ -303,7 +346,51 @@ public class Country {
 			science = getProvinces().iterator().next().getScienceAdministration();
 		}
 		science = Math.max(1, science);
-		passability = Math.log10(science);
+		int newWaterMaxDistance;
+		int threshold = 20000;
+		if (science > threshold) {
+			newWaterMaxDistance = 4 + science / threshold;
+		} else {
+			newWaterMaxDistance = (int) Math.log10(science);
+		}
+		if (newWaterMaxDistance != waterMaxDistance) {
+			waterMaxDistance = newWaterMaxDistance;
+			isNeedRefreshReachableProvincesThroughWater = true;
+		}
+	}
+
+	private void refreshListOfReachableProvincesThroughWater() {
+		reachableLandProvincesThroughWater.clear();
+		reachableWaterProvinces.clear();
+		if (waterMaxDistance == 0) {
+			return;
+		}
+		List<Province> waterProvs = new ArrayList<>();
+		coastProvinces.stream().map(id -> game.getMap().findProvById(id)).forEach(p -> {
+			p.getNeighbors().stream().filter(n -> n.getTerrainType().isWater()).forEach(n -> {
+				waterProvs.add(n);
+				reachableWaterProvinces.add(n.getId());
+			});
+		});
+		int step = 0;
+		int idx = 0;
+		while (step++ <= waterMaxDistance) {
+			int final_idx = waterProvs.size();
+			for (int i = idx; i < final_idx; i++) {
+				Province prov = waterProvs.get(i);
+				for (Province n : prov.getNeighbors()) {
+					if (n.getTerrainType().isWater()) {
+						if (step < waterMaxDistance && !reachableWaterProvinces.contains(n.getId())) {
+							waterProvs.add(n);
+							reachableWaterProvinces.add(n.getId());
+						}
+					} else {
+						reachableLandProvincesThroughWater.add(n.getId());
+					}
+				}
+			}
+			idx = final_idx + 1;
+		}
 	}
 
 	private void processScienceNewTurn() {
@@ -317,12 +404,20 @@ public class Country {
 		return data.getAiScriptName();
 	}
 
+	public Set<Integer> getReachableLandProvincesThroughWater() {
+		return reachableLandProvincesThroughWater;
+	}
+
+	public Set<Integer> getReachableWaterProvinces() {
+		return reachableWaterProvinces;
+	}
+
+	public Set<Integer> getReachableLandBorderAlienProvs() {
+		return reachableLandBorderAlienProvs;
+	}
+
 	public void setAiScriptName(String aiScriptName) {
 		data.setAiScriptName(aiScriptName);
-	}
-	
-	public double getPassability() {
-		return passability;
 	}
 
 	public void setName(String name) {

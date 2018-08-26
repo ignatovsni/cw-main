@@ -3,7 +3,7 @@ package com.cwsni.world.game.commands;
 import com.cwsni.world.model.Army;
 import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.player.PArmy;
-import com.cwsni.world.model.player.PCountry;
+import com.cwsni.world.model.player.interfaces.IPCountry;
 
 abstract public class CommandArmy extends Command {
 
@@ -43,7 +43,7 @@ abstract public class CommandArmy extends Command {
 		return army;
 	}
 
-	protected PArmy getAndCheckArmy(PCountry country, int idOfArmy) {
+	protected PArmy getAndCheckArmy(IPCountry country, int idOfArmy) {
 		PArmy army = (PArmy) country.findArmyById(idOfArmy);
 		if (army == null) {
 			addError("army = null");

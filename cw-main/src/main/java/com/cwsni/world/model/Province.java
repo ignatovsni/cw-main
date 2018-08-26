@@ -38,6 +38,7 @@ public class Province implements EventTarget {
 	private double distanceToCapital;
 	private Integer oldStateCapitalId;
 	private double distanceToStateCapital;
+	private Boolean hasWaterNeighbor;
 
 	@Override
 	public int hashCode() {
@@ -94,10 +95,6 @@ public class Province implements EventTarget {
 
 	public Country getCountry() {
 		return country;
-	}
-
-	public double getPassability() {
-		return data.getPassability();
 	}
 
 	public Integer getCountryId() {
@@ -664,7 +661,11 @@ public class Province implements EventTarget {
 	}
 
 	public void addLoyaltyToState(int id, Double delta) {
-		getPopulation().forEach(p -> p.addLoyaltyToState(id, delta));
+		addLoyaltyToState(id, delta, null);
+	}
+	
+	public void addLoyaltyToState(int id, Double delta, Double maxStateLoyalty) {
+		getPopulation().forEach(p -> p.addLoyaltyToState(id, delta, maxStateLoyalty));
 	}
 
 	public void decreaseLoyaltyToAllCountries(double coeff) {
@@ -754,6 +755,13 @@ public class Province implements EventTarget {
 
 	public boolean isPassable(Country c) {
 		return new ProvincePassabilityCriteria(c).isPassable(this);
+	}
+
+	public boolean hasWaterNeighbor() {
+		if (hasWaterNeighbor == null) {
+			hasWaterNeighbor = getNeighbors().stream().filter(n -> n.getTerrainType().isWater()).findAny().isPresent();
+		}
+		return hasWaterNeighbor;
 	}
 
 }

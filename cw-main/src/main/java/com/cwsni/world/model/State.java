@@ -307,7 +307,7 @@ public class State {
 				.sum() / statePopulation;
 	}
 
-	private long getPopulationAmount() {
+	public long getPopulationAmount() {
 		return getProvinces().stream().mapToLong(p -> p.getPopulationAmount()).sum();
 	}
 
@@ -349,6 +349,37 @@ public class State {
 
 	public void setName(String name) {
 		data.setName(name);
+	}
+
+	void initializeNeighbors() {
+		neighbors.forEach(n -> n.neighbors.remove(this));
+		neighbors.clear();
+		for (Province p : getProvinces()) {
+			neighbors.addAll(p.getNeighbors().stream().filter(n -> n.getState() != null && !this.equals(n.getState()))
+					.map(n -> n.getState()).collect(Collectors.toSet()));
+		}
+		neighbors.forEach(n -> n.neighbors.add(this));
+	}
+
+	public Double getMaxStateLoyalty() {
+		Province stateCapital = getCapital();
+		if (stateCapital == null || stateCapital.getCountry() == null || stateCapital.getCountry().getCapital() == null
+				|| stateCapital.getCountry().getCapital().getState() == null) {
+			return null;
+		}
+		State capitalState = stateCapital.getCountry().getCapital().getState();
+		if (this.equals(capitalState)) {
+			return null;
+		}
+		long statePopulationAmount = getPopulationAmount();
+		if (statePopulationAmount == 0) {
+			return null;
+		}
+		long capitalStatePopulationAmount = capitalState.getPopulationAmount();
+		if (capitalStatePopulationAmount == 0) {
+			return null;
+		}
+		return 1.0 * statePopulationAmount / capitalStatePopulationAmount;
 	}
 
 	// --------------------- static -------------------------------
@@ -432,16 +463,6 @@ public class State {
 			}
 		}
 		return color;
-	}
-
-	void initializeNeighbors() {
-		neighbors.forEach(n -> n.neighbors.remove(this));
-		neighbors.clear();
-		for (Province p : getProvinces()) {
-			neighbors.addAll(p.getNeighbors().stream().filter(n -> n.getState() != null && !this.equals(n.getState()))
-					.map(n -> n.getState()).collect(Collectors.toSet()));
-		}
-		neighbors.forEach(n -> n.neighbors.add(this));
 	}
 
 }

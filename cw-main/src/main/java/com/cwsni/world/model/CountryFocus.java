@@ -71,11 +71,22 @@ public class CountryFocus {
 				data.setStep(createStep(gParams, rnd, 0.01));
 			}
 		} else if (data.getStep() > 0) {
+			double step = data.getStep();
+			double currentFocus = data.getFocus();
+			if (currentFocus > DataCountryFocus.MAX_VALUE * 0.8) {
+				step = DataCountryFocus.MAX_VALUE * 0.02;
+			} else if (currentFocus > DataCountryFocus.MAX_VALUE * 0.5) {
+				step = DataCountryFocus.MAX_VALUE * 0.01;
+			} else if (currentFocus > DataCountryFocus.MAX_VALUE * 0.3) {
+				step = DataCountryFocus.MAX_VALUE * 0.005;
+			} else if (currentFocus > DataCountryFocus.MAX_VALUE * 0.2) {
+				step = DataCountryFocus.MAX_VALUE * 0.003;
+			}
 			double diff = data.getGoal() - focus;
 			double diffAbs = Math.abs(diff);
-			if (diffAbs >= data.getStep()) {
+			if (diffAbs >= step) {
 				// we are able to make a step
-				data.setFocus(focus + Math.min(data.getStep(), diffAbs) * Math.signum(diff));
+				data.setFocus(focus + Math.min(step, diffAbs) * Math.signum(diff));
 			} else if (Math.abs(data.getGoal() - DataCountryFocus.BASE_VALUE) < DataCountryFocus.BASE_VALUE / 100) {
 				// the goal is base and we are close to it
 				data.setFocus(DataCountryFocus.BASE_VALUE);

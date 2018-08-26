@@ -16,7 +16,6 @@ public class DataProvince {
 	private Point center;
 	private List<Integer> neighbors;
 	private TerrainType terrainType;
-	private double passability;
 	private int size;
 	private double soilFertility;
 
@@ -142,14 +141,6 @@ public class DataProvince {
 
 	public void setWealth(double wealth) {
 		this.wealth = DataFormatter.doubleWith3points(wealth);
-	}
-
-	public double getPassability() {
-		return passability;
-	}
-
-	public void setPassability(double passability) {
-		this.passability = DataFormatter.doubleWith2points(passability);
 	}
 
 }

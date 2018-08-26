@@ -1,6 +1,7 @@
 package com.cwsni.world.model.player.interfaces;
 
 import java.util.Collection;
+import java.util.Set;
 
 public interface IPCountry {
 
@@ -18,7 +19,13 @@ public interface IPCountry {
 
 	IPScienceBudget getScienceBudget();
 
-	Collection<IPProvince> getNeighborsProvs();
+	Set<IPProvince> getReachableLandBorderAlienProvs();
+
+	Set<IPProvince> getReachableLandProvincesThroughWater();
+
+	Set<IPProvince> getReachableWaterProvinces();
+
+	Set<IPProvince> getReachableLandAlienProvincesThroughWater();
 
 	IPArmy createArmy(int provinceId, int soldiers);
 

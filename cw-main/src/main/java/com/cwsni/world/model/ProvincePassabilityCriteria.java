@@ -12,7 +12,7 @@ public class ProvincePassabilityCriteria {
 		if (!p.getTerrainType().isWater() || country == null) {
 			return true;
 		}
-		return country.getPassability() > p.getPassability();
+		return country.getReachableWaterProvinces().contains(p.getId());
 	}
 
 }
