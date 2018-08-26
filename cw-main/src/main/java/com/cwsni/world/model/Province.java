@@ -96,6 +96,10 @@ public class Province implements EventTarget {
 		return country;
 	}
 
+	public double getPassability() {
+		return data.getPassability();
+	}
+
 	public Integer getCountryId() {
 		return country != null ? country.getId() : null;
 	}
@@ -746,6 +750,10 @@ public class Province implements EventTarget {
 		}
 		return getPopulation().stream().mapToDouble(pop -> pop.getAmount() * pop.getLoyaltyToState(c.getId())).sum()
 				/ populationAmount;
+	}
+
+	public boolean isPassable(Country c) {
+		return new ProvincePassabilityCriteria(c).isPassable(this);
 	}
 
 }

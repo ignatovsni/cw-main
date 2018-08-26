@@ -18,7 +18,7 @@ public interface IPGame {
 
 	double findDistance(Integer fromId, Integer toId);
 
-	List<Object> findShortestPath(int fromId, int toId);
+	List<Object> findShortestPath(int fromId, int toId, IPArmy a);
 
 	AIData4Country getAIData();
 

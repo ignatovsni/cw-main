@@ -30,6 +30,7 @@ public class Country {
 	private MoneyBudget budget;
 	private ScienceBudget scienceBudget;
 	private CountryFocus focus;
+	private double passability;
 
 	public void buildFrom(Game game, DataCountry dc) {
 		this.game = game;
@@ -58,6 +59,7 @@ public class Country {
 		// budget must be initialized last to calculate actual numbers
 		budget.buildFrom(this, dc.getBudget());
 		scienceBudget.buildFrom(this, dc.getScienceBudget());
+		refreshPassability();
 	}
 
 	public int getId() {
@@ -290,6 +292,18 @@ public class Country {
 		budget.processNewTurn();
 		processScienceNewTurn();
 		focus.processNewTurn();
+		refreshPassability();
+	}
+
+	private void refreshPassability() {
+		int science = 0;
+		if (getCapital() != null) {
+			science = getCapital().getScienceAdministration();
+		} else if (!getProvinces().isEmpty()) {
+			science = getProvinces().iterator().next().getScienceAdministration();
+		}
+		science = Math.max(1, science);
+		passability = Math.log10(science);
 	}
 
 	private void processScienceNewTurn() {
@@ -305,6 +319,10 @@ public class Country {
 
 	public void setAiScriptName(String aiScriptName) {
 		data.setAiScriptName(aiScriptName);
+	}
+	
+	public double getPassability() {
+		return passability;
 	}
 
 	public void setName(String name) {

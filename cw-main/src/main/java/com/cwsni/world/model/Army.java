@@ -124,7 +124,8 @@ public class Army {
 	}
 
 	public double getEffectiveness() {
-		return 1.0 * data.getOrganisation() / 100 * data.getTraining() / 100 * country.getFocus().getArmyStrengthInfluence();
+		return 1.0 * data.getOrganisation() / 100 * data.getTraining() / 100
+				* country.getFocus().getArmyStrengthInfluence();
 	}
 
 	public double getStrength() {
@@ -155,6 +156,9 @@ public class Army {
 				// destination is not neighbor
 				// TODO find nearest province to move
 				// right now command has only neighbors target
+				return;
+			}
+			if (!new ProvincePassabilityCriteria(getCountry()).isPassable(destination)) {
 				return;
 			}
 			moveFrom = getLocation();

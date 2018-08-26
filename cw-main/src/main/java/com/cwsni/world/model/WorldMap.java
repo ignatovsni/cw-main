@@ -117,20 +117,24 @@ public class WorldMap {
 	}
 
 	public double findCountOfProvsBetweenProvs(int fromId, int toId) {
-		return findShortestPath(fromId, toId).size() - 1;
+		return findShortestPath(fromId, toId, null).size() - 1;
 	}
 
-	public List<Object> findShortestPath(int fromId, int toId) {
-		return game.getGameAlgorithms().findShortestPath(new ProvinceNodeWrapper(findProvById(fromId)),
-				new ProvinceNodeWrapper(findProvById(toId)));
+	public List<Object> findShortestPath(int fromId, int toId, Integer countryId) {
+		Country country = countryId != null ? game.findCountryById(countryId) : null;
+		ProvincePassabilityCriteria passability = new ProvincePassabilityCriteria(country);
+		return game.getGameAlgorithms().findShortestPath(new ProvinceNodeWrapper(findProvById(fromId), passability),
+				new ProvinceNodeWrapper(findProvById(toId), passability));
 	}
 
 	private class ProvinceNodeWrapper extends Node {
 
 		private Province p;
+		private ProvincePassabilityCriteria passability;
 
-		ProvinceNodeWrapper(Province p) {
+		ProvinceNodeWrapper(Province p, ProvincePassabilityCriteria passability) {
 			this.p = p;
+			this.passability = passability;
 		}
 
 		@Override
@@ -140,7 +144,13 @@ public class WorldMap {
 
 		@Override
 		public Collection<Node> getNeighbors() {
-			return p.getNeighbors().stream().map(n -> new ProvinceNodeWrapper(n)).collect(Collectors.toList());
+			if (passability != null) {
+				return p.getNeighbors().stream().filter(p -> passability.isPassable(p))
+						.map(n -> new ProvinceNodeWrapper(n, passability)).collect(Collectors.toList());
+			} else {
+				return p.getNeighbors().stream().map(n -> new ProvinceNodeWrapper(n, passability))
+						.collect(Collectors.toList());
+			}
 		}
 
 	}

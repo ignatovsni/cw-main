@@ -34,7 +34,8 @@ import groovy.lang.Script;
 @Qualifier("scriptAIHandler")
 public class ScriptAIHandler implements IAIHandler {
 
-	public static final String DEFAULT_SCRIPT = "default";
+	//public static final String DEFAULT_SCRIPT = "default";
+	public static final String DEFAULT_SCRIPT = "[java]";
 	private static final String JAVA_INTERNAL_AI = "[java]";
 	private static final String AI_SCRIPTS_FOLDER_WITH_SLASH = "ai-scripts/";
 	private static final String AI_SCRIPTS_FOLDER = "ai-scripts";

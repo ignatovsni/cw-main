@@ -16,6 +16,7 @@ import com.cwsni.world.model.Country;
 import com.cwsni.world.model.Game;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.State;
+import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPGameParams;
@@ -121,8 +122,8 @@ public class PGame implements IPGame {
 	}
 
 	@Override
-	public List<Object> findShortestPath(int fromId, int toId) {
-		return game.getMap().findShortestPath(fromId, toId);
+	public List<Object> findShortestPath(int fromId, int toId, IPArmy a) {
+		return game.getMap().findShortestPath(fromId, toId, a.getCountry().getId());
 	}
 
 	@Override
@@ -144,7 +145,7 @@ public class PGame implements IPGame {
 		return result;
 	}
 
-	public void removeCommands(@SuppressWarnings("rawtypes") List commandsForCancellation) {
+	public void removeCommands(List<? extends Command> commandsForCancellation) {
 		commands.removeAll(commandsForCancellation);
 	}
 

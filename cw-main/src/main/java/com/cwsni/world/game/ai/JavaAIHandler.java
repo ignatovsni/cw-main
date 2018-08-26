@@ -222,6 +222,7 @@ public class JavaAIHandler implements IAIHandler {
 			} else {
 				// return to home !!! army.dismiss() can work in different way in next versions
 				if (data.getCountry().getCapital() != null && data.getCountry().getProvinces().size() > 10) {
+					// TODO Move to nearest army to join. Don't dismiss!
 					army.dismiss();
 					return;
 				}
@@ -233,7 +234,7 @@ public class JavaAIHandler implements IAIHandler {
 		tryMovingArmyFurther(data, army);
 	}
 
-	private boolean tryMovingArmyToNeighbors(AIData4Country data, IPArmy army) {		
+	private boolean tryMovingArmyToNeighbors(AIData4Country data, IPArmy army) {
 		Map<IPProvince, Double> importanceOfProvinces = new HashMap<>();
 		for (IPProvince neighbor : army.getLocation().getNeighbors()) {
 			if (neighbor.getTerrainType().isPopulationPossible() && !neighbor.isMyProvince()) {
@@ -284,8 +285,12 @@ public class JavaAIHandler implements IAIHandler {
 			}
 		}
 		if (nearestProv != null) {
-			List<Object> path = data.getGame().findShortestPath(a.getLocation().getId(), nearestProv.getId());
-			a.moveTo(path);
+			List<Object> path = data.getGame().findShortestPath(a.getLocation().getId(), nearestProv.getId(), a);
+			// path.size = 0 means that army can't reach target province
+			// path.size = 1 means that path contains only from province
+			if (path.size() > 1) {
+				a.moveTo(path);
+			}
 		}
 	}
 

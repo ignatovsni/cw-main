@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -34,7 +35,7 @@ public class GameGenerator {
 
 	@Autowired
 	private GameAlgorithms gameAlgorithms;
-	
+
 	@Autowired
 	private GameEventListener gameEventListener;
 
@@ -60,6 +61,7 @@ public class GameGenerator {
 		fillSoil(dataGame, tData);
 		fillPopulation(dataGame);
 		fillInfrastructure(dataGame);
+		fillPassability(dataGame, tData);
 		Game game = new Game();
 		game.buildFrom(dataGame, messageSource, getGameAlgorithms(), gameEventListener);
 		gameParams.getRandom().resetWithSeed(gameParams.getSeed());
@@ -270,6 +272,36 @@ public class GameGenerator {
 			int popsAmpount = p.getPopulation().stream().mapToInt(pop -> pop.getAmount()).sum();
 			p.setInfrastructure((int) (popsAmpount * gParams.getInfrastructureNaturalLimitFromPopulation()));
 		});
+	}
+
+	private void fillPassability(DataGame game, TempData tData) {
+		double stepWaterPassability = 1;
+		List<DataProvince> waterProvs = new ArrayList<>();
+		List<DataProvince> provs = game.getMap().getProvinces();
+		for (DataProvince p : provs) {
+			if (p.getTerrainType().isWater()) {
+				Optional<DataProvince> earth = p.getNeighbors().stream().map(nId -> tData.provByIds.get(nId))
+						.filter(n -> !n.getTerrainType().isWater()).findFirst();
+				if (earth.isPresent()) {
+					waterProvs.add(p);
+					p.setPassability(stepWaterPassability);
+				}
+			} else {
+				p.setPassability(1);
+			}
+		}
+		int idx = 0;
+		while (idx < waterProvs.size()) {
+			// This algorithm works only if all steps are always the same.
+			DataProvince p = waterProvs.get(idx);
+			double nextPassability = p.getPassability() + stepWaterPassability;
+			p.getNeighbors().stream().map(nId -> tData.provByIds.get(nId))
+					.filter(n -> n.getTerrainType().isWater() && n.getPassability() == 0).forEach(n -> {
+						n.setPassability(nextPassability);
+						waterProvs.add(n);
+					});
+			idx++;
+		}
 	}
 
 	public Game createEmptyGame() {

@@ -60,7 +60,7 @@ public class GameAlgorithmsTest {
 	}
 
 	private List<Object> findShortestPath(WorldMap map, int fromId, int toId) {
-		return map.findShortestPath(fromId, toId);
+		return map.findShortestPath(fromId, toId, null);
 	}
 
 }

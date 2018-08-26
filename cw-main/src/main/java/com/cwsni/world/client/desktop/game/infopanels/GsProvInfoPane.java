@@ -23,6 +23,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesNameLabel;
 	private RowValue valuesSizeLabel;
 	private RowValue valuesTerrainTypeLabel;
+	private RowValue valuesPassability;
 	private RowValue valuesPopsLabel;
 	private RowValue valuesWealthLabel;
 	private RowValue valuesGovInfluenceLabel;
@@ -45,6 +46,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 		int idx = 0;
 		valuesNameLabel = addRow("info.pane.prov.name", grid, idx++);
 		valuesTerrainTypeLabel = addRow("info.pane.prov.terrain-type", grid, idx++);
+		valuesPassability = addRow("info.pane.prov.passability", grid, idx++);
 		valuesSizeLabel = addRow("info.pane.prov.size", grid, idx++);
 		valuesPopsLabel = addRow("info.pane.prov.population", grid, idx++);
 		valuesWealthLabel = addRow("info.pane.prov.wealth", grid, idx++);
@@ -62,6 +64,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 		Province prov = gameScene.getSelectedProvince();
 		setLabelText(valuesNameLabel, prov.getName());
 		setLabelText(valuesTerrainTypeLabel, getMessage(prov.getTerrainType().getCodeMsg()));
+		setLabelText(valuesPassability, DataFormatter.toFraction(prov.getPassability()));
 		switch (prov.getTerrainType()) {
 		case GRASSLAND:
 			setLabelText(valuesSizeLabel, DataFormatter.toLong(prov.getSize()));
