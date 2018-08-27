@@ -30,7 +30,6 @@ public class CwRandom {
 		CwRandom cwRandom = new CwRandom(1);
 		for (int i = 0; i < 100; i++) {
 			System.out.println(cwRandom.nextNormalDouble());
-			// System.out.println(cwRandom.random.nextGaussian());
 		}
 	}
 

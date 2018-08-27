@@ -60,10 +60,6 @@ public class GameAlgorithms {
 			path = Collections.emptyList();
 		}
 		
-		if (path.size()<2) {
-			System.out.println(path);
-		}
-
 		return path;
 	}
 

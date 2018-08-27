@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.cwsni.world.CwException;
 import com.cwsni.world.model.data.Color;
-import com.cwsni.world.model.data.DataArmy;
 import com.cwsni.world.model.data.DataCountry;
 import com.cwsni.world.model.data.DataMoneyBudget;
 import com.cwsni.world.model.data.DataPopulation;
@@ -239,15 +238,6 @@ public class Country {
 		unregisterArmy(a);
 	}
 
-	private Army createArmy() {
-		Army a = new Army();
-		a.buildFrom(this, new DataArmy(game.nextArmyId()));
-		a.setEquipment(1);
-		a.setOrganisation(100);
-		a.setTraining(50);
-		return a;
-	}
-
 	public Army createArmy(Province p, int soldiers) {
 		if (!this.equals(p.getCountry())) {
 			logger.error("destination country id = " + p.getCountryId() + " but country.id = " + getId());
@@ -263,7 +253,7 @@ public class Country {
 					+ gParams.getArmyMinAllowedSoldiers());
 			return null;
 		}
-		Army a = createArmy();
+		Army a = Army.createArmy(this);
 		p.hirePeopleForArmy(a, soldiers);
 		if (a.getSoldiers() > 0) {
 			budget.spendMoneyForArmy(a.getSoldiers() * baseHiringCostPerSoldier);
@@ -276,33 +266,16 @@ public class Country {
 	}
 
 	public Army splitArmy(Army army, int soldiers) {
-		if (soldiers >= army.getSoldiers()) {
-			logger.warn("soldiers >= army.getSoldiers() ; " + soldiers + " >= " + army.getSoldiers());
-			return null;
+		Army a = army.split(soldiers);
+		if (a != null) {
+			registerArmy(a);
+			a.setProvince(army.getLocation());
 		}
-		GameParams gParams = game.getGameParams();
-		if (soldiers < gParams.getArmyMinAllowedSoldiers()) {
-			logger.warn("soldiers <= gParams.getArmyMinAllowedSoldiers() ; " + soldiers + " < "
-					+ gParams.getArmyMinAllowedSoldiers());
-			return null;
-		}
-		if ((army.getSoldiers() - soldiers) < gParams.getArmyMinAllowedSoldiers()) {
-			logger.warn("(army.getSoldiers()-soldiers) <= gParams.getArmyMinAllowedSoldiers() ; "
-					+ (army.getSoldiers() - soldiers) + " < " + gParams.getArmyMinAllowedSoldiers());
-			return null;
-		}
-		Army a = createArmy();
-		a.setSoldiers(soldiers);
-		army.setSoldiers(army.getSoldiers() - soldiers);
-		registerArmy(a);
-		a.setProvince(army.getLocation());
 		return a;
 	}
 
 	public void mergeArmy(Army army, Army armyFrom, int soldiers) {
-		soldiers = Math.min(soldiers, armyFrom.getSoldiers());
-		army.setSoldiers(army.getSoldiers() + soldiers);
-		armyFrom.setSoldiers(armyFrom.getSoldiers() - soldiers);
+		army.mergeFrom(armyFrom, soldiers);
 		if (armyFrom.getSoldiers() <= 0) {
 			dismissArmy(armyFrom);
 		}

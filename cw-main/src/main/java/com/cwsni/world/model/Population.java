@@ -44,7 +44,7 @@ public class Population {
 		return data.getAmount();
 	}
 
-	private void setAmount(int amount) {
+	void setAmount(int amount) {
 		data.setAmount(amount);
 		if (province != null) {
 			double maxWealth = amount * province.getMap().getGame().getGameParams().getBudgetMaxWealthPerPerson();
@@ -74,7 +74,7 @@ public class Population {
 	Population createNewPopFromThis(int migrantsCount) {
 		migrantsCount = Math.min(migrantsCount, data.getAmount());
 		Population newPop = new Population();
-		newPop.setWealth(migrantsCount / getAmount() * getWealth());
+		newPop.setWealth(getWealth() * migrantsCount / getAmount());
 		addWealth(-newPop.getWealth());
 		newPop.setAmount(migrantsCount);
 		setAmount(getAmount() - migrantsCount);
@@ -131,7 +131,7 @@ public class Population {
 		ids.addAll(mergeTo.keySet());
 		ids.addAll(mergeFrom.keySet());
 		for (Integer id : ids) {
-			int newLoyalty = 0;
+			int newValue = 0;
 			Integer thisL = mergeTo.get(id);
 			Integer otherL = mergeFrom.get(id);
 			if (thisL == null) {
@@ -140,8 +140,12 @@ public class Population {
 			if (otherL == null) {
 				otherL = 0;
 			}
-			newLoyalty = (int) (thisL * ownFraction + otherL * (1 - ownFraction));
-			mergeTo.put(id, newLoyalty - thisL);
+			newValue = (int) (thisL * ownFraction + otherL * (1 - ownFraction));
+			if (newValue > 0) {
+				mergeTo.put(id, newValue);
+			} else {
+				mergeTo.remove(id);
+			}
 		}
 	}
 
@@ -198,7 +202,7 @@ public class Population {
 		currentLoyalty = Math.min(Math.max(currentLoyalty + delta, 0),
 				maxLoyalty != null ? maxLoyalty : DataPopulation.LOYALTY_MAX);
 		currentLoyalty = DataFormatter.doubleWith4points(currentLoyalty);
-		if (currentLoyalty < DataPopulation.LOYALTY_MAX / 120 && delta < 0) {
+		if (currentLoyalty < DataPopulation.LOYALTY_MAX / 120 && delta <= 0) {
 			loyalties.remove(id);
 		} else {
 			loyalties.put(id, currentLoyalty);
@@ -231,7 +235,7 @@ public class Population {
 		}
 	}
 
-	public Map<Integer, Double> getLoyaltyToCountries() {
+	public Map<Integer, Double> getLoyaltyToCountries() {		
 		return Collections.unmodifiableMap(data.getLoyaltyToCountries());
 	}
 
@@ -572,11 +576,6 @@ public class Population {
 		}
 
 		return sb.toString();
-	}
-
-	public static void addPopulationFromArmy(Province p, int soldiers) {
-		double fraction = 1.0 * soldiers / p.getPopulationAmount();
-		p.getPopulation().forEach(pop -> pop.setAmount((int) (pop.getAmount() + pop.getAmount() * fraction)));
 	}
 
 }

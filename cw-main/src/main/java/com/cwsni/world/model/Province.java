@@ -320,8 +320,10 @@ public class Province implements EventTarget {
 	}
 
 	public void addPopulation(Population pop) {
-		population.add(pop);
-		pop.setProvince(this);
+		if (getTerrainType().isPopulationPossible()) {
+			population.add(pop);
+			pop.setProvince(this);
+		}
 	}
 
 	public void removePopulation(Population pop) {
@@ -511,9 +513,6 @@ public class Province implements EventTarget {
 	}
 
 	public double getFederalIncomePerYear() {
-		if (getCountry() == null) {
-			System.out.println("!!! getCountry() == null for province " + getId());
-		}
 		return sumTaxForYear() * getCountry().getMoneyBudget().getProvinceTax() * getGovernmentInfluence();
 	}
 
@@ -616,7 +615,6 @@ public class Province implements EventTarget {
 	void sufferFromInvasion(int soldiers, double successfulInvasion) {
 		double loss = map.getGame().getGameParams().getProvinceLossFromFight();
 		loss = Math.min(0.1, loss * soldiers / getPopulationAmount() * successfulInvasion);
-		// System.out.println("loss: " + loss);
 		setWealth(data.getWealth() * (1 - loss));
 		setInfrastructure((int) (getInfrastructure() * (1 - loss)));
 		for (Population p : getPopulation()) {
@@ -634,26 +632,20 @@ public class Province implements EventTarget {
 			return;
 		}
 		double fraction = Math.min(1, (double) soldiers / populationAmount);
-		int hiredSoldiers = 0;
 		List<Population> pops = new ArrayList<>(getPopulation());
 		for (Population pop : pops) {
 			int soldiersFromPop = (int) (pop.getAmount() * fraction);
 			if (fraction >= 1 || soldiersFromPop == pop.getAmount()) {
-				hiredSoldiers += pop.getAmount();
+				a.addPopulation(pop);
 				removePopulation(pop);
 			} else {
-				hiredSoldiers += pop.createNewPopFromThis(soldiersFromPop).getAmount();
+				a.addPopulation(pop.createNewPopFromThis(soldiersFromPop));
 			}
 		}
-		a.setSoldiers(hiredSoldiers);
 	}
 
 	public void setName(String name) {
 		data.setName(name);
-	}
-
-	public void addPopulationFromArmy(int soldiers) {
-		Population.addPopulationFromArmy(this, soldiers);
 	}
 
 	public void addLoyaltyToCountry(int id, Double delta) {
@@ -663,7 +655,7 @@ public class Province implements EventTarget {
 	public void addLoyaltyToState(int id, Double delta) {
 		addLoyaltyToState(id, delta, null);
 	}
-	
+
 	public void addLoyaltyToState(int id, Double delta, Double maxStateLoyalty) {
 		getPopulation().forEach(p -> p.addLoyaltyToState(id, delta, maxStateLoyalty));
 	}

@@ -27,7 +27,7 @@ import com.cwsni.world.util.Heap;
 @Qualifier("javaAIHandler")
 public class JavaAIHandler implements IAIHandler {
 
-	private static final int MAX_ARMIES = 30;
+	private static final int MAX_ARMIES = 100;
 
 	@Override
 	public void processCountry(AIData4Country data) {
@@ -221,12 +221,9 @@ public class JavaAIHandler implements IAIHandler {
 				// alien province and army is able to subjugate it, stay here
 				return;
 			} else {
-				// return to home !!! army.dismiss() can work in different way in next versions
-				if (data.getCountry().getCapital() != null && data.getCountry().getProvinces().size() > 10) {
-					// TODO Move to nearest army to join. Don't dismiss!
-					army.dismiss();
-					return;
-				}
+				// TODO Move to nearest army to join. Don't dismiss!
+				army.dismiss();
+				return;
 			}
 		}
 		if (tryMovingArmyToNeighbors(data, army)) {
@@ -277,7 +274,7 @@ public class JavaAIHandler implements IAIHandler {
 				data.getCountry().getReachableLandBorderAlienProvs());
 		SimplePair<IPProvince, Double> nearestLandProvThroughWater = findNearestProvince(data, a.getLocation(),
 				data.getCountry().getReachableLandAlienProvincesThroughWater());
-		SimplePair<IPProvince, Double> nearestProv = nearestLandProv.b <= nearestLandProvThroughWater.b
+		SimplePair<IPProvince, Double> nearestProv = nearestLandProv.b <= nearestLandProvThroughWater.b * 2
 				? nearestLandProv
 				: nearestLandProvThroughWater;
 		if (nearestProv.a != null) {

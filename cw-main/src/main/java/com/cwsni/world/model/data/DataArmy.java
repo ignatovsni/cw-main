@@ -1,37 +1,25 @@
 package com.cwsni.world.model.data;
 
 public class DataArmy {
-	/*
-	 * TODO нужно запоминать состав армии - культуру, против своих сражаться будут
-	 * неохотно
-	 * DataPopulation can be used
+	/**
+	 * Maybe id should be string as "country-id" + "-" +"army-id" - to avoid
+	 * constantly increasing of {@link DataGame#lastArmyId} Or I can search min
+	 * value while the game is loading and then make 1) min--; 2) find max; 3)
+	 * max++;
 	 */
-
-	
-/**
- * Maybe id should be string as "country-id" + "-" +"army-id" - to avoid constantly increasing of {@link DataGame#lastArmyId}
- * Or I can search min value while the game is loading and then make 1) min--; 2) find max; 3) max++; 
- */
 	private int id;
-	private int soldiers;
 	private int training;
 	private int organisation;
 	private int equipment;
 	private Integer province;
+	private DataPopulation population;
 
 	public DataArmy() {
 	}
 
 	public DataArmy(int id) {
-		this.setId(id);
-	}
-
-	public int getSoldiers() {
-		return soldiers;
-	}
-
-	public void setSoldiers(int soldiers) {
-		this.soldiers = Math.max(0, soldiers);
+		this.id = id;
+		this.population = new DataPopulation();
 	}
 
 	public int getTraining() {
@@ -72,6 +60,14 @@ public class DataArmy {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public DataPopulation getPopulation() {
+		return population;
+	}
+
+	public void setPopulation(DataPopulation population) {
+		this.population = population;
 	}
 
 }

@@ -13,6 +13,7 @@ public class Army {
 	private static final Log logger = LogFactory.getLog(Army.class);
 
 	private DataArmy data;
+	private Population population;
 	private Country country;
 	private Province moveFrom;
 	private boolean isCanMoveThisTurn = true;
@@ -31,11 +32,11 @@ public class Army {
 	}
 
 	public int getSoldiers() {
-		return data.getSoldiers();
+		return population.getAmount();
 	}
 
-	public void setSoldiers(int soldiers) {
-		data.setSoldiers(soldiers);
+	void setSoldiers(int soldiers) {
+		population.setAmount(soldiers);
 	}
 
 	public int getTraining() {
@@ -90,6 +91,8 @@ public class Army {
 	public void buildFrom(Country country, DataArmy da) {
 		this.country = country;
 		this.data = da;
+		this.population = new Population();
+		population.buildFrom(getLocation(), da.getPopulation());
 	}
 
 	@Override
@@ -120,7 +123,7 @@ public class Army {
 	}
 
 	private void changeSoldiers(int delta) {
-		data.setSoldiers(Math.max(0, data.getSoldiers() + delta));
+		setSoldiers(Math.max(0, getSoldiers() + delta));
 	}
 
 	public double getEffectiveness() {
@@ -129,25 +132,16 @@ public class Army {
 	}
 
 	public double getStrength() {
-		return 1.0 * getEffectiveness() * data.getSoldiers();
+		return 1.0 * getEffectiveness() * getSoldiers();
 	}
 
 	public void dismiss() {
+		getLocation().addPopulation(population);
 		setProvince(null);
-		dismissToCapital(getSoldiers());
 	}
 
 	public void dismissSoldiers(int howManySoldiersNeedToDismiss) {
-		setSoldiers(getSoldiers() - howManySoldiersNeedToDismiss);
-		dismissToCapital(howManySoldiersNeedToDismiss);
-	}
-
-	private void dismissToCapital(int soldiers) {
-		// TODO pops should return to home or stay in current province
-		Province capital = getCountry().getCapital();
-		if (capital != null) {
-			capital.addPopulationFromArmy(soldiers);
-		}
+		getLocation().addPopulation(population.createNewPopFromThis(howManySoldiersNeedToDismiss));
 	}
 
 	public void moveTo(Province destination) {
@@ -235,7 +229,54 @@ public class Army {
 				&& getOrganisation() >= gParams.getArmyMinAllowedOrganization();
 	}
 
+	public void addPopulation(Population pop) {
+		if (pop.getAmount() == 0) {
+			population = pop;
+		} else {
+			population.addPop(pop);
+		}
+	}
+
+	Army split(int soldiers) {
+		if (soldiers >= getSoldiers()) {
+			logger.warn("soldiers >= army.getSoldiers() ; " + soldiers + " >= " + getSoldiers());
+			return null;
+		}
+		GameParams gParams = country.getGame().getGameParams();
+		if (soldiers < gParams.getArmyMinAllowedSoldiers()) {
+			logger.warn("soldiers <= gParams.getArmyMinAllowedSoldiers() ; " + soldiers + " < "
+					+ gParams.getArmyMinAllowedSoldiers());
+			return null;
+		}
+		if ((getSoldiers() - soldiers) < gParams.getArmyMinAllowedSoldiers()) {
+			logger.warn("(army.getSoldiers()-soldiers) <= gParams.getArmyMinAllowedSoldiers() ; "
+					+ (getSoldiers() - soldiers) + " < " + gParams.getArmyMinAllowedSoldiers());
+			return null;
+		}
+		Army a = createArmy(country);
+		a.addPopulation(population.createNewPopFromThis(soldiers));
+		return a;
+	}
+
+	void mergeFrom(Army armyFrom, int soldiers) {
+		if (soldiers >= armyFrom.getSoldiers()) {
+			addPopulation(armyFrom.population);
+			armyFrom.population = new Population();
+		} else {
+			addPopulation(armyFrom.population.createNewPopFromThis(soldiers));
+		}
+	}
+
 	// ---------------------------- static -----------------------------
+
+	public static Army createArmy(Country country) {
+		Army a = new Army();
+		a.buildFrom(country, new DataArmy(country.getGame().nextArmyId()));
+		a.setEquipment(1);
+		a.setOrganisation(100);
+		a.setTraining(50);
+		return a;
+	}
 
 	public static double fight(List<Army> attacker, List<Army> defender) {
 		Game game = attacker.get(0).getCountry().getGame();

@@ -49,7 +49,12 @@ public class CommandArmySplit extends CommandArmy {
 			return;
 		}
 		Army newArmy = country.splitArmy(army, soldiers);
-		country.getGame().registerNewArmyWithIdLessThanZero(country.getId(), newArmyId, newArmy);
+		if (newArmy != null) {
+			country.getGame().registerNewArmyWithIdLessThanZero(country.getId(), newArmyId, newArmy);
+		} else {
+			addError("could not create army");
+		}
+
 	}
 
 	@Override
