@@ -13,6 +13,7 @@ import com.cwsni.world.model.player.interfaces.IPProvince;
 
 public class PArmy implements IPArmy {
 
+	private Army army;
 	private PGame game;
 	private IPCountry country;
 	private CommandArmyMove moveCommand;
@@ -24,6 +25,7 @@ public class PArmy implements IPArmy {
 
 	PArmy(PGame game, Army army) {
 		this(game, army.getId(), army.getLocationId(), army.getSoldiers());
+		this.army = army;
 	}
 
 	PArmy(PGame game, int id, Integer locationId, int soldiers) {
@@ -154,6 +156,11 @@ public class PArmy implements IPArmy {
 			CommandArmyMerge mergeCommand = new CommandArmyMerge(id, fromArmy.getId(), soldiers);
 			game.addCommand(mergeCommand);
 		}
+	}
+
+	double getAgriculture() {
+		// it works only for existing armies (not for created or splitted at the same turn)
+		return army != null ? army.getScienceAgriculture() : 0;
 	}
 
 	public void cmcAddSoldiers(int howManySoldiers) {

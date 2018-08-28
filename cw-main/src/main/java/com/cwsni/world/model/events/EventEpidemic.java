@@ -87,13 +87,16 @@ public class EventEpidemic extends Event {
 		// TODO LocaleMessageSource messageSource
 		e.setTitle("Protection against epidemics");
 		e.setDescription("Protection against epidemics");
-		//e.setTitle("event.epidemic.protected.title");
-		//e.setDescription("event.epidemic.protected.title");
+		// e.setTitle("event.epidemic.protected.title");
+		// e.setDescription("event.epidemic.protected.title");
 		game.addEvent(e);
 		p.getEvents().addEvent(e);
 	}
 
 	public static double getDiseaseResistance(double scienceMedicine) {
+		if (scienceMedicine == 0) {
+			return 0;
+		}
 		return Math.min(0.9, Math.log10(scienceMedicine) / 10);
 	}
 

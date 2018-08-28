@@ -23,7 +23,6 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesNameLabel;
 	private RowValue valuesSizeLabel;
 	private RowValue valuesTerrainTypeLabel;
-	private RowValue valuesPassability;
 	private RowValue valuesPopsLabel;
 	private RowValue valuesWealthLabel;
 	private RowValue valuesGovInfluenceLabel;

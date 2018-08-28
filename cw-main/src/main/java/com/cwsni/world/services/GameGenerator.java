@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -57,6 +58,10 @@ public class GameGenerator {
 		dataGame.setTurn(new Turn(0));
 		createMap(dataGame, tData);
 		createTerrain(dataGame, tData);
+		int lastContinentId = defineContinents(dataGame, tData, tt -> !tt.isWater(), 0);
+		int lastOceanId = defineContinents(dataGame, tData, tt -> tt.isWater(), lastContinentId);
+		dataGame.getMap().setContinents(lastContinentId);
+		dataGame.getMap().setOceans(lastOceanId - lastContinentId);
 		fillSoil(dataGame, tData);
 		fillPopulation(dataGame);
 		fillInfrastructure(dataGame);
@@ -151,6 +156,30 @@ public class GameGenerator {
 			int neighborIdx = gParams.getRandom().nextInt(nProv.getNeighbors().size());
 			prov = tData.provByIds.get(nProv.getNeighbors().get(neighborIdx));
 		}
+	}
+
+	private int defineContinents(DataGame game, TempData tData, Function<TerrainType, Boolean> checkProvince,
+			int currentContinentId) {
+		for (DataProvince p : game.getMap().getProvinces()) {
+			if (p.getContinentId() > 0 || !checkProvince.apply(p.getTerrainType())) {
+				continue;
+			}
+			int continentId = ++currentContinentId;
+			List<DataProvince> continent = new ArrayList<>();
+			continent.add(p);
+			p.setContinentId(continentId);
+			int idx = 0;
+			while (idx < continent.size()) {
+				DataProvince prov = continent.get(idx);
+				prov.getNeighbors().stream().map(nId -> tData.provByIds.get(nId))
+						.filter(n -> n.getContinentId() == 0 && checkProvince.apply(n.getTerrainType())).forEach(n -> {
+							n.setContinentId(continentId);
+							continent.add(n);
+						});
+				idx++;
+			}
+		}
+		return currentContinentId;
 	}
 
 	private void setTerrainType(List<DataProvince> terrain, Set<Integer> terrainIds, DataProvince prov,

@@ -71,6 +71,10 @@ public class Army {
 		return data.getProvince();
 	}
 
+	public double getScienceAgriculture() {
+		return population.getScience().getAgriculture().getAmount();
+	}
+
 	public void setProvince(Province province) {
 		Province p = getLocation();
 		if (p != null) {

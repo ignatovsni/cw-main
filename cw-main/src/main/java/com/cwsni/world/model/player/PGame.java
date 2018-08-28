@@ -94,7 +94,7 @@ public class PGame implements IPGame {
 		return ps;
 	}
 
-	PProvince getProvince(Province p) {
+	IPProvince getProvince(Province p) {
 		if (p == null) {
 			return null;
 		}

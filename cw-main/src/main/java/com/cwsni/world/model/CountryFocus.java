@@ -28,7 +28,7 @@ public class CountryFocus {
 	}
 
 	public double getArmyStrengthInfluence() {
-		return getValue();
+		return (getValue() - DataCountryFocus.BASE_VALUE) / 2 + DataCountryFocus.BASE_VALUE;
 	}
 
 	public double getGovernmentInfluenceOnDistance() {

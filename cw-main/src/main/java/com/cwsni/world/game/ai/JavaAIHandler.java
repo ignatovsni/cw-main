@@ -103,16 +103,18 @@ public class JavaAIHandler implements IAIHandler {
 			armies.forEach(a -> armiesByValues.put(a));
 			IPArmy weakestArmy = armiesByValues.poll();
 			while (availableMoneyForArmy < 0 && weakestArmy != null) {
-				double costForSoldier = weakestArmy.getCostForSoldierPerYear();
-				double howManySoldiersNeedToDismiss = -availableMoneyForArmy / costForSoldier;
-				if (howManySoldiersNeedToDismiss >= weakestArmy.getSoldiers()) {
-					availableMoneyForArmy += weakestArmy.getCostPerYear();
-					weakestArmy.dismiss();
-					weakestArmy = armiesByValues.poll();
-				} else {
-					weakestArmy.dismissSoldiers((int) howManySoldiersNeedToDismiss);
-					availableMoneyForArmy = 0; // += howManySoldiersNeedToDismiss * costForSoldier;
+				if (!weakestArmy.getLocation().getTerrainType().isWater()) {
+					double costForSoldier = weakestArmy.getCostForSoldierPerYear();
+					double howManySoldiersNeedToDismiss = -availableMoneyForArmy / costForSoldier;
+					if (howManySoldiersNeedToDismiss >= weakestArmy.getSoldiers()) {
+						availableMoneyForArmy += weakestArmy.getCostPerYear();
+						weakestArmy.dismiss();
+					} else {
+						weakestArmy.dismissSoldiers((int) howManySoldiersNeedToDismiss);
+						availableMoneyForArmy = 0; // += howManySoldiersNeedToDismiss * costForSoldier;
+					}
 				}
+				weakestArmy = armiesByValues.poll();
 			}
 		}
 
@@ -216,13 +218,12 @@ public class JavaAIHandler implements IAIHandler {
 		IPProvince location = army.getLocation();
 		if (!ComparisonTool.isEqual(army.getCountry().getId(), location.getCountryId())
 				&& !location.getTerrainType().isWater()) {
-			if (army.getSoldiers() > location.getPopulationAmount()
-					* data.getCountry().getArmySoldiersToPopulationForSubjugation()) {
-				// alien province and army is able to subjugate it, stay here
-				return;
-			} else {
-				// TODO Move to nearest army to join. Don't dismiss!
+			if (location.getPopulationAmount() == 0 && location.getSoilFertilityWithPopFromArmy(army) > 2.0) {
+				// Colonize.
 				army.dismiss();
+				return;
+			} else if (isAbleToSubjugate(data, army, location)) {
+				// alien province and army is able to subjugate it, stay here
 				return;
 			}
 		}
@@ -254,9 +255,16 @@ public class JavaAIHandler implements IAIHandler {
 		while (!importantProvinces.isEmpty() && !strongArmies.isEmpty()) {
 			IPProvince p = importantProvinces.poll();
 			IPArmy a = strongArmies.poll();
-			a.moveTo(p);
+			if (isAbleToSubjugate(data, a, p)) {
+				a.moveTo(p);
+			}
 		}
-		return true;
+		return !army.isCanMove();
+	}
+
+	private boolean isAbleToSubjugate(AIData4Country data, IPArmy army, IPProvince location) {
+		return army.getSoldiers() > 1.05 * location.getPopulationAmount()
+				* data.getCountry().getArmySoldiersToPopulationForSubjugation();
 	}
 
 	private double calculateImportanceOfProvince(AIData4Country data, IPProvince neighbor, IPCountry pCountry) {
@@ -270,9 +278,10 @@ public class JavaAIHandler implements IAIHandler {
 	}
 
 	private void tryMovingArmyFurther(AIData4Country data, IPArmy a) {
-		SimplePair<IPProvince, Double> nearestLandProv = findNearestProvince(data, a.getLocation(),
+		IPProvince capital = data.getCountry().getCapital();
+		SimplePair<IPProvince, Double> nearestLandProv = findNearestProvince(data, capital, a.getLocation(),
 				data.getCountry().getReachableLandBorderAlienProvs());
-		SimplePair<IPProvince, Double> nearestLandProvThroughWater = findNearestProvince(data, a.getLocation(),
+		SimplePair<IPProvince, Double> nearestLandProvThroughWater = findNearestProvince(data, capital, a.getLocation(),
 				data.getCountry().getReachableLandAlienProvincesThroughWater());
 		SimplePair<IPProvince, Double> nearestProv = nearestLandProv.b <= nearestLandProvThroughWater.b * 2
 				? nearestLandProv
@@ -287,8 +296,8 @@ public class JavaAIHandler implements IAIHandler {
 		}
 	}
 
-	private SimplePair<IPProvince, Double> findNearestProvince(AIData4Country data, IPProvince province,
-			Set<IPProvince> provinces) {
+	private SimplePair<IPProvince, Double> findNearestProvince(AIData4Country data, IPProvince capital,
+			IPProvince province, Set<IPProvince> provinces) {
 		IPProvince nearestProv = null;
 		double minDistance = Double.MAX_VALUE;
 		for (IPProvince p : provinces) {
@@ -296,6 +305,10 @@ public class JavaAIHandler implements IAIHandler {
 				continue;
 			}
 			double distance = data.getGame().findDistance(province, p);
+			if (capital != null && capital.getContinentId() != p.getContinentId()) {
+				// Provinces are less important if they are at different continent.
+				distance *= 2;
+			}
 			if (distance < minDistance) {
 				minDistance = distance;
 				nearestProv = p;

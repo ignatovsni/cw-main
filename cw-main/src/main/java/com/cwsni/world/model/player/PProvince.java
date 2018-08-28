@@ -7,6 +7,7 @@ import java.util.List;
 import com.cwsni.world.model.ComparisonTool;
 import com.cwsni.world.model.Province;
 import com.cwsni.world.model.data.TerrainType;
+import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 import com.cwsni.world.model.player.interfaces.IPState;
 
@@ -29,6 +30,11 @@ public class PProvince implements IPProvince {
 	}
 
 	@Override
+	public String getName() {
+		return province.getName();
+	}
+
+	@Override
 	public Collection<IPProvince> getNeighbors() {
 		if (neighbors == null) {
 			neighbors = new ArrayList<>(province.getNeighbors().size());
@@ -45,6 +51,11 @@ public class PProvince implements IPProvince {
 	@Override
 	public TerrainType getTerrainType() {
 		return province.getTerrainType();
+	}
+
+	@Override
+	public int getContinentId() {
+		return province.getContinentId();
 	}
 
 	@Override
@@ -86,6 +97,26 @@ public class PProvince implements IPProvince {
 		}
 	}
 
+	@Override
+	public double getSoilFertility() {
+		return province.getSoilFertility();
+	}
+
+	@Override
+	public double getSoilFertilityWithPopFromArmy(IPArmy army) {
+		return province.getSoilFertilityBasePlusAgriculture(((PArmy) army).getAgriculture());
+	}
+
+	@Override
+	public boolean isPassable(IPArmy a) {
+		if (a != null) {
+			return province.isPassable(a.getCountry().getId());
+		} else {
+			return province.isPassable(game.getCountryId());
+		}
+	}
+
+	// --------------------- client model changes ---------------------
 	public void cmcAddPopulation(int delta) {
 		populationAmount += delta;
 	}

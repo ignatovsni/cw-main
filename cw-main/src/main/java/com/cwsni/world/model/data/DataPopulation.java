@@ -22,6 +22,10 @@ public class DataPopulation {
 	}
 
 	public void setAmount(int amount) {
+		if (amount < 0) {
+			System.out.println("amount < 0");
+			amount = 0;
+		}
 		this.amount = amount;
 	}
 

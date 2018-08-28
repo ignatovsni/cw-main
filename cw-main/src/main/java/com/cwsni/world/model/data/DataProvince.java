@@ -13,6 +13,7 @@ public class DataProvince {
 
 	private int id;
 	private String name;
+	private int continentId;
 	private Point center;
 	private List<Integer> neighbors;
 	private TerrainType terrainType;
@@ -141,6 +142,14 @@ public class DataProvince {
 
 	public void setWealth(double wealth) {
 		this.wealth = DataFormatter.doubleWith3points(wealth);
+	}
+
+	public int getContinentId() {
+		return continentId;
+	}
+
+	public void setContinentId(int continentId) {
+		this.continentId = continentId;
 	}
 
 }

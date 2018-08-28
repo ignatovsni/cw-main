@@ -117,11 +117,13 @@ public class Province implements EventTarget {
 		return state != null ? state.getId() : null;
 	}
 
+	public int getContinentId() {
+		return data.getContinentId();
+	}
+
 	public double getSoilFertility() {
-		double v = data.getSoilFertility();
 		// science
-		v += (double) getScienceAgriculture()
-				* map.getGame().getGameParams().getScienceAgricultureMultiplicatorForFertility();
+		double v = getSoilFertilityBasePlusAgriculture(getScienceAgriculture());
 		// climate change
 		for (Event e : getEvents().getEventsWithType(Event.EVENT_GLOBAL_CLIMATE_CHANGE)) {
 			v *= e.getEffectDouble1();
@@ -131,6 +133,11 @@ public class Province implements EventTarget {
 			v = v * 0.5 * (1 + getInfrastructurePercent());
 		}
 		return v;
+	}
+
+	public double getSoilFertilityBasePlusAgriculture(double agriculture) {
+		return data.getSoilFertility()
+				+ agriculture * map.getGame().getGameParams().getScienceAgricultureMultiplicatorForFertility();
 	}
 
 	public int getScienceAgriculture() {
@@ -747,6 +754,10 @@ public class Province implements EventTarget {
 
 	public boolean isPassable(Country c) {
 		return new ProvincePassabilityCriteria(c).isPassable(this);
+	}
+
+	public boolean isPassable(int countryId) {
+		return isPassable(getCountry().getGame().findCountryById(countryId));
 	}
 
 	public boolean hasWaterNeighbor() {

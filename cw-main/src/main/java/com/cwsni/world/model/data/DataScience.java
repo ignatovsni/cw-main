@@ -23,6 +23,7 @@ public class DataScience {
 	public void setAmount(double amount) {
 		if (amount < 0) {
 			System.out.println("DataScience: amount < 0");
+			amount = 0;
 		}
 		this.amount = DataFormatter.doubleWith3points(amount);
 		if (this.amount > 10000000) {
