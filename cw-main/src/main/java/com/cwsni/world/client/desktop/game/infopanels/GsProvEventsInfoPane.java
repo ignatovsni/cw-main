@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
-import com.cwsni.world.model.Province;
-import com.cwsni.world.model.events.Event;
+import com.cwsni.world.model.data.events.Event;
+import com.cwsni.world.model.engine.Province;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;

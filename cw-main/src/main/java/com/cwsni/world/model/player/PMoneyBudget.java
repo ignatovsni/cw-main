@@ -1,7 +1,7 @@
 package com.cwsni.world.model.player;
 
 import com.cwsni.world.game.commands.CommandSetMoneyBudget;
-import com.cwsni.world.model.MoneyBudget;
+import com.cwsni.world.model.engine.MoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 
 public class PMoneyBudget implements IPMoneyBudget {

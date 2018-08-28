@@ -2,7 +2,7 @@ package com.cwsni.world.services;
 
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.model.Game;
+import com.cwsni.world.model.engine.Game;
 
 @Component
 public class GameEventListener {

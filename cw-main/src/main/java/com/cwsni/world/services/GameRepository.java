@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import com.cwsni.world.CwException;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
-import com.cwsni.world.model.Game;
 import com.cwsni.world.model.data.DataGame;
+import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

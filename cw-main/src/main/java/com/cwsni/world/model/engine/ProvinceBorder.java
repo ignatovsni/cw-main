@@ -1,4 +1,4 @@
-package com.cwsni.world.model;
+package com.cwsni.world.model.engine;
 
 public class ProvinceBorder {
 	private int first;

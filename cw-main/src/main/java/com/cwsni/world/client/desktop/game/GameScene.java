@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,9 +29,9 @@ import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.AlertWithStackTraceFactory;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
 import com.cwsni.world.game.ai.ScriptAIHandler;
-import com.cwsni.world.model.Country;
-import com.cwsni.world.model.Game;
-import com.cwsni.world.model.Province;
+import com.cwsni.world.model.engine.Country;
+import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.services.GameGenerator;
 import com.cwsni.world.services.GameHandler;
 import com.cwsni.world.services.GameRepository;
@@ -411,7 +410,7 @@ public class GameScene extends Scene {
 		 */
 
 		// TODO It is not fully correct. We need to wait until task will be finished.
-		Future<?> f = aiExecutorService.submit(task);
+		aiExecutorService.submit(task);
 	}
 
 	private void refreshViewAndStartNewTurn() {

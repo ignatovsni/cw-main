@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
-import com.cwsni.world.model.Game;
 import com.cwsni.world.model.data.DataCulture;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.data.DataPopulation;
@@ -25,6 +24,7 @@ import com.cwsni.world.model.data.DataWorldMap;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.data.Turn;
+import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
 
 @Component

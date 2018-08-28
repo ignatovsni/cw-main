@@ -6,7 +6,7 @@ import com.cwsni.world.game.commands.CommandArmyDismiss;
 import com.cwsni.world.game.commands.CommandArmyMerge;
 import com.cwsni.world.game.commands.CommandArmyMove;
 import com.cwsni.world.game.commands.CommandArmySplit;
-import com.cwsni.world.model.Army;
+import com.cwsni.world.model.engine.Army;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPProvince;
@@ -88,15 +88,15 @@ public class PArmy implements IPArmy {
 
 	@Override
 	public void moveTo(IPProvince destination) {
-		moveTo(destination.getId());
-	}
-
-	private void moveTo(int destId) {
-		if (isCanMove) {
-			moveCommand = new CommandArmyMove(id, destId);
+		if (isCanMove && destination.isPassable(this)) {
+			moveCommand = new CommandArmyMove(id, destination.getId());
 			game.addCommand(moveCommand);
 			isCanMove = false;
 		}
+	}
+
+	private void moveTo(int destId) {
+		moveTo(game.findProvById(destId));
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class PArmy implements IPArmy {
 
 	@Override
 	public void dismiss() {
-		dismissSoldiers(-1);
+		dismiss(-1);
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class PArmy implements IPArmy {
 	 *            if < 0 then dismiss all
 	 */
 	@Override
-	public void dismissSoldiers(int howManySoldiersNeedToDismiss) {
+	public void dismiss(int howManySoldiersNeedToDismiss) {
 		if (howManySoldiersNeedToDismiss == 0) {
 			return;
 		}
@@ -159,7 +159,8 @@ public class PArmy implements IPArmy {
 	}
 
 	double getAgriculture() {
-		// it works only for existing armies (not for created or splitted at the same turn)
+		// it works only for existing armies (not for created or splitted at the same
+		// turn)
 		return army != null ? army.getScienceAgriculture() : 0;
 	}
 

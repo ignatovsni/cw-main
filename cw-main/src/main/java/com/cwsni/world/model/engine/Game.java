@@ -1,4 +1,4 @@
-package com.cwsni.world.model;
+package com.cwsni.world.model.engine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,9 +12,10 @@ import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.GameStats;
 import com.cwsni.world.model.data.Turn;
-import com.cwsni.world.model.events.Event;
-import com.cwsni.world.model.events.EventCollection;
-import com.cwsni.world.model.events.EventTarget;
+import com.cwsni.world.model.data.events.Event;
+import com.cwsni.world.model.data.events.EventCollection;
+import com.cwsni.world.model.data.events.EventTarget;
+import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 import com.cwsni.world.services.GameEventListener;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
 
@@ -29,6 +30,7 @@ public class Game implements EventTarget {
 	private StateCollection states;
 	private Map<Integer, Army> armies;
 	private Map<Integer, Map<Integer, Army>> newArmiesWithIdLessThanZero;
+	private RelationshipsCollection relationships;
 
 	private LocaleMessageSource messageSource;
 	private GameAlgorithms gameAlgorithms;
@@ -280,12 +282,15 @@ public class Game implements EventTarget {
 
 		armies = new HashMap<>();
 		newArmiesWithIdLessThanZero = new HashMap<>();
-
+		
 		events = new EventCollection();
 		events.buildFrom(this, data.getEvents());
 
 		map = new WorldMap();
 		map.buildFrom(this, data.getMap());
+		
+		relationships = new RelationshipsCollection();
+		relationships.buildFrom(this, data.getRelationships());
 
 		countries = new CountryCollection();
 		countries.buildFrom(this, data.getCountries());

@@ -1,4 +1,4 @@
-package com.cwsni.world.model;
+package com.cwsni.world.model.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.cwsni.world.model.data.DataWorldMap;
-import com.cwsni.world.model.events.Event;
+import com.cwsni.world.model.data.events.Event;
 import com.cwsni.world.services.algorithms.Node;
 
 public class WorldMap {

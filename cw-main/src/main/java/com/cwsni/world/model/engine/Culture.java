@@ -1,4 +1,4 @@
-package com.cwsni.world.model;
+package com.cwsni.world.model.engine;
 
 import com.cwsni.world.model.data.Color;
 import com.cwsni.world.model.data.DataCulture;

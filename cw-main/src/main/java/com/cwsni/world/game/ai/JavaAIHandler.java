@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.model.ComparisonTool;
+import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.player.SimplePair;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
@@ -36,7 +36,7 @@ public class JavaAIHandler implements IAIHandler {
 		manageScienceBudget(data);
 		processArmyBudget(data);
 		mergeAndSplitArmies(data);
-		moveArmies(data);
+		moveArmiesInWar(data);
 	}
 
 	public void manageMoneyBudget(AIData4Country data) {
@@ -110,7 +110,7 @@ public class JavaAIHandler implements IAIHandler {
 						availableMoneyForArmy += weakestArmy.getCostPerYear();
 						weakestArmy.dismiss();
 					} else {
-						weakestArmy.dismissSoldiers((int) howManySoldiersNeedToDismiss);
+						weakestArmy.dismiss((int) howManySoldiersNeedToDismiss);
 						availableMoneyForArmy = 0; // += howManySoldiersNeedToDismiss * costForSoldier;
 					}
 				}
@@ -203,7 +203,7 @@ public class JavaAIHandler implements IAIHandler {
 		}
 	}
 
-	public void moveArmies(AIData4Country data) {
+	public void moveArmiesInWar(AIData4Country data) {
 		Collection<IPArmy> armies = new ArrayList<>(data.getCountry().getArmies());
 		if (armies.isEmpty()) {
 			return;
@@ -220,7 +220,7 @@ public class JavaAIHandler implements IAIHandler {
 				&& !location.getTerrainType().isWater()) {
 			if (location.getPopulationAmount() == 0 && location.getSoilFertilityWithPopFromArmy(army) > 2.0) {
 				// Colonize.
-				army.dismiss();
+				army.dismiss(army.getSoldiers() / 2);
 				return;
 			} else if (isAbleToSubjugate(data, army, location)) {
 				// alien province and army is able to subjugate it, stay here
@@ -236,7 +236,8 @@ public class JavaAIHandler implements IAIHandler {
 	private boolean tryMovingArmyToNeighbors(AIData4Country data, IPArmy army) {
 		Map<IPProvince, Double> importanceOfProvinces = new HashMap<>();
 		for (IPProvince neighbor : army.getLocation().getNeighbors()) {
-			if (neighbor.getTerrainType().isPopulationPossible() && !neighbor.isMyProvince()) {
+			if (neighbor.getTerrainType().isPopulationPossible() && neighbor.isPassable(army)
+					&& !neighbor.isMyProvince()) {
 				double weight = calculateImportanceOfProvince(data, neighbor, army.getCountry());
 				importanceOfProvinces.put(neighbor, weight);
 			}
@@ -279,9 +280,9 @@ public class JavaAIHandler implements IAIHandler {
 
 	private void tryMovingArmyFurther(AIData4Country data, IPArmy a) {
 		IPProvince capital = data.getCountry().getCapital();
-		SimplePair<IPProvince, Double> nearestLandProv = findNearestProvince(data, capital, a.getLocation(),
+		SimplePair<IPProvince, Double> nearestLandProv = findNearestPriorityProvince(data, capital, a,
 				data.getCountry().getReachableLandBorderAlienProvs());
-		SimplePair<IPProvince, Double> nearestLandProvThroughWater = findNearestProvince(data, capital, a.getLocation(),
+		SimplePair<IPProvince, Double> nearestLandProvThroughWater = findNearestPriorityProvince(data, capital, a,
 				data.getCountry().getReachableLandAlienProvincesThroughWater());
 		SimplePair<IPProvince, Double> nearestProv = nearestLandProv.b <= nearestLandProvThroughWater.b * 2
 				? nearestLandProv
@@ -296,15 +297,16 @@ public class JavaAIHandler implements IAIHandler {
 		}
 	}
 
-	private SimplePair<IPProvince, Double> findNearestProvince(AIData4Country data, IPProvince capital,
-			IPProvince province, Set<IPProvince> provinces) {
+	private SimplePair<IPProvince, Double> findNearestPriorityProvince(AIData4Country data, IPProvince capital,
+			IPArmy army, Set<IPProvince> provinces) {
+		IPProvince armyLocation = army.getLocation();
 		IPProvince nearestProv = null;
 		double minDistance = Double.MAX_VALUE;
 		for (IPProvince p : provinces) {
-			if (p.equals(province)) {
+			if (p.equals(armyLocation) || !p.isPassable(army)) {
 				continue;
 			}
-			double distance = data.getGame().findDistance(province, p);
+			double distance = data.getGame().findDistance(armyLocation, p);
 			if (capital != null && capital.getContinentId() != p.getContinentId()) {
 				// Provinces are less important if they are at different continent.
 				distance *= 2;

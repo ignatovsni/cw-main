@@ -1,12 +1,12 @@
-package com.cwsni.world.model.events;
+package com.cwsni.world.model.data.events;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.cwsni.world.model.Game;
 import com.cwsni.world.model.data.DataProvince;
+import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.util.ObjectStorage;
 
 public class EventCollection extends ObjectStorage<Event, Integer, String> {

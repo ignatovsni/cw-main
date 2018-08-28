@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.cwsni.world.model.State;
+import com.cwsni.world.model.engine.State;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 import com.cwsni.world.model.player.interfaces.IPState;
 

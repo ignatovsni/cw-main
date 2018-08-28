@@ -10,11 +10,11 @@ import java.util.Set;
 
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.DialogUtil;
-import com.cwsni.world.model.Country;
-import com.cwsni.world.model.Game;
-import com.cwsni.world.model.Province;
-import com.cwsni.world.model.ProvinceBorder;
-import com.cwsni.world.model.WorldMap;
+import com.cwsni.world.model.engine.Country;
+import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.model.engine.Province;
+import com.cwsni.world.model.engine.ProvinceBorder;
+import com.cwsni.world.model.engine.WorldMap;
 
 import javafx.scene.Group;
 import javafx.scene.Node;

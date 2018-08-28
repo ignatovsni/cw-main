@@ -1,4 +1,4 @@
-package com.cwsni.world.model;
+package com.cwsni.world.model.engine;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.IntSummaryStatistics;

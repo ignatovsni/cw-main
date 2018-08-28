@@ -19,11 +19,11 @@ import com.cwsni.world.game.commands.CommandArmyCreate;
 import com.cwsni.world.game.commands.CommandArmyMove;
 import com.cwsni.world.game.commands.CommandArmySplit;
 import com.cwsni.world.game.commands.CommandErrorHandler;
-import com.cwsni.world.model.Army;
-import com.cwsni.world.model.ComparisonTool;
-import com.cwsni.world.model.Country;
-import com.cwsni.world.model.Game;
-import com.cwsni.world.model.ProvinceBorder;
+import com.cwsni.world.model.engine.Army;
+import com.cwsni.world.model.engine.ComparisonTool;
+import com.cwsni.world.model.engine.Country;
+import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.model.engine.ProvinceBorder;
 import com.cwsni.world.model.player.PGame;
 
 @Component

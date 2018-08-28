@@ -29,7 +29,7 @@ public interface IPArmy {
 	 * @param howManySoldiersNeedToDismiss
 	 *            if < 0 then dismiss all
 	 */
-	void dismissSoldiers(int howManySoldiersNeedToDismiss);
+	void dismiss(int howManySoldiersNeedToDismiss);
 
 	IPArmy splitArmy(int soldiersToNewArmy);
 

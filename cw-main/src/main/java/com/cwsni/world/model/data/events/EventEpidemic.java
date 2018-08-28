@@ -1,14 +1,14 @@
-package com.cwsni.world.model.events;
+package com.cwsni.world.model.data.events;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
-import com.cwsni.world.model.Game;
-import com.cwsni.world.model.Population;
-import com.cwsni.world.model.Province;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.model.engine.Population;
+import com.cwsni.world.model.engine.Province;
 
 public class EventEpidemic extends Event {
 

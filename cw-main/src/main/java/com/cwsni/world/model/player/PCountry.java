@@ -9,8 +9,9 @@ import java.util.stream.Collectors;
 
 import com.cwsni.world.game.commands.CommandArmyCreate;
 import com.cwsni.world.game.commands.CommandProvinceSetCapital;
-import com.cwsni.world.model.ComparisonTool;
-import com.cwsni.world.model.Country;
+import com.cwsni.world.model.engine.ComparisonTool;
+import com.cwsni.world.model.engine.Country;
+import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
@@ -133,8 +134,8 @@ public class PCountry implements IPCountry {
 				.filter(p -> !ComparisonTool.isEqual(getId(), p.getCountryId())).collect(Collectors.toSet());
 	}
 
-	private Set<IPProvince> findProvinces(Set<Integer> provinces) {
-		return provinces.stream().map(provId -> game.findProvById(provId)).collect(Collectors.toSet());
+	private Set<IPProvince> findProvinces(Set<Province> provinces) {
+		return provinces.stream().map(prov -> game.findProvById(prov.getId())).collect(Collectors.toSet());
 	}
 
 	@Override

@@ -1,10 +1,10 @@
 package com.cwsni.world.game.commands;
 
 import com.cwsni.world.CwException;
-import com.cwsni.world.model.Army;
-import com.cwsni.world.model.ComparisonTool;
-import com.cwsni.world.model.Game;
-import com.cwsni.world.model.Province;
+import com.cwsni.world.model.engine.Army;
+import com.cwsni.world.model.engine.ComparisonTool;
+import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.player.PCountry;
 import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.model.player.interfaces.IPProvince;

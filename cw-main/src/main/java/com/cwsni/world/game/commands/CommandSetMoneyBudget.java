@@ -1,6 +1,6 @@
 package com.cwsni.world.game.commands;
 
-import com.cwsni.world.model.MoneyBudget;
+import com.cwsni.world.model.engine.MoneyBudget;
 
 public class CommandSetMoneyBudget extends Command {
 

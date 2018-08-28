@@ -1,8 +1,8 @@
 package com.cwsni.world.game.commands;
 
-import com.cwsni.world.model.Army;
-import com.cwsni.world.model.Game;
-import com.cwsni.world.model.Province;
+import com.cwsni.world.model.engine.Army;
+import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.model.engine.Province;
 
 public class CommandArmyMove extends CommandArmy {
 

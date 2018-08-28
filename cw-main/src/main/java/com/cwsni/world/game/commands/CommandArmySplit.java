@@ -1,8 +1,8 @@
 package com.cwsni.world.game.commands;
 
 import com.cwsni.world.CwException;
-import com.cwsni.world.model.Army;
-import com.cwsni.world.model.Game;
+import com.cwsni.world.model.engine.Army;
+import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.player.PArmy;
 import com.cwsni.world.model.player.PCountry;
 import com.cwsni.world.model.player.interfaces.IPGameParams;

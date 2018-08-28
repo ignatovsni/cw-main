@@ -1,4 +1,4 @@
-package com.cwsni.world.model;
+package com.cwsni.world.model.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,10 +18,10 @@ import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
-import com.cwsni.world.model.events.Event;
-import com.cwsni.world.model.events.EventCollection;
-import com.cwsni.world.model.events.EventEpidemic;
-import com.cwsni.world.model.events.EventTarget;
+import com.cwsni.world.model.data.events.Event;
+import com.cwsni.world.model.data.events.EventCollection;
+import com.cwsni.world.model.data.events.EventEpidemic;
+import com.cwsni.world.model.data.events.EventTarget;
 
 public class Province implements EventTarget {
 
@@ -757,7 +757,7 @@ public class Province implements EventTarget {
 	}
 
 	public boolean isPassable(int countryId) {
-		return isPassable(getCountry().getGame().findCountryById(countryId));
+		return isPassable(map.getGame().findCountryById(countryId));
 	}
 
 	public boolean hasWaterNeighbor() {

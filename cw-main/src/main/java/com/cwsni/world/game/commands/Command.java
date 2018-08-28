@@ -1,6 +1,6 @@
 package com.cwsni.world.game.commands;
 
-import com.cwsni.world.model.Country;
+import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.player.PCountry;
 
 public abstract class Command {

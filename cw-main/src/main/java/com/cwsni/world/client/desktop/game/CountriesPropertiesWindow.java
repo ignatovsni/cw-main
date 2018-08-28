@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.game.ai.ScriptAIHandler;
-import com.cwsni.world.model.Country;
 import com.cwsni.world.model.data.Color;
+import com.cwsni.world.model.engine.Country;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;

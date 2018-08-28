@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.cwsni.world.model.ComparisonTool;
-import com.cwsni.world.model.Province;
 import com.cwsni.world.model.data.TerrainType;
+import com.cwsni.world.model.engine.ComparisonTool;
+import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 import com.cwsni.world.model.player.interfaces.IPState;

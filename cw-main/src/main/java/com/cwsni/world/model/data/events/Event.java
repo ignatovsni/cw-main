@@ -1,11 +1,11 @@
-package com.cwsni.world.model.events;
+package com.cwsni.world.model.data.events;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
-import com.cwsni.world.model.Game;
-import com.cwsni.world.model.Province;
+import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.model.engine.Province;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Event {

@@ -1,6 +1,6 @@
 package com.cwsni.world.game.commands;
 
-import com.cwsni.world.model.Army;
+import com.cwsni.world.model.engine.Army;
 import com.cwsni.world.model.player.PArmy;
 import com.cwsni.world.model.player.PCountry;
 

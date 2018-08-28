@@ -1,4 +1,4 @@
-package com.cwsni.world.model.events;
+package com.cwsni.world.model.data.events;
 
 public interface EventTarget {
 	

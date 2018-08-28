@@ -1,7 +1,7 @@
 package com.cwsni.world.model.player;
 
 import com.cwsni.world.game.commands.CommandSetScienceBudget;
-import com.cwsni.world.model.ScienceBudget;
+import com.cwsni.world.model.engine.ScienceBudget;
 import com.cwsni.world.model.player.interfaces.IPScienceBudget;
 
 public class PScienceBudget implements IPScienceBudget {

@@ -8,9 +8,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cwsni.world.model.Game;
-import com.cwsni.world.model.WorldMap;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.model.engine.WorldMap;
 import com.cwsni.world.services.GameGenerator;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
 
