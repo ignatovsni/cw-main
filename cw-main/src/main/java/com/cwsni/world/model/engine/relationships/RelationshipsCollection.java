@@ -76,7 +76,7 @@ public class RelationshipsCollection {
 		}
 	}
 
-	public Map<Integer, RTruce> getCountriesWithTruces(Integer countryId) {
+	public Map<Integer, RTruce> getCountriesWithTruce(Integer countryId) {
 		return truces.getCountriesWithAgreement(countryId);
 	}
 

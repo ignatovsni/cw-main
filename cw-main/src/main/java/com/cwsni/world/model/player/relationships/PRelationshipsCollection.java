@@ -34,7 +34,7 @@ public class PRelationshipsCollection implements IPRelationshipsCollection {
 
 	@Override
 	public Map<Integer, IPRTruce> getCountriesWithTruce(Integer countryId) {
-		Map<Integer, RTruce> warsWith = relationships.getCountriesWithTruces(countryId);
+		Map<Integer, RTruce> warsWith = relationships.getCountriesWithTruce(countryId);
 		Map<Integer, IPRTruce> result = new HashMap<>();
 		warsWith.entrySet().forEach(e -> result.put(e.getKey(), new PRTruce(e.getValue())));
 		return result;

@@ -14,6 +14,7 @@ import com.cwsni.world.model.engine.Culture;
 import com.cwsni.world.model.engine.GameTransientStats;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.engine.State;
+import com.cwsni.world.model.engine.relationships.RTruce;
 import com.cwsni.world.model.engine.relationships.RWar;
 
 import javafx.animation.Animation;
@@ -256,9 +257,14 @@ class DProvince extends Group {
 		if (country.equals(selectedCountry)) {
 			color = Color.GREEN;
 		} else {
-			Map<Integer, RWar> countriesWithWar = map.getGame().getRelationships().getCountriesWithWar(country.getId());
-			if (countriesWithWar.containsKey(selectedCountry.getId())) {
+			Map<Integer, RWar> countriesWithWar = map.getGame().getRelationships()
+					.getCountriesWithWar(selectedCountry.getId());
+			Map<Integer, RTruce> countriesWithTruce = map.getGame().getRelationships()
+					.getCountriesWithTruce(selectedCountry.getId());
+			if (countriesWithWar.containsKey(country.getId())) {
 				color = Color.RED;
+			} else if (countriesWithTruce.containsKey(country.getId())) {
+				color = Color.YELLOW;
 			} else {
 				color = Color.GREY;
 			}
