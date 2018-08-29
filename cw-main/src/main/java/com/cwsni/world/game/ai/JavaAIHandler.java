@@ -19,6 +19,7 @@ import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.player.SimplePair;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
+import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPGameParams;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPProvince;
@@ -40,51 +41,86 @@ public class JavaAIHandler implements IAIHandler {
 		processArmyBudget(data);
 		mergeAndSplitArmies(data);
 		moveArmies(data);
-		checkWars(data);
+		manageWars(data);
 	}
 
-	private void checkWars(AIData4Country data) {
-		Map<Integer, Double> countriesCurrentWarStrength = getCurrentWarStrengthForReachableCountries(data);
+	private void manageWars(AIData4Country data) {
+		Map<Integer, Double> countriesCurrentWarStrength = getCurrentWarStrengthForCountries(data);
 		double thisCountryPureWarStrength = getPureWarStrength(data, data.getCountry());
 		double thisCountryStrength = countriesCurrentWarStrength.get(data.getCountry().getId());
 		Random rnd = new Random();
+		IPGame game = data.getGame();
+		Map<Integer, PRWar> countriesWithWar = game.getRelationships().getCountriesWithWar(data.getCountry().getId());
+
+		// check war
+		if (thisCountryStrength >= thisCountryPureWarStrength * 0.7
+				&& ((countriesWithWar.size() == 0 && rnd.nextDouble() < 0.5)
+						|| (countriesWithWar.size() == 1 && rnd.nextDouble() < 0.1))) {
+			Integer weakestEnemyCountryId = null;
+			double weakestEnemyStrength = Double.MAX_VALUE;
+			for (Entry<Integer, Double> e : countriesCurrentWarStrength.entrySet()) {
+				Integer enemyCountryId = e.getKey();
+				if (ComparisonTool.isEqual(enemyCountryId, data.getCountry().getId())) {
+					continue;
+				}
+				Double enemyStrength = e.getValue();
+				if (enemyStrength < weakestEnemyStrength && !countriesWithWar.containsKey(enemyCountryId)) {
+					weakestEnemyStrength = enemyStrength;
+					weakestEnemyCountryId = enemyCountryId;
+				}
+			}
+			if (weakestEnemyCountryId != null && weakestEnemyStrength < thisCountryStrength * 0.5) {
+				game.getRelationships().declareWar(weakestEnemyCountryId);
+			}
+		}
+
 		// check peace
-		Map<Integer, PRWar> countriesWithWar = data.getGame().getRelationships()
-				.getCountriesWithWar(data.getCountry().getId());
 		for (Entry<Integer, PRWar> warWithId : countriesWithWar.entrySet()) {
 			PRWar war = warWithId.getValue();
-			double enemyStrength = countriesCurrentWarStrength.get(warWithId.getKey());
-			if (thisCountryStrength < 0 && rnd.nextInt(countriesWithWar.size()) == 0) {
-				data.getGame().getRelationships().makePeace(war);
-			} else if (thisCountryStrength < enemyStrength / 2) {
-				data.getGame().getRelationships().makePeace(war);
+			if (game.getTurn().getYearsAfter(war.getStartTurn()) > 50) {
+				game.getRelationships().makePeace(war);
 			}
 		}
-		if (thisCountryStrength <= thisCountryPureWarStrength / 2) {
-			// we can't allow new wars
-			return;
-		}
-		// check war
-		for (Entry<Integer, Double> e : countriesCurrentWarStrength.entrySet()) {
-			double relativeStrengthOfEnemy = 2 * Math.max(e.getValue(), 0) / thisCountryStrength;
-			if (relativeStrengthOfEnemy < rnd.nextDouble()) {
-				data.getGame().getRelationships().declareWar(e.getKey());
+		if ((countriesWithWar.size() > 2 && rnd.nextDouble() < 0.7)
+				|| (countriesWithWar.size() == 2 && rnd.nextDouble() < 0.3)
+				|| (countriesWithWar.size() == 1 && rnd.nextDouble() < 0.1)
+				|| (thisCountryStrength < thisCountryPureWarStrength * 0.5 && rnd.nextDouble() < 0.8)) {
+			PRWar strongerEnemyWar = null;
+			double strongerEnemyStrength = Double.MIN_VALUE;
+			for (Entry<Integer, PRWar> warWithId : countriesWithWar.entrySet()) {
+				Integer enemyCountryId = warWithId.getKey();
+				PRWar war = warWithId.getValue();
+				Double enemyStrength = countriesCurrentWarStrength.get(enemyCountryId);
+				if (enemyStrength > strongerEnemyStrength) {
+					strongerEnemyStrength = enemyStrength;
+					strongerEnemyWar = war;
+				}
+			}
+			if (strongerEnemyWar != null && strongerEnemyStrength > thisCountryStrength * 0.2
+					&& game.getTurn().getYearsAfter(strongerEnemyWar.getStartTurn()) > 10) {
+				game.getRelationships().makePeace(strongerEnemyWar);
 			}
 		}
+
 	}
 
-	private Map<Integer, Double> getCurrentWarStrengthForReachableCountries(AIData4Country data) {
+	private Map<Integer, Double> getCurrentWarStrengthForCountries(AIData4Country data) {
 		Map<Integer, Double> pureWarStrength = new HashMap<>();
+		// this country
 		pureWarStrength.put(data.getCountry().getId(), 0.0);
+		// enemies
 		data.getGame().getRelationships().getCountriesWithWar(data.getCountry().getId()).keySet()
 				.forEach(cId -> pureWarStrength.put(cId, 0.0));
+		// land neighbors
 		data.getCountry().getReachableLandBorderAlienProvs().stream().filter(p -> p.getCountryId() != null)
 				.forEach(p -> pureWarStrength.put(p.getCountryId(), 0.0));
+		// water neighbors
 		data.getCountry().getReachableLandProvincesThroughWater().stream().filter(p -> p.getCountryId() != null)
 				.forEach(p -> pureWarStrength.put(p.getCountryId(), 0.0));
+		// calculate pure strength
 		pureWarStrength.entrySet()
 				.forEach(e -> e.setValue(getPureWarStrength(data, data.getGame().findCountryById(e.getKey()))));
-
+		// calculate strength taking in account current wars
 		Map<Integer, Double> countriesCurrentWarStrength = new HashMap<>();
 		for (Entry<Integer, Double> e : pureWarStrength.entrySet()) {
 			Integer countryId = e.getKey();
@@ -95,7 +131,7 @@ public class JavaAIHandler implements IAIHandler {
 				if (enemyPureStrength == null) {
 					enemyPureStrength = getPureWarStrength(data, data.getGame().findCountryById(cId));
 				}
-				currentStrength -= enemyPureStrength;
+				currentStrength -= enemyPureStrength * 0.1;
 			}
 			countriesCurrentWarStrength.put(countryId, currentStrength);
 		}

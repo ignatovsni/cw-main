@@ -39,6 +39,10 @@ public class RWar {
 	public int getDefenderId() {
 		return data.getDefenderId();
 	}
+	
+	public int getStartTurn() {
+		return data.getStartTurn();
+	}
 
 	public void attackerOfferPeace() {
 		this.attackerOfferPeace = true;

@@ -76,16 +76,16 @@ public class RelationshipsCollection {
 		Map<Integer, RWar> countries = warsWithCountries.get(war.getAttackerId());
 		if (countries != null) {
 			countries.remove(war.getDefenderId());
-		}
-		if (countries.isEmpty()) {
-			warsWithCountries.remove(war.getAttackerId());
+			if (countries.isEmpty()) {
+				warsWithCountries.remove(war.getAttackerId());
+			}
 		}
 		countries = warsWithCountries.get(war.getDefenderId());
 		if (countries != null) {
 			countries.remove(war.getAttackerId());
-		}
-		if (countries.isEmpty()) {
-			warsWithCountries.remove(war.getDefenderId());
+			if (countries.isEmpty()) {
+				warsWithCountries.remove(war.getDefenderId());
+			}
 		}
 		wars.remove(war);
 		data.getWars().remove(war.getData());

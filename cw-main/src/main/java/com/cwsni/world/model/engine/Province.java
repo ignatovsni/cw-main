@@ -493,7 +493,7 @@ public class Province implements EventTarget {
 			if (ComparisonTool.isEqual(capitalId, getId())) {
 				distanceToCapital = 0;
 			} else {
-				distanceToCapital = map.findDistanceForGovernmentInfluence(country.getCapital(), this);
+				distanceToCapital = map.findDistanceApproximateProvinces(country.getCapital(), this);
 			}
 			oldCapitalId = capitalId;
 		}
@@ -512,7 +512,7 @@ public class Province implements EventTarget {
 			if (ComparisonTool.isEqual(capitalId, getId())) {
 				distanceToStateCapital = 0;
 			} else {
-				distanceToStateCapital = map.findDistanceForGovernmentInfluence(getState().getCapital(), this);
+				distanceToStateCapital = map.findDistanceApproximateProvinces(getState().getCapital(), this);
 			}
 			oldStateCapitalId = capitalId;
 		}

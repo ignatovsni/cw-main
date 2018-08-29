@@ -426,6 +426,10 @@ public class Country {
 		return population;
 	}
 
+	public long getArmiesSoldiers() {
+		return getArmies().stream().mapToLong(a -> a.getSoldiers()).sum();
+	}
+
 	// --------------------- static -------------------------------
 
 	public static Country createNewCountry(Game game, Province p) {

@@ -1,6 +1,7 @@
 package com.cwsni.world.client.desktop.game.map;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import com.cwsni.world.model.data.DataPopulation;
@@ -13,6 +14,7 @@ import com.cwsni.world.model.engine.Culture;
 import com.cwsni.world.model.engine.GameTransientStats;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.engine.State;
+import com.cwsni.world.model.engine.relationships.RWar;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -99,6 +101,9 @@ class DProvince extends Group {
 				break;
 			case POLITICAL:
 				drawPoliticalMode(polygon);
+				break;
+			case DIPLOMACY:
+				drawDiplomacyMode(polygon);
 				break;
 			case GOVERNMENT_INFLUENCE:
 				drawGovInfluenceMode(polygon);
@@ -229,6 +234,34 @@ class DProvince extends Group {
 			color = state.getColor().getJavaFxColor();
 		} else {
 			color = COLOR_NONE;
+		}
+		fillPolygon(polygon, color);
+	}
+
+	private void drawDiplomacyMode(Polygon polygon) {
+		Country country = province.getCountry();
+		Province selectedProvince = map.getSelectedProvince();
+		if (selectedProvince == null || selectedProvince.getCountry() == null || country == null) {
+			Color color;
+			if (province.getPopulationAmount() == 0) {
+				color = COLOR_NONE;
+			} else {
+				color = COLOR_NO_COUNTRY_BUT_POPS;
+			}
+			fillPolygon(polygon, color);
+			return;
+		}
+		Country selectedCountry = selectedProvince.getCountry();
+		Color color;
+		if (country.equals(selectedCountry)) {
+			color = Color.GREEN;
+		} else {
+			Map<Integer, RWar> countriesWithWar = map.getGame().getRelationships().getCountriesWithWar(country.getId());
+			if (countriesWithWar.containsKey(selectedCountry.getId())) {
+				color = Color.RED;
+			} else {
+				color = Color.GREY;
+			}
 		}
 		fillPolygon(polygon, color);
 	}

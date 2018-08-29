@@ -234,7 +234,9 @@ public class Game implements EventTarget {
 		List<Country> countryList = new ArrayList<>(countries.getCountries());
 		countryList.forEach(c -> {
 			if ((c.getProvinces().isEmpty() || c.getProvinces().stream().mapToLong(p -> p.getPopulationAmount())
-					.sum() <= getGameParams().getNewCountryPopulationMin() / 2) && c.getArmies().isEmpty()) {
+					.sum() <= getGameParams().getNewCountryPopulationMin() / 2)
+					&& (c.getArmies().isEmpty()
+							|| c.getArmiesSoldiers() < getGameParams().getNewCountryPopulationMin())) {
 				c.dismiss();
 				unregisterCountry(c);
 				history.removeCountry(c);

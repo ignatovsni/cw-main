@@ -24,4 +24,8 @@ public class PRWar {
 		return war.getDefenderId();
 	}
 
+	public int getStartTurn() {
+		return war.getStartTurn();
+	}
+
 }

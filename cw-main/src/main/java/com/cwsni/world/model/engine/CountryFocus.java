@@ -55,13 +55,13 @@ public class CountryFocus {
 		if (chance > 0.999) {
 			data.setFocus(focus + (rnd.nextNormalDouble() - 0.5) * 2);
 			data.setGoal(DataCountryFocus.BASE_VALUE);
-			data.setStep(createStep(gParams, rnd, 0.01));
+			data.setStep(createStep(gParams, rnd, 0.005));
 		} else if (chance > 0.997) {
 			data.setGoal(createNewGoal(gParams, rnd));
 			if (rnd.nextDouble() > 0.9) {
-				data.setStep(createStep(gParams, rnd, 0.005));
+				data.setStep(createStep(gParams, rnd, 0.001));
 			} else {
-				data.setStep(createStep(gParams, rnd, 0.01));
+				data.setStep(createStep(gParams, rnd, 0.005));
 			}
 		} else if (chance > 0.995) {
 			data.setGoal((createNewGoal(gParams, rnd) + DataCountryFocus.BASE_VALUE) / 2);
@@ -74,13 +74,13 @@ public class CountryFocus {
 			double step = data.getStep();
 			double currentFocus = data.getFocus();
 			if (currentFocus > DataCountryFocus.MAX_VALUE * 0.8) {
-				step = DataCountryFocus.MAX_VALUE * 0.02;
+				step = DataCountryFocus.BASE_VALUE * 0.02;
 			} else if (currentFocus > DataCountryFocus.MAX_VALUE * 0.5) {
-				step = DataCountryFocus.MAX_VALUE * 0.01;
+				step = DataCountryFocus.BASE_VALUE * 0.01;
 			} else if (currentFocus > DataCountryFocus.MAX_VALUE * 0.3) {
-				step = DataCountryFocus.MAX_VALUE * 0.005;
+				step = DataCountryFocus.BASE_VALUE * 0.008;
 			} else if (currentFocus > DataCountryFocus.MAX_VALUE * 0.2) {
-				step = DataCountryFocus.MAX_VALUE * 0.003;
+				step = DataCountryFocus.BASE_VALUE * 0.005;
 			}
 			double diff = data.getGoal() - focus;
 			double diffAbs = Math.abs(diff);

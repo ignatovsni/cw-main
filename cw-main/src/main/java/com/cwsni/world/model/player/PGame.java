@@ -23,6 +23,7 @@ import com.cwsni.world.model.player.interfaces.IPGameParams;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 import com.cwsni.world.model.player.interfaces.IPRelationshipsCollection;
 import com.cwsni.world.model.player.interfaces.IPState;
+import com.cwsni.world.model.player.interfaces.IPTurn;
 import com.cwsni.world.model.player.relationships.PRelationshipsCollection;
 
 public class PGame implements IPGame {
@@ -129,6 +130,11 @@ public class PGame implements IPGame {
 	public double findDistance(Integer fromId, Integer toId) {
 		return game.getMap().findDistanceBetweenProvs(fromId, toId);
 	}
+	
+	@Override
+	public double findDistanceApproximateCountOfProvinces(IPProvince from, IPProvince to) {
+		return game.getMap().findDistanceApproximateCountOfProvinces(from.getId(), to.getId());
+	}
 
 	@Override
 	public List<Object> findShortestPath(int fromId, int toId, IPArmy a) {
@@ -146,6 +152,11 @@ public class PGame implements IPGame {
 	@Override
 	public IPCountry findCountryById(Integer countryId) {
 		return getCountry(game.findCountryById(countryId));
+	}
+
+	@Override
+	public IPTurn getTurn() {
+		return new PTurn(game.getTurn());
 	}
 
 	public List<Command> getCommands() {

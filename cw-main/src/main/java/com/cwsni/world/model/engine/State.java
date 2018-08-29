@@ -164,8 +164,8 @@ public class State {
 			return;
 		}
 
-		Country countryOfStateCapital = stateCapital.getCountry();
-		if (countryOfStateCapital == null) {
+		Country originaltCountry = stateCapital.getCountry();
+		if (originaltCountry == null) {
 			return;
 		}
 		Collection<Province> stateProvinces = getProvinces();
@@ -176,16 +176,16 @@ public class State {
 			return;
 		}
 
-		double loyaltyToCountryOfStateCapital = getLoayltyToCountry(countryOfStateCapital.getId(), statePopulation);
+		double loyaltyToOriginalCountry = getLoayltyToCountry(originaltCountry.getId(), statePopulation);
 		Set<Integer> countriesIds = getCountriesWithLoyalty();
 		if (revoltAttractionToCountry != null) {
 			countriesIds.add(revoltAttractionToCountry.getId());
 		}
 		CwRandom random = gParams.getRandom();
 		for (int countryId : countriesIds) {
-			if (!ComparisonTool.isEqual(countryId, countryOfStateCapital.getId())) {
+			if (!ComparisonTool.isEqual(countryId, originaltCountry.getId())) {
 				double loyaltyToCountry = getLoayltyToCountry(countryId, statePopulation);
-				double diffLoaylty = loyaltyToCountry - loyaltyToCountryOfStateCapital
+				double diffLoaylty = loyaltyToCountry - loyaltyToOriginalCountry
 						- gParams.getPopulationLoyaltyRebelToCountryThreshold();
 				if (revoltAttractionToCountry != null
 						&& ComparisonTool.isEqual(revoltAttractionToCountry.getId(), countryId)) {
@@ -197,11 +197,13 @@ public class State {
 					TypeOfRebelCountry typeC = revoltToCountry(countryId, stateCapital);
 					if (typeC != null) {
 						isRevoltSuccessfulThisTurn = true;
-						getNeighbors().forEach(n -> n.processRebels(stateCapital.getCountry()));
+						Country rebelCountry = stateCapital.getCountry();
+						getNeighbors().forEach(n -> n.processRebels(rebelCountry));
 						if (TypeOfRebelCountry.RESTORED.equals(typeC)) {
-							stateCapital.getCountry().getProvinces().forEach(
-									p -> p.addLoyaltyToCountry(stateCapital.getCountryId(), p.getLoyaltyToState()));
+							rebelCountry.getProvinces()
+									.forEach(p -> p.addLoyaltyToCountry(rebelCountry.getId(), p.getLoyaltyToState()));
 						}
+						game.getRelationships().newWar(originaltCountry.getId(), rebelCountry.getId());
 						return;
 					}
 				}
@@ -209,15 +211,17 @@ public class State {
 		}
 
 		double stateLoyalty = getLoayltyToState(statePopulation);
-		double diffLoaylty = stateLoyalty - loyaltyToCountryOfStateCapital
+		double diffLoaylty = stateLoyalty - loyaltyToOriginalCountry
 				- gParams.getPopulationLoyaltyRebelToStateThreshold();
 		if (diffLoaylty > 0 && diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > random.nextDouble()) {
 			TypeOfRebelCountry typeC = revoltToState(stateCapital, random);
 			if (typeC != null) {
 				isRevoltSuccessfulThisTurn = true;
-				getNeighbors().forEach(n -> n.processRebels(stateCapital.getCountry()));
-				stateCapital.getCountry().getProvinces()
-						.forEach(p -> p.addLoyaltyToCountry(stateCapital.getCountryId(), p.getLoyaltyToState()));
+				Country rebelCountry = stateCapital.getCountry();
+				getNeighbors().forEach(n -> n.processRebels(rebelCountry));
+				rebelCountry.getProvinces()
+						.forEach(p -> p.addLoyaltyToCountry(rebelCountry.getId(), p.getLoyaltyToState()));
+				game.getRelationships().newWar(originaltCountry.getId(), rebelCountry.getId());
 				return;
 			}
 			return;

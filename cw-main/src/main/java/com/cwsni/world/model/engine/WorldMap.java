@@ -68,13 +68,17 @@ public class WorldMap {
 	/**
 	 * It must count provinces!! not just distance
 	 */
-	public double findDistanceForGovernmentInfluence(Province p1, Province p2) {
+	public double findDistanceApproximateProvinces(Province p1, Province p2) {
 		// We use hexagons with known radius, so we can use it.
 		// TODO (!) We can do better - use real math for hexagons.
 		return Math
 				.sqrt(Math.pow(p1.getCenter().getX() - p2.getCenter().getX(), 2)
 						+ Math.pow(p1.getCenter().getY() - p2.getCenter().getY(), 2))
 				/ game.getGameParams().getProvinceRadius();
+	}
+
+	public double findDistanceApproximateCountOfProvinces(int provId1, int provId2) {
+		return findDistanceApproximateProvinces(findProvById(provId1), findProvById(provId2));
 	}
 
 	private Set<ProvinceBorder> refreshCountriesBorders() {

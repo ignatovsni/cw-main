@@ -55,18 +55,25 @@ public class Turn {
 	public void increment() {
 		turn++;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getTurnTexToDisplay();
 	}
 
 	/**
-	 * Size of last step 
+	 * Size of last step
 	 */
 	@JsonIgnore
 	public int getLastStep() {
 		return 1;
+	}
+
+	/**
+	 * It can be useful if I decide to use turns less than year.
+	 */
+	public int getYearsAfter(int pastTurn) {
+		return getTurn() - pastTurn;
 	}
 
 }

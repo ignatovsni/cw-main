@@ -74,6 +74,14 @@ public class DWorldMap {
 		return textures;
 	}
 
+	Province getSelectedProvince() {
+		if (gameScene != null) {
+			return gameScene.getSelectedProvince();
+		} else {
+			return null;
+		}
+	}
+
 	private String getMessage(String code) {
 		return gameScene.getMessageSource().getMessage(code);
 	}
@@ -116,6 +124,9 @@ public class DWorldMap {
 
 	public void selectProvince(Integer provId) {
 		selectProvince(provincesById.get(provId));
+		if (MapMode.DIPLOMACY == mapMode) {
+			setMapModeAndRedraw(mapMode);
+		}
 	}
 
 	private void selectProvince(DProvince dProvince) {

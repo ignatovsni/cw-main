@@ -18,6 +18,8 @@ public interface IPGame {
 
 	double findDistance(Integer fromId, Integer toId);
 
+	double findDistanceApproximateCountOfProvinces(IPProvince from, IPProvince to);
+
 	List<Object> findShortestPath(int fromId, int toId, IPArmy a);
 
 	AIData4Country getAIData();
@@ -25,5 +27,8 @@ public interface IPGame {
 	IPRelationshipsCollection getRelationships();
 
 	IPCountry findCountryById(Integer countryId);
+
+	IPTurn getTurn();
+
 
 }
