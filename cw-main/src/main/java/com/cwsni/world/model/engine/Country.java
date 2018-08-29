@@ -266,7 +266,7 @@ public class Country {
 			return null;
 		}
 		Army a = Army.createArmy(this);
-		p.hirePeopleForArmy(a, soldiers);
+		p.recruitPeopleForArmy(a, soldiers);
 		if (a.getSoldiers() > 0) {
 			budget.spendMoneyForArmy(a.getSoldiers() * baseHiringCostPerSoldier);
 			registerArmy(a);
@@ -424,6 +424,10 @@ public class Country {
 			refreshPopulation();
 		}
 		return population;
+	}
+
+	public long getAvailablePeopleForRecruiting() {
+		return getProvinces().stream().mapToLong(p -> p.getAvailablePeopleForRecruiting()).sum();
 	}
 
 	public long getArmiesSoldiers() {

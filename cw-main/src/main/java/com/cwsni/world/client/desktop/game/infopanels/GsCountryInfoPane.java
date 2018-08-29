@@ -23,6 +23,7 @@ public class GsCountryInfoPane extends InternalInfoPane {
 	private RowValue valuesNameLabel;
 	private RowValue valuesProvincesLabel;
 	private RowValue valuesPopulationLabel;
+	private RowValue valuesRecruitsLabel;
 	private RowValue valuesMoneyLabel;
 	private RowValue valuesFocusLabel;
 	private RowValue valuesArmiesSoldiersLabel;
@@ -41,6 +42,7 @@ public class GsCountryInfoPane extends InternalInfoPane {
 		valuesNameLabel = addRow("info.pane.country.name", grid, idx++);
 		valuesProvincesLabel = addRow("info.pane.country.provinces", grid, idx++);
 		valuesPopulationLabel = addRow("info.pane.country.population", grid, idx++);
+		valuesRecruitsLabel = addRow("info.pane.country.recruits", grid, idx++);
 		valuesMoneyLabel = addRow("info.pane.country.money", grid, idx++);
 		valuesFocusLabel = addRow("info.pane.country.focus", grid, idx++);
 		valuesArmiesSoldiersLabel = addRow("info.pane.country.armies-soldiers", grid, idx++);
@@ -54,6 +56,7 @@ public class GsCountryInfoPane extends InternalInfoPane {
 		setLabelText(valuesNameLabel, country.getName());
 		setLabelText(valuesProvincesLabel, DataFormatter.toLong(country.getProvinces().size()));
 		setLabelTextWithLongFormatterAndValueTooltip(valuesPopulationLabel, country.getPopulation());
+		setLabelTextWithLongFormatterAndValueTooltip(valuesRecruitsLabel, country.getAvailablePeopleForRecruiting());
 		setLabelText(valuesMoneyLabel, DataFormatter.toLong((long) country.getMoney()) + " / "
 				+ DataFormatter.toLong((long) country.getIncome()));
 		setLabelText(valuesFocusLabel, DataFormatter.toLong((long) (country.getFocus().getValue() * 100)));

@@ -10,4 +10,10 @@ public interface IPState {
 
 	int getId();
 
+	long getPopulationAmount();
+
+	double getLoayltyToCountry(int countryId);
+
+	double getLoayltyToState();
+
 }

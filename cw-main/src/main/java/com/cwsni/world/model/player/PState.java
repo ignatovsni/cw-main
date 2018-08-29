@@ -53,5 +53,20 @@ public class PState implements IPState {
 	public Collection<IPProvince> getProvinces() {
 		return provinces;
 	}
+	
+	@Override
+	public long getPopulationAmount() {
+		return state.getPopulationAmount();
+	}
+	
+	@Override
+	public double getLoayltyToState() {
+		return state.getLoayltyToState();
+	}
+	
+	@Override
+	public double getLoayltyToCountry(int countryId) {
+		return state.getLoayltyToCountry(countryId);
+	}
 
 }

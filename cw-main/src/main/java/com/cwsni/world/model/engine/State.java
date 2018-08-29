@@ -305,10 +305,24 @@ public class State {
 		return getProvinces().stream().mapToDouble(p -> p.getLoyaltyToState() * p.getPopulationAmount()).sum()
 				/ statePopulation;
 	}
+	
+	/**
+	 * Please, use {@link State#getLoayltyToState(long)}} if it is possible (performance reason).  
+	 */
+	public double getLoayltyToState() {
+		return getLoayltyToState(getPopulationAmount());
+	}
 
 	private double getLoayltyToCountry(int countryId, long statePopulation) {
 		return getProvinces().stream().mapToDouble(p -> p.getLoyaltyToCountry(countryId) * p.getPopulationAmount())
 				.sum() / statePopulation;
+	}
+	
+	/**
+	 * Please, use {@link State#getLoayltyToCountry(int, long)}} if it is possible (performance reason).  
+	 */
+	public double getLoayltyToCountry(int countryId) {
+		return getLoayltyToCountry(countryId, getPopulationAmount());
 	}
 
 	public long getPopulationAmount() {

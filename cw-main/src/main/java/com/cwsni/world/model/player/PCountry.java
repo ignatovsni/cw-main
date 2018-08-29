@@ -141,6 +141,10 @@ public class PCountry implements IPCountry {
 
 	@Override
 	public IPArmy createArmy(int provinceId, int soldiers) {
+		if (game.findProvById(provinceId).getAvailablePeopleForRecruiting() < game.getGameParams()
+				.getArmyMinAllowedSoldiers()) {
+			return null;
+		}
 		return (IPArmy) game.addCommand(new CommandArmyCreate(getNewArmyId(), provinceId, soldiers));
 	}
 
@@ -172,18 +176,16 @@ public class PCountry implements IPCountry {
 	public double getArmySoldiersToPopulationForSubjugation() {
 		return country.getArmySoldiersToPopulationForSubjugation();
 	}
-	
 
 	@Override
 	public long getPopulation() {
 		return country.getPopulation();
 	}
-	
+
 	@Override
 	public double getFocusLevel() {
 		return country.getFocus().getValue();
 	}
-
 
 	// --------------- client model change ----------------------
 	/**
@@ -198,7 +200,7 @@ public class PCountry implements IPCountry {
 	}
 
 	public PArmy cmcCreateArmy(int armyId, IPProvince destination, int soldiers) {
-		soldiers = Math.min(soldiers, destination.getPopulationAmount());
+		soldiers = Math.min(soldiers, destination.getAvailablePeopleForRecruiting());
 		PArmy newArmy = new PArmy(game, armyId, destination.getId(), soldiers);
 		addArmy(newArmy);
 		((PProvince) destination).cmcAddPopulation(-soldiers);
@@ -211,6 +213,5 @@ public class PCountry implements IPCountry {
 		army.cmcAddSoldiers(-soldiers);
 		return newArmy;
 	}
-
 
 }

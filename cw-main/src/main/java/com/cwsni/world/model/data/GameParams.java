@@ -38,6 +38,9 @@ public class GameParams {
 	private double populationMaxInCapital = 1.3;
 	private double populationMaxInStateCapital = 1.1;
 	private int populationLimitWithoutGovernment = 10000;
+	private int populationLimitInProvince = 10000000;
+	private double populationRecruitPercentBaseMax = 0.1;
+	private double populationRecruitPercentBaseRestore = 0.01;
 
 	private double populationLoyaltyDecreasingCoeffDefault = 0.99;
 	private double populationLoyaltyDecreasingEpidemic = -0.002;
@@ -785,6 +788,30 @@ public class GameParams {
 
 	public void setTruceDurationInYears(int truceDurationInYears) {
 		this.truceDurationInYears = truceDurationInYears;
+	}
+
+	public int getPopulationLimitInProvince() {
+		return populationLimitInProvince;
+	}
+
+	public void setPopulationLimitInProvince(int populationLimitInProvince) {
+		this.populationLimitInProvince = populationLimitInProvince;
+	}
+
+	public double getPopulationRecruitPercentBaseMax() {
+		return populationRecruitPercentBaseMax;
+	}
+
+	public void setPopulationRecruitPercentBaseMax(double populationRecruitPercentBaseMax) {
+		this.populationRecruitPercentBaseMax = populationRecruitPercentBaseMax;
+	}
+
+	public double getPopulationRecruitPercentBaseRestore() {
+		return populationRecruitPercentBaseRestore;
+	}
+
+	public void setPopulationRecruitPercentBaseRestore(double populationRecruitPercentBaseRestore) {
+		this.populationRecruitPercentBaseRestore = populationRecruitPercentBaseRestore;
 	}
 
 }

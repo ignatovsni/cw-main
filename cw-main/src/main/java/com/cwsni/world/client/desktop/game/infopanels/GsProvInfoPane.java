@@ -24,6 +24,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 	private RowValue valuesSizeLabel;
 	private RowValue valuesTerrainTypeLabel;
 	private RowValue valuesPopsLabel;
+	private RowValue valuesRecruitsLabel;
 	private RowValue valuesWealthLabel;
 	private RowValue valuesGovInfluenceLabel;
 	private RowValue valuesCountryLoyalty;
@@ -47,6 +48,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 		valuesTerrainTypeLabel = addRow("info.pane.prov.terrain-type", grid, idx++);
 		valuesSizeLabel = addRow("info.pane.prov.size", grid, idx++);
 		valuesPopsLabel = addRow("info.pane.prov.population", grid, idx++);
+		valuesRecruitsLabel = addRow("info.pane.prov.recruits", grid, idx++);
 		valuesWealthLabel = addRow("info.pane.prov.wealth", grid, idx++);
 		valuesGovInfluenceLabel = addRow("info.pane.prov.government-influence", grid, idx++);
 		valuesCountryLoyalty = addRow("info.pane.prov.country.loyalty", grid, idx++);
@@ -66,6 +68,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 		case GRASSLAND:
 			setLabelText(valuesSizeLabel, DataFormatter.toLong(prov.getSize()));
 			setLabelTextWithLongFormatterAndValueTooltip(valuesPopsLabel, prov.getPopulationAmount());
+			setLabelTextWithLongFormatterAndValueTooltip(valuesRecruitsLabel, prov.getAvailablePeopleForRecruiting());
 			setLabelText(valuesWealthLabel, createTextForWealth(prov));
 			setLabelText(valuesGovInfluenceLabel,
 					String.valueOf(Math.round(prov.getGovernmentInfluence() * 100)) + "%");

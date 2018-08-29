@@ -29,25 +29,32 @@ public class Population {
 
 	private static final Log logger = LogFactory.getLog(Population.class);
 
+	private Game game;
 	private DataPopulation data;
 	private Province province;
 	private ScienceCollection science;
 	private Culture culture;
 
-	public Population() {
+	public Population(Game game) {
+		this.game = game;
 		data = new DataPopulation();
 		science = new ScienceCollection(data.getScience());
 		culture = new Culture(data.getCulture());
+	}
+
+	protected Game getGame() {
+		return game;
 	}
 
 	public int getAmount() {
 		return data.getAmount();
 	}
 
-	void setAmount(int amount) {
+	protected void setAmount(int amount) {
+		amount = Math.min(amount, getGame().getGameParams().getPopulationLimitInProvince());
 		data.setAmount(amount);
 		if (province != null) {
-			double maxWealth = amount * province.getMap().getGame().getGameParams().getBudgetMaxWealthPerPerson();
+			double maxWealth = amount * getGame().getGameParams().getBudgetMaxWealthPerPerson();
 			if (data.getWealth() > maxWealth) {
 				data.setWealth(maxWealth);
 			}
@@ -71,12 +78,45 @@ public class Population {
 		culture.buildFrom(dpop.getCulture());
 	}
 
-	Population createNewPopFromThis(int migrantsCount) {
+	protected Population recruitPopForArmy(int soldiers) {
+		int maxRecruits = getAvailablePeopleForRecruiting();
+		if (maxRecruits <= 0) {
+			return null;
+		}
+		if (maxRecruits < 1.1 * getGame().getGameParams().getArmyMinAllowedSoldiers()) {
+			return null;
+		}
+		soldiers = Math.min(soldiers, maxRecruits);
+		// It is not very accurate, because we calculate percent for current population
+		// instead of full (current + already recruited), but it is OK for now.
+		double deltaPercent = 1.0 * soldiers / getAmount();
+		double newRecruitedPercent = getRecruitedPercent() + deltaPercent;
+		Population newPop = createNewPopFromThis(soldiers);
+		newPop.setRecruitedPercent(0);
+		setRecruitedPercent(newRecruitedPercent);
+		addLoyaltyToCountry(province.getCountryId(), -deltaPercent);
+		if (province.getState() != null) {
+			addLoyaltyToState(province.getStateId(), -deltaPercent / 4);
+		}
+		return newPop;
+	}
+
+	public int getAvailablePeopleForRecruiting() {
+		return (int) Math.max(0, 1.0 * getAmount()
+				* (getGame().getGameParams().getPopulationRecruitPercentBaseMax() - getRecruitedPercent()));
+	}
+
+	/**
+	 * Main purpose: migration. Army should invoke
+	 * {@link Population#recruitPopForArmy(int)}} instead of this method
+	 */
+	protected Population createNewPopFromThis(int migrantsCount) {
 		migrantsCount = Math.min(migrantsCount, data.getAmount());
-		Population newPop = new Population();
+		Population newPop = new Population(getGame());
 		newPop.setWealth(getWealth() * migrantsCount / getAmount());
 		addWealth(-newPop.getWealth());
 		newPop.setAmount(migrantsCount);
+		newPop.setRecruitedPercent(getRecruitedPercent());
 		setAmount(getAmount() - migrantsCount);
 		newPop.getScience().cloneFrom(getScience());
 		newPop.getCulture().cloneFrom(getCulture());
@@ -90,10 +130,11 @@ public class Population {
 		return newPop;
 	}
 
-	void addPop(Population pop) {
+	protected void addPop(Population pop) {
 		double ownFraction = (double) getAmount() / (getAmount() + pop.getAmount());
 		setAmount(getAmount() + pop.getAmount());
 		setWealth(getWealth() + pop.getWealth());
+		setRecruitedPercent(getRecruitedPercent() * ownFraction + pop.getRecruitedPercent() * (1 - ownFraction));
 		getScience().mergeFrom(pop.getScience(), ownFraction);
 		getCulture().mergeFrom(pop.getCulture(), ownFraction);
 		if (ownFraction < 0.95) {
@@ -153,27 +194,35 @@ public class Population {
 		return EventEpidemic.getDiseaseResistance(getScience().getMedicine().getAmount());
 	}
 
-	DataPopulation getPopulationData() {
+	protected DataPopulation getPopulationData() {
 		return data;
+	}
+
+	private void setRecruitedPercent(double recruitedPercent) {
+		data.setRecruitedPercent(recruitedPercent);
+	}
+
+	public double getRecruitedPercent() {
+		return data.getRecruitedPercent();
 	}
 
 	public void setProvince(Province province) {
 		this.province = province;
 	}
 
-	double getWealth() {
+	protected double getWealth() {
 		return data.getWealth();
 	}
 
-	double getWealthLevel() {
-		return getWealth() / getAmount() / province.getMap().getGame().getGameParams().getBudgetMaxWealthPerPerson();
+	protected double getWealthLevel() {
+		return getWealth() / getAmount() / getGame().getGameParams().getBudgetMaxWealthPerPerson();
 	}
 
 	private void setWealth(double wealth) {
 		data.setWealth(wealth);
 	}
 
-	void addWealth(double delta) {
+	protected void addWealth(double delta) {
 		data.setWealth(Math.max(0, data.getWealth() + delta));
 	}
 
@@ -235,7 +284,7 @@ public class Population {
 		}
 	}
 
-	public Map<Integer, Double> getLoyaltyToCountries() {		
+	public Map<Integer, Double> getLoyaltyToCountries() {
 		return Collections.unmodifiableMap(data.getLoyaltyToCountries());
 	}
 
@@ -329,6 +378,9 @@ public class Population {
 			// overpopulation
 			dieFromOverpopulation(game, prov, 1 - 1 / currentPopFromMax);
 		}
+		// recruits pool growths
+		prov.getPopulation().forEach(p -> p.setRecruitedPercent(
+				p.getRecruitedPercent() - game.getGameParams().getPopulationRecruitPercentBaseRestore()));
 	}
 
 	public static void processEventsNewTurn(Province prov, Game game) {

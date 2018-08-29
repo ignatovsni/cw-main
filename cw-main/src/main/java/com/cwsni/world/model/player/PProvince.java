@@ -116,6 +116,21 @@ public class PProvince implements IPProvince {
 		}
 	}
 
+	@Override
+	public int getAvailablePeopleForRecruiting() {
+		return province.getAvailablePeopleForRecruiting();
+	}
+	
+	@Override
+	public double getLoyaltyToCountry() {
+		return province.getLoyaltyToCountry();
+	}
+	
+	@Override
+	public double getLoyaltyToState() {
+		return province.getLoyaltyToState();
+	}
+	
 	// --------------------- client model changes ---------------------
 	public void cmcAddPopulation(int delta) {
 		populationAmount += delta;

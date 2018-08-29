@@ -10,6 +10,7 @@ public class DataPopulation {
 	public static Double LOYALTY_MAX = 1.0;
 
 	private int amount;
+	private double recruitedPercent;
 	private DataScienceCollection science = new DataScienceCollection();
 	private DataCulture culture = new DataCulture();
 	private double wealth;
@@ -75,6 +76,15 @@ public class DataPopulation {
 
 	public void setLifeInCountries(Map<Integer, Integer> lifeInCountries) {
 		this.lifeInCountries = lifeInCountries;
+	}
+
+	public double getRecruitedPercent() {
+		return recruitedPercent;
+	}
+
+	public void setRecruitedPercent(double recruitedPercent) {
+		recruitedPercent = Math.min(1, Math.max(0, recruitedPercent));
+		this.recruitedPercent = DataFormatter.doubleWith4points(recruitedPercent);
 	}
 
 }

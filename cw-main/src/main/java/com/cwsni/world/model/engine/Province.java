@@ -199,6 +199,11 @@ public class Province implements EventTarget {
 	public int getPopulationAmount() {
 		return getPopulation().stream().mapToInt(p -> p.getAmount()).sum();
 	}
+	
+
+	public int getAvailablePeopleForRecruiting() {
+		return getPopulation().stream().mapToInt(p -> p.getAvailablePeopleForRecruiting()).sum();
+	}
 
 	public int getSoilQuality() {
 		return (int) (getSoilArea() * getSoilFertility());
@@ -252,7 +257,7 @@ public class Province implements EventTarget {
 		population = new ArrayList<>();
 		immigrants = new ArrayList<>();
 		data.getPopulation().forEach(dpop -> {
-			Population pop = new Population();
+			Population pop = new Population(worldMap.getGame());
 			pop.buildFrom(this, dpop);
 			population.add(pop);
 		});
@@ -633,7 +638,7 @@ public class Province implements EventTarget {
 		ScienceCollection.spendMoneyForScience(map.getGame(), this, money);
 	}
 
-	public void hirePeopleForArmy(Army a, int soldiers) {
+	public void recruitPeopleForArmy(Army a, int soldiers) {
 		int populationAmount = getPopulationAmount();
 		if (populationAmount == 0) {
 			return;
@@ -642,11 +647,9 @@ public class Province implements EventTarget {
 		List<Population> pops = new ArrayList<>(getPopulation());
 		for (Population pop : pops) {
 			int soldiersFromPop = (int) (pop.getAmount() * fraction);
-			if (fraction >= 1 || soldiersFromPop == pop.getAmount()) {
-				a.addPopulation(pop);
-				removePopulation(pop);
-			} else {
-				a.addPopulation(pop.createNewPopFromThis(soldiersFromPop));
+			Population recruit = pop.recruitPopForArmy(soldiersFromPop);
+			if (recruit != null) {
+				a.addPopulation(recruit);
 			}
 		}
 	}
@@ -679,7 +682,7 @@ public class Province implements EventTarget {
 		return getLoyaltyToCountry(getCountryId());
 	}
 
-	double getLoyaltyToCountry(Integer countryId) {
+	public double getLoyaltyToCountry(Integer countryId) {
 		if (countryId == null) {
 			return 0;
 		}
@@ -766,5 +769,6 @@ public class Province implements EventTarget {
 		}
 		return hasWaterNeighbor;
 	}
+
 
 }

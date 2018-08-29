@@ -95,7 +95,7 @@ public class Army {
 	public void buildFrom(Country country, DataArmy da) {
 		this.country = country;
 		this.data = da;
-		this.population = new Population();
+		this.population = new Population(country.getGame());
 		population.buildFrom(getLocation(), da.getPopulation());
 	}
 
@@ -265,7 +265,7 @@ public class Army {
 	void mergeFrom(Army armyFrom, int soldiers) {
 		if (soldiers >= armyFrom.getSoldiers()) {
 			addPopulation(armyFrom.population);
-			armyFrom.population = new Population();
+			armyFrom.population = new Population(getCountry().getGame());
 		} else {
 			addPopulation(armyFrom.population.createNewPopFromThis(soldiers));
 		}

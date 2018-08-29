@@ -19,6 +19,8 @@ public interface IPProvince {
 	TerrainType getTerrainType();
 
 	int getPopulationAmount();
+	
+	int getAvailablePeopleForRecruiting();
 
 	double getSoilFertility();
 
@@ -29,5 +31,9 @@ public interface IPProvince {
 	double getSoilFertilityWithPopFromArmy(IPArmy army);
 
 	public boolean isPassable(IPArmy a);
+
+	double getLoyaltyToState();
+
+	double getLoyaltyToCountry();
 
 }
