@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -18,6 +19,7 @@ import com.cwsni.world.game.commands.Command;
 import com.cwsni.world.game.commands.CommandArmyCreate;
 import com.cwsni.world.game.commands.CommandArmyMove;
 import com.cwsni.world.game.commands.CommandArmySplit;
+import com.cwsni.world.game.commands.CommandDiplomacy;
 import com.cwsni.world.game.commands.CommandErrorHandler;
 import com.cwsni.world.model.engine.Army;
 import com.cwsni.world.model.engine.ComparisonTool;
@@ -62,7 +64,9 @@ public class GameHandler {
 		CommandErrorHandler errorHandler = new CommandErrorHandler();
 		try {
 			preProcessCommands(game, pGames, errorHandler);
-			processNewArmyCommands(game, pGames);
+			processCommandsWithFilter(game, pGames,
+					c -> (c instanceof CommandArmyCreate) || (c instanceof CommandArmySplit));
+			processCommandsWithFilter(game, pGames, c -> (c instanceof CommandDiplomacy));
 			checkArmyMovementCollisions(game, pGames, errorHandler);
 			processCommands(game, pGames);
 		} finally {
@@ -88,13 +92,12 @@ public class GameHandler {
 		});
 	}
 
-	private void processNewArmyCommands(Game game, List<PGame> pGames) {
+	private void processCommandsWithFilter(Game game, List<PGame> pGames, Function<Command, Boolean> checkCommand) {
 		pGames.forEach(pg -> {
-			List<Command> createArmyCommands = pg.getCommands().stream()
-					.filter(c -> (c instanceof CommandArmyCreate) || (c instanceof CommandArmySplit))
+			List<Command> commands = pg.getCommands().stream().filter(c -> checkCommand.apply(c))
 					.collect(Collectors.toList());
-			createArmyCommands.forEach(c -> c.apply());
-			pg.removeCommands(createArmyCommands);
+			commands.forEach(c -> c.apply());
+			pg.removeCommands(commands);
 		});
 	}
 

@@ -22,9 +22,10 @@ import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPGameParams;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPProvince;
+import com.cwsni.world.model.player.interfaces.IPRTruce;
+import com.cwsni.world.model.player.interfaces.IPRWar;
 import com.cwsni.world.model.player.interfaces.IPRandom;
 import com.cwsni.world.model.player.interfaces.IPScienceBudget;
-import com.cwsni.world.model.player.relationships.PRWar;
 import com.cwsni.world.util.Heap;
 
 @Component
@@ -50,7 +51,9 @@ public class JavaAIHandler implements IAIHandler {
 		double thisCountryStrength = countriesCurrentWarStrength.get(data.getCountry().getId());
 		IPGame game = data.getGame();
 		IPRandom rnd = game.getGameParams().getRandom();
-		Map<Integer, PRWar> countriesWithWar = game.getRelationships().getCountriesWithWar(data.getCountry().getId());
+		Map<Integer, IPRWar> countriesWithWar = game.getRelationships().getCountriesWithWar(data.getCountry().getId());
+		Map<Integer, IPRTruce> countriesWithTruce = game.getRelationships()
+				.getCountriesWithTruce(data.getCountry().getId());
 
 		// check war
 		if (thisCountryStrength >= thisCountryPureWarStrength * 0.7
@@ -64,7 +67,8 @@ public class JavaAIHandler implements IAIHandler {
 					continue;
 				}
 				Double enemyStrength = e.getValue();
-				if (enemyStrength < weakestEnemyStrength && !countriesWithWar.containsKey(enemyCountryId)) {
+				if (enemyStrength < weakestEnemyStrength && !countriesWithWar.containsKey(enemyCountryId)
+						&& !countriesWithTruce.containsKey(enemyCountryId)) {
 					weakestEnemyStrength = enemyStrength;
 					weakestEnemyCountryId = enemyCountryId;
 				}
@@ -75,8 +79,8 @@ public class JavaAIHandler implements IAIHandler {
 		}
 
 		// check peace
-		for (Entry<Integer, PRWar> warWithId : countriesWithWar.entrySet()) {
-			PRWar war = warWithId.getValue();
+		for (Entry<Integer, IPRWar> warWithId : countriesWithWar.entrySet()) {
+			IPRWar war = warWithId.getValue();
 			if (game.getTurn().getYearsAfter(war.getStartTurn()) > 50) {
 				game.getRelationships().makePeace(war);
 			}
@@ -85,11 +89,11 @@ public class JavaAIHandler implements IAIHandler {
 				|| (countriesWithWar.size() == 2 && rnd.nextDouble() < 0.3)
 				|| (countriesWithWar.size() == 1 && rnd.nextDouble() < 0.1)
 				|| (thisCountryStrength < thisCountryPureWarStrength * 0.5 && rnd.nextDouble() < 0.8)) {
-			PRWar strongerEnemyWar = null;
+			IPRWar strongerEnemyWar = null;
 			double strongerEnemyStrength = Double.MIN_VALUE;
-			for (Entry<Integer, PRWar> warWithId : countriesWithWar.entrySet()) {
+			for (Entry<Integer, IPRWar> warWithId : countriesWithWar.entrySet()) {
 				Integer enemyCountryId = warWithId.getKey();
-				PRWar war = warWithId.getValue();
+				IPRWar war = warWithId.getValue();
 				Double enemyStrength = countriesCurrentWarStrength.get(enemyCountryId);
 				if (enemyStrength > strongerEnemyStrength) {
 					strongerEnemyStrength = enemyStrength;

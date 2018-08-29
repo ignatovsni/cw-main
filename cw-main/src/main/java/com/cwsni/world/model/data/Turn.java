@@ -72,8 +72,12 @@ public class Turn {
 	/**
 	 * It can be useful if I decide to use turns less than year.
 	 */
-	public int getYearsAfter(int pastTurn) {
+	public int howManyYearsHavePassedSinceTurn(int pastTurn) {
 		return getTurn() - pastTurn;
+	}
+
+	public int calculateFutureTurnAfterYears(int years) {
+		return getTurn() + years;
 	}
 
 }

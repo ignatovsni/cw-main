@@ -96,6 +96,8 @@ public class GameParams {
 	private double budgetBaseHiringCostPerSoldier = 100;
 
 	private int stateCreateWithMinProvinces = 4;
+	
+	private int truceDurationInYears = 20;
 
 	private double eventGlobalClimateChangeProbability = 0.01;
 	private double eventGlobalClimateChangeContinueProbability = 0.8;
@@ -775,6 +777,14 @@ public class GameParams {
 
 	public void setFocusMinStep(double focusMinStep) {
 		this.focusMinStep = focusMinStep;
+	}
+
+	public int getTruceDurationInYears() {
+		return truceDurationInYears;
+	}
+
+	public void setTruceDurationInYears(int truceDurationInYears) {
+		this.truceDurationInYears = truceDurationInYears;
 	}
 
 }

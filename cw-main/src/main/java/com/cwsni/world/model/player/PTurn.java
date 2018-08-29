@@ -18,7 +18,7 @@ public class PTurn implements IPTurn {
 	
 	@Override
 	public int getYearsAfter(int turn) {
-		return this.turn.getYearsAfter(turn);
+		return this.turn.howManyYearsHavePassedSinceTurn(turn);
 	}
 
 }
