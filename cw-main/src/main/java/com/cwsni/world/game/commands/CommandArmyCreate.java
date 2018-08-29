@@ -6,7 +6,7 @@ import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.player.PCountry;
-import com.cwsni.world.model.player.PGame;
+import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 
 public class CommandArmyCreate extends CommandArmy {
@@ -58,7 +58,7 @@ public class CommandArmyCreate extends CommandArmy {
 			addError("armyId for new army must be < 0");
 			return null;
 		}
-		PGame game = country.getGame();
+		IPGame game = country.getGame();
 		IPProvince destination = game.findProvById(destinationProvId);
 		if (destination == null) {
 			addError("destination province not found. id = " + destinationProvId);

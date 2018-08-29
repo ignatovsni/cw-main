@@ -14,6 +14,7 @@ import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
+import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 import com.cwsni.world.model.player.interfaces.IPScienceBudget;
@@ -50,7 +51,7 @@ public class PCountry implements IPCountry {
 		armies.add(army);
 	}
 
-	public PGame getGame() {
+	public IPGame getGame() {
 		return game;
 	}
 
@@ -171,7 +172,20 @@ public class PCountry implements IPCountry {
 	public double getArmySoldiersToPopulationForSubjugation() {
 		return country.getArmySoldiersToPopulationForSubjugation();
 	}
+	
 
+	@Override
+	public long getPopulation() {
+		return country.getPopulation();
+	}
+	
+	@Override
+	public double getFocusLevel() {
+		return country.getFocus().getValue();
+	}
+
+
+	// --------------- client model change ----------------------
 	/**
 	 * 'cmc' prefix means Client Model Changes
 	 */
@@ -197,5 +211,6 @@ public class PCountry implements IPCountry {
 		army.cmcAddSoldiers(-soldiers);
 		return newArmy;
 	}
+
 
 }

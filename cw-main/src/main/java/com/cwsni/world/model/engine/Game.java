@@ -68,6 +68,10 @@ public class Game implements EventTarget {
 		return gameTransientStats;
 	}
 
+	public RelationshipsCollection getRelationships() {
+		return relationships;
+	}
+
 	public GameParams getGameParams() {
 		return data.getGameParams();
 	}
@@ -128,6 +132,7 @@ public class Game implements EventTarget {
 	public void unregisterCountry(Country c) {
 		data.getCountries().remove(c.getCountryData());
 		countries.removeCountry(c);
+		relationships.unregisterCountry(c);
 	}
 
 	public Country findCountryById(Integer countryId) {
@@ -178,6 +183,7 @@ public class Game implements EventTarget {
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
 		countries.getCountries().forEach(c -> c.processNewTurn());
 		processStates();
+		relationships.processNewTurn();
 		history.processNewTurn();
 		calcGameStats();
 	}
@@ -282,13 +288,13 @@ public class Game implements EventTarget {
 
 		armies = new HashMap<>();
 		newArmiesWithIdLessThanZero = new HashMap<>();
-		
+
 		events = new EventCollection();
 		events.buildFrom(this, data.getEvents());
 
 		map = new WorldMap();
 		map.buildFrom(this, data.getMap());
-		
+
 		relationships = new RelationshipsCollection();
 		relationships.buildFrom(this, data.getRelationships());
 

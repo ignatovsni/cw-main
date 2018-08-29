@@ -7,11 +7,13 @@ public class AIData4Country {
 	private IPGame game;
 	private IPCountry country;
 	private JavaAIHandler javaAIHandler;
+	private boolean isInWar;
 
-	public void initNewTurn(IPGame game, IPCountry country, JavaAIHandler javaAIHandler) {
+	void initNewTurn(IPGame game, IPCountry country, JavaAIHandler javaAIHandler) {
 		this.game = game;
 		this.country = country;
 		this.javaAIHandler = javaAIHandler;
+		this.isInWar = !game.getRelationships().getCountriesWithWar(country.getId()).isEmpty();
 	}
 
 	public IPGame getGame() {
@@ -24,6 +26,10 @@ public class AIData4Country {
 
 	public JavaAIHandler getJavaAIHandler() {
 		return javaAIHandler;
+	}
+
+	public boolean isInWar() {
+		return isInWar;
 	}
 
 }

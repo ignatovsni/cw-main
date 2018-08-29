@@ -21,13 +21,16 @@ import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPGameParams;
 import com.cwsni.world.model.player.interfaces.IPProvince;
+import com.cwsni.world.model.player.interfaces.IPRelationshipsCollection;
 import com.cwsni.world.model.player.interfaces.IPState;
+import com.cwsni.world.model.player.relationships.PRelationshipsCollection;
 
 public class PGame implements IPGame {
 	private static final Log logger = LogFactory.getLog(PGame.class);
 
 	private Game game;
 	private IPGameParams params;
+	private IPRelationshipsCollection relationships;
 	private Country country;
 	private Map<Integer, PCountry> countries;
 	private Map<Integer, PState> states;
@@ -45,6 +48,7 @@ public class PGame implements IPGame {
 		this.game = country.getGame();
 		this.country = country;
 		this.params = new PGameParams(game.getGameParams());
+		relationships = new PRelationshipsCollection(this, game.getRelationships());
 		provinces = new HashMap<>();
 		countries = new HashMap<>(game.getCountries().size());
 		states = new HashMap<>(game.getStates().size());
@@ -56,6 +60,11 @@ public class PGame implements IPGame {
 				logger.warn(e);
 			}
 		};
+	}
+
+	@Override
+	public IPRelationshipsCollection getRelationships() {
+		return relationships;
 	}
 
 	@Override
@@ -132,6 +141,11 @@ public class PGame implements IPGame {
 			aiData = new AIData4Country();
 		}
 		return aiData;
+	}
+
+	@Override
+	public IPCountry findCountryById(Integer countryId) {
+		return getCountry(game.findCountryById(countryId));
 	}
 
 	public List<Command> getCommands() {

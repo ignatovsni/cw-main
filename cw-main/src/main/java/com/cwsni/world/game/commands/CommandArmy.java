@@ -20,8 +20,7 @@ abstract public class CommandArmy extends Command {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName());
-		sb.append(".");
+		sb.append(super.toString());
 		sb.append(" armyId:");
 		sb.append(armyId);
 		return sb.toString();

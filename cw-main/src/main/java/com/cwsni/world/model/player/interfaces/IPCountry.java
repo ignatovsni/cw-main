@@ -39,4 +39,8 @@ public interface IPCountry {
 
 	void setCapital(IPProvince candidate);
 
+	long getPopulation();
+
+	double getFocusLevel();
+
 }

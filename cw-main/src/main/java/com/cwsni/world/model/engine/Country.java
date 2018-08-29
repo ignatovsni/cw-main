@@ -31,19 +31,23 @@ public class Country {
 	private MoneyBudget budget;
 	private ScienceBudget scienceBudget;
 	private CountryFocus focus;
-	private int waterMaxDistance;
 
+	// ------------- cache -----------------
+	private long population;
+	private int waterMaxDistance;
 	private boolean isNeedRefreshReachableLandBorderAlienProvs = true;
 	private boolean isNeedRefreshReachableProvincesThroughWater = true;
 	private Set<Province> coastProvinces;
 	private Set<Province> reachableWaterProvinces;
+	// ------------- end of cache -----------------
+
 	// -------------- player section -----------
 	// Probably some of below variables should be in PCountry. But PGame (and all
 	// PCountry) is creating for each country, so they can require many
 	// recalculations.
 	private Set<Province> reachableLandBorderAlienProvs;
 	private Set<Province> reachableLandProvincesThroughWater;
-	//-------------- end of player section -----------
+	// -------------- end of player section -----------
 
 	public void buildFrom(Game game, DataCountry dc) {
 		this.game = game;
@@ -76,6 +80,7 @@ public class Country {
 		// budget must be initialized last to calculate actual numbers
 		budget.buildFrom(this, dc.getBudget());
 		scienceBudget.buildFrom(this, dc.getScienceBudget());
+		refreshPopulation();
 		refreshWaterMaxDistance();
 		refreshLandReachableBorderAlienProvs();
 		refreshListOfReachableProvincesThroughWater();
@@ -302,6 +307,7 @@ public class Country {
 			refreshListOfReachableProvincesThroughWater();
 			isNeedRefreshReachableProvincesThroughWater = false;
 		}
+		refreshPopulation();
 	}
 
 	private void refreshLandReachableBorderAlienProvs() {
@@ -407,6 +413,17 @@ public class Country {
 	public double getArmySoldiersToPopulationForSubjugation() {
 		// it can depend on country science development
 		return game.getGameParams().getArmySoldiersToPopulationForSubjugation();
+	}
+
+	private void refreshPopulation() {
+		population = getProvinces().stream().mapToLong(p -> p.getPopulationAmount()).sum();
+	}
+
+	public long getPopulation() {
+		if (population == 0) {
+			refreshPopulation();
+		}
+		return population;
 	}
 
 	// --------------------- static -------------------------------

@@ -82,7 +82,7 @@ public class PMoneyBudget implements IPMoneyBudget {
 		if (cmdMoneyBudget == null) {
 			cmdMoneyBudget = new CommandSetMoneyBudget();
 		}
-		country.getGame().addCommand(cmdMoneyBudget);
+		((PGame) country.getGame()).addCommand(cmdMoneyBudget);
 		return cmdMoneyBudget;
 	}
 

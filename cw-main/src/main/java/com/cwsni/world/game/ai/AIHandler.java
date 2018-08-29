@@ -24,7 +24,7 @@ public class AIHandler {
 	private ScriptAIHandler scriptAIHandler;
 
 	public void processNewTurn(List<PGame> pGames) {
-		for (PGame pg : pGames) {
+		for (IPGame pg : pGames) {
 			try {
 				processCountry(pg, pg.getCountry());
 			} catch (Exception e) {

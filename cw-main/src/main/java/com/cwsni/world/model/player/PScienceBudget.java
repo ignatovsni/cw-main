@@ -57,7 +57,7 @@ public class PScienceBudget implements IPScienceBudget {
 		if (cmdScienceBudget == null) {
 			cmdScienceBudget = new CommandSetScienceBudget();
 		}
-		country.getGame().addCommand(cmdScienceBudget);
+		((PGame)country.getGame()).addCommand(cmdScienceBudget);
 		return cmdScienceBudget;
 	}
 

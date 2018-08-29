@@ -1,6 +1,7 @@
 package com.cwsni.world.game.commands;
 
 import com.cwsni.world.model.engine.Country;
+import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.player.PCountry;
 
 public abstract class Command {
@@ -18,8 +19,12 @@ public abstract class Command {
 		this.country = country;
 	}
 
-	public Integer getCountryId() {
+	public int getCountryId() {
 		return country.getId();
+	}
+
+	public Game getGame() {
+		return country.getGame();
 	}
 
 	public void setErrorHandler(CommandErrorHandler errorHandler) {
@@ -28,6 +33,16 @@ public abstract class Command {
 
 	public void addError(String txt) {
 		errorHandler.addError(this, txt);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append(".");
+		sb.append(" country.id=");
+		sb.append(getCountryId());
+		return sb.toString();
 	}
 
 }

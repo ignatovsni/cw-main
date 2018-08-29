@@ -16,8 +16,7 @@ abstract public class CommandProvince extends Command {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName());
-		sb.append(".");
+		sb.append(super.toString());
 		sb.append(" provinceId:");
 		sb.append(provinceId);
 		return sb.toString();

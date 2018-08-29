@@ -22,4 +22,8 @@ public interface IPGame {
 
 	AIData4Country getAIData();
 
+	IPRelationshipsCollection getRelationships();
+
+	IPCountry findCountryById(Integer countryId);
+
 }

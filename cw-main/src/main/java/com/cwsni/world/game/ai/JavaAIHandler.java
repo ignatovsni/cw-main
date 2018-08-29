@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,6 +23,7 @@ import com.cwsni.world.model.player.interfaces.IPGameParams;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 import com.cwsni.world.model.player.interfaces.IPScienceBudget;
+import com.cwsni.world.model.player.relationships.PRWar;
 import com.cwsni.world.util.Heap;
 
 @Component
@@ -36,7 +39,71 @@ public class JavaAIHandler implements IAIHandler {
 		manageScienceBudget(data);
 		processArmyBudget(data);
 		mergeAndSplitArmies(data);
-		moveArmiesInWar(data);
+		moveArmies(data);
+		checkWars(data);
+	}
+
+	private void checkWars(AIData4Country data) {
+		Map<Integer, Double> countriesCurrentWarStrength = getCurrentWarStrengthForReachableCountries(data);
+		double thisCountryPureWarStrength = getPureWarStrength(data, data.getCountry());
+		double thisCountryStrength = countriesCurrentWarStrength.get(data.getCountry().getId());
+		Random rnd = new Random();
+		// check peace
+		Map<Integer, PRWar> countriesWithWar = data.getGame().getRelationships()
+				.getCountriesWithWar(data.getCountry().getId());
+		for (Entry<Integer, PRWar> warWithId : countriesWithWar.entrySet()) {
+			PRWar war = warWithId.getValue();
+			double enemyStrength = countriesCurrentWarStrength.get(warWithId.getKey());
+			if (thisCountryStrength < 0 && rnd.nextInt(countriesWithWar.size()) == 0) {
+				data.getGame().getRelationships().makePeace(war);
+			} else if (thisCountryStrength < enemyStrength / 2) {
+				data.getGame().getRelationships().makePeace(war);
+			}
+		}
+		if (thisCountryStrength <= thisCountryPureWarStrength / 2) {
+			// we can't allow new wars
+			return;
+		}
+		// check war
+		for (Entry<Integer, Double> e : countriesCurrentWarStrength.entrySet()) {
+			double relativeStrengthOfEnemy = 2 * Math.max(e.getValue(), 0) / thisCountryStrength;
+			if (relativeStrengthOfEnemy < rnd.nextDouble()) {
+				data.getGame().getRelationships().declareWar(e.getKey());
+			}
+		}
+	}
+
+	private Map<Integer, Double> getCurrentWarStrengthForReachableCountries(AIData4Country data) {
+		Map<Integer, Double> pureWarStrength = new HashMap<>();
+		pureWarStrength.put(data.getCountry().getId(), 0.0);
+		data.getGame().getRelationships().getCountriesWithWar(data.getCountry().getId()).keySet()
+				.forEach(cId -> pureWarStrength.put(cId, 0.0));
+		data.getCountry().getReachableLandBorderAlienProvs().stream().filter(p -> p.getCountryId() != null)
+				.forEach(p -> pureWarStrength.put(p.getCountryId(), 0.0));
+		data.getCountry().getReachableLandProvincesThroughWater().stream().filter(p -> p.getCountryId() != null)
+				.forEach(p -> pureWarStrength.put(p.getCountryId(), 0.0));
+		pureWarStrength.entrySet()
+				.forEach(e -> e.setValue(getPureWarStrength(data, data.getGame().findCountryById(e.getKey()))));
+
+		Map<Integer, Double> countriesCurrentWarStrength = new HashMap<>();
+		for (Entry<Integer, Double> e : pureWarStrength.entrySet()) {
+			Integer countryId = e.getKey();
+			Double currentStrength = e.getValue();
+			Set<Integer> warWith = data.getGame().getRelationships().getCountriesWithWar(countryId).keySet();
+			for (Integer cId : warWith) {
+				Double enemyPureStrength = pureWarStrength.get(cId);
+				if (enemyPureStrength == null) {
+					enemyPureStrength = getPureWarStrength(data, data.getGame().findCountryById(cId));
+				}
+				currentStrength -= enemyPureStrength;
+			}
+			countriesCurrentWarStrength.put(countryId, currentStrength);
+		}
+		return countriesCurrentWarStrength;
+	}
+
+	private double getPureWarStrength(AIData4Country data, IPCountry country) {
+		return country.getFocusLevel() * country.getPopulation();
 	}
 
 	public void manageMoneyBudget(AIData4Country data) {
@@ -203,7 +270,7 @@ public class JavaAIHandler implements IAIHandler {
 		}
 	}
 
-	public void moveArmiesInWar(AIData4Country data) {
+	public void moveArmies(AIData4Country data) {
 		Collection<IPArmy> armies = new ArrayList<>(data.getCountry().getArmies());
 		if (armies.isEmpty()) {
 			return;
