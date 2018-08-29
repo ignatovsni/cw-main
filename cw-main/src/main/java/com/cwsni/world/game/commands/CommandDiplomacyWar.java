@@ -1,10 +1,5 @@
 package com.cwsni.world.game.commands;
 
-import java.util.Map;
-
-import com.cwsni.world.model.engine.relationships.RWar;
-import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
-
 public class CommandDiplomacyWar extends CommandDiplomacy {
 
 	public CommandDiplomacyWar(int targetCountryId) {
@@ -16,13 +11,7 @@ public class CommandDiplomacyWar extends CommandDiplomacy {
 		if (!checkTargetCountry()) {
 			return;
 		}
-		RelationshipsCollection relationships = getGame().getRelationships();
-		Map<Integer, RWar> wars = relationships.getCountriesWithWar(getCountryId());
-		if (wars.containsKey(targetCountryId)) {
-			System.out.println("war is already active: " + this);
-			return;
-		}
-		relationships.newWar(getCountryId(), targetCountryId);
+		getGame().getRelationships().newWar(getCountryId(), targetCountryId);
 	}
 
 }

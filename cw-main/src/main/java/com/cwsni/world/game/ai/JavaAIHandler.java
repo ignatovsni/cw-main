@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,6 +22,7 @@ import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPGameParams;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPProvince;
+import com.cwsni.world.model.player.interfaces.IPRandom;
 import com.cwsni.world.model.player.interfaces.IPScienceBudget;
 import com.cwsni.world.model.player.relationships.PRWar;
 import com.cwsni.world.util.Heap;
@@ -48,8 +48,8 @@ public class JavaAIHandler implements IAIHandler {
 		Map<Integer, Double> countriesCurrentWarStrength = getCurrentWarStrengthForCountries(data);
 		double thisCountryPureWarStrength = getPureWarStrength(data, data.getCountry());
 		double thisCountryStrength = countriesCurrentWarStrength.get(data.getCountry().getId());
-		Random rnd = new Random();
 		IPGame game = data.getGame();
+		IPRandom rnd = game.getGameParams().getRandom();
 		Map<Integer, PRWar> countriesWithWar = game.getRelationships().getCountriesWithWar(data.getCountry().getId());
 
 		// check war

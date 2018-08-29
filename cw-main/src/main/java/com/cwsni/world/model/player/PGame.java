@@ -130,7 +130,7 @@ public class PGame implements IPGame {
 	public double findDistance(Integer fromId, Integer toId) {
 		return game.getMap().findDistanceBetweenProvs(fromId, toId);
 	}
-	
+
 	@Override
 	public double findDistanceApproximateCountOfProvinces(IPProvince from, IPProvince to) {
 		return game.getMap().findDistanceApproximateCountOfProvinces(from.getId(), to.getId());

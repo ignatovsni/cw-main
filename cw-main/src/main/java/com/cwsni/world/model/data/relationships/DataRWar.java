@@ -44,7 +44,7 @@ public class DataRWar {
 
 	@Override
 	public int hashCode() {
-		return attackerId + defenderId;
+		return attackerId << 10 + defenderId;
 	}
 
 	@Override
@@ -58,4 +58,16 @@ public class DataRWar {
 		return obj2.getAttackerId() == getAttackerId() && obj2.getDefenderId() == getDefenderId();
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getSimpleName());
+		sb.append(" attackerId:");
+		sb.append(attackerId);
+		sb.append(" defenderId:");
+		sb.append(defenderId);
+		sb.append(" startTurn:");
+		sb.append(startTurn);
+		return sb.toString();
+	}
 }

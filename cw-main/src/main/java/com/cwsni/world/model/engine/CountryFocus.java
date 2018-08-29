@@ -40,7 +40,7 @@ public class CountryFocus {
 	}
 
 	public double getLoyaltyFlatBonus() {
-		return getFlatBonus();
+		return getFlatBonus() / 2;
 	}
 
 	public double getTaxInfluence() {
@@ -53,7 +53,8 @@ public class CountryFocus {
 		double chance = rnd.nextDouble();
 		double focus = getValue();
 		if (chance > 0.999) {
-			data.setFocus(focus + (rnd.nextNormalDouble() - 0.5) * 2);
+			data.setFocus(Math.min(gParams.getFocusMaxGoal(),
+					Math.max(gParams.getFocusMinGoal(), focus + (rnd.nextNormalDouble() - 0.5) * 2)));
 			data.setGoal(DataCountryFocus.BASE_VALUE);
 			data.setStep(createStep(gParams, rnd, 0.005));
 		} else if (chance > 0.997) {
@@ -107,8 +108,14 @@ public class CountryFocus {
 		CwRandom rnd = game.getGameParams().getRandom();
 		double chance = rnd.nextDouble();
 		double focus;
-		if (chance > 0.99) {
+		if (chance > 0.998) {
 			focus = createNewGoal(game.getGameParams(), rnd);
+			dcf.setStep(createStep(game.getGameParams(), rnd, 0.01));
+		} else if (chance > 0.995) {
+			focus = (createNewGoal(game.getGameParams(), rnd) + DataCountryFocus.BASE_VALUE) / 2;
+			dcf.setStep(createStep(game.getGameParams(), rnd, 0.01));
+		} else if (chance > 0.99) {
+			focus = (createNewGoal(game.getGameParams(), rnd) + DataCountryFocus.BASE_VALUE * 4) / 5;
 			dcf.setStep(createStep(game.getGameParams(), rnd, 0.01));
 		} else {
 			focus = DataCountryFocus.BASE_VALUE;

@@ -54,6 +54,14 @@ public class RelationshipsCollection {
 	}
 
 	public void newWar(Integer countryId, int targetCountryId) {
+		Map<Integer, RWar> wars = getCountriesWithWar(countryId);
+		if (wars.containsKey(targetCountryId)) {
+			return;
+		}
+		wars = getCountriesWithWar(targetCountryId);
+		if (wars.containsKey(countryId)) {
+			return;
+		}
 		DataRWar dw = new DataRWar();
 		dw.setAttackerId(countryId);
 		dw.setDefenderId(targetCountryId);

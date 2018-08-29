@@ -8,4 +8,6 @@ public interface IPGameParams {
 
 	double getBudgetBaseHiringCostPerSoldier();
 
+	IPRandom getRandom();
+
 }

@@ -1,17 +1,17 @@
 package com.cwsni.world.model.data.relationships;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DataRelationshipsCollection {
 
-	private List<DataRWar> wars = new ArrayList<>();
+	private Set<DataRWar> wars = new HashSet<>();
 
-	public List<DataRWar> getWars() {
+	public Set<DataRWar> getWars() {
 		return wars;
 	}
 
-	public void setWars(List<DataRWar> wars) {
+	public void setWars(Set<DataRWar> wars) {
 		this.wars = wars;
 	}
 
