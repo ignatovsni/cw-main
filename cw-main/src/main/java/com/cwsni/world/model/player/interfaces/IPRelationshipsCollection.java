@@ -8,8 +8,10 @@ public interface IPRelationshipsCollection {
 
 	Map<Integer, IPRTruce> getCountriesWithTruce(Integer countryId);
 
-	void makePeace(IPRWar war);
+	void makePeace(IPRWar war, boolean isRegularPeace, boolean isWantToBeMaster, boolean isWantToBeVassal);
 
 	void declareWar(Integer countryId);
+
+	Map<Integer, IPRVassal> getCountriesWithVassal(Integer countryId);
 
 }

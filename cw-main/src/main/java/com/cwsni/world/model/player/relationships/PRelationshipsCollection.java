@@ -7,10 +7,12 @@ import com.cwsni.world.game.commands.CommandDiplomacyPeace;
 import com.cwsni.world.game.commands.CommandDiplomacyWar;
 import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.relationships.RTruce;
+import com.cwsni.world.model.engine.relationships.RVassal;
 import com.cwsni.world.model.engine.relationships.RWar;
 import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.model.player.interfaces.IPRTruce;
+import com.cwsni.world.model.player.interfaces.IPRVassal;
 import com.cwsni.world.model.player.interfaces.IPRWar;
 import com.cwsni.world.model.player.interfaces.IPRelationshipsCollection;
 
@@ -41,7 +43,15 @@ public class PRelationshipsCollection implements IPRelationshipsCollection {
 	}
 
 	@Override
-	public void makePeace(IPRWar war) {
+	public Map<Integer, IPRVassal> getCountriesWithVassal(Integer countryId) {
+		Map<Integer, RVassal> warsWith = relationships.getCountriesWithVassal(countryId);
+		Map<Integer, IPRVassal> result = new HashMap<>();
+		warsWith.entrySet().forEach(e -> result.put(e.getKey(), new PRVassal(e.getValue())));
+		return result;
+	}
+
+	@Override
+	public void makePeace(IPRWar war, boolean isRegularPeace, boolean isWantToBeMaster, boolean isWantToBeVassal) {
 		if (war == null) {
 			return;
 		}
@@ -50,7 +60,7 @@ public class PRelationshipsCollection implements IPRelationshipsCollection {
 		}
 		int targetId = ComparisonTool.isEqual(game.getCountryId(), war.getMasterId()) ? war.getSlaveId()
 				: war.getMasterId();
-		game.addCommand(new CommandDiplomacyPeace(targetId));
+		game.addCommand(new CommandDiplomacyPeace(targetId, isRegularPeace, isWantToBeMaster, isWantToBeVassal));
 	}
 
 	@Override

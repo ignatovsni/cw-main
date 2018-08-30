@@ -8,6 +8,8 @@ public class DataRTruce extends DataRBaseAgreement {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(super.toString());
+		sb.append(" entTurn:");
+		sb.append(endTurn);
 		return sb.toString();
 	}
 

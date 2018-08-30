@@ -23,6 +23,9 @@ public class ProvincePassabilityCriteria {
 		if (game.getRelationships().getCountriesWithWar(country.getId()).keySet().contains(p.getCountryId())) {
 			return true;
 		}
+		if (game.getRelationships().getCountriesWithVassal(country.getId()).keySet().contains(p.getCountryId())) {
+			return true;
+		}
 		return false;
 	}
 

@@ -1,7 +1,6 @@
 package com.cwsni.world.client.desktop.game.map;
 
 import java.io.InputStream;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import com.cwsni.world.model.data.DataPopulation;
@@ -14,8 +13,8 @@ import com.cwsni.world.model.engine.Culture;
 import com.cwsni.world.model.engine.GameTransientStats;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.engine.State;
-import com.cwsni.world.model.engine.relationships.RTruce;
-import com.cwsni.world.model.engine.relationships.RWar;
+import com.cwsni.world.model.engine.relationships.RVassal;
+import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -257,16 +256,22 @@ class DProvince extends Group {
 		if (country.equals(selectedCountry)) {
 			color = Color.GREEN;
 		} else {
-			Map<Integer, RWar> countriesWithWar = map.getGame().getRelationships()
-					.getCountriesWithWar(selectedCountry.getId());
-			Map<Integer, RTruce> countriesWithTruce = map.getGame().getRelationships()
-					.getCountriesWithTruce(selectedCountry.getId());
-			if (countriesWithWar.containsKey(country.getId())) {
+			RelationshipsCollection relationships = map.getGame().getRelationships();
+			if (relationships.getCountriesWithWar(selectedCountry.getId()).containsKey(country.getId())) {
 				color = Color.RED;
-			} else if (countriesWithTruce.containsKey(country.getId())) {
+			} else if (relationships.getCountriesWithTruce(selectedCountry.getId()).containsKey(country.getId())) {
 				color = Color.YELLOW;
 			} else {
-				color = Color.GREY;
+				RVassal vassalAgr = relationships.getCountriesWithVassal(selectedCountry.getId()).get(country.getId());
+				if (vassalAgr != null) {
+					if (ComparisonTool.isEqual(selectedCountry.getId(), vassalAgr.getMasterId())) {
+						color = Color.GREENYELLOW;
+					} else {
+						color = Color.AQUAMARINE;
+					}
+				} else {
+					color = Color.GREY;
+				}
 			}
 		}
 		fillPolygon(polygon, color);

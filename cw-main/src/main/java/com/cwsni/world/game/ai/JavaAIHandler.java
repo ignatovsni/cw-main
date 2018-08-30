@@ -82,8 +82,9 @@ public class JavaAIHandler implements IAIHandler {
 		// check peace
 		for (Entry<Integer, IPRWar> warWithId : countriesWithWar.entrySet()) {
 			IPRWar war = warWithId.getValue();
-			if (game.getTurn().getYearsAfter(war.getStartTurn()) > 50) {
-				game.getRelationships().makePeace(war);
+			if (game.getTurn().getYearsAfter(war.getStartTurn()) > 50
+					|| loyaltyToCountryFromCountryCasualties < -0.15) {
+				game.getRelationships().makePeace(war, true, true, false);
 			}
 		}
 		if ((loyaltyToCountryFromCountryCasualties < -0.15)
@@ -103,8 +104,14 @@ public class JavaAIHandler implements IAIHandler {
 				}
 			}
 			if (strongerEnemyWar != null && strongerEnemyStrength > thisCountryStrength * 0.2
-					&& game.getTurn().getYearsAfter(strongerEnemyWar.getStartTurn()) > 5) {
-				game.getRelationships().makePeace(strongerEnemyWar);
+					&& game.getTurn().getYearsAfter(strongerEnemyWar.getStartTurn()) > 10) {
+				if (strongerEnemyStrength > thisCountryStrength * 10) {
+					game.getRelationships().makePeace(strongerEnemyWar, true, false, true);
+				} else if (strongerEnemyStrength * 5 < thisCountryStrength ) {
+					game.getRelationships().makePeace(strongerEnemyWar, false, true, false);
+				} else {
+					game.getRelationships().makePeace(strongerEnemyWar, true, true, false);
+				}
 			}
 		}
 

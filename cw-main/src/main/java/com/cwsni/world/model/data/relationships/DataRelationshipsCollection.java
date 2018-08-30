@@ -7,6 +7,7 @@ public class DataRelationshipsCollection {
 
 	private Set<DataRWar> wars = new HashSet<>();
 	private Set<DataRTruce> truces = new HashSet<>();
+	private Set<DataRVassal> vassals = new HashSet<>();
 
 	public Set<DataRWar> getWars() {
 		return wars;
@@ -22,6 +23,14 @@ public class DataRelationshipsCollection {
 
 	public void setTruces(Set<DataRTruce> truces) {
 		this.truces = truces;
+	}
+
+	public Set<DataRVassal> getVassals() {
+		return vassals;
+	}
+
+	public void setVassals(Set<DataRVassal> vassals) {
+		this.vassals = vassals;
 	}
 
 }
