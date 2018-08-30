@@ -199,7 +199,6 @@ public class Province implements EventTarget {
 	public int getPopulationAmount() {
 		return getPopulation().stream().mapToInt(p -> p.getAmount()).sum();
 	}
-	
 
 	public int getAvailablePeopleForRecruiting() {
 		return getPopulation().stream().mapToInt(p -> p.getAvailablePeopleForRecruiting()).sum();
@@ -609,7 +608,7 @@ public class Province implements EventTarget {
 		setWealth(Math.max(0, data.getWealth() + delta));
 	}
 
-	void sufferFromFight(List<Army> attackerArmies, List<Army> defenderArmies) {
+	protected void sufferFromFight(List<Army> attackerArmies, List<Army> defenderArmies) {
 		double loss = map.getGame().getGameParams().getProvinceLossFromFight();
 		setWealth(data.getWealth() * (1 - loss));
 		setInfrastructure((int) (getInfrastructure() * (1 - loss)));
@@ -624,7 +623,7 @@ public class Province implements EventTarget {
 		}
 	}
 
-	void sufferFromInvasion(int soldiers, double successfulInvasion) {
+	protected void sufferFromInvasion(int soldiers, double successfulInvasion) {
 		double loss = map.getGame().getGameParams().getProvinceLossFromFight();
 		loss = Math.min(0.1, loss * soldiers / getPopulationAmount() * successfulInvasion);
 		setWealth(data.getWealth() * (1 - loss));
@@ -696,10 +695,14 @@ public class Province implements EventTarget {
 		double loyalty = getPopulation().stream()
 				.mapToDouble(pop -> pop.getAmount() * pop.getLoyaltyToCountry(countryId)).sum() / provincePopulation;
 		if (ComparisonTool.isEqual(countryId, getCountryId())) {
-			double countryLoyaltyFromArmy = getLoyaltyToCountryFromArmy();
-			loyalty = Math.max(loyalty, Math.min(loyalty + countryLoyaltyFromArmy,
-					map.getGame().getGameParams().getPopulationLoyaltyArmyMax()));
 			loyalty += country.getFocus().getLoyaltyFlatBonus();
+			loyalty += getLoyaltyToCountryFromLocalCasualties();
+			loyalty += country.getLoyaltyToCountryFromCountryCasualties();
+			double countryLoyaltyFromArmy = getLoyaltyToCountryFromArmy();
+			if (countryLoyaltyFromArmy != 0) {
+				loyalty = Math.max(loyalty, Math.min(loyalty + countryLoyaltyFromArmy,
+						map.getGame().getGameParams().getPopulationLoyaltyArmyMax()));
+			}
 		}
 		return Math.max(0, Math.min(loyalty, DataPopulation.LOYALTY_MAX));
 	}
@@ -739,7 +742,17 @@ public class Province implements EventTarget {
 		}
 		double loyltyFromArmy = 1.0 * soldiers / getPopulationAmount()
 				/ map.getGame().getGameParams().getPopulationLoyaltyArmySoldiersToPopulationThreshold();
-		return Math.min(loyltyFromArmy, map.getGame().getGameParams().getPopulationLoyaltyArmyMax());
+		return loyltyFromArmy;
+	}
+
+	protected double getLoyaltyToCountryFromLocalCasualties() {
+		long populationAmount = getPopulationAmount();
+		if (populationAmount == 0) {
+			return 0;
+		}
+		long casualties = getPopulation().stream().mapToLong(pop -> pop.getCasualties()).sum();
+		return -Math.min(map.getGame().getGameParams().getPopulationCasualtiesLocalLoyaltyMaxSuffer(),
+				1.0 * casualties / populationAmount);
 	}
 
 	public double getLoyaltyToState() {
@@ -769,6 +782,5 @@ public class Province implements EventTarget {
 		}
 		return hasWaterNeighbor;
 	}
-
 
 }

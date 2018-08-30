@@ -27,6 +27,7 @@ public class GsCountryInfoPane extends InternalInfoPane {
 	private RowValue valuesMoneyLabel;
 	private RowValue valuesFocusLabel;
 	private RowValue valuesArmiesSoldiersLabel;
+	private RowValue valuesCausaltiesLabel;
 
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
@@ -46,6 +47,7 @@ public class GsCountryInfoPane extends InternalInfoPane {
 		valuesMoneyLabel = addRow("info.pane.country.money", grid, idx++);
 		valuesFocusLabel = addRow("info.pane.country.focus", grid, idx++);
 		valuesArmiesSoldiersLabel = addRow("info.pane.country.armies-soldiers", grid, idx++);
+		valuesCausaltiesLabel = addRow("info.pane.country.casualties", grid, idx++);
 
 		return grid;
 	}
@@ -55,7 +57,7 @@ public class GsCountryInfoPane extends InternalInfoPane {
 		Country country = prov.getCountry();
 		setLabelText(valuesNameLabel, country.getName());
 		setLabelText(valuesProvincesLabel, DataFormatter.toLong(country.getProvinces().size()));
-		setLabelTextWithLongFormatterAndValueTooltip(valuesPopulationLabel, country.getPopulation());
+		setLabelTextWithLongFormatterAndValueTooltip(valuesPopulationLabel, country.getPopulationAmount());
 		setLabelTextWithLongFormatterAndValueTooltip(valuesRecruitsLabel, country.getAvailablePeopleForRecruiting());
 		setLabelText(valuesMoneyLabel, DataFormatter.toLong((long) country.getMoney()) + " / "
 				+ DataFormatter.toLong((long) country.getIncome()));
@@ -63,6 +65,18 @@ public class GsCountryInfoPane extends InternalInfoPane {
 		String armies = DataFormatter.toLong(country.getArmies().size()) + " / "
 				+ DataFormatter.toLong(country.getArmiesSoldiers());
 		setLabelText(valuesArmiesSoldiersLabel, armies);
+		setLabelText(valuesCausaltiesLabel, createTextForCasualties(country));
+	}
+
+	private String createTextForCasualties(Country country) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(Math.round(country.getLoyaltyToCountryFromCountryCasualties() * 100));
+		sb.append(" ");
+		sb.append(getMessage("info.pane.country.casualties.loayalty"));
+		sb.append("(");
+		sb.append(DataFormatter.toLong((long) country.getCasualties()));
+		sb.append(")");
+		return sb.toString();
 	}
 
 	@Override

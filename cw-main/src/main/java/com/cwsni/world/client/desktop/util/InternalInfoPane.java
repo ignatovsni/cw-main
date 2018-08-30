@@ -40,6 +40,7 @@ abstract public class InternalInfoPane extends BorderPane {
 
 		public void setValue(String v) {
 			valueNode.setText(v);
+			setValueColumnTooltip(v);
 		}
 
 		public void setNameColumnTooltip(String txt) {
@@ -195,6 +196,7 @@ abstract public class InternalInfoPane extends BorderPane {
 		grid.add(label, 1, row);
 		label.setText(txt);
 		RowValue rowValue = new RowValue(nameColumn, label);
+		rowValue.setNameColumnTooltip(nameColumn.getText());
 		infoRows.add(rowValue);
 		return rowValue;
 	}

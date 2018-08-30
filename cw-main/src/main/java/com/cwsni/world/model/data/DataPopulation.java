@@ -17,6 +17,10 @@ public class DataPopulation {
 	private Map<Integer, Double> loyaltyToCountries = new HashMap<>();
 	private Map<Integer, Double> loyaltyToStates = new HashMap<>();
 	private Map<Integer, Integer> lifeInCountries = new HashMap<>();
+	/**
+	 * died people by different reasons (mostly fights and diseases)
+	 */
+	private long casualties;
 
 	public int getAmount() {
 		return amount;
@@ -85,6 +89,14 @@ public class DataPopulation {
 	public void setRecruitedPercent(double recruitedPercent) {
 		recruitedPercent = Math.min(1, Math.max(0, recruitedPercent));
 		this.recruitedPercent = DataFormatter.doubleWith4points(recruitedPercent);
+	}
+
+	public long getCasualties() {
+		return casualties;
+	}
+
+	public void setCasualties(long casualties) {
+		this.casualties = casualties;
 	}
 
 }

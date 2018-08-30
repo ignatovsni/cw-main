@@ -53,12 +53,17 @@ public class GameParams {
 	private double populationLoyaltyWealthThresholdCoeff = 0.01;
 	private double populationLoyaltyArmySoldiersToPopulationThreshold = 0.1;
 	private double populationLoyaltyArmyMax = 0.8;
-	private double populationLoyaltyRebelChanceCoeff = 0.1;
-	private double populationLoyaltyRebelToStateThreshold = 0.1;
-	private double populationLoyaltyRebelToCountryThreshold = 0.1;
+	private double populationLoyaltyRebelChanceCoeff = 0.2;
+	private double populationLoyaltyRebelToStateThreshold = 0.2;
+	private double populationLoyaltyRebelToCountryThreshold = 0.2;
 	private double populationLoyaltyRebelChainAdditionalLoyalty = 0.5;
 	private double populationLoyaltyRebelChainProbabilityMultiplicator = 10.0;
 	private int populationLoyaltyRebelNewCountriesTakeMoneyForYears = 5;
+
+	private double populationCasualtiesCoeffPerYear = 0.95;
+	private double populationCasualtiesLocalLoyaltyMaxSuffer = 0.5;
+	private double populationCasualtiesGlobalLoyaltyMaxSuffer = 0.2;
+	private double populationCasualtiesFromDiseasesCoeff = 0.5;
 
 	private double focusMinGoal = 0.8;
 	private double focusMaxGoal = 10.0;
@@ -99,7 +104,7 @@ public class GameParams {
 	private double budgetBaseHiringCostPerSoldier = 100;
 
 	private int stateCreateWithMinProvinces = 4;
-	
+
 	private int truceDurationInYears = 20;
 
 	private double eventGlobalClimateChangeProbability = 0.01;
@@ -812,6 +817,38 @@ public class GameParams {
 
 	public void setPopulationRecruitPercentBaseRestore(double populationRecruitPercentBaseRestore) {
 		this.populationRecruitPercentBaseRestore = populationRecruitPercentBaseRestore;
+	}
+
+	public double getPopulationCasualtiesCoeffPerYear() {
+		return populationCasualtiesCoeffPerYear;
+	}
+
+	public void setPopulationCasualtiesCoeffPerYear(double populationCasualtiesCoeffPerYear) {
+		this.populationCasualtiesCoeffPerYear = populationCasualtiesCoeffPerYear;
+	}
+
+	public double getPopulationCasualtiesLocalLoyaltyMaxSuffer() {
+		return populationCasualtiesLocalLoyaltyMaxSuffer;
+	}
+
+	public void setPopulationCasualtiesLocalLoyaltyMaxSuffer(double populationCasualtiesLocalLoyaltyMaxSuffer) {
+		this.populationCasualtiesLocalLoyaltyMaxSuffer = populationCasualtiesLocalLoyaltyMaxSuffer;
+	}
+
+	public double getPopulationCasualtiesGlobalLoyaltyMaxSuffer() {
+		return populationCasualtiesGlobalLoyaltyMaxSuffer;
+	}
+
+	public void setPopulationCasualtiesGlobalLoyaltyMaxSuffer(double populationCasualtiesGlobalLoyaltyMaxSuffer) {
+		this.populationCasualtiesGlobalLoyaltyMaxSuffer = populationCasualtiesGlobalLoyaltyMaxSuffer;
+	}
+
+	public double getPopulationCasualtiesFromDiseasesCoeff() {
+		return populationCasualtiesFromDiseasesCoeff;
+	}
+
+	public void setPopulationCasualtiesFromDiseasesCoeff(double populationCasualtiesFromDiseasesCoeff) {
+		this.populationCasualtiesFromDiseasesCoeff = populationCasualtiesFromDiseasesCoeff;
 	}
 
 }

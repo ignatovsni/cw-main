@@ -39,8 +39,13 @@ public interface IPCountry {
 
 	void setCapital(IPProvince candidate);
 
-	long getPopulation();
+	long getPopulationAmount();
 
 	double getFocusLevel();
+	
+	public long getCasualties();
+	
+	public double getLoyaltyToCountryFromCountryCasualties();
+	
 
 }

@@ -115,6 +115,8 @@ public class Population {
 		Population newPop = new Population(getGame());
 		newPop.setWealth(getWealth() * migrantsCount / getAmount());
 		addWealth(-newPop.getWealth());
+		newPop.data.setCasualties(data.getCasualties() * migrantsCount / getAmount());
+		data.setCasualties(data.getCasualties() - newPop.data.getCasualties());
 		newPop.setAmount(migrantsCount);
 		newPop.setRecruitedPercent(getRecruitedPercent());
 		setAmount(getAmount() - migrantsCount);
@@ -134,6 +136,7 @@ public class Population {
 		double ownFraction = (double) getAmount() / (getAmount() + pop.getAmount());
 		setAmount(getAmount() + pop.getAmount());
 		setWealth(getWealth() + pop.getWealth());
+		data.setCasualties(data.getCasualties() + pop.data.getCasualties());
 		setRecruitedPercent(getRecruitedPercent() * ownFraction + pop.getRecruitedPercent() * (1 - ownFraction));
 		getScience().mergeFrom(pop.getScience(), ownFraction);
 		getCulture().mergeFrom(pop.getCulture(), ownFraction);
@@ -226,9 +229,13 @@ public class Population {
 		data.setWealth(Math.max(0, data.getWealth() + delta));
 	}
 
-	public void sufferFromWar(double loss) {
+	public int sufferFromWar(double loss) {
 		setWealth(getWealth() * (1 - loss));
+		int oldAmount = getAmount();
 		setAmount((int) (getAmount() * (1 - loss)));
+		int casualties = oldAmount - getAmount();
+		addCasualties(casualties, province.getCountry());
+		return casualties;
 	}
 
 	public void addLoyaltyToCountry(int id, double delta) {
@@ -314,6 +321,19 @@ public class Population {
 		return Collections.unmodifiableMap(data.getLoyaltyToStates());
 	}
 
+	protected void processNewTurnAsArmy() {
+		processCasualtiesNewTurn();
+	}
+
+	private void processCasualtiesNewTurn() {
+		data.setCasualties(
+				(long) (1.0 * data.getCasualties() * getGame().getGameParams().getPopulationCasualtiesCoeffPerYear()));
+	}
+
+	protected long getCasualties() {
+		return data.getCasualties();
+	}
+
 	// --------------- static section -----------------------
 
 	static public void migrateNewTurn(Province from, Game game) {
@@ -378,9 +398,12 @@ public class Population {
 			// overpopulation
 			dieFromOverpopulation(game, prov, 1 - 1 / currentPopFromMax);
 		}
-		// recruits pool growths
-		prov.getPopulation().forEach(p -> p.setRecruitedPercent(
-				p.getRecruitedPercent() - game.getGameParams().getPopulationRecruitPercentBaseRestore()));
+		// recruits pool growth && casualties decreasing
+		prov.getPopulation().forEach(p -> {
+			p.setRecruitedPercent(
+					p.getRecruitedPercent() - game.getGameParams().getPopulationRecruitPercentBaseRestore());
+			p.processCasualtiesNewTurn();
+		});
 	}
 
 	public static void processEventsNewTurn(Province prov, Game game) {
@@ -403,14 +426,27 @@ public class Population {
 			int died = (int) (p.getAmount() * effectiveDeathRate);
 			p.setAmount(p.getAmount() - died);
 			game.getGameStats().addDiedFromDisease(died);
+			p.addCasualties((int) (1.0 * died * game.getGameParams().getPopulationCasualtiesFromDiseasesCoeff()),
+					from.getCountry());
 		});
 		// armies
 		double effectiveDeathRate = deathRate * (1 - from.getDiseaseResistance());
 		from.getArmies().forEach(a -> {
 			int died = (int) (a.getSoldiers() * effectiveDeathRate);
 			a.setSoldiers(a.getSoldiers() - died);
+			a.getCountry().addCasualties((int) (1.0 * died * game.getGameParams().getPopulationCasualtiesFromDiseasesCoeff()));
 			game.getGameStats().addDiedFromDisease(died);
 		});
+	}
+
+	protected void addCasualties(int delta, Country country) {
+		if (delta < 0) {
+			System.out.println("population addCasualties: delta < 0, delta=" + delta);
+		}
+		data.setCasualties(data.getCasualties() + delta);
+		if (country != null) {
+			country.addCasualties(delta);
+		}
 	}
 
 	private static void dieFromOverpopulation(Game game, Province from, double fraction) {
@@ -472,10 +508,6 @@ public class Population {
 
 		if (state != null) {
 			Double maxStateLoyalty = state.getMaxStateLoyalty();
-			// TODO Loyalty should depend on (state population) / (capital state
-			// population).
-			// It will allow to have big countries with low populated provinces (like Russia
-			// with Sibir).
 			p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyIncreasingForState(), maxStateLoyalty);
 			if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
 				p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyDecreasingEpidemic(), maxStateLoyalty);
@@ -618,12 +650,26 @@ public class Population {
 		}
 
 		// increasing - temporary from focus
-		double countryFocus = DataFormatter.doubleWith2points(country.getFocus().getLoyaltyFlatBonus() * 100);
+		double countryFocus = country.getFocus().getLoyaltyFlatBonus();
 		if (countryFocus != 0) {
 			if (countryFocus > 0) {
 				sb.append("+");
 			}
-			sb.append(countryFocus + " " + messageSource.getMessage("info.pane.prov.country.loyalty.description.focus"))
+			sb.append(DataFormatter.doubleWith2points(countryFocus * 100) + " "
+					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.focus")).append("\n");
+		}
+
+		// decreasing - temporary from casualties
+		double localCasualtiesLoyalty = p.getLoyaltyToCountryFromLocalCasualties();
+		if (localCasualtiesLoyalty != 0) {
+			sb.append(DataFormatter.doubleWith2points(localCasualtiesLoyalty * 100) + " "
+					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.casualties-local"))
+					.append("\n");
+		}
+		double countryCasualtiesLoyalty = country.getLoyaltyToCountryFromCountryCasualties();
+		if (countryCasualtiesLoyalty != 0) {
+			sb.append(DataFormatter.doubleWith2points(countryCasualtiesLoyalty * 100) + " "
+					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.casualties-country"))
 					.append("\n");
 		}
 

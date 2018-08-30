@@ -130,6 +130,11 @@ public class Army {
 		setSoldiers(Math.max(0, getSoldiers() + delta));
 	}
 
+	private void diedInBattle(int delta) {
+		changeSoldiers(-delta);
+		population.addCasualties(delta, country);
+	}
+
 	public double getEffectiveness() {
 		return 1.0 * data.getOrganisation() / 100 * data.getTraining() / 100
 				* country.getFocus().getArmyStrengthInfluence();
@@ -170,7 +175,11 @@ public class Army {
 
 	private void processEffectivenessInNewTurn() {
 		changeOrganization(20);
-		changeTraining(-1);
+		if (getTraining() < 100) {
+			changeTraining(5);
+		} else if (getTraining() > 100) {
+			changeTraining(-1);
+		}
 	}
 
 	public void processNewTurn() {
@@ -178,6 +187,7 @@ public class Army {
 		isCanFightThisTurn = true;
 		moveFrom = null;
 		processEffectivenessInNewTurn();
+		population.processNewTurnAsArmy();
 		Province currentProv = getLocation();
 		Country locationCountry = currentProv.getCountry();
 		if (getCountry().equals(locationCountry)) {
@@ -303,12 +313,14 @@ public class Army {
 		winner.forEach(a -> {
 			a.changeOrganization((int) Math.round(-10 / result));
 			a.changeTraining(5);
-			a.changeSoldiers((int) (-game.getGameParams().getArmyFightBasePercentOfLoss() * a.getSoldiers() / result));
+			int delta = (int) (game.getGameParams().getArmyFightBasePercentOfLoss() * a.getSoldiers() / result);
+			a.diedInBattle(delta);
 		});
 		loser.forEach(a -> {
 			a.changeOrganization((int) Math.round(-10 * result));
 			a.changeTraining(5);
-			a.changeSoldiers((int) (-game.getGameParams().getArmyFightBasePercentOfLoss() * a.getSoldiers() * result));
+			int delta = (int) (game.getGameParams().getArmyFightBasePercentOfLoss() * a.getSoldiers() * result);
+			a.diedInBattle(delta);
 		});
 		loser.forEach(a -> a.retreat());
 	}

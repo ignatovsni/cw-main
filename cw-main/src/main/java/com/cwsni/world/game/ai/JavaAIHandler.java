@@ -47,23 +47,24 @@ public class JavaAIHandler implements IAIHandler {
 
 	private void manageWars(AIData4Country data) {
 		Map<Integer, Double> countriesCurrentWarStrength = getCurrentWarStrengthForCountries(data);
-		double thisCountryPureWarStrength = getPureWarStrength(data, data.getCountry());
-		double thisCountryStrength = countriesCurrentWarStrength.get(data.getCountry().getId());
+		IPCountry country = data.getCountry();
+		double thisCountryPureWarStrength = getPureWarStrength(data, country);
+		double thisCountryStrength = countriesCurrentWarStrength.get(country.getId());
 		IPGame game = data.getGame();
 		IPRandom rnd = game.getGameParams().getRandom();
-		Map<Integer, IPRWar> countriesWithWar = game.getRelationships().getCountriesWithWar(data.getCountry().getId());
-		Map<Integer, IPRTruce> countriesWithTruce = game.getRelationships()
-				.getCountriesWithTruce(data.getCountry().getId());
+		Map<Integer, IPRWar> countriesWithWar = game.getRelationships().getCountriesWithWar(country.getId());
+		Map<Integer, IPRTruce> countriesWithTruce = game.getRelationships().getCountriesWithTruce(country.getId());
+		double loyaltyToCountryFromCountryCasualties = country.getLoyaltyToCountryFromCountryCasualties();
 
 		// check war
-		if (thisCountryStrength >= thisCountryPureWarStrength * 0.7
+		if (loyaltyToCountryFromCountryCasualties > -0.03 && thisCountryStrength >= thisCountryPureWarStrength * 0.7
 				&& ((countriesWithWar.size() == 0 && rnd.nextDouble() < 0.5)
 						|| (countriesWithWar.size() == 1 && rnd.nextDouble() < 0.1))) {
 			Integer weakestEnemyCountryId = null;
 			double weakestEnemyStrength = Double.MAX_VALUE;
 			for (Entry<Integer, Double> e : countriesCurrentWarStrength.entrySet()) {
 				Integer enemyCountryId = e.getKey();
-				if (ComparisonTool.isEqual(enemyCountryId, data.getCountry().getId())) {
+				if (ComparisonTool.isEqual(enemyCountryId, country.getId())) {
 					continue;
 				}
 				Double enemyStrength = e.getValue();
@@ -85,10 +86,11 @@ public class JavaAIHandler implements IAIHandler {
 				game.getRelationships().makePeace(war);
 			}
 		}
-		if ((countriesWithWar.size() > 2 && rnd.nextDouble() < 0.7)
-				|| (countriesWithWar.size() == 2 && rnd.nextDouble() < 0.3)
-				|| (countriesWithWar.size() == 1 && rnd.nextDouble() < 0.1)
-				|| (thisCountryStrength < thisCountryPureWarStrength * 0.5 && rnd.nextDouble() < 0.8)) {
+		if ((loyaltyToCountryFromCountryCasualties < -0.15)
+				|| (loyaltyToCountryFromCountryCasualties < -0.10 && rnd.nextDouble() < 0.5)
+				|| (thisCountryStrength < thisCountryPureWarStrength * 0.5 && rnd.nextDouble() < 0.8)
+				|| (countriesWithWar.size() > 2) || (countriesWithWar.size() == 2 && rnd.nextDouble() < 0.3)
+				|| (countriesWithWar.size() == 1 && rnd.nextDouble() < 0.1)) {
 			IPRWar strongerEnemyWar = null;
 			double strongerEnemyStrength = Double.MIN_VALUE;
 			for (Entry<Integer, IPRWar> warWithId : countriesWithWar.entrySet()) {
@@ -101,7 +103,7 @@ public class JavaAIHandler implements IAIHandler {
 				}
 			}
 			if (strongerEnemyWar != null && strongerEnemyStrength > thisCountryStrength * 0.2
-					&& game.getTurn().getYearsAfter(strongerEnemyWar.getStartTurn()) > 10) {
+					&& game.getTurn().getYearsAfter(strongerEnemyWar.getStartTurn()) > 5) {
 				game.getRelationships().makePeace(strongerEnemyWar);
 			}
 		}
@@ -143,7 +145,7 @@ public class JavaAIHandler implements IAIHandler {
 	}
 
 	private double getPureWarStrength(AIData4Country data, IPCountry country) {
-		return country.getFocusLevel() * country.getPopulation();
+		return country.getFocusLevel() * country.getPopulationAmount();
 	}
 
 	public void manageMoneyBudget(AIData4Country data) {
@@ -235,18 +237,18 @@ public class JavaAIHandler implements IAIHandler {
 				budget.getMoney() / baseHiringCostPerSoldier);
 
 		Collection<IPProvince> provinces = data.getCountry().getProvinces();
-		if (canAllowNewSoldiers >= params.getArmyMinAllowedSoldiers() && !provinces.isEmpty()) {
-			Heap<IPProvince> provsBySoldiers = new Heap<>((x, y) -> y.getAvailablePeopleForRecruiting() - x.getAvailablePeopleForRecruiting());
-			provinces.forEach(p -> provsBySoldiers.put(p));
+		Heap<IPProvince> provsBySoldiers = new Heap<>(
+				(x, y) -> y.getAvailablePeopleForRecruiting() - x.getAvailablePeopleForRecruiting());
+		provinces.forEach(p -> provsBySoldiers.put(p));
+		while (armies.size() < MAX_ARMIES && canAllowNewSoldiers >= params.getArmyMinAllowedSoldiers() * 2
+				&& !provsBySoldiers.isEmpty()) {
 			IPProvince provForHiring = provsBySoldiers.poll();
-			if (provForHiring.equals(data.getCountry().getCapital()) && !provsBySoldiers.isEmpty()) {
-				// we don't want to recruit in capital
-				IPProvince anotherProv = provsBySoldiers.poll();
-				if (anotherProv.getAvailablePeopleForRecruiting() > params.getArmyMinAllowedSoldiers() * 2) {
-					provForHiring = anotherProv;
+			if (provForHiring.getAvailablePeopleForRecruiting() > params.getArmyMinAllowedSoldiers() * 2) {
+				IPArmy army = data.getCountry().createArmy(provForHiring.getId(), (int) canAllowNewSoldiers);
+				if (army != null) {
+					canAllowNewSoldiers -= army.getSoldiers();
 				}
 			}
-			data.getCountry().createArmy(provForHiring.getId(), (int) canAllowNewSoldiers);
 		}
 	}
 

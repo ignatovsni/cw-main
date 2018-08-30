@@ -178,13 +178,23 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
-	public long getPopulation() {
-		return country.getPopulation();
+	public long getPopulationAmount() {
+		return country.getPopulationAmount();
 	}
 
 	@Override
 	public double getFocusLevel() {
 		return country.getFocus().getValue();
+	}
+
+	@Override
+	public long getCasualties() {
+		return country.getCasualties();
+	}
+
+	@Override
+	public double getLoyaltyToCountryFromCountryCasualties() {
+		return country.getLoyaltyToCountryFromCountryCasualties();
 	}
 
 	// --------------- client model change ----------------------

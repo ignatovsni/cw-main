@@ -25,6 +25,10 @@ public class DataCountry {
 	private String aiScriptName = ScriptAIHandler.DEFAULT_SCRIPT;
 	private int turnOfCreation;
 	private int turnsOfExistence;
+	/**
+	 * died people by different reasons (mostly fights and diseases)
+	 */
+	private long casualties;
 
 	public int getId() {
 		return id;
@@ -158,5 +162,12 @@ public class DataCountry {
 		this.turnsOfExistence = turnsOfExistence;
 	}
 
+	public long getCasualties() {
+		return casualties;
+	}
+
+	public void setCasualties(long casualties) {
+		this.casualties = casualties;
+	}
 
 }

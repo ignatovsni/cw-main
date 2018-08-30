@@ -33,7 +33,7 @@ public class Country {
 	private CountryFocus focus;
 
 	// ------------- cache -----------------
-	private long population;
+	private long populationAmount;
 	private int waterMaxDistance;
 	private boolean isNeedRefreshReachableLandBorderAlienProvs = true;
 	private boolean isNeedRefreshReachableProvincesThroughWater = true;
@@ -295,6 +295,8 @@ public class Country {
 
 	public void processNewTurn() {
 		data.setTurnsOfExistence(data.getTurnsOfExistence() + game.getTurn().getLastStep());
+		data.setCasualties(
+				(long) (1.0 * data.getCasualties() * game.getGameParams().getPopulationCasualtiesCoeffPerYear()));
 		budget.processNewTurn();
 		processScienceNewTurn();
 		focus.processNewTurn();
@@ -416,14 +418,14 @@ public class Country {
 	}
 
 	private void refreshPopulation() {
-		population = getProvinces().stream().mapToLong(p -> p.getPopulationAmount()).sum();
+		populationAmount = getProvinces().stream().mapToLong(p -> p.getPopulationAmount()).sum();
 	}
 
-	public long getPopulation() {
-		if (population == 0) {
+	public long getPopulationAmount() {
+		if (populationAmount == 0) {
 			refreshPopulation();
 		}
-		return population;
+		return populationAmount;
 	}
 
 	public long getAvailablePeopleForRecruiting() {
@@ -432,6 +434,27 @@ public class Country {
 
 	public long getArmiesSoldiers() {
 		return getArmies().stream().mapToLong(a -> a.getSoldiers()).sum();
+	}
+
+	public long getCasualties() {
+		return data.getCasualties();
+	}
+
+	protected void addCasualties(long delta) {
+		if (delta < 0) {
+			System.out.println("country addCasualties: delta < 0, delta=" + delta);
+		}
+		data.setCasualties(data.getCasualties() + delta);
+	}
+
+	public double getLoyaltyToCountryFromCountryCasualties() {
+		long populationAmount = getPopulationAmount();
+		if (populationAmount == 0) {
+			return 0;
+		}
+		long casualties = getCasualties();
+		return -Math.min(getGame().getGameParams().getPopulationCasualtiesGlobalLoyaltyMaxSuffer(),
+				1.0 * casualties / populationAmount);
 	}
 
 	// --------------------- static -------------------------------
