@@ -47,6 +47,7 @@ public class JavaAIHandler implements IAIHandler {
 	}
 
 	private void manageDiplomacy(AIData4Country data) {
+		int maxDesiredWars = 3;
 		Map<Integer, Double> countriesCurrentWarStrength = getCurrentWarStrengthForCountries(data);
 		IPCountry country = data.getCountry();
 		double thisCountryPureWarStrength = getPureWarStrength(data, country);
@@ -60,9 +61,8 @@ public class JavaAIHandler implements IAIHandler {
 		double loyaltyToCountryFromCountryCasualties = country.getLoyaltyToCountryFromCountryCasualties();
 
 		// check war
-		if (loyaltyToCountryFromCountryCasualties > -0.03 && thisCountryStrength >= thisCountryPureWarStrength * 0.7
-				&& ((countriesWithWar.size() == 0 && rnd.nextDouble() < 0.5)
-						|| (countriesWithWar.size() == 1 && rnd.nextDouble() < 0.1))) {
+		if (loyaltyToCountryFromCountryCasualties > -0.05 && thisCountryStrength >= thisCountryPureWarStrength * 0.5
+				&& 1.0 * countriesWithWar.size() / maxDesiredWars < rnd.nextDouble()) {
 			Integer weakestEnemyCountryId = null;
 			double weakestEnemyStrength = Double.MAX_VALUE;
 			for (Entry<Integer, Double> e : countriesCurrentWarStrength.entrySet()) {
@@ -94,7 +94,7 @@ public class JavaAIHandler implements IAIHandler {
 			boolean wantToBeSlave = false;
 			if (thisCountryStrength > enemyStrength * 50) {
 				// We want to crush them.
-			} else if (thisCountryStrength > enemyStrength * 20 && enemyCountry.isAI()) {				
+			} else if (thisCountryStrength > enemyStrength * 20 && enemyCountry.isAI()) {
 				// We want to crush them. But we are gently with a human player.
 				wantToBeMaster = true;
 			} else if (thisCountryStrength > enemyStrength * 10) {
@@ -121,7 +121,7 @@ public class JavaAIHandler implements IAIHandler {
 			double enemyStrength = countriesCurrentWarStrength.get(enemyCountryId);
 			if (ComparisonTool.isEqual(tribute.getMasterId(), country.getId())) {
 				// we are master
-				if (countriesWithWar.size() < 2) {
+				if (countriesWithWar.size() < maxDesiredWars) {
 					if (thisCountryStrength > enemyStrength * 50) {
 						game.getRelationships().cancelTribute(tribute);
 					} else if (thisCountryStrength > enemyStrength * 30 && enemyCountry.isAI()) {
