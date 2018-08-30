@@ -84,8 +84,17 @@ public class PProvince implements IPProvince {
 	}
 
 	@Override
-	public boolean isMyProvince() {
-		return ComparisonTool.isEqual(getCountryId(), game.getCountryId());
+	public boolean canBeSubjugatedByMe() {
+		if (!getTerrainType().isPopulationPossible()) {
+			return false;
+		}
+		if (getCountryId() == null) {
+			return true;
+		}
+		if (ComparisonTool.isEqual(getCountryId(), game.getCountryId())) {
+			return false;
+		}
+		return game.getRelationships().getCountriesWithWar(game.getCountryId()).containsKey(getCountryId());
 	}
 
 	@Override
@@ -120,17 +129,17 @@ public class PProvince implements IPProvince {
 	public int getAvailablePeopleForRecruiting() {
 		return province.getAvailablePeopleForRecruiting();
 	}
-	
+
 	@Override
 	public double getLoyaltyToCountry() {
 		return province.getLoyaltyToCountry();
 	}
-	
+
 	@Override
 	public double getLoyaltyToState() {
 		return province.getLoyaltyToState();
 	}
-	
+
 	// --------------------- client model changes ---------------------
 	public void cmcAddPopulation(int delta) {
 		populationAmount += delta;

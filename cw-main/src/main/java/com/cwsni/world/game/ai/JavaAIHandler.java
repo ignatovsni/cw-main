@@ -22,6 +22,7 @@ import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPGameParams;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPProvince;
+import com.cwsni.world.model.player.interfaces.IPRTribute;
 import com.cwsni.world.model.player.interfaces.IPRTruce;
 import com.cwsni.world.model.player.interfaces.IPRWar;
 import com.cwsni.world.model.player.interfaces.IPRandom;
@@ -39,13 +40,13 @@ public class JavaAIHandler implements IAIHandler {
 		checkCapital(data);
 		manageMoneyBudget(data);
 		manageScienceBudget(data);
+		manageDiplomacy(data);
 		processArmyBudget(data);
 		mergeAndSplitArmies(data);
 		moveArmies(data);
-		manageWars(data);
 	}
 
-	private void manageWars(AIData4Country data) {
+	private void manageDiplomacy(AIData4Country data) {
 		Map<Integer, Double> countriesCurrentWarStrength = getCurrentWarStrengthForCountries(data);
 		IPCountry country = data.getCountry();
 		double thisCountryPureWarStrength = getPureWarStrength(data, country);
@@ -54,6 +55,8 @@ public class JavaAIHandler implements IAIHandler {
 		IPRandom rnd = game.getGameParams().getRandom();
 		Map<Integer, IPRWar> countriesWithWar = game.getRelationships().getCountriesWithWar(country.getId());
 		Map<Integer, IPRTruce> countriesWithTruce = game.getRelationships().getCountriesWithTruce(country.getId());
+		Map<Integer, IPRTribute> countriesWithTribute = game.getRelationships()
+				.getCountriesWithTribute(country.getId());
 		double loyaltyToCountryFromCountryCasualties = country.getLoyaltyToCountryFromCountryCasualties();
 
 		// check war
@@ -69,7 +72,8 @@ public class JavaAIHandler implements IAIHandler {
 				}
 				Double enemyStrength = e.getValue();
 				if (enemyStrength < weakestEnemyStrength && !countriesWithWar.containsKey(enemyCountryId)
-						&& !countriesWithTruce.containsKey(enemyCountryId)) {
+						&& !countriesWithTruce.containsKey(enemyCountryId)
+						&& !countriesWithTribute.containsKey(enemyCountryId)) {
 					weakestEnemyStrength = enemyStrength;
 					weakestEnemyCountryId = enemyCountryId;
 				}
@@ -80,37 +84,54 @@ public class JavaAIHandler implements IAIHandler {
 		}
 
 		// check peace
-		for (Entry<Integer, IPRWar> warWithId : countriesWithWar.entrySet()) {
-			IPRWar war = warWithId.getValue();
+		for (Entry<Integer, IPRWar> agreementWithId : countriesWithWar.entrySet()) {
+			IPRWar war = agreementWithId.getValue();
+			Integer enemyCountryId = agreementWithId.getKey();
+			IPCountry enemyCountry = game.findCountryById(enemyCountryId);
+			double enemyStrength = countriesCurrentWarStrength.get(enemyCountryId);
+			boolean wantRegularPeace = false;
+			boolean wantToBeMaster = false;
+			boolean wantToBeSlave = false;
+			if (thisCountryStrength > enemyStrength * 50) {
+				// We want to crush them.
+			} else if (thisCountryStrength > enemyStrength * 20 && enemyCountry.isAI()) {				
+				// We want to crush them. But we are gently with a human player.
+				wantToBeMaster = true;
+			} else if (thisCountryStrength > enemyStrength * 10) {
+				wantToBeMaster = true;
+			} else if (thisCountryStrength < enemyStrength / 10) {
+				wantRegularPeace = true;
+				wantToBeSlave = true;
+			}
 			if (game.getTurn().getYearsAfter(war.getStartTurn()) > 50
 					|| loyaltyToCountryFromCountryCasualties < -0.15) {
-				game.getRelationships().makePeace(war, true, true, false);
+				wantRegularPeace = true;
+				wantToBeMaster = true;
+			}
+			if (wantRegularPeace || wantToBeMaster || wantToBeSlave) {
+				game.getRelationships().makePeace(war, wantRegularPeace, wantToBeMaster, wantToBeSlave);
 			}
 		}
-		if ((loyaltyToCountryFromCountryCasualties < -0.15)
-				|| (loyaltyToCountryFromCountryCasualties < -0.10 && rnd.nextDouble() < 0.5)
-				|| (thisCountryStrength < thisCountryPureWarStrength * 0.5 && rnd.nextDouble() < 0.8)
-				|| (countriesWithWar.size() > 2) || (countriesWithWar.size() == 2 && rnd.nextDouble() < 0.3)
-				|| (countriesWithWar.size() == 1 && rnd.nextDouble() < 0.1)) {
-			IPRWar strongerEnemyWar = null;
-			double strongerEnemyStrength = Double.MIN_VALUE;
-			for (Entry<Integer, IPRWar> warWithId : countriesWithWar.entrySet()) {
-				Integer enemyCountryId = warWithId.getKey();
-				IPRWar war = warWithId.getValue();
-				Double enemyStrength = countriesCurrentWarStrength.get(enemyCountryId);
-				if (enemyStrength > strongerEnemyStrength) {
-					strongerEnemyStrength = enemyStrength;
-					strongerEnemyWar = war;
+
+		// check tribute
+		for (Entry<Integer, IPRTribute> agreementWithId : countriesWithTribute.entrySet()) {
+			IPRTribute tribute = agreementWithId.getValue();
+			Integer enemyCountryId = agreementWithId.getKey();
+			IPCountry enemyCountry = game.findCountryById(enemyCountryId);
+			double enemyStrength = countriesCurrentWarStrength.get(enemyCountryId);
+			if (ComparisonTool.isEqual(tribute.getMasterId(), country.getId())) {
+				// we are master
+				if (countriesWithWar.size() < 2) {
+					if (thisCountryStrength > enemyStrength * 50) {
+						game.getRelationships().cancelTribute(tribute);
+					} else if (thisCountryStrength > enemyStrength * 30 && enemyCountry.isAI()) {
+						game.getRelationships().cancelTribute(tribute);
+					}
 				}
-			}
-			if (strongerEnemyWar != null && strongerEnemyStrength > thisCountryStrength * 0.2
-					&& game.getTurn().getYearsAfter(strongerEnemyWar.getStartTurn()) > 10) {
-				if (strongerEnemyStrength > thisCountryStrength * 10) {
-					game.getRelationships().makePeace(strongerEnemyWar, true, false, true);
-				} else if (strongerEnemyStrength * 5 < thisCountryStrength ) {
-					game.getRelationships().makePeace(strongerEnemyWar, false, true, false);
-				} else {
-					game.getRelationships().makePeace(strongerEnemyWar, true, true, false);
+			} else {
+				// we are slave
+				if (thisCountryStrength > enemyStrength * 0.5) {
+					game.getRelationships().cancelTribute(tribute);
 				}
 			}
 		}
@@ -121,8 +142,11 @@ public class JavaAIHandler implements IAIHandler {
 		Map<Integer, Double> pureWarStrength = new HashMap<>();
 		// this country
 		pureWarStrength.put(data.getCountry().getId(), 0.0);
-		// enemies
+		// wars
 		data.getGame().getRelationships().getCountriesWithWar(data.getCountry().getId()).keySet()
+				.forEach(cId -> pureWarStrength.put(cId, 0.0));
+		// tributes
+		data.getGame().getRelationships().getCountriesWithTribute(data.getCountry().getId()).keySet()
 				.forEach(cId -> pureWarStrength.put(cId, 0.0));
 		// land neighbors
 		data.getCountry().getReachableLandBorderAlienProvs().stream().filter(p -> p.getCountryId() != null)
@@ -275,8 +299,7 @@ public class JavaAIHandler implements IAIHandler {
 			Collection<IPArmy> armiesInProv = country.findArmiesInProv(location);
 			processed.addAll(armiesInProv);
 			List<IPProvince> alienNeighbors = army.getLocation().getNeighbors().stream()
-					.filter(n -> n.getTerrainType().isPopulationPossible() && !n.isMyProvince())
-					.collect(Collectors.toList());
+					.filter(n -> n.canBeSubjugatedByMe()).collect(Collectors.toList());
 			if (armiesInProv.size() < alienNeighbors.size()) {
 				// split
 				int needMoreArmies = alienNeighbors.size() - armiesInProv.size();
@@ -334,7 +357,8 @@ public class JavaAIHandler implements IAIHandler {
 		IPProvince location = army.getLocation();
 		if (!ComparisonTool.isEqual(army.getCountry().getId(), location.getCountryId())
 				&& !location.getTerrainType().isWater()) {
-			if (location.getPopulationAmount() == 0 && location.getSoilFertilityWithPopFromArmy(army) > 2.0) {
+			if (location.getCountryId() == null && location.getPopulationAmount() == 0
+					&& location.getSoilFertilityWithPopFromArmy(army) > 2.0) {
 				// Colonize.
 				army.dismiss(army.getSoldiers() / 2);
 				return;
@@ -352,8 +376,7 @@ public class JavaAIHandler implements IAIHandler {
 	private boolean tryMovingArmyToNeighbors(AIData4Country data, IPArmy army) {
 		Map<IPProvince, Double> importanceOfProvinces = new HashMap<>();
 		for (IPProvince neighbor : army.getLocation().getNeighbors()) {
-			if (neighbor.getTerrainType().isPopulationPossible() && neighbor.isPassable(army)
-					&& !neighbor.isMyProvince()) {
+			if (neighbor.canBeSubjugatedByMe() && neighbor.isPassable(army)) {
 				double weight = calculateImportanceOfProvince(data, neighbor, army.getCountry());
 				importanceOfProvinces.put(neighbor, weight);
 			}
@@ -380,6 +403,9 @@ public class JavaAIHandler implements IAIHandler {
 	}
 
 	private boolean isAbleToSubjugate(AIData4Country data, IPArmy army, IPProvince location) {
+		if (!location.canBeSubjugatedByMe()) {
+			return false;
+		}
 		return army.getSoldiers() > 1.05 * location.getPopulationAmount()
 				* data.getCountry().getArmySoldiersToPopulationForSubjugation();
 	}
@@ -390,8 +416,6 @@ public class JavaAIHandler implements IAIHandler {
 			capital = pCountry.getFirstCapital();
 		}
 		return 1 / Math.max(data.getGame().findDistance(neighbor, capital), 1);
-		// return calculateImportanceOfProvinceByCountOfNeighborsPops(data, neighbor,
-		// pCountry.getId());
 	}
 
 	private void tryMovingArmyFurther(AIData4Country data, IPArmy a) {
@@ -419,7 +443,7 @@ public class JavaAIHandler implements IAIHandler {
 		IPProvince nearestProv = null;
 		double minDistance = Double.MAX_VALUE;
 		for (IPProvince p : provinces) {
-			if (p.equals(armyLocation) || !p.isPassable(army)) {
+			if (p.equals(armyLocation) || !p.canBeSubjugatedByMe()) {
 				continue;
 			}
 			double distance = data.getGame().findDistance(armyLocation, p);

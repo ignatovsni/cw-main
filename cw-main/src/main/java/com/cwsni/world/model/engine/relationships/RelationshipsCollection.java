@@ -3,8 +3,8 @@ package com.cwsni.world.model.engine.relationships;
 import java.util.HashSet;
 import java.util.Map;
 
+import com.cwsni.world.model.data.relationships.DataRTribute;
 import com.cwsni.world.model.data.relationships.DataRTruce;
-import com.cwsni.world.model.data.relationships.DataRVassal;
 import com.cwsni.world.model.data.relationships.DataRWar;
 import com.cwsni.world.model.data.relationships.DataRelationshipsCollection;
 import com.cwsni.world.model.engine.ComparisonTool;
@@ -18,7 +18,7 @@ public class RelationshipsCollection {
 
 	private AgreementCollection<DataRWar, RWar> wars;
 	private AgreementCollection<DataRTruce, RTruce> truces;
-	private AgreementCollection<DataRVassal, RVassal> vassals;
+	private AgreementCollection<DataRTribute, RTribute> tributes;
 
 	public void buildFrom(Game game, DataRelationshipsCollection relationships) {
 		this.game = game;
@@ -30,8 +30,8 @@ public class RelationshipsCollection {
 		truces = new AgreementCollection<DataRTruce, RTruce>(DataRTruce::new, RTruce::new);
 		truces.buildFrom(game, data.getTruces());
 
-		vassals = new AgreementCollection<DataRVassal, RVassal>(DataRVassal::new, RVassal::new);
-		vassals.buildFrom(game, data.getVassals());
+		tributes = new AgreementCollection<DataRTribute, RTribute>(DataRTribute::new, RTribute::new);
+		tributes.buildFrom(game, data.getTributes());
 	}
 
 	public void processNewTurn() {
@@ -43,7 +43,7 @@ public class RelationshipsCollection {
 	public void unregisterCountry(Country c) {
 		wars.unregisterCountry(c);
 		truces.unregisterCountry(c);
-		vassals.unregisterCountry(c);
+		tributes.unregisterCountry(c);
 	}
 
 	// -------------------- wars ---------------------------------------
@@ -59,6 +59,7 @@ public class RelationshipsCollection {
 		if (truces.getCountriesWithAgreement(targetCountryId).containsKey(countryId)) {
 			return;
 		}
+		cancelTribute(countryId, targetCountryId);
 		wars.newAgreement(countryId, targetCountryId);
 	}
 
@@ -77,14 +78,14 @@ public class RelationshipsCollection {
 		} else {
 			war.defenderOfferPeace(isRegularPeace, isWantToBeMaster, isWantToBeVassal);
 		}
-		if (war.checkAttackerIsMasterInVassal()) {
+		if (war.checkAttackerIsMasterInTribute()) {
 			wars.removeAgreement(war);
-			vassals.newAgreement(countryId, targetCountryId);
-			System.out.println("attacker is master " + countryId);
-		} else if (war.checkDefenderIsMasterInVassal()) {
+			RTribute tribute = tributes.newAgreement(war.getMasterId(), war.getSlaveId());
+			tribute.setTax(0.1);
+		} else if (war.checkDefenderIsMasterInTribute()) {
 			wars.removeAgreement(war);
-			vassals.newAgreement(targetCountryId, countryId);
-			System.out.println("defender is master " + targetCountryId);
+			RTribute tribute = tributes.newAgreement(war.getSlaveId(), war.getMasterId());
+			tribute.setTax(0.1);
 		} else if (war.checkRegularTruce()) {
 			wars.removeAgreement(war);
 			RTruce truce = truces.newAgreement(countryId, targetCountryId);
@@ -102,8 +103,15 @@ public class RelationshipsCollection {
 
 	// -------------------- vassals ---------------------------------------
 
-	public Map<Integer, RVassal> getCountriesWithVassal(Integer countryId) {
-		return vassals.getCountriesWithAgreement(countryId);
+	public Map<Integer, RTribute> getCountriesWithTribute(Integer countryId) {
+		return tributes.getCountriesWithAgreement(countryId);
+	}
+
+	public void cancelTribute(int countryId, int targetCountryId) {
+		RTribute tribute = getCountriesWithTribute(countryId).get(targetCountryId);
+		if (tribute != null) {
+			tributes.removeAgreement(tribute);
+		}
 	}
 
 }

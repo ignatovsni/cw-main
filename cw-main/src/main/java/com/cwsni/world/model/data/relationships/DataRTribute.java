@@ -2,7 +2,7 @@ package com.cwsni.world.model.data.relationships;
 
 import com.cwsni.world.client.desktop.util.DataFormatter;
 
-public class DataRVassal extends DataRBaseAgreement {
+public class DataRTribute extends DataRBaseAgreement {
 
 	private double tax;
 

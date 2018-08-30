@@ -194,8 +194,12 @@ public class Army {
 			// our land, doing nothing
 			return;
 		}
-		// it is our land now! Probably... we need to check
+		// Check maybe we may subjugate
 		if (currentProv.getTerrainType().isPopulationPossible()) {
+			if (locationCountry != null && !country.getGame().getRelationships().getCountriesWithWar(country.getId())
+					.containsKey(locationCountry.getId())) {
+				return;
+			}
 			long totalSoldiers = currentProv.getArmies().stream()
 					.filter(a -> ComparisonTool.isEqual(a.getCountry().getId(), getCountry().getId()))
 					.mapToLong(a -> a.getSoldiers()).sum();

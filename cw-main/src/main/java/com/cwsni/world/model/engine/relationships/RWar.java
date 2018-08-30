@@ -4,30 +4,30 @@ public class RWar extends RBaseAgreement {
 
 	private boolean attackerRegularPeace;
 	private boolean attackerWantToBeMaster;
-	private boolean attackerWantToBeVassal;
+	private boolean attackerWantToBeSlave;
 
 	private boolean defenderRegularPeace;
 	private boolean defenderWantToBeMaster;
-	private boolean defenderWantToBeVassal;
+	private boolean defenderWantToBeSlave;
 
-	public void attackerOfferPeace(boolean isRegularPeace, boolean isWantToBeMaster, boolean isWantToBeVassal) {
+	public void attackerOfferPeace(boolean isRegularPeace, boolean isWantToBeMaster, boolean isWantToBeSlave) {
 		this.attackerRegularPeace = isRegularPeace;
 		this.attackerWantToBeMaster = isWantToBeMaster;
-		this.attackerWantToBeVassal = isWantToBeVassal;
+		this.attackerWantToBeSlave = isWantToBeSlave;
 	}
 
-	public void defenderOfferPeace(boolean isRegularPeace, boolean isWantToBeMaster, boolean isWantToBeVassal) {
+	public void defenderOfferPeace(boolean isRegularPeace, boolean isWantToBeMaster, boolean isWantToBeSlave) {
 		this.defenderRegularPeace = isRegularPeace;
 		this.defenderWantToBeMaster = isWantToBeMaster;
-		this.defenderWantToBeVassal = isWantToBeVassal;
+		this.defenderWantToBeSlave = isWantToBeSlave;
 	}
 
-	public boolean checkAttackerIsMasterInVassal() {
-		return attackerWantToBeMaster && defenderWantToBeVassal;
+	public boolean checkAttackerIsMasterInTribute() {
+		return attackerWantToBeMaster && defenderWantToBeSlave;
 	}
 
-	public boolean checkDefenderIsMasterInVassal() {
-		return defenderWantToBeMaster && attackerWantToBeVassal;
+	public boolean checkDefenderIsMasterInTribute() {
+		return defenderWantToBeMaster && attackerWantToBeSlave;
 	}
 
 	public boolean checkRegularTruce() {
@@ -37,11 +37,11 @@ public class RWar extends RBaseAgreement {
 	public void resetPeaceOffer() {
 		attackerRegularPeace = false;
 		attackerWantToBeMaster = false;
-		attackerWantToBeVassal = false;
+		attackerWantToBeSlave = false;
 
 		defenderRegularPeace = false;
 		defenderWantToBeMaster = false;
-		defenderWantToBeVassal = false;
+		defenderWantToBeSlave = false;
 	}
 
 }

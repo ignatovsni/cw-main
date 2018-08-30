@@ -292,11 +292,18 @@ public class Country {
 			dismissArmy(armyFrom);
 		}
 	}
+	
+	protected void calculateBaseBudget() {
+		budget.calculateBaseBudget();
+	}
+	
+
+	protected void calculateBudgetWithAgreements() {
+		budget.calculateBudgetWithAgreements();
+	}
 
 	public void processNewTurn() {
 		data.setTurnsOfExistence(data.getTurnsOfExistence() + game.getTurn().getLastStep());
-		data.setCasualties(
-				(long) (1.0 * data.getCasualties() * game.getGameParams().getPopulationCasualtiesCoeffPerYear()));
 		budget.processNewTurn();
 		processScienceNewTurn();
 		focus.processNewTurn();
@@ -310,6 +317,8 @@ public class Country {
 			isNeedRefreshReachableProvincesThroughWater = false;
 		}
 		refreshPopulation();
+		data.setCasualties(
+				(long) (1.0 * data.getCasualties() * game.getGameParams().getPopulationCasualtiesCoeffPerYear()));
 	}
 
 	private void refreshLandReachableBorderAlienProvs() {
@@ -534,5 +543,6 @@ public class Country {
 		}
 		return color;
 	}
+
 
 }

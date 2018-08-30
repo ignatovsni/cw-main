@@ -6,6 +6,8 @@ import java.util.Set;
 public interface IPCountry {
 
 	int getId();
+	
+	boolean isAI();
 
 	Collection<IPArmy> getArmies();
 

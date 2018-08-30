@@ -1,13 +1,17 @@
 package com.cwsni.world.model.engine;
 
+import java.util.Map;
+
 import com.cwsni.world.model.data.DataMoneyBudget;
+import com.cwsni.world.model.engine.relationships.RTribute;
 
 public class MoneyBudget {
 
 	private DataMoneyBudget data;
 	private Country country;
 
-	private double income;
+	private double baseIncome;
+	private double totalIncome;
 	private double armyCost;
 	private double availableMoneyForArmy;
 
@@ -46,18 +50,38 @@ public class MoneyBudget {
 	public void buildFrom(Country country, DataMoneyBudget budget) {
 		this.country = country;
 		this.data = budget;
-		calculateBudget();
+		calculateBaseBudget();
 	}
 
-	private void calculateBudget() {
-		income = country.getProvinces().stream().mapToDouble(p -> p.getFederalIncomePerYear()).sum();
+	protected void calculateBaseBudget() {
+		baseIncome = country.getProvinces().stream().mapToDouble(p -> p.getFederalIncomePerYear()).sum();
 		armyCost = country.getArmies().stream().mapToDouble(a -> a.getCostPerYear()).sum();
-		availableMoneyForArmy = income * data.getArmyWeight() / getTotalWeight() - armyCost;
+		totalIncome = baseIncome;
+		availableMoneyForArmy = totalIncome * data.getArmyWeight() / getTotalWeight() - armyCost;
+	}
+
+	private void addMoneyFromTribute(double money) {
+		totalIncome += money;
+		availableMoneyForArmy = totalIncome * data.getArmyWeight() / getTotalWeight() - armyCost;
+	}
+
+	protected void calculateBudgetWithAgreements() {
+		Map<Integer, RTribute> tributes = country.getGame().getRelationships().getCountriesWithTribute(country.getId());
+		for (RTribute tribute : tributes.values()) {
+			if (ComparisonTool.isEqual(tribute.getSlaveId(), country.getId())) {
+				Country masterCountry = country.getGame().findCountryById(tribute.getMasterId());
+				if (masterCountry != null) {
+					double money = baseIncome * tribute.getTax();
+					masterCountry.getMoneyBudget().addMoneyFromTribute(money);
+					addMoneyFromTribute(-money);
+				}
+			}
+		}
 	}
 
 	public void processNewTurn() {
-		calculateBudget();
-		data.setMoney(data.getMoney() + income * data.getSavingWeight() / getTotalWeight() + availableMoneyForArmy);
+		data.setMoney(
+				data.getMoney() + totalIncome * data.getSavingWeight() / getTotalWeight() + availableMoneyForArmy);
 	}
 
 	private double getTotalWeight() {
@@ -65,7 +89,7 @@ public class MoneyBudget {
 	}
 
 	public double getAvailableMoneyForScience() {
-		return income * getScienceWeight() / getTotalWeight();
+		return totalIncome * getScienceWeight() / getTotalWeight();
 	}
 
 	public double getAvailableMoneyForArmy() {
@@ -86,7 +110,7 @@ public class MoneyBudget {
 	}
 
 	public double getIncome() {
-		return income;
+		return totalIncome;
 	}
 
 	void resetBudgetForRestoredCountry() {
@@ -94,8 +118,8 @@ public class MoneyBudget {
 	}
 
 	public void addMoneyForNewRebelCountry(int populationLoyaltyRebelNewCountriesTakeMoneyForYears) {
-		calculateBudget();
-		data.setMoney(income * populationLoyaltyRebelNewCountriesTakeMoneyForYears);
+		calculateBaseBudget();
+		data.setMoney(totalIncome * populationLoyaltyRebelNewCountriesTakeMoneyForYears);
 	}
 
 }

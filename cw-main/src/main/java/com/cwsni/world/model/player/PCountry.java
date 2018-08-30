@@ -75,6 +75,7 @@ public class PCountry implements IPCountry {
 		return country.getId();
 	}
 
+	@Override
 	public boolean isAI() {
 		return country.isAI();
 	}

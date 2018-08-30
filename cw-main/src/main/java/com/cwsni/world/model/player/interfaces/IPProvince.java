@@ -24,7 +24,7 @@ public interface IPProvince {
 
 	double getSoilFertility();
 
-	boolean isMyProvince();
+	boolean canBeSubjugatedByMe();
 
 	IPState getState();
 

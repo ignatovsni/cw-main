@@ -1,5 +1,7 @@
 package com.cwsni.world.model.engine;
 
+import com.cwsni.world.model.engine.relationships.RTribute;
+
 public class ProvincePassabilityCriteria {
 
 	private Country country;
@@ -23,7 +25,8 @@ public class ProvincePassabilityCriteria {
 		if (game.getRelationships().getCountriesWithWar(country.getId()).keySet().contains(p.getCountryId())) {
 			return true;
 		}
-		if (game.getRelationships().getCountriesWithVassal(country.getId()).keySet().contains(p.getCountryId())) {
+		RTribute tribute = game.getRelationships().getCountriesWithTribute(country.getId()).get(p.getCountryId());
+		if (tribute != null && ComparisonTool.isEqual(tribute.getMasterId(), country.getId())) {
 			return true;
 		}
 		return false;

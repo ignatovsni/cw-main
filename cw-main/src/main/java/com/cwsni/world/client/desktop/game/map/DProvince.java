@@ -13,7 +13,7 @@ import com.cwsni.world.model.engine.Culture;
 import com.cwsni.world.model.engine.GameTransientStats;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.engine.State;
-import com.cwsni.world.model.engine.relationships.RVassal;
+import com.cwsni.world.model.engine.relationships.RTribute;
 import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 
 import javafx.animation.Animation;
@@ -262,10 +262,10 @@ class DProvince extends Group {
 			} else if (relationships.getCountriesWithTruce(selectedCountry.getId()).containsKey(country.getId())) {
 				color = Color.YELLOW;
 			} else {
-				RVassal vassalAgr = relationships.getCountriesWithVassal(selectedCountry.getId()).get(country.getId());
-				if (vassalAgr != null) {
-					if (ComparisonTool.isEqual(selectedCountry.getId(), vassalAgr.getMasterId())) {
-						color = Color.GREENYELLOW;
+				RTribute tribute = relationships.getCountriesWithTribute(selectedCountry.getId()).get(country.getId());
+				if (tribute != null) {
+					if (ComparisonTool.isEqual(selectedCountry.getId(), tribute.getMasterId())) {
+						color = Color.BLUE;
 					} else {
 						color = Color.AQUAMARINE;
 					}

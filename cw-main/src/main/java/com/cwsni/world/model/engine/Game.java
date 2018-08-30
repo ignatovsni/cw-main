@@ -181,6 +181,8 @@ public class Game implements EventTarget {
 		map.getProvinces().forEach(p -> p.processNewTurn());
 		Event.processEvents(this, messageSource);
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
+		countries.getCountries().forEach(c -> c.calculateBaseBudget());
+		countries.getCountries().forEach(c -> c.calculateBudgetWithAgreements());
 		countries.getCountries().forEach(c -> c.processNewTurn());
 		processStates();
 		relationships.processNewTurn();

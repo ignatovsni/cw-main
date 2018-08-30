@@ -3,16 +3,17 @@ package com.cwsni.world.model.player.relationships;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cwsni.world.game.commands.CommandDiplomacyCancelTribute;
 import com.cwsni.world.game.commands.CommandDiplomacyPeace;
 import com.cwsni.world.game.commands.CommandDiplomacyWar;
 import com.cwsni.world.model.engine.ComparisonTool;
+import com.cwsni.world.model.engine.relationships.RTribute;
 import com.cwsni.world.model.engine.relationships.RTruce;
-import com.cwsni.world.model.engine.relationships.RVassal;
 import com.cwsni.world.model.engine.relationships.RWar;
 import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 import com.cwsni.world.model.player.PGame;
+import com.cwsni.world.model.player.interfaces.IPRTribute;
 import com.cwsni.world.model.player.interfaces.IPRTruce;
-import com.cwsni.world.model.player.interfaces.IPRVassal;
 import com.cwsni.world.model.player.interfaces.IPRWar;
 import com.cwsni.world.model.player.interfaces.IPRelationshipsCollection;
 
@@ -43,10 +44,10 @@ public class PRelationshipsCollection implements IPRelationshipsCollection {
 	}
 
 	@Override
-	public Map<Integer, IPRVassal> getCountriesWithVassal(Integer countryId) {
-		Map<Integer, RVassal> warsWith = relationships.getCountriesWithVassal(countryId);
-		Map<Integer, IPRVassal> result = new HashMap<>();
-		warsWith.entrySet().forEach(e -> result.put(e.getKey(), new PRVassal(e.getValue())));
+	public Map<Integer, IPRTribute> getCountriesWithTribute(Integer countryId) {
+		Map<Integer, RTribute> warsWith = relationships.getCountriesWithTribute(countryId);
+		Map<Integer, IPRTribute> result = new HashMap<>();
+		warsWith.entrySet().forEach(e -> result.put(e.getKey(), new PRTribute(e.getValue())));
 		return result;
 	}
 
@@ -70,6 +71,13 @@ public class PRelationshipsCollection implements IPRelationshipsCollection {
 			return;
 		}
 		game.addCommand(new CommandDiplomacyWar(countryId));
+	}
+
+	@Override
+	public void cancelTribute(IPRTribute tribute) {
+		int targetId = ComparisonTool.isEqual(game.getCountryId(), tribute.getMasterId()) ? tribute.getSlaveId()
+				: tribute.getMasterId();
+		game.addCommand(new CommandDiplomacyCancelTribute(targetId));
 	}
 
 }
