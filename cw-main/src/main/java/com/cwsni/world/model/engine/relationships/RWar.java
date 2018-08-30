@@ -34,6 +34,10 @@ public class RWar extends RBaseAgreement {
 		return attackerRegularPeace && defenderRegularPeace;
 	}
 
+	public boolean checkAnyPeace() {
+		return checkAttackerIsMasterInTribute() || checkDefenderIsMasterInTribute() || checkRegularTruce();
+	}
+
 	public void resetPeaceOffer() {
 		attackerRegularPeace = false;
 		attackerWantToBeMaster = false;

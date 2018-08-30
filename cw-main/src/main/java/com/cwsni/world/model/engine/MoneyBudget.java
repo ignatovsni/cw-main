@@ -62,7 +62,7 @@ public class MoneyBudget {
 
 	private void addMoneyFromTribute(double money) {
 		totalIncome += money;
-		availableMoneyForArmy = totalIncome * data.getArmyWeight() / getTotalWeight() - armyCost;
+		availableMoneyForArmy += money * data.getArmyWeight() / getTotalWeight();
 	}
 
 	protected void calculateBudgetWithAgreements() {

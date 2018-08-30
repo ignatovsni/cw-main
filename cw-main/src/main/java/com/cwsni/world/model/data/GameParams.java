@@ -53,7 +53,7 @@ public class GameParams {
 	private double populationLoyaltyWealthThresholdCoeff = 0.01;
 	private double populationLoyaltyArmySoldiersToPopulationThreshold = 0.1;
 	private double populationLoyaltyArmyMax = 0.8;
-	private double populationLoyaltyRebelChanceCoeff = 0.2;
+	private double populationLoyaltyRebelChanceCoeff = 0.1;
 	private double populationLoyaltyRebelToStateThreshold = 0.2;
 	private double populationLoyaltyRebelToCountryThreshold = 0.2;
 	private double populationLoyaltyRebelChainAdditionalLoyalty = 0.5;

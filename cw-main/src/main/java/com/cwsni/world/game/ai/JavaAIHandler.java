@@ -47,7 +47,7 @@ public class JavaAIHandler implements IAIHandler {
 	}
 
 	private void manageDiplomacy(AIData4Country data) {
-		int maxDesiredWars = 3;
+		int maxDesiredWars = 5;
 		Map<Integer, Double> countriesCurrentWarStrength = getCurrentWarStrengthForCountries(data);
 		IPCountry country = data.getCountry();
 		double thisCountryPureWarStrength = getPureWarStrength(data, country);
@@ -78,7 +78,7 @@ public class JavaAIHandler implements IAIHandler {
 					weakestEnemyCountryId = enemyCountryId;
 				}
 			}
-			if (weakestEnemyCountryId != null && weakestEnemyStrength < thisCountryStrength * 0.5) {
+			if (weakestEnemyCountryId != null && thisCountryStrength > weakestEnemyStrength * 2) {
 				game.getRelationships().declareWar(weakestEnemyCountryId);
 			}
 		}
@@ -92,14 +92,14 @@ public class JavaAIHandler implements IAIHandler {
 			boolean wantRegularPeace = false;
 			boolean wantToBeMaster = false;
 			boolean wantToBeSlave = false;
-			if (thisCountryStrength > enemyStrength * 50) {
+			if (thisCountryStrength > enemyStrength * 10) {
 				// We want to crush them.
-			} else if (thisCountryStrength > enemyStrength * 20 && enemyCountry.isAI()) {
+			} else if (thisCountryStrength > enemyStrength * 5 && enemyCountry.isAI()) {
 				// We want to crush them. But we are gently with a human player.
 				wantToBeMaster = true;
-			} else if (thisCountryStrength > enemyStrength * 10) {
+			} else if (thisCountryStrength > enemyStrength * 3) {
 				wantToBeMaster = true;
-			} else if (thisCountryStrength < enemyStrength / 10) {
+			} else if (thisCountryStrength < enemyStrength / 3) {
 				wantRegularPeace = true;
 				wantToBeSlave = true;
 			}
@@ -122,9 +122,9 @@ public class JavaAIHandler implements IAIHandler {
 			if (ComparisonTool.isEqual(tribute.getMasterId(), country.getId())) {
 				// we are master
 				if (countriesWithWar.size() < maxDesiredWars) {
-					if (thisCountryStrength > enemyStrength * 50) {
+					if (thisCountryStrength > enemyStrength * 10) {
 						game.getRelationships().cancelTribute(tribute);
-					} else if (thisCountryStrength > enemyStrength * 30 && enemyCountry.isAI()) {
+					} else if (thisCountryStrength > enemyStrength * 5 && enemyCountry.isAI()) {
 						game.getRelationships().cancelTribute(tribute);
 					}
 				}

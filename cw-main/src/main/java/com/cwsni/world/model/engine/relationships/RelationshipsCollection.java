@@ -78,16 +78,15 @@ public class RelationshipsCollection {
 		} else {
 			war.defenderOfferPeace(isRegularPeace, isWantToBeMaster, isWantToBeVassal);
 		}
-		if (war.checkAttackerIsMasterInTribute()) {
+		if (war.checkAnyPeace()) {
 			wars.removeAgreement(war);
-			RTribute tribute = tributes.newAgreement(war.getMasterId(), war.getSlaveId());
-			tribute.setTax(0.1);
-		} else if (war.checkDefenderIsMasterInTribute()) {
-			wars.removeAgreement(war);
-			RTribute tribute = tributes.newAgreement(war.getSlaveId(), war.getMasterId());
-			tribute.setTax(0.1);
-		} else if (war.checkRegularTruce()) {
-			wars.removeAgreement(war);
+			if (war.checkAttackerIsMasterInTribute()) {
+				RTribute tribute = tributes.newAgreement(war.getMasterId(), war.getSlaveId());
+				tribute.setTax(0.1);
+			} else if (war.checkDefenderIsMasterInTribute()) {
+				RTribute tribute = tributes.newAgreement(war.getSlaveId(), war.getMasterId());
+				tribute.setTax(0.15);
+			}
 			RTruce truce = truces.newAgreement(countryId, targetCountryId);
 			truce.setEndTurn(
 					game.getTurn().calculateFutureTurnAfterYears(game.getGameParams().getTruceDurationInYears()));

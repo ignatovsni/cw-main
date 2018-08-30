@@ -259,8 +259,6 @@ class DProvince extends Group {
 			RelationshipsCollection relationships = map.getGame().getRelationships();
 			if (relationships.getCountriesWithWar(selectedCountry.getId()).containsKey(country.getId())) {
 				color = Color.RED;
-			} else if (relationships.getCountriesWithTruce(selectedCountry.getId()).containsKey(country.getId())) {
-				color = Color.YELLOW;
 			} else {
 				RTribute tribute = relationships.getCountriesWithTribute(selectedCountry.getId()).get(country.getId());
 				if (tribute != null) {
@@ -269,6 +267,8 @@ class DProvince extends Group {
 					} else {
 						color = Color.AQUAMARINE;
 					}
+				} else if (relationships.getCountriesWithTruce(selectedCountry.getId()).containsKey(country.getId())) {
+					color = Color.YELLOW;
 				} else {
 					color = Color.GREY;
 				}
