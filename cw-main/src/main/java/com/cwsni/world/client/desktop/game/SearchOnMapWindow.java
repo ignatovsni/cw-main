@@ -62,12 +62,11 @@ public class SearchOnMapWindow extends Dialog<ButtonType> {
 
 	private GameScene gameScene;
 	private ComboBox<SearchResult> searchField;
+	private Button goButton;
 
 	private ObservableList<SearchResult> searchResults;
 	private Map<String, SearchResult> strToSearchResult;
 	private Set<Object> foundObjects;
-
-	private Button goButton;
 
 	private String getMessage(String code) {
 		return messageSource.getMessage(code);
@@ -122,6 +121,7 @@ public class SearchOnMapWindow extends Dialog<ButtonType> {
 	}
 
 	private void processSearchAndFillResult(String searchText) {
+		int maxResults = 20;
 		searchResults.clear();
 		strToSearchResult.clear();
 		foundObjects.clear();
@@ -131,16 +131,37 @@ public class SearchOnMapWindow extends Dialog<ButtonType> {
 		Game game = gameScene.getGame();
 		try {
 			Integer id = Integer.valueOf(searchText);
-			Province prov = game.getMap().findProvById(id);
-			if (prov != null) {
-				addProvinceToSearchResults(prov);
-			}
 			Country country = game.findCountryById(id);
 			if (country != null) {
 				addCountryToSearchResults(country);
 			}
+			Province prov = game.getMap().findProvById(id);
+			if (prov != null) {
+				addProvinceToSearchResults(prov);
+			}
 		} catch (NumberFormatException e) {
 			// ignore
+		}
+		searchText = searchText.toLowerCase();
+		int found = 0;
+		for (Country o: game.getCountries()) {
+			if (searchResults.size() > maxResults || found > maxResults / 2) {
+				break;
+			}
+			if (o.getName().toLowerCase().startsWith(searchText)) {
+				addCountryToSearchResults(o);
+				found++;
+			}
+		}
+		found = 0;
+		for (Province o: game.getMap().getProvinces()) {
+			if (searchResults.size() > maxResults || found > maxResults / 2) {
+				break;
+			}
+			if (o.getName().toLowerCase().startsWith(searchText)) {
+				addProvinceToSearchResults(o);
+				found++;
+			}
 		}
 	}
 
