@@ -391,15 +391,19 @@ public class State {
 		if (this.equals(capitalState)) {
 			return null;
 		}
-		long statePopulationAmount = getPopulationAmount();
-		if (statePopulationAmount == 0) {
+		double stateStrength = getPopulationAmount();
+		if (stateStrength == 0) {
 			return null;
 		}
-		long capitalStatePopulationAmount = capitalState.getPopulationAmount();
-		if (capitalStatePopulationAmount == 0) {
+		double countryCapitalInfluence = stateCapital.getCapitalInfluence();
+		double capitalStateStrength = capitalState.getPopulationAmount();
+		if (countryCapitalInfluence < 0.3) {
+			capitalStateStrength *= (countryCapitalInfluence + 0.7);
+		}
+		if (capitalStateStrength == 0) {
 			return null;
 		}
-		return Math.min(1, 1.0 * statePopulationAmount / capitalStatePopulationAmount);
+		return Math.min(1, stateStrength / capitalStateStrength);
 	}
 
 	// --------------------- static -------------------------------

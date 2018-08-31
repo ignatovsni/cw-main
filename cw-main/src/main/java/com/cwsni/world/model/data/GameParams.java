@@ -89,12 +89,12 @@ public class GameParams {
 	private int armyMinAllowedOrganization = 10;
 	private int armyMinAllowedSoldiers = 50;
 	private double armySoldiersToPopulationForSubjugation = 0.1;
-
 	private double provinceLossFromFight = 0.1;
+	
 	private double provinceInfluenceFromCapitalWithDistanceDecrease = 0.8;
 	private double provinceInfluenceFromCapitalWithoutCapital = 0.05;
 	private double provinceInfluenceFromCapitalForStateWithDistanceDecrease = 0.9;
-	private double provinceInfluenceFromStateForTaxes = 0.5;
+	private double provinceEffectivenessWithoutGoverment = 0.1;
 
 	private double budgetBaseTaxPerPerson = 1;
 	private double budgetBaseTaxPerWealthPerson = 3;
@@ -663,14 +663,6 @@ public class GameParams {
 		this.populationLoyaltyWealthThresholdCoeff = populationLoyaltyWealthThresholdCoeff;
 	}
 
-	public double getProvinceInfluenceFromStateForTaxes() {
-		return provinceInfluenceFromStateForTaxes;
-	}
-
-	public void setProvinceInfluenceFromStateForTaxes(double provinceInfluenceFromStateForTaxes) {
-		this.provinceInfluenceFromStateForTaxes = provinceInfluenceFromStateForTaxes;
-	}
-
 	public double getPopulationLoyaltyArmySoldiersToPopulationThreshold() {
 		return populationLoyaltyArmySoldiersToPopulationThreshold;
 	}
@@ -849,6 +841,14 @@ public class GameParams {
 
 	public void setPopulationCasualtiesFromDiseasesCoeff(double populationCasualtiesFromDiseasesCoeff) {
 		this.populationCasualtiesFromDiseasesCoeff = populationCasualtiesFromDiseasesCoeff;
+	}
+
+	public double getProvinceEffectivenessWithoutGoverment() {
+		return provinceEffectivenessWithoutGoverment;
+	}
+
+	public void setProvinceEffectivenessWithoutGoverment(double provinceEffectivenessWithoutGoverment) {
+		this.provinceEffectivenessWithoutGoverment = provinceEffectivenessWithoutGoverment;
 	}
 
 }

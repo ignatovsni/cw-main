@@ -447,7 +447,7 @@ public class Province implements EventTarget {
 			if (distToCapital < 1) {
 				return capitalInfluence;
 			}
-			double adminScience = 1 + getScienceAdministration() + country.getCapital().getScienceAdministration();
+			double adminScience = 10 + getScienceAdministration() + country.getCapital().getScienceAdministration();
 			double coeffWithDist = gParams.getProvinceInfluenceFromCapitalForStateWithDistanceDecrease();
 			double stateInfluence = Math.pow(coeffWithDist, distToCapital / Math.log10(adminScience) * 2);
 			return Math.max(stateInfluence, capitalInfluence);
@@ -464,7 +464,7 @@ public class Province implements EventTarget {
 		}
 	}
 
-	private double getCapitalInfluence() {
+	protected double getCapitalInfluence() {
 		Country country = getCountry();
 		if (country == null) {
 			return 0;
@@ -473,7 +473,7 @@ public class Province implements EventTarget {
 		if (country.getCapitalId() == null) {
 			return gParams.getProvinceInfluenceFromCapitalWithoutCapital();
 		}
-		double adminScience = getScienceAdministration() + country.getCapital().getScienceAdministration();
+		double adminScience = 10 + getScienceAdministration() + country.getCapital().getScienceAdministration();
 		double distanceToCapitalWithScience = getDistanceToCapital() - Math.log10(adminScience) / 3;
 		if (distanceToCapitalWithScience <= 0) {
 			return 1;
@@ -524,20 +524,26 @@ public class Province implements EventTarget {
 	}
 
 	public double getFederalIncomePerYear() {
-		return sumTaxForYear() * getCountry().getMoneyBudget().getProvinceTax() * getGovernmentInfluence();
+		return getSumTaxForYear() * getCountry().getMoneyBudget().getProvinceTax();
 	}
 
 	private double getLocalIncomePerYear() {
-		double minInfluence = map.getGame().getGameParams().getProvinceInfluenceFromStateForTaxes();
 		if (getCountry() == null) {
-			return sumTaxForYear() * minInfluence;
+			return getSumTaxForYear();
 		} else {
-			return sumTaxForYear() * (1 - getCountry().getMoneyBudget().getProvinceTax())
-					* Math.max(getGovernmentInfluence(), minInfluence);
+			return getSumTaxForYear() * (1 - getCountry().getMoneyBudget().getProvinceTax());
 		}
 	}
 
-	private double sumTaxForYear() {
+	private double getSumTaxForYear() {
+		if (getCountry() == null) {
+			return getRawSumTaxForYear() * map.getGame().getGameParams().getProvinceEffectivenessWithoutGoverment();
+		} else {
+			return getRawSumTaxForYear() * getGovernmentInfluence();
+		}
+	}
+
+	private double getRawSumTaxForYear() {
 		int populationAmount = getPopulationAmount();
 		if (populationAmount <= 0) {
 			return 0;
@@ -633,7 +639,7 @@ public class Province implements EventTarget {
 		}
 	}
 
-	void spendMoneyForScience(double money) {
+	protected void spendMoneyForScience(double money) {
 		ScienceCollection.spendMoneyForScience(map.getGame(), this, money);
 	}
 

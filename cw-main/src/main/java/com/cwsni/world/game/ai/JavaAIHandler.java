@@ -46,6 +46,21 @@ public class JavaAIHandler implements IAIHandler {
 		moveArmies(data);
 	}
 
+	public void manageMoneyBudget(AIData4Country data) {
+		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
+		budget.setProvinceTax(0.5);
+		budget.setArmyWeight(1);
+		budget.setScienceWeight(1);
+		budget.setSavingWeight(1);
+	}
+
+	public void manageScienceBudget(AIData4Country data) {
+		IPScienceBudget budget = data.getCountry().getScienceBudget();
+		budget.setAdministrationWeight(1);
+		budget.setAgricultureWeight(2);
+		budget.setMedicineWeight(1);
+	}
+
 	private void manageDiplomacy(AIData4Country data) {
 		int maxDesiredWars = 5;
 		Map<Integer, Double> countriesCurrentWarStrength = getCurrentWarStrengthForCountries(data);
@@ -177,21 +192,6 @@ public class JavaAIHandler implements IAIHandler {
 
 	private double getPureWarStrength(AIData4Country data, IPCountry country) {
 		return country.getFocusLevel() * country.getPopulationAmount();
-	}
-
-	public void manageMoneyBudget(AIData4Country data) {
-		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
-		budget.setProvinceTax(0.5);
-		budget.setArmyWeight(1);
-		budget.setScienceWeight(1);
-		budget.setSavingWeight(1);
-	}
-
-	public void manageScienceBudget(AIData4Country data) {
-		IPScienceBudget budget = data.getCountry().getScienceBudget();
-		budget.setAdministrationWeight(1);
-		budget.setAgricultureWeight(2);
-		budget.setMedicineWeight(1);
 	}
 
 	public void checkCapital(AIData4Country data) {
