@@ -30,13 +30,17 @@ import javafx.util.StringConverter;
 @Scope("prototype")
 public class SearchOnMapWindow extends Dialog<ButtonType> {
 
+	public enum SearchResultType {
+		PROVINCE, COUNTRY
+	}
+
 	public class SearchResult {
-		Object object;
+		SearchResultType type;
 		Integer id;
 		String name;
 
-		public SearchResult(Object object, Integer id, String name) {
-			this.object = object;
+		public SearchResult(SearchResultType type, Integer id, String name) {
+			this.type = type;
 			this.id = id;
 			this.name = name;
 		}
@@ -44,10 +48,13 @@ public class SearchOnMapWindow extends Dialog<ButtonType> {
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
-			if (object instanceof Province) {
+			switch (type) {
+			case PROVINCE:
 				sb.append(messageSource.getMessage("window.search-on-map.province"));
-			} else if (object instanceof Country) {
+				break;
+			case COUNTRY:
 				sb.append(messageSource.getMessage("window.search-on-map.country"));
+				break;
 			}
 			sb.append(": ");
 			sb.append(name);
@@ -144,7 +151,7 @@ public class SearchOnMapWindow extends Dialog<ButtonType> {
 		}
 		searchText = searchText.toLowerCase();
 		int found = 0;
-		for (Country o: game.getCountries()) {
+		for (Country o : game.getCountries()) {
 			if (searchResults.size() > maxResults || found > maxResults / 2) {
 				break;
 			}
@@ -154,7 +161,7 @@ public class SearchOnMapWindow extends Dialog<ButtonType> {
 			}
 		}
 		found = 0;
-		for (Province o: game.getMap().getProvinces()) {
+		for (Province o : game.getMap().getProvinces()) {
 			if (searchResults.size() > maxResults || found > maxResults / 2) {
 				break;
 			}
@@ -167,7 +174,7 @@ public class SearchOnMapWindow extends Dialog<ButtonType> {
 
 	private void addProvinceToSearchResults(Province o) {
 		if (!foundObjects.contains(o)) {
-			SearchResult sr = new SearchResult(o, o.getId(), o.getName());
+			SearchResult sr = new SearchResult(SearchResultType.PROVINCE, o.getId(), o.getName());
 			searchResults.add(sr);
 			strToSearchResult.put(sr.toString(), sr);
 			foundObjects.add(o);
@@ -176,7 +183,7 @@ public class SearchOnMapWindow extends Dialog<ButtonType> {
 
 	private void addCountryToSearchResults(Country o) {
 		if (!foundObjects.contains(o)) {
-			SearchResult sr = new SearchResult(o, o.getId(), o.getName());
+			SearchResult sr = new SearchResult(SearchResultType.COUNTRY, o.getId(), o.getName());
 			searchResults.add(sr);
 			strToSearchResult.put(sr.toString(), sr);
 			foundObjects.add(o);

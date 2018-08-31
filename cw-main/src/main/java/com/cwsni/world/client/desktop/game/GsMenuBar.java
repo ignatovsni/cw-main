@@ -9,6 +9,7 @@ import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -61,8 +62,8 @@ public class GsMenuBar extends MenuBar {
 		createGameMenuItem.setOnAction(event -> gameScene.createNewGame());
 		createGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
 
-		menu.getItems().setAll(createGameMenuItem, createTestGameMenuItem, loadMenuItem, saveMenuItem,
-				quickLoadMenuItem, quickSaveMenuItem, exitMenuItem);
+		menu.getItems().setAll(createGameMenuItem, createTestGameMenuItem, new SeparatorMenuItem(), loadMenuItem,
+				saveMenuItem, quickLoadMenuItem, quickSaveMenuItem, new SeparatorMenuItem(), exitMenuItem);
 		return menu;
 	}
 
@@ -75,7 +76,7 @@ public class GsMenuBar extends MenuBar {
 		menu.getItems().setAll(countriesMenuItem);
 		return menu;
 	}
-	
+
 	private Menu createToolsMenu(GameScene gameScene) {
 		Menu menu = new Menu(getMessage("menu.tools"));
 
@@ -83,7 +84,16 @@ public class GsMenuBar extends MenuBar {
 		searchOnMapMenuItem.setOnAction(event -> gameScene.searchOnMap());
 		searchOnMapMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 
-		menu.getItems().setAll(searchOnMapMenuItem);
+		MenuItem scaleToDefaultMenuItem = new MenuItem(getMessage("menu.tools.scale-to-default"));
+		scaleToDefaultMenuItem.setOnAction(event -> gameScene.scaleMapToDefault());
+		scaleToDefaultMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.PAGE_UP, KeyCombination.CONTROL_DOWN));
+
+		MenuItem scaleToFitMenuItem = new MenuItem(getMessage("menu.tools.scale-to-fit"));
+		scaleToFitMenuItem.setOnAction(event -> gameScene.scaleMapToFitAllContent());
+		scaleToFitMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.PAGE_DOWN, KeyCombination.CONTROL_DOWN));
+
+		menu.getItems().setAll(searchOnMapMenuItem, new SeparatorMenuItem(), scaleToDefaultMenuItem,
+				scaleToFitMenuItem);
 		return menu;
 	}
 

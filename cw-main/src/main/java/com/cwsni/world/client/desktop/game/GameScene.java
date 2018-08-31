@@ -566,6 +566,15 @@ public class GameScene extends Scene {
 		editCountriesSettings(list);
 	}
 
+	public void scaleMapToDefault() {
+		mapPane.scaleToDefault();
+		Platform.runLater(() -> showProvince(game.getMap().findProvById(selectedProvinceId)));
+	}
+
+	public void scaleMapToFitAllContent() {
+		mapPane.scaleToFitAllContent();
+	}
+
 	public void searchOnMap() {
 		pauseGame();
 		runLocked(() -> {
@@ -573,15 +582,18 @@ public class GameScene extends Scene {
 			if (result.isPresent() && result.get().getButtonData() == ButtonData.OK_DONE) {
 				SearchResult selectedSearchResult = searchOnMapWindow.getSelectedSearchResult();
 				if (selectedSearchResult != null) {
-					if (selectedSearchResult.object instanceof Province) {
-						selectAndShowProvince((Province) selectedSearchResult.object);
-					} else if (selectedSearchResult.object instanceof Country) {
-						Country country = (Country) selectedSearchResult.object;
+					switch (selectedSearchResult.type) {
+					case PROVINCE:
+						selectAndShowProvince(game.getMap().findProvById(selectedSearchResult.id));
+						break;
+					case COUNTRY:
+						Country country = (Country) game.findCountryById(selectedSearchResult.id);
 						if (country.getCapital() != null) {
 							selectAndShowProvince(country.getCapital());
 						} else if (!country.getProvinces().isEmpty()) {
 							selectAndShowProvince(country.getProvinces().iterator().next());
 						}
+						break;
 					}
 				}
 			}
