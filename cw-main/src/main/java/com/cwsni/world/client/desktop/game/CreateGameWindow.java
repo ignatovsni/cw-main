@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.GameParams;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -48,15 +49,15 @@ public class CreateGameWindow extends Dialog<ButtonType> {
 	public void init(GameScene gameScene) {
 
 		setTitle(getMessage("window.create-game.title"));
-		ButtonType okButtonType = new ButtonType(getMessage("window.create-game.button.ok"),
-				ButtonData.OK_DONE);
+		ButtonType okButtonType = new ButtonType(getMessage("window.create-game.button.ok"), ButtonData.OK_DONE);
 		getDialogPane().getButtonTypes().add(okButtonType);
 		// getDialogPane().lookupButton(createNewGameButtonType).setDisable(disabled);
 		ButtonType cancelButtonType = new ButtonType(getMessage("window.create-game.button.cancel"),
 				ButtonData.CANCEL_CLOSE);
 		getDialogPane().getButtonTypes().add(cancelButtonType);
 
-		ObservableList<String> mapSizesList = FXCollections.observableArrayList(MAP_SMALL, MAP_MEDIUM, MAP_LARGE, MAP_HUGE);
+		ObservableList<String> mapSizesList = FXCollections.observableArrayList(MAP_SMALL, MAP_MEDIUM, MAP_LARGE,
+				MAP_HUGE);
 		cbMapSizes = new ComboBox<String>(mapSizesList);
 		cbMapSizes.setValue(MAP_MEDIUM);
 
@@ -83,6 +84,7 @@ public class CreateGameWindow extends Dialog<ButtonType> {
 		addRow("window.create-game.random-seed", grid, idx++, tfRandomSeed);
 
 		getDialogPane().setContent(grid);
+		this.setOnShown(e -> Platform.runLater(() -> cbMapSizes.requestFocus()));
 	}
 
 	public GameParams getGameParams() {
