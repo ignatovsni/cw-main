@@ -91,4 +91,17 @@ public class ZoomableScrollPane extends ScrollPane {
         this.setHvalue((valX + adjustment.getX()) / (updatedInnerBounds.getWidth() - viewportBounds.getWidth()));
         this.setVvalue((valY + adjustment.getY()) / (updatedInnerBounds.getHeight() - viewportBounds.getHeight()));
     }
+    
+    public void ensureVisible(Node node) {
+        double width = getContent().getBoundsInLocal().getWidth();
+        double height = getContent().getBoundsInLocal().getHeight();
+
+        double x = node.getBoundsInParent().getMaxX();
+        double y = node.getBoundsInParent().getMaxY();
+
+        // scrolling values range from 0 to 1
+        setVvalue(y/height);
+        setHvalue(x/width);
+    }
+    
 }

@@ -574,18 +574,30 @@ public class GameScene extends Scene {
 				SearchResult selectedSearchResult = searchOnMapWindow.getSelectedSearchResult();
 				if (selectedSearchResult != null) {
 					if (selectedSearchResult.object instanceof Province) {
-						selectProvince((Province) selectedSearchResult.object);
+						selectAndShowProvince((Province) selectedSearchResult.object);
 					} else if (selectedSearchResult.object instanceof Country) {
 						Country country = (Country) selectedSearchResult.object;
 						if (country.getCapital() != null) {
-							selectProvince(country.getCapital());
+							selectAndShowProvince(country.getCapital());
 						} else if (!country.getProvinces().isEmpty()) {
-							selectProvince(country.getProvinces().iterator().next());
+							selectAndShowProvince(country.getProvinces().iterator().next());
 						}
 					}
 				}
 			}
 		});
+	}
+
+	private void selectAndShowProvince(Province p) {
+		selectProvince(p);
+		showProvince(p);
+	}
+
+	private void showProvince(Province p) {
+		if (p == null) {
+			return;
+		}
+		mapPane.ensureVisible(worldMap.findProvinceById(p.getId()));
 	}
 
 }

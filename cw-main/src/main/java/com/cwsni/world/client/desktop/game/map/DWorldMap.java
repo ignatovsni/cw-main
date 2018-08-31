@@ -202,4 +202,8 @@ public class DWorldMap {
 		}
 	}
 
+	public DProvince findProvinceById(int id) {
+		return provincesById.get(id);
+	}
+
 }
