@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -133,11 +134,14 @@ public class GameScene extends Scene {
 	private Object lockObj = new Object();
 	private ExecutorService aiExecutorService;
 
+	private ConfigurableApplicationContext springContext;
+
 	public GameScene() {
 		super(new BorderPane());
 	}
 
-	public void init(ExecutorService aiExecutorService) {
+	public void init(ConfigurableApplicationContext springContext, ExecutorService aiExecutorService) {
+		this.springContext = springContext;
 		this.aiExecutorService = aiExecutorService;
 		mapPane = new ZoomableScrollPane();
 		mapToolBar.init(this);
@@ -194,6 +198,10 @@ public class GameScene extends Scene {
 		otherMaps = new HashMap<>();
 
 		setupGame(gameGenerator.createEmptyGame());
+	}
+	
+	public ConfigurableApplicationContext getSpringContext() {
+		return springContext;
 	}
 
 	public LocaleMessageSource getMessageSource() {

@@ -78,8 +78,7 @@ public class GroovyConsoleWindow extends Dialog<ButtonType> {
 		} else {
 			needOutAreaButton.setEffect(null);
 			scriptArea.setPrefHeight(600);
-			getDialogPane()
-					.setContent(new VBox(scriptArea, new HBox(runScriptButton, needOutAreaButton)));
+			getDialogPane().setContent(new VBox(scriptArea, new HBox(runScriptButton, needOutAreaButton)));
 		}
 	}
 
@@ -89,6 +88,7 @@ public class GroovyConsoleWindow extends Dialog<ButtonType> {
 			shell.setProperty("game", gameScene.getGame());
 			if (isNeedOutArea) {
 				shell.setProperty("out", osToOutArea);
+				shell.setProperty("springContext", gameScene.getSpringContext());
 			}
 			shell.evaluate(scriptText);
 		} catch (Exception e) {
