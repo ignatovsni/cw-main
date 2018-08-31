@@ -110,6 +110,9 @@ public class GameScene extends Scene {
 	private SearchOnMapWindow searchOnMapWindow;
 
 	@Autowired
+	private GroovyConsoleWindow groovyConsoleWindow;
+
+	@Autowired
 	private ScriptAIHandler scriptAIHandler;
 
 	private ZoomableScrollPane mapPane;
@@ -149,6 +152,7 @@ public class GameScene extends Scene {
 		createGameWindow.init(this);
 		countriesPropertiesWindow.init(this);
 		searchOnMapWindow.init(this);
+		groovyConsoleWindow.init(this);
 
 		VBox rightInfoPanes = new VBox();
 		rightInfoPanes.getChildren().addAll(countryInfoPane, provInfoPane, provScienceInfoPane, provArmiesInfoPane,
@@ -610,6 +614,13 @@ public class GameScene extends Scene {
 			return;
 		}
 		mapPane.ensureVisible(worldMap.findProvinceById(p.getId()));
+	}
+
+	public void runGroovyConsole() {
+		pauseGame();
+		runLocked(() -> {
+			groovyConsoleWindow.showAndWait();
+		});
 	}
 
 }

@@ -84,6 +84,10 @@ public class GsMenuBar extends MenuBar {
 		searchOnMapMenuItem.setOnAction(event -> gameScene.searchOnMap());
 		searchOnMapMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 
+		MenuItem scriptConsoleMenuItem = new MenuItem(getMessage("menu.tools.script-console"));
+		scriptConsoleMenuItem.setOnAction(event -> gameScene.runGroovyConsole());
+		scriptConsoleMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
+
 		MenuItem scaleToDefaultMenuItem = new MenuItem(getMessage("menu.tools.scale-to-default"));
 		scaleToDefaultMenuItem.setOnAction(event -> gameScene.scaleMapToDefault());
 		scaleToDefaultMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.PAGE_UP, KeyCombination.CONTROL_DOWN));
@@ -92,8 +96,8 @@ public class GsMenuBar extends MenuBar {
 		scaleToFitMenuItem.setOnAction(event -> gameScene.scaleMapToFitAllContent());
 		scaleToFitMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.PAGE_DOWN, KeyCombination.CONTROL_DOWN));
 
-		menu.getItems().setAll(searchOnMapMenuItem, new SeparatorMenuItem(), scaleToDefaultMenuItem,
-				scaleToFitMenuItem);
+		menu.getItems().setAll(searchOnMapMenuItem, new SeparatorMenuItem(), scriptConsoleMenuItem,
+				new SeparatorMenuItem(), scaleToDefaultMenuItem, scaleToFitMenuItem);
 		return menu;
 	}
 
