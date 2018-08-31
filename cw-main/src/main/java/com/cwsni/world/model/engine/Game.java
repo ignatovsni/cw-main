@@ -35,6 +35,7 @@ public class Game implements EventTarget {
 	private LocaleMessageSource messageSource;
 	private GameAlgorithms gameAlgorithms;
 	private GameEventListener gameEventListener;
+	private int lastAutoSaveTurn;
 
 	public List<Event> getEvents() {
 		return events.getEvents();
@@ -370,6 +371,14 @@ public class Game implements EventTarget {
 
 	public void resetNewArmiesWithIdLessThanZero() {
 		newArmiesWithIdLessThanZero.clear();
+	}
+
+	public int getLastAutoSaveTurn() {
+		return lastAutoSaveTurn;
+	}
+	
+	public void setLastAutoSaveTurn(int lastAutoSaveTurn) {
+		this.lastAutoSaveTurn = lastAutoSaveTurn;
 	}
 
 }

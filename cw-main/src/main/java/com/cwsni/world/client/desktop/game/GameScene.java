@@ -218,7 +218,7 @@ public class GameScene extends Scene {
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle(getMessage("menu.save.window-title"));
 				fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Game files", "*.cw"));
-				fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+				fileChooser.setInitialDirectory(new File(gameRepository.getSaveDirectoryFullPath()));
 				File file = fileChooser.showSaveDialog(getWindow());
 				if (file != null) {
 					gameRepository.saveGame(game, file);
@@ -250,7 +250,7 @@ public class GameScene extends Scene {
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle(getMessage("menu.load.window-title"));
 				fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Game files", "*.cw"));
-				fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+				fileChooser.setInitialDirectory(new File(gameRepository.getSaveDirectoryFullPath()));
 				File file = fileChooser.showOpenDialog(getWindow());
 				if (file != null) {
 					newGame = gameRepository.loadGame(file);

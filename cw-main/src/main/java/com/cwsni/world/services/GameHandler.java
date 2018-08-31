@@ -35,12 +35,16 @@ public class GameHandler {
 
 	@Autowired
 	private AIHandler aiHandler;
+	
+	@Autowired
+	private GameRepository gameRepository;
 
 	public void processNewTurn(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn) {
 		try {
 			for (int i = 0; i < timeMode.getTurnPerTime(); i++) {
 				processOneTurn(game);
 			}
+			gameRepository.autoSave(game);
 		} catch (Exception e) {
 			logError(e);
 		}
