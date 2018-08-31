@@ -2,65 +2,81 @@ package com.cwsni.world.model.data;
 
 public class GameStats {
 
-	private long maxPopulationForAllTime;
-	private long diedFromDisease;
-	private long diedFromHunger;
-	private long diedFromOverpopulation;
+	private double maxPopulationForAllTime;
+	private double diedFromDisease;
+	private double diedFromHunger;
+	private double diedFromOverpopulation;
+	private double diedInBattles;
+	private double diedFromInvasion;
 
-	public long getDiedFromDisease() {
+	public double getDiedFromDisease() {
 		return diedFromDisease;
 	}
 
-	public void setDiedFromDisease(long diedFromDisease) {
+	public void setDiedFromDisease(double diedFromDisease) {
 		this.diedFromDisease = diedFromDisease;
 	}
 
-	public long getDiedFromHunger() {
+	public double getDiedFromHunger() {
 		return diedFromHunger;
 	}
 
-	public void setDiedFromHunger(long diedFromHunger) {
+	public void setDiedFromHunger(double diedFromHunger) {
 		this.diedFromHunger = diedFromHunger;
 	}
 
-	public long getMaxPopulationForAllTime() {
+	public double getMaxPopulationForAllTime() {
 		return maxPopulationForAllTime;
 	}
 
-	public long getDiedFromOverpopulation() {
+	public double getDiedFromOverpopulation() {
 		return diedFromOverpopulation;
 	}
 
-	public void setDiedFromOverpopulation(long diedFromOverpopulation) {
+	public void setDiedFromOverpopulation(double diedFromOverpopulation) {
 		this.diedFromOverpopulation = diedFromOverpopulation;
 	}
 
-	public void setMaxPopulationForAllTime(long maxPopulationForAllTime) {
+	public void setMaxPopulationForAllTime(double maxPopulationForAllTime) {
 		this.maxPopulationForAllTime = maxPopulationForAllTime;
 	}
 
-	public void addDiedFromDisease(long diedFromDisease) {
+	public double getDiedInBattles() {
+		return diedInBattles;
+	}
+
+	public void setDiedInBattles(double diedInBattles) {
+		this.diedInBattles = diedInBattles;
+	}
+
+	public double getDiedFromInvasion() {
+		return diedFromInvasion;
+	}
+
+	public void setDiedFromInvasion(double diedFromInvasion) {
+		this.diedFromInvasion = diedFromInvasion;
+	}
+
+	public void addDiedFromDisease(double diedFromDisease) {
 		this.diedFromDisease += diedFromDisease;
 	}
 
-	public void addDiedFromHunger(long diedFromHunger) {
+	public void addDiedFromHunger(double diedFromHunger) {
 		this.diedFromHunger += diedFromHunger;
 	}
 
-	public void addDiedFromOverpopulation(long diedFromOverpopulation) {
+	public void addDiedFromOverpopulation(double diedFromOverpopulation) {
 		this.diedFromOverpopulation += diedFromOverpopulation;
 	}
 
-	public void addDiedFromDisease(double d) {
-		addDiedFromDisease((long) d);
+	public void addDiedInBattles(double diedInBattles) {
+		this.diedInBattles += diedInBattles;
 	}
 
-	public void addDiedFromHunger(double d) {
-		addDiedFromHunger((long) d);
+	public void addDiedFromInvasion(double diedFromInvasion) {
+		this.diedFromInvasion += diedFromInvasion;
 	}
 
-	public void addDiedFromOverpopulation(double d) {
-		addDiedFromOverpopulation((long) d);
-	}
+
 
 }

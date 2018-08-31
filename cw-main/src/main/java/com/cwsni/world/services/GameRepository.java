@@ -56,7 +56,7 @@ public class GameRepository {
 	}
 
 	public void quickSaveGame(Game game) {
-		logger.info("quick save : " + game.logDescription());
+		logger.trace("quick save : " + game.logDescription());
 		File file = new File(getQuickSaveFullPath());
 		saveGame(game, file);
 	}
@@ -67,10 +67,10 @@ public class GameRepository {
 			// printToConsole(objectMapper);
 			objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 			objectMapper.writeValue(file, game.getSaveData());
-			logger.info("saving is successful : " + game.logDescription());
+			logger.trace("saving is successful : " + game.logDescription());
 		} catch (IOException e) {
 			e.printStackTrace();
-			logger.info("saving is failed : " + game.logDescription(), e);
+			logger.error("saving is failed : " + game.logDescription(), e);
 			throw new CwException(e.getMessage(), e);
 		}
 	}
@@ -84,7 +84,7 @@ public class GameRepository {
 
 	public Game quickLoadGame() {
 		File file = new File(getQuickSaveFullPath());
-		logger.info("quick load");
+		logger.trace("quick load");
 		Game game = loadGame(file);
 		return game;
 	}
@@ -96,10 +96,10 @@ public class GameRepository {
 			DataGame dataGame = objectMapper.readValue(file, DataGame.class);
 			game = new Game();
 			game.buildFrom(dataGame, messageSource, gameAlgorithms, gameEventListener);
-			logger.info("loading is successful : " + game.logDescription());
+			logger.trace("loading is successful : " + game.logDescription());
 		} catch (IOException e) {
 			e.printStackTrace();
-			logger.info("loading is failed ", e);
+			logger.error("loading is failed ", e);
 			throw new CwException(e.getMessage(), e);
 		}
 		return game;

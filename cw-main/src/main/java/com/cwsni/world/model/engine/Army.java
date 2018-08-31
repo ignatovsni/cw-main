@@ -133,6 +133,7 @@ public class Army {
 	private void diedInBattle(int delta) {
 		changeSoldiers(-delta);
 		population.addCasualties(delta, country);
+		country.getGame().getGameStats().addDiedInBattles(delta);
 	}
 
 	public double getEffectiveness() {

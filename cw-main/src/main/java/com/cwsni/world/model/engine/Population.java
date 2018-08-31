@@ -235,6 +235,7 @@ public class Population {
 		setAmount((int) (getAmount() * (1 - loss)));
 		int casualties = oldAmount - getAmount();
 		addCasualties(casualties, province.getCountry());
+		game.getGameStats().addDiedFromInvasion(casualties);
 		return casualties;
 	}
 
@@ -434,7 +435,8 @@ public class Population {
 		from.getArmies().forEach(a -> {
 			int died = (int) (a.getSoldiers() * effectiveDeathRate);
 			a.setSoldiers(a.getSoldiers() - died);
-			a.getCountry().addCasualties((int) (1.0 * died * game.getGameParams().getPopulationCasualtiesFromDiseasesCoeff()));
+			a.getCountry().addCasualties(
+					(int) (1.0 * died * game.getGameParams().getPopulationCasualtiesFromDiseasesCoeff()));
 			game.getGameStats().addDiedFromDisease(died);
 		});
 	}

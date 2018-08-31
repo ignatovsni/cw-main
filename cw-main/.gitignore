@@ -3,3 +3,4 @@
 /my-app.log.*.gz
 /user.properties
 /*.cw
+/saves/
