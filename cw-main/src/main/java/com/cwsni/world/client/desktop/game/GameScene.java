@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.UserPreferences;
 import com.cwsni.world.client.desktop.game.CountriesPropertiesWindow.RowCountry;
+import com.cwsni.world.client.desktop.game.SearchOnMapWindow.SearchResult;
 import com.cwsni.world.client.desktop.game.infopanels.GsCountryInfoPane;
 import com.cwsni.world.client.desktop.game.infopanels.GsGlobalInfoPane;
 import com.cwsni.world.client.desktop.game.infopanels.GsProvArmiesInfoPane;
@@ -106,6 +107,9 @@ public class GameScene extends Scene {
 	private CountriesPropertiesWindow countriesPropertiesWindow;
 
 	@Autowired
+	private SearchOnMapWindow searchOnMapWindow;
+
+	@Autowired
 	private ScriptAIHandler scriptAIHandler;
 
 	private ZoomableScrollPane mapPane;
@@ -144,6 +148,7 @@ public class GameScene extends Scene {
 		timeControl.init(this);
 		createGameWindow.init(this);
 		countriesPropertiesWindow.init(this);
+		searchOnMapWindow.init(this);
 
 		VBox rightInfoPanes = new VBox();
 		rightInfoPanes.getChildren().addAll(countryInfoPane, provInfoPane, provScienceInfoPane, provArmiesInfoPane,
@@ -559,6 +564,28 @@ public class GameScene extends Scene {
 		List<Country> list = new ArrayList<>();
 		list.add(country);
 		editCountriesSettings(list);
+	}
+
+	public void searchOnMap() {
+		pauseGame();
+		runLocked(() -> {
+			Optional<ButtonType> result = searchOnMapWindow.showAndWait();
+			if (result.isPresent() && result.get().getButtonData() == ButtonData.OK_DONE) {
+				SearchResult selectedSearchResult = searchOnMapWindow.getSelectedSearchResult();
+				if (selectedSearchResult != null) {
+					if (selectedSearchResult.object instanceof Province) {
+						selectProvince((Province) selectedSearchResult.object);
+					} else if (selectedSearchResult.object instanceof Country) {
+						Country country = (Country) selectedSearchResult.object;
+						if (country.getCapital() != null) {
+							selectProvince(country.getCapital());
+						} else if (!country.getProvinces().isEmpty()) {
+							selectProvince(country.getProvinces().iterator().next());
+						}
+					}
+				}
+			}
+		});
 	}
 
 }

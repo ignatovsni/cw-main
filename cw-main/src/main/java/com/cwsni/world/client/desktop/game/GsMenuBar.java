@@ -27,11 +27,12 @@ public class GsMenuBar extends MenuBar {
 	public void init(GameScene gameScene) {
 		Menu fileMenu = createFileMenu(gameScene);
 		Menu worldMenu = createWorldMenu(gameScene);
-		getMenus().setAll(fileMenu, worldMenu);
+		Menu toolsMenu = createToolsMenu(gameScene);
+		getMenus().setAll(fileMenu, worldMenu, toolsMenu);
 	}
 
 	private Menu createFileMenu(GameScene gameScene) {
-		Menu fileMenu = new Menu(getMessage("menu.file"));
+		Menu menu = new Menu(getMessage("menu.file"));
 
 		MenuItem exitMenuItem = new MenuItem(getMessage("menu.file.exit"));
 		exitMenuItem.setOnAction(event -> gameScene.exitApp());
@@ -60,19 +61,30 @@ public class GsMenuBar extends MenuBar {
 		createGameMenuItem.setOnAction(event -> gameScene.createNewGame());
 		createGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
 
-		fileMenu.getItems().setAll(createGameMenuItem, createTestGameMenuItem, loadMenuItem, saveMenuItem,
+		menu.getItems().setAll(createGameMenuItem, createTestGameMenuItem, loadMenuItem, saveMenuItem,
 				quickLoadMenuItem, quickSaveMenuItem, exitMenuItem);
-		return fileMenu;
+		return menu;
 	}
 
 	private Menu createWorldMenu(GameScene gameScene) {
-		Menu worldMenu = new Menu(getMessage("menu.world"));
+		Menu menu = new Menu(getMessage("menu.world"));
 
 		MenuItem countriesMenuItem = new MenuItem(getMessage("menu.world.countries"));
 		countriesMenuItem.setOnAction(event -> gameScene.editCountriesSettings());
 
-		worldMenu.getItems().setAll(countriesMenuItem);
-		return worldMenu;
+		menu.getItems().setAll(countriesMenuItem);
+		return menu;
+	}
+	
+	private Menu createToolsMenu(GameScene gameScene) {
+		Menu menu = new Menu(getMessage("menu.tools"));
+
+		MenuItem searchOnMapMenuItem = new MenuItem(getMessage("menu.tools.search-on-map"));
+		searchOnMapMenuItem.setOnAction(event -> gameScene.searchOnMap());
+		searchOnMapMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
+
+		menu.getItems().setAll(searchOnMapMenuItem);
+		return menu;
 	}
 
 }

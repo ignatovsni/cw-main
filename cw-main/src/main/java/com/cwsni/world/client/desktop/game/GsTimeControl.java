@@ -34,7 +34,7 @@ public class GsTimeControl extends BorderPane {
 
 	@Autowired
 	private LocaleMessageSource messageSource;
-	
+
 	@Autowired
 	private ScriptAIHandler scriptAIHandler;
 
@@ -57,37 +57,43 @@ public class GsTimeControl extends BorderPane {
 
 	private Pane createUI() {
 		pauseButton = new Button(getMessage("||"));
-		pauseButton.setTooltip(new Tooltip(getMessage("info.pane.time.button.pause")));
+		pauseButton.setTooltip(new Tooltip(getMessage("info.pane.time.button.pause") + "\n"
+				+ getMessage("info.pane.time.tooltip.press-key") + " [0]"));
 		pauseButton.setOnAction(e -> {
 			pressButton(pauseButton, GsTimeMode.PAUSE);
 		});
 		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT0), () -> pauseButton.fire());
-		//gameScene.putHotKey(new KeyCodeCombination(KeyCode.SPACE), () -> pauseButton.fire());
+		// gameScene.putHotKey(new KeyCodeCombination(KeyCode.SPACE), () ->
+		// pauseButton.fire());
 		pauseButton.setEffect(new Lighting());
 
 		Button startButton = new Button(getMessage(">"));
-		startButton.setTooltip(new Tooltip(getMessage("info.pane.time.button.start")));
+		startButton.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + "\n"
+				+ getMessage("info.pane.time.tooltip.press-key") + " [1]"));
 		startButton.setOnAction(e -> {
 			pressButton(startButton, GsTimeMode.RUN);
 		});
 		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT1), () -> startButton.fire());
 
 		Button startButton_2 = new Button(getMessage(">>"));
-		startButton_2.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + " 2x"));
+		startButton_2.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + " 2x\n"
+				+ getMessage("info.pane.time.tooltip.press-key") + " [2]"));
 		startButton_2.setOnAction(e -> {
 			pressButton(startButton_2, GsTimeMode.RUN_2);
 		});
 		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT2), () -> startButton_2.fire());
 
 		Button startButton_5 = new Button(getMessage(">>>"));
-		startButton_5.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + " 5x"));
+		startButton_5.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + " 5x\n"
+				+ getMessage("info.pane.time.tooltip.press-key") + " [3]"));
 		startButton_5.setOnAction(e -> {
 			pressButton(startButton_5, GsTimeMode.RUN_5);
 		});
 		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT3), () -> startButton_5.fire());
 
 		Button startButton_10 = new Button(getMessage(">>>>"));
-		startButton_10.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + " 10x"));
+		startButton_10.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + " 10x\n"
+				+ getMessage("info.pane.time.tooltip.press-key") + " [4]"));
 		startButton_10.setOnAction(e -> {
 			pressButton(startButton_10, GsTimeMode.RUN_10);
 		});
