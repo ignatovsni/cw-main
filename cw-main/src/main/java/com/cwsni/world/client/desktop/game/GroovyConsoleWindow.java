@@ -32,7 +32,6 @@ public class GroovyConsoleWindow extends Dialog<ButtonType> {
 	private TextArea outArea;
 	private Button runScriptButton;
 	private Button needOutAreaButton;
-	private Button clearOutAreaButton;
 
 	private boolean isNeedOutArea = true;
 
@@ -62,9 +61,6 @@ public class GroovyConsoleWindow extends Dialog<ButtonType> {
 			fillDialog();
 		});
 
-		clearOutAreaButton = new Button(getMessage("window.script-console.button.clear-out-area"));
-		clearOutAreaButton.setOnAction(e -> outArea.setText(""));
-
 		fillDialog();
 		this.setOnShown(e -> Platform.runLater(() -> scriptArea.requestFocus()));
 	}
@@ -73,8 +69,7 @@ public class GroovyConsoleWindow extends Dialog<ButtonType> {
 		if (isNeedOutArea) {
 			needOutAreaButton.setEffect(new Lighting());
 			scriptArea.setPrefHeight(400);
-			getDialogPane().setContent(
-					new VBox(scriptArea, outArea, new HBox(runScriptButton, needOutAreaButton, clearOutAreaButton)));
+			getDialogPane().setContent(new VBox(scriptArea, outArea, new HBox(runScriptButton, needOutAreaButton)));
 		} else {
 			needOutAreaButton.setEffect(null);
 			scriptArea.setPrefHeight(600);
