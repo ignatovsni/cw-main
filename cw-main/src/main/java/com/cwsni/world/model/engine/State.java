@@ -454,8 +454,7 @@ public class State {
 				provsIds.add(p.getId());
 			}
 		}
-
-		if (provs.size() < minProvinces) {
+		if (provs.size() < minProvinces && game.getGameParams().getRandom().nextDouble() > 0.001 * provs.size()) {
 			return;
 		}
 		DataState dc = new DataState();

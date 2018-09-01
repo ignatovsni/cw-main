@@ -38,8 +38,8 @@ public class CreateGameWindow extends Dialog<ButtonType> {
 
 	private GridPane grid;
 	private ComboBox<String> cbMapSizes;
-
 	private ComboBox<String> cbOceanFraction;
+	private ComboBox<String> cbMountainFraction;
 	private TextField tfRandomSeed;
 
 	private String getMessage(String code) {
@@ -66,6 +66,11 @@ public class CreateGameWindow extends Dialog<ButtonType> {
 		cbOceanFraction = new ComboBox<String>(oceanFractionList);
 		cbOceanFraction.setValue("40");
 
+		ObservableList<String> mountainFractionList = FXCollections.observableArrayList("0", "0.001", "0.003", "0.005",
+				"0.010");
+		cbMountainFraction = new ComboBox<String>(mountainFractionList);
+		cbMountainFraction.setValue("0.003");
+
 		tfRandomSeed = new TextField();
 		tfRandomSeed.setText(String.valueOf(System.currentTimeMillis()));
 		tfRandomSeed.textProperty().addListener(new ChangeListener<String>() {
@@ -81,6 +86,7 @@ public class CreateGameWindow extends Dialog<ButtonType> {
 		int idx = 0;
 		addRow("window.create-game.map.size", grid, idx++, cbMapSizes);
 		addRow("window.create-game.map.ocean-fraction", grid, idx++, cbOceanFraction);
+		addRow("window.create-game.map.ocean-fraction", grid, idx++, cbMountainFraction);
 		addRow("window.create-game.random-seed", grid, idx++, tfRandomSeed);
 
 		getDialogPane().setContent(grid);
@@ -91,6 +97,7 @@ public class CreateGameWindow extends Dialog<ButtonType> {
 		GameParams gameParams = new GameParams();
 		gameParams.setSeed(tfRandomSeed.getText().isEmpty() ? 0 : Long.valueOf(tfRandomSeed.getText()));
 		gameParams.setOceanPercent(Double.valueOf(cbOceanFraction.getValue()) / 100);
+		gameParams.setMountainsPerMapProvinces(Double.valueOf(cbMountainFraction.getValue()));
 		switch (cbMapSizes.getValue()) {
 		case MAP_HUGE:
 			gameParams.setRows(70);

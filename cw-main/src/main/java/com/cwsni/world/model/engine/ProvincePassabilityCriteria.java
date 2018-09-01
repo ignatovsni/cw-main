@@ -13,6 +13,9 @@ public class ProvincePassabilityCriteria {
 	}
 
 	public boolean isPassable(Province p) {
+		if (p.getTerrainType().isMountain()) {
+			return false;
+		}
 		if (p.getTerrainType().isWater()) {
 			return country.getReachableWaterProvinces().contains(p);
 		}

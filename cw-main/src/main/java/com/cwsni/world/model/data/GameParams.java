@@ -15,6 +15,7 @@ public class GameParams {
 	private int provinceRadius = 10;
 	private int terrainCorePoints = 10;
 	private double oceanPercent = 0.4;
+	private double mountainsPerMapProvinces = 0.003;
 
 	private double soilAreaCorePointsPerProvinces = 0.01;
 	private int soilAreaPerSize = 1000;
@@ -835,6 +836,14 @@ public class GameParams {
 
 	public void setSoilFertilityAtStartCoeffForCoast(double soilFertilityAtStartCoeffForCoast) {
 		this.soilFertilityAtStartCoeffForCoast = soilFertilityAtStartCoeffForCoast;
+	}
+
+	public double getMountainsPerMapProvinces() {
+		return mountainsPerMapProvinces;
+	}
+
+	public void setMountainsPerMapProvinces(double mountainsPerMapProvinces) {
+		this.mountainsPerMapProvinces = mountainsPerMapProvinces;
 	}
 
 }

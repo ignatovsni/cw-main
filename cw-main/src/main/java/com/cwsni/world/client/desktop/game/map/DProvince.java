@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 
 import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.Point;
-import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.data.events.Event;
 import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.Country;
@@ -83,7 +82,7 @@ class DProvince extends Group {
 
 	public void draw() {
 		MapMode mapMode = map.getMapMode();
-		if (getProvince().getTerrainType() == TerrainType.OCEAN) {
+		if (!getProvince().getTerrainType().isPopulationPossible()) {
 			if (mapMode != prevMode) {
 				drawGeoMode(polygon);
 			}

@@ -26,6 +26,7 @@ import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.data.Turn;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
+import com.cwsni.world.util.CwRandom;
 
 @Component
 public class GameGenerator {
@@ -58,6 +59,7 @@ public class GameGenerator {
 		dataGame.setTurn(new Turn(0));
 		createMap(dataGame, tData);
 		createTerrain(dataGame, tData);
+		createMountaints(dataGame, tData);
 		int lastContinentId = defineContinents(dataGame, tData, tt -> !tt.isWater(), 0);
 		int lastOceanId = defineContinents(dataGame, tData, tt -> tt.isWater(), lastContinentId);
 		dataGame.getMap().setContinents(lastContinentId);
@@ -158,6 +160,88 @@ public class GameGenerator {
 		}
 	}
 
+	private void createMountaints(DataGame game, TempData tData) {
+		if (game.getMap().getProvinces().size() < 200) {
+			return;
+		}
+		GameParams gParams = game.getGameParams();
+		int needMountains = (int) (gParams.getMountainsPerMapProvinces() * game.getMap().getProvinces().size());
+		int maxChainLength = Math.max(gParams.getRows(), gParams.getColumns());
+		createChainMountains(tData, gParams, needMountains, maxChainLength);
+		createChainMountains(tData, gParams, needMountains, 1);
+
+		// Check isolated provinces. It is not the best solution, but still...
+		tData.provByIds.values().forEach(p -> {
+			long notMontainsProvs = p.getNeighbors().stream().map(nId -> tData.provByIds.get(nId))
+					.filter(n -> !n.getTerrainType().isMountain()).count();
+			if (notMontainsProvs == 0) {
+				configureMountainProvince(p);
+			}
+		});
+	}
+
+	private void createChainMountains(TempData tData, GameParams gParams, int needMountains, int maxChainLength) {
+		CwRandom rnd = gParams.getRandom();
+		double probabilityOfPass = 0.2;
+		double probabilityOfChangeDirection = 0.05;
+		int alreadyCreatedMountains = 0;
+		DataProvince lastMountainProv = null;
+		int direction = 0;
+		int chainLength = 0;
+		int maxThisChainLength = 0;
+		while (alreadyCreatedMountains < needMountains) {
+			if (lastMountainProv == null) {
+				int provId = rnd.nextInt(tData.provByIds.keySet().size());
+				DataProvince prov = tData.provByIds.get(provId);
+				if (prov.getTerrainType().isWater()) {
+					continue;
+				}
+				// start new mountains chain
+				lastMountainProv = prov;
+				direction = rnd.nextInt(lastMountainProv.getNeighbors().size());
+				chainLength = 0;
+				maxThisChainLength = 1 + rnd.nextInt(
+						1 + (int) (1.0 * maxChainLength * (needMountains - alreadyCreatedMountains) / needMountains));
+				maxThisChainLength = Math.min(maxThisChainLength, maxChainLength);
+			} else if (chainLength >= maxThisChainLength) {
+				// end mountains chain
+				lastMountainProv = null;
+				alreadyCreatedMountains++;
+			} else {
+				direction = changeDirection(lastMountainProv, direction, 0);
+				lastMountainProv = tData.provByIds.get(lastMountainProv.getNeighbors().get(direction));
+			}
+			if (lastMountainProv != null) {
+				if (!lastMountainProv.getTerrainType().isWater()) {
+					if (rnd.nextDouble() > probabilityOfPass) {
+						configureMountainProvince(lastMountainProv);
+					}
+				}
+				chainLength++;
+				if (rnd.nextDouble() < probabilityOfChangeDirection) {
+					direction = changeDirection(lastMountainProv, direction, 1);
+				} else if (rnd.nextDouble() < probabilityOfChangeDirection) {
+					direction = changeDirection(lastMountainProv, direction, -1);
+				}
+
+			}
+		}
+	}
+
+	private void configureMountainProvince(DataProvince p) {
+		p.setTerrainType(TerrainType.MOUNTAIN);
+	}
+
+	private int changeDirection(DataProvince p, int direction, int delta) {
+		direction += delta;
+		if (direction >= p.getNeighbors().size()) {
+			direction = 0;
+		} else if (direction < 0) {
+			direction = p.getNeighbors().size() - 1;
+		}
+		return direction;
+	}
+
 	private int defineContinents(DataGame game, TempData tData, Function<TerrainType, Boolean> checkProvince,
 			int currentContinentId) {
 		for (DataProvince p : game.getMap().getProvinces()) {
@@ -218,7 +302,7 @@ public class GameGenerator {
 			}
 			increasedIds.add(coreId);
 		});
-		
+
 		// increase soil fertility for coast
 		Set<Integer> coastIds = new HashSet<>();
 		terrain.stream().filter(p -> p.getTerrainType().isSoilPossible()).forEach(p -> {
@@ -229,7 +313,7 @@ public class GameGenerator {
 			}
 		});
 		increasedIds.addAll(coastIds);
-		
+
 		// increase soil fertility for neighbors
 		Queue<DataProvince> queueProvs = new LinkedBlockingQueue<DataProvince>();
 		increasedIds.forEach(id -> queueProvs.add(tData.provByIds.get(id)));
