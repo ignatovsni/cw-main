@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.cwsni.world.model.data.DataArmy;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.util.ComparisonTool;
 
 public class Army {
 

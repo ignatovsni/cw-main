@@ -1,6 +1,7 @@
 package com.cwsni.world.model.engine;
 
 import com.cwsni.world.model.engine.relationships.RTribute;
+import com.cwsni.world.util.ComparisonTool;
 
 public class ProvincePassabilityCriteria {
 

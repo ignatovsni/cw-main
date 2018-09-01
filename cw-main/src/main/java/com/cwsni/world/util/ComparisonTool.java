@@ -1,4 +1,4 @@
-package com.cwsni.world.model.engine;
+package com.cwsni.world.util;
 
 public class ComparisonTool {
 

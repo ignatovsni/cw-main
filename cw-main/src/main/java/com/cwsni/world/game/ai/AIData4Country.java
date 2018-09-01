@@ -1,35 +1,40 @@
 package com.cwsni.world.game.ai;
 
+import com.cwsni.world.model.player.PGame;
+import com.cwsni.world.model.player.interfaces.IData4Country;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPGame;
 
-public class AIData4Country {
-	private IPGame game;
-	private IPCountry country;
+public class AIData4Country implements IData4Country {
+	private PGame game;
 	private JavaAIHandler javaAIHandler;
-	private boolean isInWar;
 
-	void initNewTurn(IPGame game, IPCountry country, JavaAIHandler javaAIHandler) {
+	public AIData4Country(PGame game) {
 		this.game = game;
-		this.country = country;
-		this.javaAIHandler = javaAIHandler;
-		this.isInWar = !game.getRelationships().getCountriesWithWar(country.getId()).isEmpty();
 	}
 
+	protected void initNewTurn(JavaAIHandler javaAIHandler) {
+		this.javaAIHandler = javaAIHandler;
+	}
+
+	@Override
 	public IPGame getGame() {
 		return game;
 	}
 
+	@Override
 	public IPCountry getCountry() {
-		return country;
+		return game.getCountry();
 	}
 
+	@Override
+	public Integer getCountryId() {
+		return getCountry().getId();
+	}
+
+	@Override
 	public JavaAIHandler getJavaAIHandler() {
 		return javaAIHandler;
-	}
-
-	public boolean isInWar() {
-		return isInWar;
 	}
 
 }

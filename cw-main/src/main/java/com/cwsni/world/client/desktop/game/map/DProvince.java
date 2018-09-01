@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.events.Event;
-import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Culture;
 import com.cwsni.world.model.engine.GameTransientStats;
@@ -14,6 +13,7 @@ import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.engine.State;
 import com.cwsni.world.model.engine.relationships.RTribute;
 import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
+import com.cwsni.world.util.ComparisonTool;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;

@@ -1,9 +1,9 @@
 package com.cwsni.world.game.commands;
 
-import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.player.PCountry;
 import com.cwsni.world.model.player.interfaces.IPProvince;
+import com.cwsni.world.util.ComparisonTool;
 
 abstract public class CommandProvince extends Command {
 

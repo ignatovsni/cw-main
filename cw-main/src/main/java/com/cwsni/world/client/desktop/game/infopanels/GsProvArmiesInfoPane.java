@@ -12,9 +12,9 @@ import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 import com.cwsni.world.model.engine.Army;
-import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Province;
+import com.cwsni.world.util.ComparisonTool;
 
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;

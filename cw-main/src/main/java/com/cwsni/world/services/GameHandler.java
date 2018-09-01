@@ -22,11 +22,11 @@ import com.cwsni.world.game.commands.CommandArmySplit;
 import com.cwsni.world.game.commands.CommandDiplomacy;
 import com.cwsni.world.game.commands.CommandErrorHandler;
 import com.cwsni.world.model.engine.Army;
-import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.ProvinceBorder;
 import com.cwsni.world.model.player.PGame;
+import com.cwsni.world.util.ComparisonTool;
 
 @Component
 public class GameHandler {
@@ -35,11 +35,22 @@ public class GameHandler {
 
 	@Autowired
 	private AIHandler aiHandler;
-	
+
 	@Autowired
 	private GameRepository gameRepository;
 
-	public void processNewTurn(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn) {
+	@Autowired
+	private GameExecutorService executorService;
+
+	public void processNewTurn(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn,
+			Runnable afterTurnProcessing) {
+		executorService.processAI(() -> {
+			runInThread(game, timeMode, autoTurn, pauseBetweenTurn);
+			afterTurnProcessing.run();
+		});
+	}
+
+	private void runInThread(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn) {
 		try {
 			for (int i = 0; i < timeMode.getTurnPerTime(); i++) {
 				processOneTurn(game);
@@ -88,7 +99,7 @@ public class GameHandler {
 
 	private void preProcessCommands(Game game, List<PGame> pGames, CommandErrorHandler errorHandler) {
 		pGames.forEach(pg -> {
-			Country country = game.findCountryById(pg.getCountryId());
+			Country country = game.findCountryById(pg.getAIData().getCountryId());
 			pg.getCommands().forEach(c -> {
 				c.setCountry(country);
 				c.setErrorHandler(errorHandler);

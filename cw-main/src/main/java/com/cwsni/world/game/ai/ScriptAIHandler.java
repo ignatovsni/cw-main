@@ -19,23 +19,22 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.model.player.interfaces.IData4Country;
+
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
 /**
- * Add scripts for:
- * - fights
- * - states creating
- * - country creating ???
+ * Add scripts for: - fights - states creating - country creating ???
  * 
  */
 
 @Component
 @Qualifier("scriptAIHandler")
-public class ScriptAIHandler implements IAIHandler {
+public class ScriptAIHandler {
 
-	//public static final String DEFAULT_SCRIPT = "default";
-	public static final String DEFAULT_SCRIPT = "[java]";
+	public static final String DEFAULT_SCRIPT = "default";
+	//public static final String DEFAULT_SCRIPT = "[java]";
 	private static final String JAVA_INTERNAL_AI = "[java]";
 	private static final String AI_SCRIPTS_FOLDER_WITH_SLASH = "ai-scripts/";
 	private static final String AI_SCRIPTS_FOLDER = "ai-scripts";
@@ -48,7 +47,7 @@ public class ScriptAIHandler implements IAIHandler {
 		scriptsCache = new HashMap<>();
 	}
 
-	public boolean hasScript(AIData4Country data) {
+	public boolean hasScript(IData4Country data) {
 		String aiScriptName = data.getCountry().getAiScriptName();
 		if (aiScriptName == null || aiScriptName.isEmpty() || JAVA_INTERNAL_AI.equals(aiScriptName)) {
 			return false;
@@ -56,7 +55,7 @@ public class ScriptAIHandler implements IAIHandler {
 		return getScript(data) != null;
 	}
 
-	private Script getScript(AIData4Country data) {
+	private Script getScript(IData4Country data) {
 		String scriptName = data.getCountry().getAiScriptName();
 		if (scriptName == null || scriptName.isEmpty()) {
 			return null;
@@ -118,15 +117,14 @@ public class ScriptAIHandler implements IAIHandler {
 		scriptsCache.clear();
 	}
 
-	private void invokeMethod(String methodName, AIData4Country data) {
+	private void invokeMethod(String methodName, IData4Country data) {
 		Script script = getScript(data);
 		if (script != null) {
 			script.invokeMethod(methodName, data);
 		}
 	}
 
-	@Override
-	public void processCountry(AIData4Country data) {
+	public void processCountry(IData4Country data) {
 		invokeMethod("processCountry", data);
 	}
 

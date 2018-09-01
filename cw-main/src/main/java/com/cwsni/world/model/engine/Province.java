@@ -22,6 +22,7 @@ import com.cwsni.world.model.data.events.Event;
 import com.cwsni.world.model.data.events.EventCollection;
 import com.cwsni.world.model.data.events.EventEpidemic;
 import com.cwsni.world.model.data.events.EventTarget;
+import com.cwsni.world.util.ComparisonTool;
 
 public class Province implements EventTarget {
 

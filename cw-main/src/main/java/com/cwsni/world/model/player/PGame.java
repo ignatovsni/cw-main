@@ -16,6 +16,7 @@ import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.engine.State;
+import com.cwsni.world.model.player.interfaces.IData4Country;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPGame;
@@ -69,18 +70,12 @@ public class PGame implements IPGame {
 	}
 
 	@Override
-	public IPCountry getCountry() {
-		return getCountry(country);
-	}
-
-	@Override
-	public Integer getCountryId() {
-		return country.getId();
-	}
-
-	@Override
 	public IPGameParams getGameParams() {
 		return params;
+	}
+
+	public IPCountry getCountry() {
+		return getCountry(country);
 	}
 
 	private IPCountry getCountry(Country c) {
@@ -142,9 +137,9 @@ public class PGame implements IPGame {
 	}
 
 	@Override
-	public AIData4Country getAIData() {
+	public IData4Country getAIData() {
 		if (aiData == null) {
-			aiData = new AIData4Country();
+			aiData = new AIData4Country(this);
 		}
 		return aiData;
 	}

@@ -7,9 +7,9 @@ import com.cwsni.world.model.data.relationships.DataRTribute;
 import com.cwsni.world.model.data.relationships.DataRTruce;
 import com.cwsni.world.model.data.relationships.DataRWar;
 import com.cwsni.world.model.data.relationships.DataRelationshipsCollection;
-import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.util.ComparisonTool;
 
 public class RelationshipsCollection {
 

@@ -5,11 +5,11 @@ import java.util.Collection;
 import java.util.List;
 
 import com.cwsni.world.model.data.TerrainType;
-import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 import com.cwsni.world.model.player.interfaces.IPState;
+import com.cwsni.world.util.ComparisonTool;
 
 public class PProvince implements IPProvince {
 
@@ -91,10 +91,10 @@ public class PProvince implements IPProvince {
 		if (getCountryId() == null) {
 			return true;
 		}
-		if (ComparisonTool.isEqual(getCountryId(), game.getCountryId())) {
+		if (ComparisonTool.isEqual(getCountryId(), game.getAIData().getCountryId())) {
 			return false;
 		}
-		return game.getRelationships().getCountriesWithWar(game.getCountryId()).containsKey(getCountryId());
+		return game.getRelationships().getCountriesWithWar(game.getAIData().getCountryId()).containsKey(getCountryId());
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class PProvince implements IPProvince {
 		if (a != null) {
 			return province.isPassable(a.getCountry().getId());
 		} else {
-			return province.isPassable(game.getCountryId());
+			return province.isPassable(game.getAIData().getCountryId());
 		}
 	}
 

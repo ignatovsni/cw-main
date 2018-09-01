@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.player.SimplePair;
+import com.cwsni.world.model.player.interfaces.IData4Country;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPGame;
@@ -27,16 +27,16 @@ import com.cwsni.world.model.player.interfaces.IPRTruce;
 import com.cwsni.world.model.player.interfaces.IPRWar;
 import com.cwsni.world.model.player.interfaces.IPRandom;
 import com.cwsni.world.model.player.interfaces.IPScienceBudget;
+import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.Heap;
 
 @Component
 @Qualifier("javaAIHandler")
-public class JavaAIHandler implements IAIHandler {
+public class JavaAIHandler {
 
 	private static final int MAX_ARMIES = 100;
 
-	@Override
-	public void processCountry(AIData4Country data) {
+	public void processCountry(IData4Country data) {
 		checkCapital(data);
 		manageMoneyBudget(data);
 		manageScienceBudget(data);
@@ -46,7 +46,7 @@ public class JavaAIHandler implements IAIHandler {
 		moveArmies(data);
 	}
 
-	public void manageMoneyBudget(AIData4Country data) {
+	public void manageMoneyBudget(IData4Country data) {
 		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
 		budget.setProvinceTax(0.5);
 		budget.setArmyWeight(1);
@@ -54,14 +54,14 @@ public class JavaAIHandler implements IAIHandler {
 		budget.setSavingWeight(1);
 	}
 
-	public void manageScienceBudget(AIData4Country data) {
+	public void manageScienceBudget(IData4Country data) {
 		IPScienceBudget budget = data.getCountry().getScienceBudget();
 		budget.setAdministrationWeight(1);
 		budget.setAgricultureWeight(2);
 		budget.setMedicineWeight(1);
 	}
 
-	private void manageDiplomacy(AIData4Country data) {
+	private void manageDiplomacy(IData4Country data) {
 		int maxDesiredWars = 5;
 		Map<Integer, Double> countriesCurrentWarStrength = getCurrentWarStrengthForCountries(data);
 		IPCountry country = data.getCountry();
@@ -153,7 +153,7 @@ public class JavaAIHandler implements IAIHandler {
 
 	}
 
-	private Map<Integer, Double> getCurrentWarStrengthForCountries(AIData4Country data) {
+	private Map<Integer, Double> getCurrentWarStrengthForCountries(IData4Country data) {
 		Map<Integer, Double> pureWarStrength = new HashMap<>();
 		// this country
 		pureWarStrength.put(data.getCountry().getId(), 0.0);
@@ -190,11 +190,11 @@ public class JavaAIHandler implements IAIHandler {
 		return countriesCurrentWarStrength;
 	}
 
-	private double getPureWarStrength(AIData4Country data, IPCountry country) {
+	private double getPureWarStrength(IData4Country data, IPCountry country) {
 		return country.getFocusLevel() * country.getPopulationAmount();
 	}
 
-	public void checkCapital(AIData4Country data) {
+	public void checkCapital(IData4Country data) {
 		IPCountry country = data.getCountry();
 		IPProvince capital = country.getCapital();
 		IPProvince firstCapital = country.getFirstCapital();
@@ -230,7 +230,7 @@ public class JavaAIHandler implements IAIHandler {
 		}
 	}
 
-	public void processArmyBudget(AIData4Country data) {
+	public void processArmyBudget(IData4Country data) {
 		IPGameParams params = data.getGame().getGameParams();
 		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
 		double availableMoneyForArmy = budget.getAvailableMoneyForArmy();
@@ -283,7 +283,7 @@ public class JavaAIHandler implements IAIHandler {
 		}
 	}
 
-	public void mergeAndSplitArmies(AIData4Country data) {
+	public void mergeAndSplitArmies(IData4Country data) {
 		IPCountry country = data.getCountry();
 		List<IPArmy> armies = new ArrayList<>(country.getArmies());
 		Set<IPArmy> processed = new HashSet<>();
@@ -342,7 +342,7 @@ public class JavaAIHandler implements IAIHandler {
 		}
 	}
 
-	public void moveArmies(AIData4Country data) {
+	public void moveArmies(IData4Country data) {
 		Collection<IPArmy> armies = new ArrayList<>(data.getCountry().getArmies());
 		if (armies.isEmpty()) {
 			return;
@@ -350,7 +350,7 @@ public class JavaAIHandler implements IAIHandler {
 		armies.stream().forEach(a -> moveArmy(data, a));
 	}
 
-	private void moveArmy(AIData4Country data, IPArmy army) {
+	private void moveArmy(IData4Country data, IPArmy army) {
 		if (!army.isCanMove()) {
 			return;
 		}
@@ -373,7 +373,7 @@ public class JavaAIHandler implements IAIHandler {
 		tryMovingArmyFurther(data, army);
 	}
 
-	private boolean tryMovingArmyToNeighbors(AIData4Country data, IPArmy army) {
+	private boolean tryMovingArmyToNeighbors(IData4Country data, IPArmy army) {
 		Map<IPProvince, Double> importanceOfProvinces = new HashMap<>();
 		for (IPProvince neighbor : army.getLocation().getNeighbors()) {
 			if (neighbor.canBeSubjugatedByMe() && neighbor.isPassable(army)) {
@@ -402,7 +402,7 @@ public class JavaAIHandler implements IAIHandler {
 		return !army.isCanMove();
 	}
 
-	private boolean isAbleToSubjugate(AIData4Country data, IPArmy army, IPProvince location) {
+	private boolean isAbleToSubjugate(IData4Country data, IPArmy army, IPProvince location) {
 		if (!location.canBeSubjugatedByMe()) {
 			return false;
 		}
@@ -410,7 +410,7 @@ public class JavaAIHandler implements IAIHandler {
 				* data.getCountry().getArmySoldiersToPopulationForSubjugation();
 	}
 
-	private double calculateImportanceOfProvince(AIData4Country data, IPProvince neighbor, IPCountry pCountry) {
+	private double calculateImportanceOfProvince(IData4Country data, IPProvince neighbor, IPCountry pCountry) {
 		IPProvince capital = pCountry.getCapital();
 		if (capital == null) {
 			capital = pCountry.getFirstCapital();
@@ -418,7 +418,7 @@ public class JavaAIHandler implements IAIHandler {
 		return 1 / Math.max(data.getGame().findDistance(neighbor, capital), 1);
 	}
 
-	private void tryMovingArmyFurther(AIData4Country data, IPArmy a) {
+	private void tryMovingArmyFurther(IData4Country data, IPArmy a) {
 		IPProvince capital = data.getCountry().getCapital();
 		SimplePair<IPProvince, Double> nearestLandProv = findNearestPriorityProvince(data, capital, a,
 				data.getCountry().getReachableLandBorderAlienProvs());
@@ -437,7 +437,7 @@ public class JavaAIHandler implements IAIHandler {
 		}
 	}
 
-	private SimplePair<IPProvince, Double> findNearestPriorityProvince(AIData4Country data, IPProvince capital,
+	private SimplePair<IPProvince, Double> findNearestPriorityProvince(IData4Country data, IPProvince capital,
 			IPArmy army, Set<IPProvince> provinces) {
 		IPProvince armyLocation = army.getLocation();
 		IPProvince nearestProv = null;

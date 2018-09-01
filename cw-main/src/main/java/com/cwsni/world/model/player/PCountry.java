@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import com.cwsni.world.game.commands.CommandArmyCreate;
 import com.cwsni.world.game.commands.CommandProvinceSetCapital;
-import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.player.interfaces.IPArmy;
@@ -18,6 +17,7 @@ import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 import com.cwsni.world.model.player.interfaces.IPScienceBudget;
+import com.cwsni.world.util.ComparisonTool;
 
 public class PCountry implements IPCountry {
 

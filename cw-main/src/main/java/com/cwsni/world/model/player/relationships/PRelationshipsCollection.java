@@ -6,7 +6,6 @@ import java.util.Map;
 import com.cwsni.world.game.commands.CommandDiplomacyCancelTribute;
 import com.cwsni.world.game.commands.CommandDiplomacyPeace;
 import com.cwsni.world.game.commands.CommandDiplomacyWar;
-import com.cwsni.world.model.engine.ComparisonTool;
 import com.cwsni.world.model.engine.relationships.RTribute;
 import com.cwsni.world.model.engine.relationships.RTruce;
 import com.cwsni.world.model.engine.relationships.RWar;
@@ -16,6 +15,7 @@ import com.cwsni.world.model.player.interfaces.IPRTribute;
 import com.cwsni.world.model.player.interfaces.IPRTruce;
 import com.cwsni.world.model.player.interfaces.IPRWar;
 import com.cwsni.world.model.player.interfaces.IPRelationshipsCollection;
+import com.cwsni.world.util.ComparisonTool;
 
 public class PRelationshipsCollection implements IPRelationshipsCollection {
 
@@ -56,17 +56,17 @@ public class PRelationshipsCollection implements IPRelationshipsCollection {
 		if (war == null) {
 			return;
 		}
-		if (!war.hasParticipant(game.getCountryId())) {
+		if (!war.hasParticipant(game.getAIData().getCountryId())) {
 			return;
 		}
-		int targetId = ComparisonTool.isEqual(game.getCountryId(), war.getMasterId()) ? war.getSlaveId()
+		int targetId = ComparisonTool.isEqual(game.getAIData().getCountryId(), war.getMasterId()) ? war.getSlaveId()
 				: war.getMasterId();
 		game.addCommand(new CommandDiplomacyPeace(targetId, isRegularPeace, isWantToBeMaster, isWantToBeVassal));
 	}
 
 	@Override
 	public void declareWar(Integer countryId) {
-		if (getCountriesWithWar(game.getCountryId()).containsKey(countryId)) {
+		if (getCountriesWithWar(game.getAIData().getCountryId()).containsKey(countryId)) {
 			// war is already active
 			return;
 		}
@@ -75,7 +75,8 @@ public class PRelationshipsCollection implements IPRelationshipsCollection {
 
 	@Override
 	public void cancelTribute(IPRTribute tribute) {
-		int targetId = ComparisonTool.isEqual(game.getCountryId(), tribute.getMasterId()) ? tribute.getSlaveId()
+		int targetId = ComparisonTool.isEqual(game.getAIData().getCountryId(), tribute.getMasterId())
+				? tribute.getSlaveId()
 				: tribute.getMasterId();
 		game.addCommand(new CommandDiplomacyCancelTribute(targetId));
 	}

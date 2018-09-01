@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +38,6 @@ import com.cwsni.world.services.GameHandler;
 import com.cwsni.world.services.GameRepository;
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -132,7 +130,6 @@ public class GameScene extends Scene {
 	private Map<MapMode, DWorldMap> otherMaps;
 
 	private Object lockObj = new Object();
-	private ExecutorService aiExecutorService;
 
 	private ConfigurableApplicationContext springContext;
 
@@ -140,9 +137,8 @@ public class GameScene extends Scene {
 		super(new BorderPane());
 	}
 
-	public void init(ConfigurableApplicationContext springContext, ExecutorService aiExecutorService) {
+	public void init(ConfigurableApplicationContext springContext) {
 		this.springContext = springContext;
-		this.aiExecutorService = aiExecutorService;
 		mapPane = new ZoomableScrollPane();
 		mapToolBar.init(this);
 		menuBar.init(this);
@@ -199,7 +195,7 @@ public class GameScene extends Scene {
 
 		setupGame(gameGenerator.createEmptyGame());
 	}
-	
+
 	public ConfigurableApplicationContext getSpringContext() {
 		return springContext;
 	}
@@ -405,29 +401,8 @@ public class GameScene extends Scene {
 		if (timeMode == GsTimeMode.PAUSE) {
 			return;
 		}
-		Task<Integer> task = new Task<Integer>() {
-			@Override
-			protected Integer call() throws Exception {
-				runLocked(() -> gameHadler.processNewTurn(game, timeMode, autoTurn, pauseBetweenTurn));
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							refreshViewAndStartNewTurn();
-						} catch (Exception e) {
-							logError(e);
-						}
-					}
-				});
-				return null;
-			}
-		};
-		/*
-		 * Thread th = new Thread(task); th.setName("turn processing"); th.start();
-		 */
-
-		// TODO It is not fully correct. We need to wait until task will be finished.
-		aiExecutorService.submit(task);
+		gameHadler.processNewTurn(game, timeMode, autoTurn, pauseBetweenTurn,
+				() -> Platform.runLater(() -> refreshViewAndStartNewTurn()));
 	}
 
 	private void refreshViewAndStartNewTurn() {
@@ -478,7 +453,7 @@ public class GameScene extends Scene {
 		});
 	}
 
-	private void runLocked(Runnable r) {
+	public void runLocked(Runnable r) {
 		synchronized (lockObj) {
 			r.run();
 		}

@@ -18,6 +18,7 @@ import com.cwsni.world.model.data.events.EventTarget;
 import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 import com.cwsni.world.services.GameEventListener;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
+import com.cwsni.world.util.ComparisonTool;
 
 public class Game implements EventTarget {
 
