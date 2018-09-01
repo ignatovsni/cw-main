@@ -33,6 +33,7 @@ import com.cwsni.world.game.ai.ScriptAIHandler;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.Province;
+import com.cwsni.world.services.GameDataModelLocker;
 import com.cwsni.world.services.GameGenerator;
 import com.cwsni.world.services.GameHandler;
 import com.cwsni.world.services.GameRepository;
@@ -114,6 +115,9 @@ public class GameScene extends Scene {
 	@Autowired
 	private ScriptAIHandler scriptAIHandler;
 
+	@Autowired
+	private GameDataModelLocker gameDataModelLocker;
+
 	private ZoomableScrollPane mapPane;
 	private Text statusBarText;
 
@@ -128,8 +132,6 @@ public class GameScene extends Scene {
 
 	private Map<MapMode, Stage> otherMapWindows;
 	private Map<MapMode, DWorldMap> otherMaps;
-
-	private Object lockObj = new Object();
 
 	private ConfigurableApplicationContext springContext;
 
@@ -401,7 +403,7 @@ public class GameScene extends Scene {
 		if (timeMode == GsTimeMode.PAUSE) {
 			return;
 		}
-		gameHadler.processNewTurn(game, timeMode, autoTurn, pauseBetweenTurn,
+		gameHadler.processNewTurns(game, timeMode, autoTurn, pauseBetweenTurn,
 				() -> Platform.runLater(() -> refreshViewAndStartNewTurn()));
 	}
 
@@ -454,9 +456,7 @@ public class GameScene extends Scene {
 	}
 
 	public void runLocked(Runnable r) {
-		synchronized (lockObj) {
-			r.run();
-		}
+		gameDataModelLocker.runLocked(r);
 	}
 
 	public void setUserPreferences(UserPreferences userPref) {

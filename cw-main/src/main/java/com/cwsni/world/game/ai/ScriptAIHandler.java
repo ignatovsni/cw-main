@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.model.player.interfaces.IData4Country;
 
+import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
@@ -33,15 +36,16 @@ import groovy.lang.Script;
 @Qualifier("scriptAIHandler")
 public class ScriptAIHandler {
 
+	public static final int SCRIPTS_POOL_SIZE = 2;
 	public static final String DEFAULT_SCRIPT = "default";
-	//public static final String DEFAULT_SCRIPT = "[java]";
+	// public static final String DEFAULT_SCRIPT = "[java]";
 	private static final String JAVA_INTERNAL_AI = "[java]";
 	private static final String AI_SCRIPTS_FOLDER_WITH_SLASH = "ai-scripts/";
 	private static final String AI_SCRIPTS_FOLDER = "ai-scripts";
 
 	private static final Log logger = LogFactory.getLog(ScriptAIHandler.class);
 
-	private Map<String, Script> scriptsCache;
+	private Map<String, BlockingQueue<Script>> scriptsCache;
 
 	public ScriptAIHandler() {
 		scriptsCache = new HashMap<>();
@@ -55,7 +59,7 @@ public class ScriptAIHandler {
 		return getScript(data) != null;
 	}
 
-	private Script getScript(IData4Country data) {
+	private BlockingQueue<Script> getScript(IData4Country data) {
 		String scriptName = data.getCountry().getAiScriptName();
 		if (scriptName == null || scriptName.isEmpty()) {
 			return null;
@@ -64,9 +68,9 @@ public class ScriptAIHandler {
 		return getScriptByName(scriptName);
 	}
 
-	private Script getScriptByName(String scriptName) {
-		Script script = scriptsCache.get(scriptName);
-		if (!scriptsCache.containsKey(scriptName)) {
+	private BlockingQueue<Script> getScriptByName(String scriptName) {
+		BlockingQueue<Script> scriptsQueue = scriptsCache.get(scriptName);
+		if (scriptsQueue == null) {
 			try {
 				String fileName = scriptName + ".groovy";
 				String scriptText = loadScriptFromFile(fileName);
@@ -75,14 +79,19 @@ public class ScriptAIHandler {
 				}
 				String commonSection = loadScriptFromResources("common-section.groovy");
 				scriptText = commonSection + scriptText;
-				script = new GroovyShell().parse(scriptText);
-				scriptsCache.put(scriptName, script);
+				scriptsQueue = new LinkedBlockingQueue<>();
+				GroovyShell groovyShell = new GroovyShell();
+				for (int i = 0; i < SCRIPTS_POOL_SIZE; i++) {
+					Script script = groovyShell.parse(scriptText);
+					scriptsQueue.add(script);
+				}
+				scriptsCache.put(scriptName, scriptsQueue);
 			} catch (Exception e) {
 				logger.warn("failed to parse/load script '" + scriptName + "'", e);
 				scriptsCache.put(scriptName, null);
 			}
 		}
-		return script;
+		return scriptsQueue;
 	}
 
 	private String loadScriptFromResources(String fileName) {
@@ -118,9 +127,20 @@ public class ScriptAIHandler {
 	}
 
 	private void invokeMethod(String methodName, IData4Country data) {
-		Script script = getScript(data);
-		if (script != null) {
-			script.invokeMethod(methodName, data);
+		BlockingQueue<Script> scriptPool = getScript(data);
+		if (scriptPool != null) {
+			Script script = scriptPool.poll();
+			if (script != null) {
+				try {
+					script.invokeMethod(methodName, data);
+				} finally {
+					// clean bindings to avoid memory leaks
+					script.setBinding(new Binding());
+					scriptPool.add(script);
+				}
+			} else {
+				logger.warn("scriptPool.poll() returned null");
+			}
 		}
 	}
 

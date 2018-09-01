@@ -40,17 +40,20 @@ public class GameHandler {
 	private GameRepository gameRepository;
 
 	@Autowired
-	private GameExecutorService executorService;
+	private GameExecutorService taskExecutor;
 
-	public void processNewTurn(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn,
+	@Autowired
+	private GameDataModelLocker gameDataModelLocker;
+
+	public void processNewTurns(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn,
 			Runnable afterTurnProcessing) {
-		executorService.processAI(() -> {
-			runInThread(game, timeMode, autoTurn, pauseBetweenTurn);
+		taskExecutor.processManagerThread(() -> {
+			processTurns(game, timeMode, autoTurn, pauseBetweenTurn);
 			afterTurnProcessing.run();
 		});
 	}
 
-	private void runInThread(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn) {
+	private void processTurns(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn) {
 		try {
 			for (int i = 0; i < timeMode.getTurnPerTime(); i++) {
 				processOneTurn(game);
@@ -71,8 +74,10 @@ public class GameHandler {
 	private void processOneTurn(Game game) {
 		List<PGame> pGames = game.getCountries().stream().map(c -> new PGame(c)).collect(Collectors.toList());
 		getCommandsFromAI(pGames);
-		executeCommands(game, pGames);
-		game.processNewTurn();
+		gameDataModelLocker.runLocked(() -> {
+			executeCommands(game, pGames);
+			game.processNewTurn();
+		});
 	}
 
 	private void executeCommands(Game game, List<PGame> pGames) {
