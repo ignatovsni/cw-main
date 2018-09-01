@@ -80,6 +80,7 @@ public class GsProvInfoPane extends InternalInfoPane {
 			setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));
 			break;
 		case OCEAN:
+		case MOUNTAIN:
 			break;
 		}
 	}

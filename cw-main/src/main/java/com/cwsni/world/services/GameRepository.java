@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.cwsni.world.CwException;
+import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.engine.Game;
@@ -32,6 +33,9 @@ public class GameRepository {
 
 	@Autowired
 	private GameAlgorithms gameAlgorithms;
+
+	@Autowired
+	private ApplicationSettings applicationSettings;
 
 	@Autowired
 	private GameEventListener gameEventListener;
@@ -106,10 +110,11 @@ public class GameRepository {
 	}
 
 	public void autoSave(Game game) {
-		int autoSaveForTurns = 10;
-		int autoSaveMax = 10;
+		if (!applicationSettings.isUseAutoSave()) {
+			return;
+		}
 		int turn = game.getTurn().getTurn();
-		if (game.getLastAutoSaveTurn() > turn - autoSaveForTurns) {
+		if (game.getLastAutoSaveTurn() > turn - applicationSettings.getAutoSaveTurnStep()) {
 			return;
 		}
 		// save
@@ -120,7 +125,7 @@ public class GameRepository {
 		File saveDirectory = new File(getSaveDirectoryFullPath());
 		File[] files = saveDirectory.listFiles((dir, name) -> name.startsWith("autosave-") && name.endsWith(".cw"));
 		Arrays.sort(files, (x, y) -> x.lastModified() < y.lastModified() ? 1 : -1);
-		for (int i = autoSaveMax; i < files.length; i++) {
+		for (int i = applicationSettings.getAutoSaveMaxFiles(); i < files.length; i++) {
 			files[i].delete();
 		}
 	}

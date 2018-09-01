@@ -29,14 +29,20 @@ public class GsMenuBar extends MenuBar {
 		Menu fileMenu = createFileMenu(gameScene);
 		Menu worldMenu = createWorldMenu(gameScene);
 		Menu toolsMenu = createToolsMenu(gameScene);
-		getMenus().setAll(fileMenu, worldMenu, toolsMenu);
+		Menu settingsMenu = createSettingsMenu(gameScene);
+		getMenus().setAll(fileMenu, worldMenu, toolsMenu, settingsMenu);
 	}
 
 	private Menu createFileMenu(GameScene gameScene) {
 		Menu menu = new Menu(getMessage("menu.file"));
 
-		MenuItem exitMenuItem = new MenuItem(getMessage("menu.file.exit"));
-		exitMenuItem.setOnAction(event -> gameScene.exitApp());
+		MenuItem createGameMenuItem = new MenuItem(getMessage("menu.file.game.create"));
+		createGameMenuItem.setOnAction(event -> gameScene.createNewGame());
+		createGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+
+		MenuItem createTestGameMenuItem = new MenuItem(getMessage("menu.file.game.create.test"));
+		createTestGameMenuItem.setOnAction(event -> gameScene.createTestGame());
+		createTestGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
 
 		MenuItem saveMenuItem = new MenuItem(getMessage("menu.file.save"));
 		saveMenuItem.setOnAction(event -> gameScene.saveGame());
@@ -54,13 +60,8 @@ public class GsMenuBar extends MenuBar {
 		quickLoadMenuItem.setOnAction(event -> gameScene.quickLoadGame());
 		quickLoadMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
 
-		MenuItem createTestGameMenuItem = new MenuItem(getMessage("menu.file.game.create.test"));
-		createTestGameMenuItem.setOnAction(event -> gameScene.createTestGame());
-		createTestGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
-
-		MenuItem createGameMenuItem = new MenuItem(getMessage("menu.file.game.create"));
-		createGameMenuItem.setOnAction(event -> gameScene.createNewGame());
-		createGameMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+		MenuItem exitMenuItem = new MenuItem(getMessage("menu.file.exit"));
+		exitMenuItem.setOnAction(event -> gameScene.exitApp());
 
 		menu.getItems().setAll(createGameMenuItem, createTestGameMenuItem, new SeparatorMenuItem(), loadMenuItem,
 				saveMenuItem, quickLoadMenuItem, quickSaveMenuItem, new SeparatorMenuItem(), exitMenuItem);
@@ -98,6 +99,16 @@ public class GsMenuBar extends MenuBar {
 
 		menu.getItems().setAll(searchOnMapMenuItem, new SeparatorMenuItem(), scriptConsoleMenuItem,
 				new SeparatorMenuItem(), scaleToDefaultMenuItem, scaleToFitMenuItem);
+		return menu;
+	}
+
+	private Menu createSettingsMenu(GameScene gameScene) {
+		Menu menu = new Menu(getMessage("menu.settings"));
+
+		MenuItem settingsEditorMenuItem = new MenuItem(getMessage("menu.settings.application"));
+		settingsEditorMenuItem.setOnAction(event -> gameScene.editSettings());
+
+		menu.getItems().setAll(settingsEditorMenuItem);
 		return menu;
 	}
 

@@ -63,6 +63,7 @@ public class GroovyConsoleWindow extends Dialog<ButtonType> {
 
 		fillDialog();
 		this.setOnShown(e -> Platform.runLater(() -> scriptArea.requestFocus()));
+		this.setResizable(true);
 	}
 
 	private void fillDialog() {

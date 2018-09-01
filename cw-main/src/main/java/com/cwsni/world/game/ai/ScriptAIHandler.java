@@ -18,9 +18,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.model.player.interfaces.IData4Country;
 
 import groovy.lang.Binding;
@@ -35,8 +37,10 @@ import groovy.lang.Script;
 @Component
 @Qualifier("scriptAIHandler")
 public class ScriptAIHandler {
+	
+	@Autowired
+	private	ApplicationSettings applicationSettings; 
 
-	public static final int SCRIPTS_POOL_SIZE = 2;
 	public static final String DEFAULT_SCRIPT = "default";
 	// public static final String DEFAULT_SCRIPT = "[java]";
 	private static final String JAVA_INTERNAL_AI = "[java]";
@@ -81,7 +85,7 @@ public class ScriptAIHandler {
 				scriptText = commonSection + scriptText;
 				scriptsQueue = new LinkedBlockingQueue<>();
 				GroovyShell groovyShell = new GroovyShell();
-				for (int i = 0; i < SCRIPTS_POOL_SIZE; i++) {
+				for (int i = 0; i < applicationSettings.getAIScriptsPoolSize(); i++) {
 					Script script = groovyShell.parse(scriptText);
 					scriptsQueue.add(script);
 				}

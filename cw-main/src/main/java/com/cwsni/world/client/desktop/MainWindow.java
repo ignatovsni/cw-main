@@ -45,7 +45,7 @@ public class MainWindow extends Application {
 	@Override
 	public void stop() throws Exception {
 		setUserPreferences();
-		getUserProperties().saveUserProperties();
+		getUserProperties().savePropertiesToFile();
 		springContext.stop();
 	}
 
@@ -53,12 +53,12 @@ public class MainWindow extends Application {
 		if (stage == null || !successfulStart) {
 			return;
 		}
-		UserPreferences userProp = getUserProperties();
-		userProp.setMainWindowHeight(stage.getHeight());
-		userProp.setMainWindowWidth(stage.getWidth());
-		userProp.setMainWindowPositionX(stage.getX());
-		userProp.setMainWindowPositionY(stage.getY());
-		userProp.setMainWindowMaximazed(stage.isMaximized());
+		UserUIPreferences userProp = getUserProperties();
+		userProp.setMainWindowHeight((int) stage.getHeight());
+		userProp.setMainWindowWidth((int) stage.getWidth());
+		userProp.setMainWindowPosX((int) stage.getX());
+		userProp.setMainWindowPosY((int) stage.getY());
+		userProp.setMainWindowMaximized(stage.isMaximized());
 		if (stage.getScene() instanceof GameScene) {
 			((GameScene) stage.getScene()).setUserPreferences(userProp);
 		}
@@ -82,7 +82,7 @@ public class MainWindow extends Application {
 	}
 
 	private void applyUserPreferences(Stage stage) {
-		UserPreferences userPref = getUserProperties();
+		UserUIPreferences userPref = getUserProperties();
 		stage.setWidth(userPref.getMainWindowWidth());
 		stage.setHeight(userPref.getMainWindowHeight());
 		stage.setX(userPref.getMainWindowPosX());
@@ -101,8 +101,8 @@ public class MainWindow extends Application {
 		return springContext.getBean(GameScene.class);
 	}
 
-	private UserPreferences getUserProperties() {
-		return springContext.getBean(UserPreferences.class);
+	private UserUIPreferences getUserProperties() {
+		return springContext.getBean(UserUIPreferences.class);
 	}
 
 	/*

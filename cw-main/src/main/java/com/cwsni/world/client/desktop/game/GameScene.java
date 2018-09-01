@@ -12,7 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.UserPreferences;
+import com.cwsni.world.client.desktop.UserUIPreferences;
 import com.cwsni.world.client.desktop.game.CountriesPropertiesWindow.RowCountry;
 import com.cwsni.world.client.desktop.game.SearchOnMapWindow.SearchResult;
 import com.cwsni.world.client.desktop.game.infopanels.GsCountryInfoPane;
@@ -113,6 +113,9 @@ public class GameScene extends Scene {
 	private GroovyConsoleWindow groovyConsoleWindow;
 
 	@Autowired
+	private SettingsEditorWindow settingsEditorWindow;
+
+	@Autowired
 	private ScriptAIHandler scriptAIHandler;
 
 	@Autowired
@@ -141,20 +144,29 @@ public class GameScene extends Scene {
 
 	public void init(ConfigurableApplicationContext springContext) {
 		this.springContext = springContext;
-		mapPane = new ZoomableScrollPane();
+
+		// tabs and menu
+		timeControl.init(this);
 		mapToolBar.init(this);
 		menuBar.init(this);
+
+		// info panels
 		globalInfoPane.init(this);
 		provInfoPane.init(this);
 		provScienceInfoPane.init(this);
 		provArmiesInfoPane.init(this);
 		countryInfoPane.init(this);
 		provEventsInfoPane.init(this);
-		timeControl.init(this);
-		createGameWindow.init(this);
-		countriesPropertiesWindow.init(this);
-		searchOnMapWindow.init(this);
-		groovyConsoleWindow.init(this);
+
+		{
+			// windows
+			// It is better to get them from spring context when they are needed.
+			createGameWindow.init(this);
+			countriesPropertiesWindow.init(this);
+			searchOnMapWindow.init(this);
+			groovyConsoleWindow.init(this);
+			settingsEditorWindow.init(this);
+		}
 
 		VBox rightInfoPanes = new VBox();
 		rightInfoPanes.getChildren().addAll(countryInfoPane, provInfoPane, provScienceInfoPane, provArmiesInfoPane,
@@ -179,6 +191,7 @@ public class GameScene extends Scene {
 		VBox menuSection = new VBox();
 		menuSection.getChildren().addAll(menuBar);
 
+		mapPane = new ZoomableScrollPane();
 		BorderPane mapBlock = new BorderPane();
 		mapBlock.setBottom(mapToolBar);
 		mapBlock.setCenter(mapPane);
@@ -455,7 +468,7 @@ public class GameScene extends Scene {
 		gameDataModelLocker.runLocked(r);
 	}
 
-	public void setUserPreferences(UserPreferences userPref) {
+	public void setUserPreferences(UserUIPreferences userPref) {
 		userPref.setTimeControlAutoTurn(isAutoTurn());
 		userPref.setTimeControlPauseBetweenTurns(isPauseBetweenTurn());
 		userPref.setInfoPaneGlobalMinimized(globalInfoPane.isMinimazed());
@@ -466,7 +479,7 @@ public class GameScene extends Scene {
 		userPref.setInfoPaneProvinceEventsMinimized(provEventsInfoPane.isMinimazed());
 	}
 
-	public void applyUserPreferences(UserPreferences userPref) {
+	public void applyUserPreferences(UserUIPreferences userPref) {
 		timeControl.applyUserPreferences(userPref);
 		globalInfoPane.setMinimized(userPref.isInfoPaneGlobalMinimized());
 		countryInfoPane.setMinimized(userPref.isInfoPaneCountryMinimized());
@@ -607,6 +620,17 @@ public class GameScene extends Scene {
 		pauseGame();
 		runLocked(() -> {
 			groovyConsoleWindow.showAndWait();
+		});
+	}
+
+	public void editSettings() {
+		pauseGame();
+		runLocked(() -> {
+			settingsEditorWindow.reinit();
+			Optional<ButtonType> result = settingsEditorWindow.showAndWait();
+			if (result.isPresent() && result.get().getButtonData() == ButtonData.OK_DONE) {
+				settingsEditorWindow.storeSettings();
+			}
 		});
 	}
 

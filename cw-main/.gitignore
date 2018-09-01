@@ -1,6 +1,7 @@
 /target/
 /my-app.log
 /my-app.log.*.gz
-/user.properties
 /*.cw
 /saves/
+/settings_ui.ini
+/settings.ini

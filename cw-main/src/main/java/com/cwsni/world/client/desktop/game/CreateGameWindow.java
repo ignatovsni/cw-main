@@ -5,11 +5,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
+import com.cwsni.world.client.desktop.util.DialogUtil;
 import com.cwsni.world.model.data.GameParams;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -73,14 +72,7 @@ public class CreateGameWindow extends Dialog<ButtonType> {
 
 		tfRandomSeed = new TextField();
 		tfRandomSeed.setText(String.valueOf(System.currentTimeMillis()));
-		tfRandomSeed.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if (!newValue.matches("\\d*")) {
-					tfRandomSeed.setText(newValue.replaceAll("[^\\d]", ""));
-				}
-			}
-		});
+		DialogUtil.textFieldOnlyDigits(tfRandomSeed);
 
 		grid = createDefaultGrid();
 		int idx = 0;

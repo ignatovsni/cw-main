@@ -48,6 +48,7 @@ public class GsProvScienceInfoPane extends InternalInfoPane {
 			setLabelTextWithLongFormatterAndValueTooltip(valuesScienceAdministration, prov.getScienceAdministration());
 			break;
 		case OCEAN:
+		case MOUNTAIN:
 			break;
 		}
 	}

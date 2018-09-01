@@ -5,13 +5,17 @@ import java.util.concurrent.Future;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.game.ai.ScriptAIHandler;
+import com.cwsni.world.client.desktop.ApplicationSettings;
 
 @Component
 public class GameExecutorService {
+
+	@Autowired
+	private ApplicationSettings applicationSettings;
 
 	private ThreadPoolTaskExecutor gameHandlerThreadExecutor;
 	private ThreadPoolTaskExecutor aiTaskExecutor;
@@ -26,12 +30,12 @@ public class GameExecutorService {
 		gameHandlerThreadExecutor.setDaemon(true);
 		gameHandlerThreadExecutor.setThreadGroupName("gameHandlerThreadGroup");
 		gameHandlerThreadExecutor.setThreadNamePrefix("gameHandlerThread");
-		
+
 		aiTaskExecutor = new ThreadPoolTaskExecutor();
 		aiTaskExecutor.initialize();
-		aiTaskExecutor.setCorePoolSize(ScriptAIHandler.SCRIPTS_POOL_SIZE);
-		aiTaskExecutor.setMaxPoolSize(ScriptAIHandler.SCRIPTS_POOL_SIZE);
-		aiTaskExecutor.setQueueCapacity(2000);
+		aiTaskExecutor.setCorePoolSize(applicationSettings.getMultithreadingAIThreads());
+		aiTaskExecutor.setMaxPoolSize(applicationSettings.getMultithreadingAIThreads());
+		aiTaskExecutor.setQueueCapacity(10000);
 		aiTaskExecutor.setDaemon(true);
 		aiTaskExecutor.setThreadGroupName("aiTaskThreadGroup");
 		aiTaskExecutor.setThreadNamePrefix("aiTaskThread");

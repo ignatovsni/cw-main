@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.UserPreferences;
+import com.cwsni.world.client.desktop.UserUIPreferences;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.game.ai.ScriptAIHandler;
@@ -166,7 +166,7 @@ public class GsTimeControl extends BorderPane {
 		return messageSource.getMessage(code);
 	}
 
-	public void applyUserPreferences(UserPreferences userPref) {
+	public void applyUserPreferences(UserUIPreferences userPref) {
 		rbAutoTurn.setSelected(userPref.isTimeControlAutoTurn());
 		rbPauseBetweenTurn.setSelected(userPref.isTimeControlPauseBetweenTurns());
 		switchPauseBetweenTurn();
