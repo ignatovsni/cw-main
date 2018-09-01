@@ -65,7 +65,7 @@ public class GsMapToolBar extends ToolBar {
 		addButtonToPane(button);
 		button.setOnMouseClicked(e -> {
 			if (e.getButton() == MouseButton.SECONDARY) {
-				gameScene.openNewMapForMode(mapMode, tooltip);
+				gameScene.openNewMapForMode(getRealMode(mapMode), tooltip);
 			}
 		});
 		return button;
@@ -77,13 +77,20 @@ public class GsMapToolBar extends ToolBar {
 	}
 
 	private void pressMapModeButton(Button buttonMode, MapMode mapMode) {
-		if (MapMode.POPULATION.equals(mapMode)) {
+		mapMode = getRealMode(mapMode);
+		gameScene.setMapModeAndRedraw(mapMode);
+		toolBarMapModes.forEach(b -> b.setEffect(null));
+		buttonMode.setEffect(new Lighting());
+	}
+
+	private MapMode getRealMode(MapMode mapMode) {
+		if (MapMode.DIPLOMACY.equals(mapMode)) {
 			switch (gameScene.getWorldMap().getMapMode()) {
-			case POPULATION:
-				mapMode = MapMode.POPULATION_2;
+			case DIPLOMACY:
+				mapMode = MapMode.DIPLOMACY_REACHABLE_LANDS;
 				break;
-			case POPULATION_2:
-				mapMode = MapMode.POPULATION;
+			case DIPLOMACY_REACHABLE_LANDS:
+				mapMode = MapMode.DIPLOMACY;
 				break;
 			default:
 				break;
@@ -91,9 +98,9 @@ public class GsMapToolBar extends ToolBar {
 		} else if (MapMode.SOIL.equals(mapMode)) {
 			switch (gameScene.getWorldMap().getMapMode()) {
 			case SOIL:
-				mapMode = MapMode.SOIL_2;
+				mapMode = MapMode.SOIL_RAW_FERTILITY;
 				break;
-			case SOIL_2:
+			case SOIL_RAW_FERTILITY:
 				mapMode = MapMode.SOIL;
 				break;
 			default:
@@ -111,9 +118,7 @@ public class GsMapToolBar extends ToolBar {
 				break;
 			}
 		}
-		gameScene.setMapModeAndRedraw(mapMode);
-		toolBarMapModes.forEach(b -> b.setEffect(null));
-		buttonMode.setEffect(new Lighting());
+		return mapMode;
 	}
 
 }

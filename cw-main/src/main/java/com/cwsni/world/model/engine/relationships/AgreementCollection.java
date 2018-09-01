@@ -60,7 +60,7 @@ public class AgreementCollection<DT extends DataRBaseAgreement, ET extends RBase
 			return Collections.emptyMap();
 		}
 	}
-	
+
 	public ET newAgreement(Integer countryId, int targetCountryId) {
 		Map<Integer, ET> agrs = getCountriesWithAgreement(countryId);
 		ET et = agrs.get(targetCountryId);
@@ -106,6 +106,10 @@ public class AgreementCollection<DT extends DataRBaseAgreement, ET extends RBase
 		}
 		agreements.remove(agreement);
 		dataModelSet.remove(agreement.getData());
+	}
+
+	public boolean hasAgreement(Integer cId1, Integer cId2) {
+		return getCountriesWithAgreement(cId1).containsKey(cId2);
 	}
 
 }

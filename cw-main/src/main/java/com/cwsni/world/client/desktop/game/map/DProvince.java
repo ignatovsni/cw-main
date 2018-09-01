@@ -82,14 +82,14 @@ class DProvince extends Group {
 
 	public void draw() {
 		MapMode mapMode = map.getMapMode();
-		if (!getProvince().getTerrainType().isPopulationPossible()) {
+		if (getProvince().getTerrainType().isMountain()
+				|| getProvince().getTerrainType().isWater() && !MapMode.DIPLOMACY_REACHABLE_LANDS.equals(mapMode)) {
 			if (mapMode != prevMode) {
 				drawGeoMode(polygon);
 			}
 		} else {
 			switch (mapMode) {
 			case POPULATION:
-			case POPULATION_2:
 				drawPopulationMode(polygon);
 				break;
 			case STATES:
@@ -103,6 +103,9 @@ class DProvince extends Group {
 				break;
 			case DIPLOMACY:
 				drawDiplomacyMode(polygon);
+				break;
+			case DIPLOMACY_REACHABLE_LANDS:
+				drawDiplomacyReachableLandsMode(polygon);
 				break;
 			case GOVERNMENT_INFLUENCE:
 				drawGovInfluenceMode(polygon);
@@ -122,7 +125,7 @@ class DProvince extends Group {
 			case SOIL:
 				drawSoilFertilityMode(polygon);
 				break;
-			case SOIL_2:
+			case SOIL_RAW_FERTILITY:
 				drawSoilNaturalFertilityMode(polygon);
 				break;
 			case SCIENCE_AGRICULTURE:
@@ -276,6 +279,36 @@ class DProvince extends Group {
 		fillPolygon(polygon, color);
 	}
 
+	private void drawDiplomacyReachableLandsMode(Polygon polygon) {
+		Province selectedProvince = map.getSelectedProvince();
+		if (selectedProvince == null || selectedProvince.getCountry() == null) {
+			drawGeoMode(polygon);
+			return;
+		}
+		Country selectedCountry = selectedProvince.getCountry();
+		Province thisProvince = getProvince();
+		if (thisProvince.getTerrainType().isWater()) {
+			if (selectedCountry.getReachableWaterProvinces().contains(thisProvince)) {
+				fillPolygon(polygon, Color.AQUA);
+			} else {
+				drawGeoMode(polygon);
+			}
+		} else if (selectedCountry.equals(thisProvince.getCountry())) {
+			drawDiplomacyMode(polygon);
+		} else if (selectedCountry.getReachableLandBorderAlienProvs().contains(thisProvince)
+				|| selectedCountry.getReachableLandProvincesThroughWater().contains(thisProvince)) {
+			if (map.getGame().getRelationships().hasAgreement(selectedCountry.getId(), thisProvince.getCountryId())) {
+				drawDiplomacyMode(polygon);
+			} else {
+				// selected country does not have agreements, so probably does not have the
+				// right to cross lands
+				fillPolygon(polygon, Color.ANTIQUEWHITE);
+			}
+		} else {
+			drawGeoMode(polygon);
+		}
+	}
+
 	private void drawCultureMode(Polygon polygon) {
 		Culture cult = province.getCulture();
 		Color color;
@@ -352,15 +385,9 @@ class DProvince extends Group {
 	}
 
 	private void drawPopulationMode(Polygon polygon) {
-		if (MapMode.POPULATION_2.equals(map.getMapMode())) {
-			drawGradientMode(polygon, map.getGame().getGameTransientStats().getPopulationMaxInProvince(),
-					province.getPopulationAmount(), false);
-		} else {
-			drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getPopulationMaxInProvince(),
-					map.getGame().getGameTransientStats().getPopulationAvgInProvince(),
-					map.getGame().getGameTransientStats().getPopulationMedianInProvince(),
-					province.getPopulationAmount());
-		}
+		drawGradientModeForMedian(polygon, map.getGame().getGameTransientStats().getPopulationMaxInProvince(),
+				map.getGame().getGameTransientStats().getPopulationAvgInProvince(),
+				map.getGame().getGameTransientStats().getPopulationMedianInProvince(), province.getPopulationAmount());
 	}
 
 	private void drawGovInfluenceMode(Polygon polygon) {

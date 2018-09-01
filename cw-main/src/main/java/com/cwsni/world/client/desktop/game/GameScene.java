@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -46,7 +44,9 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -59,7 +59,7 @@ import javafx.stage.Stage;
 @Scope("prototype")
 public class GameScene extends Scene {
 
-	private static final Log logger = LogFactory.getLog(GameScene.class);
+	// private static final Log logger = LogFactory.getLog(GameScene.class);
 
 	@Autowired
 	private LocaleMessageSource messageSource;
@@ -428,10 +428,6 @@ public class GameScene extends Scene {
 		timeControl.enablePauseButton();
 	}
 
-	private void logError(Exception e) {
-		logger.error(e.getMessage(), e);
-	}
-
 	public void setAutoTurn(boolean autoTurn) {
 		this.autoTurn = autoTurn;
 	}
@@ -514,6 +510,14 @@ public class GameScene extends Scene {
 			otherMapWindows.put(mapModeForNewWindow, window);
 			otherMaps.put(mapModeForNewWindow, newWorldMap);
 
+			scene.getAccelerators().put(new KeyCodeCombination(KeyCode.PAGE_UP, KeyCombination.CONTROL_DOWN), () -> {
+				newMapPane.scaleToDefault();
+				if (selectedProvinceId != null) {
+					newMapPane.ensureVisible(newWorldMap.findProvinceById(selectedProvinceId));
+				}
+			});
+			scene.getAccelerators().put(new KeyCodeCombination(KeyCode.PAGE_DOWN, KeyCombination.CONTROL_DOWN),
+					() -> newMapPane.scaleToFitAllContent());
 			window.setScene(scene);
 			window.show();
 		}

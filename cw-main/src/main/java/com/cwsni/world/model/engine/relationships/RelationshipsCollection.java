@@ -46,6 +46,10 @@ public class RelationshipsCollection {
 		tributes.unregisterCountry(c);
 	}
 
+	public boolean hasAgreement(Integer cId1, Integer cId2) {
+		return wars.hasAgreement(cId1, cId2) || truces.hasAgreement(cId1, cId2) || tributes.hasAgreement(cId1, cId2);
+	}
+
 	// -------------------- wars ---------------------------------------
 
 	public Map<Integer, RWar> getCountriesWithWar(Integer countryId) {

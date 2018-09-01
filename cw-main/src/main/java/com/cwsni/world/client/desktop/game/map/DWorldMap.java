@@ -124,13 +124,13 @@ public class DWorldMap {
 
 	public void selectProvince(Integer provId) {
 		selectProvince(provincesById.get(provId));
-		if (MapMode.DIPLOMACY == mapMode) {
+		if (MapMode.DIPLOMACY == mapMode || MapMode.DIPLOMACY_REACHABLE_LANDS == mapMode) {
 			setMapModeAndRedraw(mapMode);
 		}
 	}
 
-	private void selectProvince(DProvince dProvince) {
-		if (selectedProvince == dProvince) {
+	private void selectProvince(DProvince newSelectedProvince) {
+		if (selectedProvince == newSelectedProvince) {
 			return;
 		}
 		if (selectedProvince != null) {
@@ -138,7 +138,7 @@ public class DWorldMap {
 			// refresh borders because polygon.stroke can overlap them
 			bordersToFront(selectedProvince.getProvince());
 		}
-		this.selectedProvince = dProvince;
+		this.selectedProvince = newSelectedProvince;
 		if (selectedProvince != null) {
 			selectedProvince.selectProvince(true);
 		}
