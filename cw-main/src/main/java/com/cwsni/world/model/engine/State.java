@@ -403,7 +403,7 @@ public class State {
 		if (capitalStateStrength == 0) {
 			return null;
 		}
-		return Math.min(1, stateStrength / capitalStateStrength);
+		return Math.min(1, stateStrength / capitalStateStrength + 0.2);
 	}
 
 	// --------------------- static -------------------------------

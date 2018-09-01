@@ -29,7 +29,8 @@ public class GameTransientStats {
 	private InternalFutureTask<DoubleSummaryStatistics> infrastructureInProvince;
 	private InternalFutureTask<Double> infrastructureMedianInProvince;
 
-	private InternalFutureTask<Integer> soilQualityMax;
+	private InternalFutureTask<DoubleSummaryStatistics> soilNaturalFertility;
+	private InternalFutureTask<Double> soilNaturalFertilityMedian;
 	private InternalFutureTask<DoubleSummaryStatistics> soilFertility;
 	private InternalFutureTask<Double> soilFertilityMedian;
 
@@ -84,9 +85,15 @@ public class GameTransientStats {
 			return getPopulationPossibleProvinces().mapToLong(p -> p.getPopulationAmount()).sum();
 		}, 0L);
 
-		soilQualityMax = new InternalFutureTask<>(() -> {
-			return getSoilPossibleProvinces().mapToInt(p -> p.getSoilQuality()).max().getAsInt();
-		}, 0);
+		soilNaturalFertility = new InternalFutureTask<>(() -> {
+			return getSoilPossibleProvinces().mapToDouble(p -> p.getSoilNaturalFertility()).summaryStatistics();
+		}, new DoubleSummaryStatistics());
+
+		soilNaturalFertilityMedian = new InternalFutureTask<>(() -> {
+			double v = new MedianFinder().findMedianDouble(
+					getSoilPossibleProvinces().map(p -> p.getSoilNaturalFertility()).collect(Collectors.toList()));
+			return v;
+		}, 0.0);
 
 		soilFertility = new InternalFutureTask<>(() -> {
 			return getSoilPossibleProvinces().mapToDouble(p -> p.getSoilFertility()).summaryStatistics();
@@ -137,10 +144,6 @@ public class GameTransientStats {
 		return game.getMap().getProvinces().stream().filter(p -> p.getTerrainType().isSoilPossible());
 	}
 
-	public int getSoilQualityMax() {
-		return soilQualityMax.get();
-	}
-
 	public long getPopulationTotal() {
 		return populationTotal.get();
 	}
@@ -178,6 +181,18 @@ public class GameTransientStats {
 	}
 
 	public double getSoilFertilityMedian() {
+		return soilNaturalFertilityMedian.get();
+	}
+	
+	public double getSoilNaturalFertilityMax() {
+		return soilNaturalFertility.get().getMax();
+	}
+
+	public double getSoilNaturalFertilityAvg() {
+		return soilNaturalFertility.get().getAverage();
+	}
+
+	public double getSoilNaturalFertilityMedian() {
 		return soilFertilityMedian.get();
 	}
 

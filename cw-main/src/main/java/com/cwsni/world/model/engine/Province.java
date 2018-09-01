@@ -136,8 +136,12 @@ public class Province implements EventTarget {
 	}
 
 	public double getSoilFertilityBasePlusAgriculture(double agriculture) {
-		return data.getSoilFertility()
-				+ agriculture * map.getGame().getGameParams().getScienceAgricultureMultiplicatorForFertility();
+		return getSoilNaturalFertility()
+				* (1 + agriculture * map.getGame().getGameParams().getScienceAgricultureMultiplicatorForFertility());
+	}
+
+	public double getSoilNaturalFertility() {
+		return data.getSoilFertility();
 	}
 
 	public int getScienceAgriculture() {
@@ -202,10 +206,6 @@ public class Province implements EventTarget {
 
 	public int getAvailablePeopleForRecruiting() {
 		return getPopulation().stream().mapToInt(p -> p.getAvailablePeopleForRecruiting()).sum();
-	}
-
-	public int getSoilQuality() {
-		return (int) (getSoilArea() * getSoilFertility());
 	}
 
 	public int getMaxPopulation() {

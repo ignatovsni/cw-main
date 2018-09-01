@@ -19,14 +19,13 @@ public class GameParams {
 	private double soilAreaCorePointsPerProvinces = 0.01;
 	private int soilAreaPerSize = 1000;
 
-	private double soilFertilityAtStartMin = 1.2;
-	private double soilFertilityAtStartMax = 1.4;
-	private double soilFertilityCorePointsPerProvinces = 0.01;
-	private int fractionOfMaxSoilFertility = 3;
+	private double soilFertilityAtStartBase = 1.2;
+	private double soilFertilityAtStartCoeffForCoast = 1.2;
+	private int fractionOfMaxSoilFertility = 1;
 	private double decreaseSoilFertilityAtPoles = 0.4;
 
 	private int populationAtStart = 10000;
-	private double minSoilFertilityToStartPopulation = Math.min(1.1, soilFertilityAtStartMin);
+	private double minSoilFertilityToStartPopulation = Math.min(1.1, soilFertilityAtStartBase);
 	private int scienceValueStart = 0;
 
 	// ------------End of Map generation section--------
@@ -90,7 +89,7 @@ public class GameParams {
 	private int armyMinAllowedSoldiers = 50;
 	private double armySoldiersToPopulationForSubjugation = 0.1;
 	private double provinceLossFromFight = 0.1;
-	
+
 	private double provinceInfluenceFromCapitalWithDistanceDecrease = 0.8;
 	private double provinceInfluenceFromCapitalWithoutCapital = 0.05;
 	private double provinceInfluenceFromCapitalForStateWithDistanceDecrease = 0.9;
@@ -145,14 +144,6 @@ public class GameParams {
 		this.soilAreaCorePointsPerProvinces = soilAreaCorePointsPerProvinces;
 	}
 
-	public double getSoilFertilityCorePointsPerProvinces() {
-		return soilFertilityCorePointsPerProvinces;
-	}
-
-	public void setSoilFertilityCorePointsPerProvinces(double soilFertilityCorePointsPerProvinces) {
-		this.soilFertilityCorePointsPerProvinces = soilFertilityCorePointsPerProvinces;
-	}
-
 	public int getFractionOfMaxSoilFertility() {
 		return fractionOfMaxSoilFertility;
 	}
@@ -161,20 +152,12 @@ public class GameParams {
 		this.fractionOfMaxSoilFertility = fractionOfMaxSoilFertility;
 	}
 
-	public double getSoilFertilityAtStartMin() {
-		return soilFertilityAtStartMin;
+	public double getSoilFertilityAtStartBase() {
+		return soilFertilityAtStartBase;
 	}
 
-	public void setSoilFertilityAtStartMin(double soilFertilityAtStartMin) {
-		this.soilFertilityAtStartMin = soilFertilityAtStartMin;
-	}
-
-	public double getSoilFertilityAtStartMax() {
-		return soilFertilityAtStartMax;
-	}
-
-	public void setSoilFertilityAtStartMax(double soilFertilityAtStartMax) {
-		this.soilFertilityAtStartMax = soilFertilityAtStartMax;
+	public void setSoilFertilityAtStartBase(double soilFertilityAtStartBase) {
+		this.soilFertilityAtStartBase = soilFertilityAtStartBase;
 	}
 
 	public double getOceanPercent() {
@@ -239,11 +222,6 @@ public class GameParams {
 
 	public void setDecreaseSoilFertilityAtPoles(double decreaseSoilFertilityAtPoluses) {
 		this.decreaseSoilFertilityAtPoles = decreaseSoilFertilityAtPoluses;
-	}
-
-	@JsonIgnore
-	public int getSoilFertilityCorePoints() {
-		return (int) (getRows() * getColumns() * getSoilFertilityCorePointsPerProvinces());
 	}
 
 	public CwRandom getRandom() {
@@ -849,6 +827,14 @@ public class GameParams {
 
 	public void setProvinceEffectivenessWithoutGoverment(double provinceEffectivenessWithoutGoverment) {
 		this.provinceEffectivenessWithoutGoverment = provinceEffectivenessWithoutGoverment;
+	}
+
+	public double getSoilFertilityAtStartCoeffForCoast() {
+		return soilFertilityAtStartCoeffForCoast;
+	}
+
+	public void setSoilFertilityAtStartCoeffForCoast(double soilFertilityAtStartCoeffForCoast) {
+		this.soilFertilityAtStartCoeffForCoast = soilFertilityAtStartCoeffForCoast;
 	}
 
 }
