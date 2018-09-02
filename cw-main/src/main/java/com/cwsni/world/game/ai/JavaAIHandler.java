@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.model.player.SimplePair;
@@ -31,7 +30,6 @@ import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.Heap;
 
 @Component
-@Qualifier("javaAIHandler")
 public class JavaAIHandler {
 
 	private static final int MAX_ARMIES = 100;

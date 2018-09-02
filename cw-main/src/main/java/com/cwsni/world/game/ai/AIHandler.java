@@ -54,7 +54,7 @@ public class AIHandler {
 		try {
 			IData4Country data = game.getAIData();
 			((AIData4Country) data).initNewTurn(javaAIHandler);
-			if (scriptAIHandler.hasScript(data)) {
+			if (scriptAIHandler.hasScriptForCountry(data)) {
 				try {
 					scriptAIHandler.processCountry(data);
 				} catch (Exception e) {

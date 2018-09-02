@@ -102,7 +102,7 @@ public class CountriesPropertiesWindow extends Dialog<ButtonType> {
 		addRow(grid, idx++, new Label(getMessage("window.countries-settings.column.color")),
 				new Label(getMessage("window.countries-settings.column.name")),
 				new Label(getMessage("window.countries-settings.column.script")));
-		listOfScripts = scriptAIHandler.getListOfAvailableScripts();
+		listOfScripts = scriptAIHandler.getListOfAvailableCountryScripts();
 		countryIds = new ArrayList<>();
 		countryСolors = new ArrayList<>();
 		countryNames = new ArrayList<>();

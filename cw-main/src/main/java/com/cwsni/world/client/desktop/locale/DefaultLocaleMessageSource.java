@@ -66,13 +66,13 @@ public class DefaultLocaleMessageSource implements LocaleMessageSource {
 	}
 
 	private Map<String, String> readMessagesForLanguage(String code) {
-		LanguageHelper lh = new LanguageHelper() {
-			@Override
-			protected String getLanguageDirectoryFullPath() {
-				return LANGUAGES_FOLDER;
-			}
-		};
 		try {
+			LanguageHelper lh = new LanguageHelper() {
+				@Override
+				protected String getLanguageDirectoryFullPath() {
+					return LANGUAGES_FOLDER;
+				}
+			};
 			return lh.readLanguageFile(code);
 		} catch (Exception e) {
 			logger.error("failed to read language file for language code=" + code, e);
@@ -116,16 +116,18 @@ public class DefaultLocaleMessageSource implements LocaleMessageSource {
 	private String getLanguageLabel(File file) {
 		String languageLabel = null;
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-			Optional<String> lineResult = br.lines().filter(line -> line.contains("=")).findFirst();
-			if (lineResult.isPresent()) {
-				String str = lineResult.get();
-				int idx = str.indexOf("=");
-				if (LANGUAGE_LABEL.equals(str.substring(0, idx).trim())) {
-					languageLabel = str.substring(idx + 1).trim();
+			try (FileInputStream fis = new FileInputStream(file);
+					InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+					BufferedReader br = new BufferedReader(isr)) {
+				Optional<String> lineResult = br.lines().filter(line -> line.contains("=")).findFirst();
+				if (lineResult.isPresent()) {
+					String str = lineResult.get();
+					int idx = str.indexOf("=");
+					if (LANGUAGE_LABEL.equals(str.substring(0, idx).trim())) {
+						languageLabel = str.substring(idx + 1).trim();
+					}
 				}
 			}
-			br.close();
 		} catch (Exception e) {
 			logger.error(e);
 		}

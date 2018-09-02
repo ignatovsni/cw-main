@@ -29,16 +29,18 @@ public class LanguageHelper {
 	}
 
 	public Map<String, String> readLanguageFile(String language) throws FileNotFoundException, IOException {
-		File languageFile = new File(getLanguageMessagesFullPath(language));
 		Map<String, String> languageMessages = new HashMap<>();
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(languageFile), "UTF-8"));
-		br.lines().forEach(line -> {
-			int idx = line.indexOf("=");
-			if (idx > 0) {
-				languageMessages.put(line.substring(0, idx).trim(), line.substring(idx + 1).trim());
-			}
-		});
-		br.close();
+		File languageFile = new File(getLanguageMessagesFullPath(language));
+		try (FileInputStream fis = new FileInputStream(languageFile);
+				InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+				BufferedReader br = new BufferedReader(isr)) {
+			br.lines().forEach(line -> {
+				int idx = line.indexOf("=");
+				if (idx > 0) {
+					languageMessages.put(line.substring(0, idx).trim(), line.substring(idx + 1).trim());
+				}
+			});
+		}
 		return languageMessages;
 	}
 
@@ -47,45 +49,48 @@ public class LanguageHelper {
 		String languageDirectory = getLanguageDirectoryFullPath();
 		List<String> resultRows = new ArrayList<>();
 		File baseFile = new File(languageDirectory + File.separator + "messages.properties");
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(baseFile), "UTF-8"));
-		int allRows = 0;
-		int usedValues = 0;
-		int needToUpdateValues = 0;
-		for (String line : br.lines().collect(Collectors.toList())) {
-			int idx = line.indexOf("=");
-			if (idx > 0) {
-				String key = line.substring(0, idx).trim();
-				String value = languageMessages.get(key);
-				if (value == null) {
-					value = line.substring(idx + 1).trim();
-					needToUpdateValues++;
+		try (FileInputStream fis = new FileInputStream(baseFile);
+				InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+				BufferedReader br = new BufferedReader(isr)) {
+			int allRows = 0;
+			int usedValues = 0;
+			int needToUpdateValues = 0;
+			for (String line : br.lines().collect(Collectors.toList())) {
+				int idx = line.indexOf("=");
+				if (idx > 0) {
+					String key = line.substring(0, idx).trim();
+					String value = languageMessages.get(key);
+					if (value == null) {
+						value = line.substring(idx + 1).trim();
+						needToUpdateValues++;
+					} else {
+						usedValues++;
+					}
+					resultRows.add(key + " = " + value);
 				} else {
-					usedValues++;
+					resultRows.add(line);
 				}
-				resultRows.add(key + " = " + value);
-			} else {
-				resultRows.add(line);
+				allRows++;
 			}
-			allRows++;
+			System.out.println("Created new row lists for '" + language + "'; allRows = " + allRows + "; usedValues = "
+					+ usedValues + "; needToUpdateValues = " + needToUpdateValues);
 		}
-		br.close();
-		System.out.println("Created new row lists for '" + language + "'; allRows = " + allRows + "; usedValues = "
-				+ usedValues + "; needToUpdateValues = " + needToUpdateValues);
 		return resultRows;
 	}
 
 	private void writeNewLanguageFile(String language, List<String> resultRows) throws IOException {
 		File languageFile = new File(getLanguageMessagesFullPath(language) + ".new");
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(languageFile), "UTF-8"));
-		resultRows.stream().forEach(row -> {
-			try {
-				bw.write(row);
-				bw.write("\n");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-		bw.close();
+		try (FileOutputStream fos = new FileOutputStream(languageFile);
+				OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+				BufferedWriter bw = new BufferedWriter(osw)) {
+			resultRows.stream().forEach(row -> {
+				try {
+					bw.write(row + "\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+		}
 	}
 
 	private String getLanguageMessagesFullPath(String language) {
