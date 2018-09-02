@@ -44,7 +44,7 @@ public class ScriptAIHandler {
 	public static final String DEFAULT_SCRIPT = "default";
 	// public static final String DEFAULT_SCRIPT = "[java]";
 	private static final String JAVA_INTERNAL_AI = "[java]";
-	private static final String AI_SCRIPTS_FOLDER = "ai-scripts";
+	private static final String AI_SCRIPTS_FOLDER = "data" + File.separator + "ai-scripts";
 
 	private static final Log logger = LogFactory.getLog(ScriptAIHandler.class);
 
@@ -77,10 +77,7 @@ public class ScriptAIHandler {
 			try {
 				String fileName = scriptName + ".groovy";
 				String scriptText = loadScriptFromFile(fileName);
-				if (scriptText == null) {
-					scriptText = loadScriptFromResources(fileName);
-				}
-				String commonSection = loadScriptFromResources("common-section.groovy");
+				String commonSection = loadScriptFromFile("common-section.groovy");
 				scriptText = commonSection + scriptText;
 				scriptsQueue = new LinkedBlockingQueue<>();
 				GroovyShell groovyShell = new GroovyShell();
@@ -95,13 +92,6 @@ public class ScriptAIHandler {
 			}
 		}
 		return scriptsQueue;
-	}
-
-	private String loadScriptFromResources(String fileName) {
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream in = classloader.getResourceAsStream(AI_SCRIPTS_FOLDER + File.separator + fileName);
-		String scriptText = loadScript(in);
-		return scriptText;
 	}
 
 	private String loadScriptFromFile(String fileName) {
