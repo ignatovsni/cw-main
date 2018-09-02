@@ -58,7 +58,7 @@ public class ApplicationSettings extends AbstractSettings {
 
 	@JsonIgnore
 	public int getAIScriptsPoolSize() {
-		return getMultithreadingAIThreads();
+		return getMultithreadingAIThreads() * 10;
 	}
 
 	public String getLanguage() {

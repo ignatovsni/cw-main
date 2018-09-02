@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.model.player.interfaces.IData4Country;
+import com.cwsni.world.util.CwException;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -43,8 +44,8 @@ public class ScriptAIHandler {
 
 	public static final String DEFAULT_SCRIPT = "default";
 	private static final String JAVA_INTERNAL_AI = "[java]";
-
 	private static final String AI_SCRIPTS_FOLDER = "data" + File.separator + "ai-scripts";
+	private static final int MAX_ALLLOWED_STACK = 10;
 
 	private Map<String, BlockingQueue<Script>> scriptsCache;
 
@@ -57,59 +58,83 @@ public class ScriptAIHandler {
 		if (aiScriptName == null || aiScriptName.isEmpty() || JAVA_INTERNAL_AI.equals(aiScriptName)) {
 			return false;
 		}
-		return getScriptForCountry(data) != null;
+		return getScriptByName(getScriptNameForCountry(data)) != null;
 	}
 
-	public void processCountry(IData4Country data) {
-		BlockingQueue<Script> scriptPool = getScriptForCountry(data);
-		Map<String, Object> mapBinding = new HashMap<>();
-		mapBinding.put("data", data);
-		mapBinding.put("game", data.getGame());
-		invokeMethod(mapBinding, scriptPool, "processCountry", null);
-	}
-
-	private BlockingQueue<Script> getScriptForCountry(IData4Country data) {
+	private String getScriptNameForCountry(IData4Country data) {
 		String scriptName = data.getCountry().getAiScriptName();
 		if (scriptName == null || scriptName.isEmpty()) {
 			return null;
 		}
 		scriptName += ".country";
-		return getScriptByName(scriptName);
+		return scriptName;
 	}
 
-	private void invokeMethod(Map<String, Object> mapBinding, BlockingQueue<Script> scriptPool, String methodName,
-			Object args) {
-		if (scriptPool != null) {
-			Script script = scriptPool.poll();
-			if (script != null) {
-				try {
-					script.setBinding(new Binding(mapBinding));
-					script.invokeMethod(methodName, args);
-				} finally {
-					// clean bindings to avoid memory leaks
-					script.setBinding(new Binding());
-					scriptPool.add(script);
-				}
-			} else {
+	public void processCountry(IData4Country data) {
+		String scriptName = getScriptNameForCountry(data);
+		BlockingQueue<Script> scriptPool = getScriptByName(scriptName);
+		Map<String, Object> mapBinding = new HashMap<>();
+		mapBinding.put("data", data);
+		mapBinding.put("game", data.getGame());
+		scriptsThreadLocalStack.set(null);
+		scriptsThreadLocalBinding.set(null);
+		invokeScriptMethod(mapBinding, scriptName, scriptPool, "processCountry", null);
+	}
+
+	private Object invokeScriptMethod(Map<String, Object> mapBinding, String scriptName,
+			BlockingQueue<Script> scriptPool, String methodName, Object args) {
+		Script script = scriptPool.poll();
+		try {
+			if (script == null) {
 				logger.warn("scriptPool.poll() returned null");
+				return null;
+			}
+			if (scriptsThreadLocalStack.get() == null) {
+				scriptsThreadLocalStack.set(new ArrayList<>());
+			}
+			scriptsThreadLocalStack.get().add(scriptName);
+			if (scriptsThreadLocalBinding.get() == null) {
+				scriptsThreadLocalBinding.set(new Binding(mapBinding));
+			}
+			script.setBinding(scriptsThreadLocalBinding.get());
+			if (scriptsThreadLocalStack.get().size() > MAX_ALLLOWED_STACK) {
+				String msg = "scripts stack may not be more than MAX_ALLLOWED_STACK (" + MAX_ALLLOWED_STACK
+						+ "). Current stack: " + scriptsThreadLocalStack.get();
+				System.out.println(msg);
+				throw new CwException(msg);
+			}
+			return script.invokeMethod(methodName, args);
+		} finally {
+			// clean bindings to avoid memory leaks
+			script.setBinding(new Binding());
+			scriptPool.add(script);
+			scriptsThreadLocalStack.get().remove(scriptsThreadLocalStack.get().size() - 1);
+			if (scriptsThreadLocalStack.get().isEmpty()) {
+				scriptsThreadLocalStack.set(null);
+				scriptsThreadLocalBinding.set(null);
 			}
 		}
 	}
 
 	private BlockingQueue<Script> getScriptByName(String scriptName) {
+		if (scriptName == null) {
+			return null;
+		}
 		BlockingQueue<Script> scriptsQueue = scriptsCache.get(scriptName);
 		if (scriptsQueue == null) {
 			try {
 				String fileName = scriptName + ".groovy";
 				String scriptText = loadScriptFromFile(fileName);
-				String commonSection = loadScriptFromFile("common-section.groovy");
-				scriptText = commonSection + "\n" + scriptText;
-				int aiScriptsPoolSize = applicationSettings.getAIScriptsPoolSize();
-				scriptsQueue = new LinkedBlockingQueue<>(aiScriptsPoolSize);
-				GroovyShell groovyShell = new GroovyShell();
-				for (int i = 0; i < aiScriptsPoolSize; i++) {
-					Script script = groovyShell.parse(scriptText);
-					scriptsQueue.add(script);
+				if (scriptText != null) {
+					String commonSection = loadScriptFromFile("common-section.groovy");
+					scriptText = commonSection + "\n" + scriptText;
+					int aiScriptsPoolSize = applicationSettings.getAIScriptsPoolSize();
+					scriptsQueue = new LinkedBlockingQueue<>(aiScriptsPoolSize);
+					GroovyShell groovyShell = new GroovyShell();
+					for (int i = 0; i < aiScriptsPoolSize; i++) {
+						Script script = groovyShell.parse(scriptText);
+						scriptsQueue.add(script);
+					}
 				}
 				scriptsCache.put(scriptName, scriptsQueue);
 			} catch (Exception e) {
@@ -123,8 +148,11 @@ public class ScriptAIHandler {
 	private String loadScriptFromFile(String fileName) {
 		fileName = AI_SCRIPTS_FOLDER + File.separator + fileName;
 		final File file = new File(fileName);
-		if (!file.exists() || file.isDirectory() || !file.canRead()) {
-			return null;
+		if (!file.exists()) {
+			throw new CwException("script not found: " + fileName);
+		}
+		if (file.isDirectory() || !file.canRead()) {
+			throw new CwException("script file is directory or can not be read: " + fileName);
 		}
 		try {
 			return loadScript(file);
@@ -165,5 +193,31 @@ public class ScriptAIHandler {
 		names.add(0, DEFAULT_SCRIPT);
 		names.add(1, JAVA_INTERNAL_AI);
 		return names;
+	}
+
+	// --------------------- Wrapper and chain invocations --------------
+
+	private ThreadLocal<List<String>> scriptsThreadLocalStack = new ThreadLocal<>();
+	private ThreadLocal<Binding> scriptsThreadLocalBinding = new ThreadLocal<>();
+
+	public class ScriptAIHandlerWrapper {
+		private ScriptAIHandler scriptAIHandler;
+
+		public ScriptAIHandlerWrapper(ScriptAIHandler scriptAIHandler) {
+			this.scriptAIHandler = scriptAIHandler;
+		}
+
+		public Object invoke(String scriptName, String methodName, Object args) {
+			BlockingQueue<Script> scriptPool = scriptAIHandler.getScriptByName(scriptName);
+			return invokeScriptMethod(null, scriptName, scriptPool, methodName, args);
+		}
+
+		public Object invoke(String scriptName, String methodName) {
+			return invoke(scriptName, methodName, null);
+		}
+	}
+
+	public ScriptAIHandlerWrapper getWrapper() {
+		return new ScriptAIHandlerWrapper(this);
 	}
 }

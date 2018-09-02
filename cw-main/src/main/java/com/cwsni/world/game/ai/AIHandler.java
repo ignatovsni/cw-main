@@ -53,7 +53,7 @@ public class AIHandler {
 	private void processCountry(IPGame game, CountDownLatch latch) {
 		try {
 			IData4Country data = game.getAIData();
-			((AIData4Country) data).initNewTurn(javaAIHandler);
+			((AIData4Country) data).initNewTurn(javaAIHandler, scriptAIHandler.getWrapper());
 			if (scriptAIHandler.hasScriptForCountry(data)) {
 				try {
 					scriptAIHandler.processCountry(data);
