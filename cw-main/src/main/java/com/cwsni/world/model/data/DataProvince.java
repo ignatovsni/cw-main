@@ -48,8 +48,28 @@ public class DataProvince {
 		events = new HashSet<>();
 	}
 
+	@Override
+	public int hashCode() {
+		return getId();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof DataProvince)) {
+			return false;
+		}
+		return ((DataProvince) obj).getId() == getId();
+	}
+
 	public List<Integer> getNeighbors() {
 		return neighbors;
+	}
+	
+	@Override
+	public String toString() {
+		return "province with id = " + getId() + ";";
 	}
 
 	public void setNeighbors(List<Integer> neighbors) {

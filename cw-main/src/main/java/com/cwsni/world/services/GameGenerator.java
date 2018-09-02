@@ -26,6 +26,7 @@ import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.data.Turn;
 import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.services.algorithms.PathFinder;
 import com.cwsni.world.util.CwRandom;
 
 @Component
@@ -166,17 +167,18 @@ public class GameGenerator {
 		int maxChainLength = Math.max(gParams.getRows(), gParams.getColumns());
 		createChainMountains(tData, gParams, needMountains, maxChainLength);
 		createChainMountains(tData, gParams, needMountains, 1);
-		// makeAllProvinceReachable(game, tData);
+
+		int tryMakeReachable = 0;
+		while (tryMakeReachable++ < game.getMap().getProvinces().size() / 100
+				&& makeAllProvinceReachable(game, tData)) {
+		}
 	}
 
 	/**
 	 * Mountains can block some provinces, so we need to make all provinces
 	 * reachable.
-	 * 
-	 * @param game
-	 * @param tData
 	 */
-	private void makeAllProvinceReachable(DataGame game, TempData tData) {
+	private boolean makeAllProvinceReachable(DataGame game, TempData tData) {
 		List<DataProvince> passableLand = game.getMap().getProvinces().stream()
 				.filter(dp -> dp.getTerrainType().isPassable()).collect(Collectors.toList());
 		DataProvince zeroProvince = passableLand.get(0);
@@ -197,21 +199,18 @@ public class GameGenerator {
 			}
 		}
 		for (int i = 0; i < passableLand.size(); i++) {
-			DataProvince p = passableLand.get(i);
-			if (!reachableProvincesIds.contains(p.getId())) {
-				// List<Object> path = gameAlgorithms.findShortestPath(createNode(zeroProvince,
-				// tData), createNode(p, tData));
-
+			DataProvince prov = passableLand.get(i);
+			if (!reachableProvincesIds.contains(prov.getId())) {
+				List<DataProvince> path = new PathFinder<DataProvince, DataProvince>().findShortestPath(zeroProvince,
+						prov, p -> p, p -> p.getNeighbors().stream().map(nId -> tData.provByIds.get(nId))
+								.collect(Collectors.toList()));
+				path.stream().filter(p -> p.getTerrainType().isMountain()).findFirst().get()
+						.setTerrainType(TerrainType.GRASSLAND);
+				return true;
 			}
 		}
+		return false;
 	}
-
-	/*
-	 * private GameAlgorithmsNode<DataProvince, Integer> createNode(DataProvince
-	 * province, TempData tData) { return new GameAlgorithmsNode<DataProvince,
-	 * Integer>(province, p -> p.getId(), p -> p.getNeighbors().stream().map(nId ->
-	 * tData.provByIds.get(nId)).collect(Collectors.toList())); }
-	 */
 
 	private void createChainMountains(TempData tData, GameParams gParams, int needMountains, int maxChainLength) {
 		CwRandom rnd = gParams.getRandom();
