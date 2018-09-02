@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.ApplicationSettings;
-import com.cwsni.world.client.desktop.locale.DefaultLocaleMessageSource;
+import com.cwsni.world.client.desktop.locale.GlobalLocaleMessageSource;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.services.GameGeneralController;
 
@@ -149,7 +149,7 @@ public class GsMenuBar extends MenuBar {
 		menu.setOnShowing(e -> {
 			menu.getItems().clear();
 			menu.getItems().addAll(defaultMenuItems);
-			DefaultLocaleMessageSource languageService = (DefaultLocaleMessageSource) messageSource;
+			GlobalLocaleMessageSource languageService = (GlobalLocaleMessageSource) messageSource;
 			Map<String, String> languages = languageService.getAvailableLanguages();
 			languages.entrySet().forEach(entry -> {
 				CheckMenuItem newLanguageMenuItem = new CheckMenuItem(entry.getValue());

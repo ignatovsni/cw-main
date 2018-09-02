@@ -15,8 +15,9 @@ public class ApplicationSettings extends AbstractSettings {
 	private int autoSaveMaxFiles = 10;
 	private int multithreadingAIThreads = 8;
 	private String language = "";
-	private int aiScriptsPoolSize = 16;
 	private int scriptsMaxStackDeep = 10;
+	private int aiScriptsPoolSize = 16;
+	private int eventsScriptsPoolSize = 16;
 
 	@Override
 	@PostConstruct
@@ -79,6 +80,14 @@ public class ApplicationSettings extends AbstractSettings {
 
 	public void setScriptsMaxStackDeep(int scriptsMaxStackDeep) {
 		this.scriptsMaxStackDeep = scriptsMaxStackDeep;
+	}
+
+	public int getEventsScriptsPoolSize() {
+		return eventsScriptsPoolSize;
+	}
+
+	public void setEventsScriptsPoolSize(int eventsScriptsPoolSize) {
+		this.eventsScriptsPoolSize = eventsScriptsPoolSize;
 	}
 
 }

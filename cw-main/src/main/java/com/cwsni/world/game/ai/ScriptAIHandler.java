@@ -16,11 +16,6 @@ import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.game.scripts.AbstractScriptHandler;
 import com.cwsni.world.model.player.interfaces.IData4Country;
 
-/**
- * Add scripts for: - fights - states creating - country creating ???
- * 
- */
-
 @Component
 public class ScriptAIHandler extends AbstractScriptHandler {
 
@@ -30,6 +25,7 @@ public class ScriptAIHandler extends AbstractScriptHandler {
 	public static final String DEFAULT_SCRIPT = "default";
 	private static final String JAVA_INTERNAL_AI = "[java]";
 	private static final String AI_SCRIPTS_FOLDER = "data" + File.separator + "ai-scripts";
+	protected static final String MAIN_SCRIPT_NAME_PART = ".main";
 
 	public boolean hasScriptForCountry(IData4Country data) {
 		String aiScriptName = data.getCountry().getAiScriptName();
@@ -44,7 +40,7 @@ public class ScriptAIHandler extends AbstractScriptHandler {
 		if (scriptName == null || scriptName.isEmpty()) {
 			return null;
 		}
-		scriptName += ".country";
+		scriptName += MAIN_SCRIPT_NAME_PART;
 		return scriptName;
 	}
 
@@ -62,7 +58,7 @@ public class ScriptAIHandler extends AbstractScriptHandler {
 		if (folder.exists() && folder.isDirectory() && folder.canRead()) {
 			for (File file : folder.listFiles()) {
 				String fileName = file.getName();
-				int idx = fileName.lastIndexOf(".country.groovy");
+				int idx = fileName.lastIndexOf(MAIN_SCRIPT_NAME_PART + ".groovy");
 				if (idx < 0) {
 					continue;
 				}

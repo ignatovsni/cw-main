@@ -26,7 +26,7 @@ import groovy.lang.Script;
 abstract public class AbstractScriptHandler {
 
 	protected Log logger = LogFactory.getLog(getClass());
-
+	
 	private Map<String, BlockingQueue<Script>> scriptsCache = new HashMap<>();
 
 	abstract protected int getScriptsPoolSize();

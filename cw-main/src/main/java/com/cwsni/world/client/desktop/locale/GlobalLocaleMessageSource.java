@@ -4,83 +4,40 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.ApplicationSettings;
-import com.cwsni.world.tools.LanguageHelper;
 
 @Component
-public class DefaultLocaleMessageSource implements LocaleMessageSource {
-
-	private static final Log logger = LogFactory.getLog(DefaultLocaleMessageSource.class);
+public class GlobalLocaleMessageSource extends SimpleLocaleMessageSource {
 
 	private static final String LANGUAGES_FOLDER = "data" + File.separator + "languages";
 	private static final String LANGUAGE_LABEL = "language.label";
-	private static final String DEFAULT_LANGUAGE_CODE = "";
-
-	private String currentLanguage;
-	private Map<String, String> messages;
-	private Map<String, String> defaultLanguageMessages;
 
 	@Autowired
-	private ApplicationSettings applicationSettings;
+	public void setApplicationSettings(ApplicationSettings applicationSettings) {
+		this.applicationSettings = applicationSettings;
+	}
 
 	@PostConstruct
-	private void init() {
-		clearCache();
+	protected void init() {
+		super.init();
 	}
 
-	public void clearCache() {
-		currentLanguage = DEFAULT_LANGUAGE_CODE;
-		defaultLanguageMessages = readMessagesForLanguage(currentLanguage);
-		messages = null;
-	}
-
-	@Override
-	public String getMessage(String code) {
-		String appLanguage = applicationSettings.getLanguage();
-		if (messages == null || !appLanguage.equals(currentLanguage)) {
-			messages = readMessagesForLanguage(appLanguage);
-			currentLanguage = appLanguage;
-		}
-		String value = messages.get(code);
-		if (value == null) {
-			value = defaultLanguageMessages.get(code);
-			if (value == null) {
-				value = code;
-			}
-		}
-		return value;
-	}
-
-	private Map<String, String> readMessagesForLanguage(String code) {
-		try {
-			LanguageHelper lh = new LanguageHelper() {
-				@Override
-				protected String getLanguageDirectoryFullPath() {
-					return LANGUAGES_FOLDER;
-				}
-			};
-			return lh.readLanguageFile(code);
-		} catch (Exception e) {
-			logger.error("failed to read language file for language code=" + code, e);
-			return Collections.emptyMap();
-		}
+	protected String getLanguagesFolder() {
+		return LANGUAGES_FOLDER;
 	}
 
 	public Map<String, String> getAvailableLanguages() {
 		Map<String, String> languages = new HashMap<>();
-		File folder = new File(LANGUAGES_FOLDER);
+		File folder = new File(getLanguagesFolder());
 		if (folder.exists() && folder.isDirectory() && folder.canRead()) {
 			for (File file : folder.listFiles()) {
 				String fileName = file.getName();
