@@ -41,7 +41,7 @@ public class JavaAIHandler {
 		manageDiplomacy(data);
 		processArmyBudget(data);
 		mergeAndSplitArmies(data);
-		moveArmies(data);
+		moveArmies(data);		
 	}
 
 	public void manageMoneyBudget(IData4Country data) {

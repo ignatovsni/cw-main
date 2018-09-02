@@ -169,4 +169,8 @@ public class PGame implements IPGame {
 		commands.removeAll(commandsForCancellation);
 	}
 
+	public Map<Object, Object> getAiRecords() {
+		return country.getAiRecords();
+	}
+
 }

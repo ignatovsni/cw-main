@@ -120,6 +120,10 @@ public class GameParams {
 	private int eventEpidemicDuration = 10;
 	private int eventEpidemicProtectionDuration = 40;
 	// ------------End of turn procession section--------
+	
+	// ------------service section--------------------------
+	private int aiRecordMaxTextSize = 1000;
+	// ------------End of service section-------------------
 
 	public double getEventGlobalClimateChangeProbability() {
 		return eventGlobalClimateChangeProbability;
@@ -844,6 +848,14 @@ public class GameParams {
 
 	public void setMountainsPerMapProvinces(double mountainsPerMapProvinces) {
 		this.mountainsPerMapProvinces = mountainsPerMapProvinces;
+	}
+
+	public int getAiRecordMaxTextSize() {
+		return aiRecordMaxTextSize;
+	}
+
+	public void setAiRecordMaxTextSize(int aiRecordMaxTextSize) {
+		this.aiRecordMaxTextSize = aiRecordMaxTextSize;
 	}
 
 }

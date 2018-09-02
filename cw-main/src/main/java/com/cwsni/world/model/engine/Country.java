@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -20,6 +21,7 @@ import com.cwsni.world.model.data.HistoryDataCountry;
 import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.CwException;
 import com.cwsni.world.util.CwRandom;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Country {
 
@@ -167,6 +169,10 @@ public class Country {
 		return scienceBudget;
 	}
 
+	public Map<Object, Object> getAiRecords() {
+		return data.getAiRecords();
+	}
+
 	public Collection<Army> getArmies() {
 		return Collections.unmodifiableCollection(armies);
 	}
@@ -293,11 +299,10 @@ public class Country {
 			dismissArmy(armyFrom);
 		}
 	}
-	
+
 	protected void calculateBaseBudget() {
 		budget.calculateBaseBudget();
 	}
-	
 
 	protected void calculateBudgetWithAgreements() {
 		budget.calculateBudgetWithAgreements();
@@ -467,6 +472,33 @@ public class Country {
 				1.0 * casualties / populationAmount);
 	}
 
+	public void checkAndCleanAiRecords() {
+		boolean isNeedToClean = false;
+		String msgAboutClean = null;
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			// objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+			String txt = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(getAiRecords());
+			if (txt != null && txt.length() > game.getGameParams().getAiRecordMaxTextSize()) {
+				isNeedToClean = true;
+				msgAboutClean = "Country " + getId() + " had text aiRecors.size=" + txt.length()
+						+ ", it is more than allowed size (" + game.getGameParams().getAiRecordMaxTextSize()
+						+ "), so aiRecors was deleted";
+			} else {
+				objectMapper.readValue(txt, Map.class);
+			}
+		} catch (Exception e) {
+			isNeedToClean = true;
+			msgAboutClean = "Country " + getId()
+					+ " could not save aiRecords as a text, so aiRecors was deleted. Error message: " + e.getMessage();
+			logger.trace(msgAboutClean, e);
+		}
+		if (isNeedToClean) {
+			getAiRecords().clear();
+			logger.warn(msgAboutClean);
+		}
+	}
+
 	// --------------------- static -------------------------------
 
 	public static Country createNewCountry(Game game, Province p) {
@@ -544,6 +576,5 @@ public class Country {
 		}
 		return color;
 	}
-
 
 }

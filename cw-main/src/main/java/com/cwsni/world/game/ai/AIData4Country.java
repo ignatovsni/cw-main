@@ -1,5 +1,7 @@
 package com.cwsni.world.game.ai;
 
+import java.util.Map;
+
 import com.cwsni.world.game.ai.ScriptAIHandler.ScriptAIHandlerWrapper;
 import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.model.player.interfaces.IData4Country;
@@ -43,6 +45,11 @@ public class AIData4Country implements IData4Country {
 	@Override
 	public ScriptAIHandlerWrapper getScriptHandler() {
 		return scriptAIHandlerWrapper;
+	}
+
+	@Override
+	public Map<Object, Object> getAiRecords() {
+		return game.getAiRecords();
 	}
 
 }

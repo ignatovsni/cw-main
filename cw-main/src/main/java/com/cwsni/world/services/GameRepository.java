@@ -67,24 +67,20 @@ public class GameRepository {
 
 	public void saveGame(Game game, File file) {
 		try {
+			checkAndCleanAiRecords(game);
 			ObjectMapper objectMapper = new ObjectMapper();
-			// printToConsole(objectMapper);
 			objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 			objectMapper.writeValue(file, game.getSaveData());
 			logger.trace("saving is successful : " + game.logDescription());
 		} catch (IOException e) {
-			e.printStackTrace();
 			logger.error("saving is failed : " + game.logDescription(), e);
 			throw new CwException(e.getMessage(), e);
 		}
 	}
 
-	/*
-	 * private void printToConsole(ObjectMapper objectMapper) throws
-	 * JsonProcessingException { String jsonInString =
-	 * objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
-	 * System.out.println("JSON is\n" + jsonInString); }
-	 */
+	private void checkAndCleanAiRecords(Game game) {
+		game.getCountries().forEach(c -> c.checkAndCleanAiRecords());
+	}
 
 	public Game quickLoadGame() {
 		File file = new File(getQuickSaveFullPath());
@@ -102,7 +98,6 @@ public class GameRepository {
 			game.buildFrom(dataGame, messageSource, gameEventListener);
 			logger.trace("loading is successful : " + game.logDescription());
 		} catch (IOException e) {
-			e.printStackTrace();
 			logger.error("loading is failed ", e);
 			throw new CwException(e.getMessage(), e);
 		}

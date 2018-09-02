@@ -1,8 +1,10 @@
 package com.cwsni.world.model.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.cwsni.world.game.ai.ScriptAIHandler;
@@ -29,6 +31,7 @@ public class DataCountry {
 	 * died people by different reasons (mostly fights and diseases)
 	 */
 	private long casualties;
+	private Map<Object, Object> aiRecords = new HashMap<>();
 
 	public int getId() {
 		return id;
@@ -168,6 +171,14 @@ public class DataCountry {
 
 	public void setCasualties(long casualties) {
 		this.casualties = casualties;
+	}
+
+	public Map<Object, Object> getAiRecords() {
+		return aiRecords;
+	}
+
+	public void setAiRecords(Map<Object, Object> aiRecords) {
+		this.aiRecords = aiRecords;
 	}
 
 }
