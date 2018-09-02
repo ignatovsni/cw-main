@@ -1,4 +1,4 @@
-package com.cwsni.world.services.algorithms;
+package com.cwsni.world.algorithms;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.cwsni.world.algorithms.PathFinder;
 import com.cwsni.world.model.data.DataWorldMap;
 import com.cwsni.world.model.data.events.Event;
-import com.cwsni.world.services.algorithms.PathFinder;
 import com.cwsni.world.util.ComparisonTool;
 
 public class WorldMap {

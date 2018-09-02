@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.algorithms.PathFinder;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.data.DataCulture;
@@ -26,7 +27,6 @@ import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.data.Turn;
 import com.cwsni.world.model.engine.Game;
-import com.cwsni.world.services.algorithms.PathFinder;
 import com.cwsni.world.util.CwRandom;
 
 @Component
