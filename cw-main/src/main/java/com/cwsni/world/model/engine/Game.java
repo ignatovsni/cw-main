@@ -16,7 +16,6 @@ import com.cwsni.world.model.data.events.EventCollection;
 import com.cwsni.world.model.data.events.EventTarget;
 import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 import com.cwsni.world.services.GameEventListener;
-import com.cwsni.world.services.algorithms.GameAlgorithms;
 import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.CwException;
 
@@ -34,7 +33,6 @@ public class Game implements EventTarget {
 	private RelationshipsCollection relationships;
 
 	private LocaleMessageSource messageSource;
-	private GameAlgorithms gameAlgorithms;
 	private GameEventListener gameEventListener;
 	private int lastAutoSaveTurn;
 
@@ -76,10 +74,6 @@ public class Game implements EventTarget {
 
 	public GameParams getGameParams() {
 		return data.getGameParams();
-	}
-
-	public GameAlgorithms getGameAlgorithms() {
-		return gameAlgorithms;
 	}
 
 	public Turn getTurn() {
@@ -285,11 +279,9 @@ public class Game implements EventTarget {
 		data.setTurn(turn);
 	}
 
-	public void buildFrom(DataGame dataGame, LocaleMessageSource messageSource, GameAlgorithms gameAlgorithms,
-			GameEventListener gameEventListener) {
+	public void buildFrom(DataGame dataGame, LocaleMessageSource messageSource, GameEventListener gameEventListener) {
 		this.data = dataGame;
 		this.messageSource = messageSource;
-		this.gameAlgorithms = gameAlgorithms;
 		this.gameEventListener = gameEventListener;
 
 		armies = new HashMap<>();
@@ -377,7 +369,7 @@ public class Game implements EventTarget {
 	public int getLastAutoSaveTurn() {
 		return lastAutoSaveTurn;
 	}
-	
+
 	public void setLastAutoSaveTurn(int lastAutoSaveTurn) {
 		this.lastAutoSaveTurn = lastAutoSaveTurn;
 	}

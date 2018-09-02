@@ -1,7 +1,6 @@
 package com.cwsni.world.model.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.stream.Collectors;
 
 import com.cwsni.world.model.data.DataWorldMap;
 import com.cwsni.world.model.data.events.Event;
-import com.cwsni.world.services.algorithms.Node;
+import com.cwsni.world.services.algorithms.PathFinder;
 import com.cwsni.world.util.ComparisonTool;
 
 public class WorldMap {
@@ -125,39 +124,12 @@ public class WorldMap {
 		return findShortestPath(fromId, toId, null).size() - 1;
 	}
 
-	public List<Object> findShortestPath(int fromId, int toId, Integer countryId) {
+	public List<? extends Object> findShortestPath(int fromId, int toId, Integer countryId) {
 		Country country = countryId != null ? game.findCountryById(countryId) : null;
 		ProvincePassabilityCriteria passability = new ProvincePassabilityCriteria(country);
-		return game.getGameAlgorithms().findShortestPath(new ProvinceNodeWrapper(findProvById(fromId), passability),
-				new ProvinceNodeWrapper(findProvById(toId), passability));
-	}
-
-	private class ProvinceNodeWrapper extends Node {
-
-		private Province p;
-		private ProvincePassabilityCriteria passability;
-
-		ProvinceNodeWrapper(Province p, ProvincePassabilityCriteria passability) {
-			this.p = p;
-			this.passability = passability;
-		}
-
-		@Override
-		public Object getKey() {
-			return p.getId();
-		}
-
-		@Override
-		public Collection<Node> getNeighbors() {
-			if (passability != null) {
-				return p.getNeighbors().stream().filter(p -> passability.isPassable(p))
-						.map(n -> new ProvinceNodeWrapper(n, passability)).collect(Collectors.toList());
-			} else {
-				return p.getNeighbors().stream().map(n -> new ProvinceNodeWrapper(n, passability))
-						.collect(Collectors.toList());
-			}
-		}
-
+		return new PathFinder<Province, Integer>().findShortestPath(findProvById(fromId), findProvById(toId),
+				p -> p.getId(),
+				p -> p.getNeighbors().stream().filter(n -> passability.isPassable(n)).collect(Collectors.toList()));
 	}
 
 }

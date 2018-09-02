@@ -15,7 +15,6 @@ import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.engine.Game;
-import com.cwsni.world.services.algorithms.GameAlgorithms;
 import com.cwsni.world.util.CwException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -30,9 +29,6 @@ public class GameRepository {
 
 	@Autowired
 	private LocaleMessageSource messageSource;
-
-	@Autowired
-	private GameAlgorithms gameAlgorithms;
 
 	@Autowired
 	private ApplicationSettings applicationSettings;
@@ -103,7 +99,7 @@ public class GameRepository {
 		try {
 			DataGame dataGame = objectMapper.readValue(file, DataGame.class);
 			game = new Game();
-			game.buildFrom(dataGame, messageSource, gameAlgorithms, gameEventListener);
+			game.buildFrom(dataGame, messageSource, gameEventListener);
 			logger.trace("loading is successful : " + game.logDescription());
 		} catch (IOException e) {
 			e.printStackTrace();

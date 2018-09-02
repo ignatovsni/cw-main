@@ -100,7 +100,7 @@ public class PArmy implements IPArmy {
 	}
 
 	@Override
-	public void moveTo(List<Object> path) {
+	public void moveTo(List<? extends Object> path) {
 		if (path.size() > 1) {
 			moveTo((Integer) path.get(1));
 		}

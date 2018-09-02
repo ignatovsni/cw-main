@@ -132,7 +132,7 @@ public class PGame implements IPGame {
 	}
 
 	@Override
-	public List<Object> findShortestPath(int fromId, int toId, IPArmy a) {
+	public List<? extends Object> findShortestPath(int fromId, int toId, IPArmy a) {
 		return game.getMap().findShortestPath(fromId, toId, a.getCountry().getId());
 	}
 

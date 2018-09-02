@@ -14,7 +14,7 @@ public interface IPArmy {
 
 	void moveTo(IPProvince destination);
 
-	void moveTo(List<Object> path);
+	void moveTo(List<? extends Object> path);
 
 	boolean isCanMove();
 

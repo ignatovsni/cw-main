@@ -9,6 +9,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,6 @@ import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.data.Turn;
 import com.cwsni.world.model.engine.Game;
-import com.cwsni.world.services.algorithms.GameAlgorithms;
 import com.cwsni.world.util.CwRandom;
 
 @Component
@@ -33,9 +33,6 @@ public class GameGenerator {
 
 	@Autowired
 	private LocaleMessageSource messageSource;
-
-	@Autowired
-	private GameAlgorithms gameAlgorithms;
 
 	@Autowired
 	private GameEventListener gameEventListener;
@@ -68,7 +65,7 @@ public class GameGenerator {
 		fillPopulation(dataGame);
 		fillInfrastructure(dataGame);
 		Game game = new Game();
-		game.buildFrom(dataGame, messageSource, getGameAlgorithms(), gameEventListener);
+		game.buildFrom(dataGame, messageSource, gameEventListener);
 		gameParams.getRandom().resetWithSeed(gameParams.getSeed());
 		return game;
 	}
@@ -161,7 +158,7 @@ public class GameGenerator {
 	}
 
 	private void createMountaints(DataGame game, TempData tData) {
-		if (game.getMap().getProvinces().size() < 200) {
+		if (game.getMap().getProvinces().size() < 100) {
 			return;
 		}
 		GameParams gParams = game.getGameParams();
@@ -169,16 +166,52 @@ public class GameGenerator {
 		int maxChainLength = Math.max(gParams.getRows(), gParams.getColumns());
 		createChainMountains(tData, gParams, needMountains, maxChainLength);
 		createChainMountains(tData, gParams, needMountains, 1);
-
-		// Check isolated provinces. It is not the best solution, but still...
-		tData.provByIds.values().forEach(p -> {
-			long notMontainsProvs = p.getNeighbors().stream().map(nId -> tData.provByIds.get(nId))
-					.filter(n -> !n.getTerrainType().isMountain()).count();
-			if (notMontainsProvs == 0) {
-				configureMountainProvince(p);
-			}
-		});
+		// makeAllProvinceReachable(game, tData);
 	}
+
+	/**
+	 * Mountains can block some provinces, so we need to make all provinces
+	 * reachable.
+	 * 
+	 * @param game
+	 * @param tData
+	 */
+	private void makeAllProvinceReachable(DataGame game, TempData tData) {
+		List<DataProvince> passableLand = game.getMap().getProvinces().stream()
+				.filter(dp -> dp.getTerrainType().isPassable()).collect(Collectors.toList());
+		DataProvince zeroProvince = passableLand.get(0);
+		List<DataProvince> listReachableProvinces = new ArrayList<>(passableLand.size());
+		Set<Integer> reachableProvincesIds = new HashSet<>();
+		listReachableProvinces.add(zeroProvince);
+		reachableProvincesIds.add(zeroProvince.getId());
+		int idx = 0;
+		while (idx < listReachableProvinces.size()) {
+			for (int i = idx; i < listReachableProvinces.size(); i++, idx++) {
+				DataProvince p = listReachableProvinces.get(i);
+				p.getNeighbors().stream().filter(nId -> !reachableProvincesIds.contains(nId))
+						.map(nId -> tData.provByIds.get(nId)).filter(n -> n.getTerrainType().isPassable())
+						.forEach(n -> {
+							listReachableProvinces.add(n);
+							reachableProvincesIds.add(n.getId());
+						});
+			}
+		}
+		for (int i = 0; i < passableLand.size(); i++) {
+			DataProvince p = passableLand.get(i);
+			if (!reachableProvincesIds.contains(p.getId())) {
+				// List<Object> path = gameAlgorithms.findShortestPath(createNode(zeroProvince,
+				// tData), createNode(p, tData));
+
+			}
+		}
+	}
+
+	/*
+	 * private GameAlgorithmsNode<DataProvince, Integer> createNode(DataProvince
+	 * province, TempData tData) { return new GameAlgorithmsNode<DataProvince,
+	 * Integer>(province, p -> p.getId(), p -> p.getNeighbors().stream().map(nId ->
+	 * tData.provByIds.get(nId)).collect(Collectors.toList())); }
+	 */
 
 	private void createChainMountains(TempData tData, GameParams gParams, int needMountains, int maxChainLength) {
 		CwRandom rnd = gParams.getRandom();
@@ -389,14 +422,6 @@ public class GameGenerator {
 		gameParams.setRows(0);
 		gameParams.setColumns(0);
 		return createGame(gameParams);
-	}
-
-	public GameAlgorithms getGameAlgorithms() {
-		return gameAlgorithms;
-	}
-
-	public void setGameAlgorithms(GameAlgorithms gameAlgorithms) {
-		this.gameAlgorithms = gameAlgorithms;
 	}
 
 }

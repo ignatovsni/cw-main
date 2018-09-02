@@ -32,4 +32,8 @@ public enum TerrainType {
 	public boolean isMountain() {
 		return MOUNTAIN.equals(this);
 	}
+
+	public boolean isPassable() {
+		return !isMountain();
+	}
 }

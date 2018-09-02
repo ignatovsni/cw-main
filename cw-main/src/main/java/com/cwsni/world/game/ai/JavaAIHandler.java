@@ -426,7 +426,7 @@ public class JavaAIHandler {
 				? nearestLandProv
 				: nearestLandProvThroughWater;
 		if (nearestProv.a != null) {
-			List<Object> path = data.getGame().findShortestPath(a.getLocation().getId(), nearestProv.a.getId(), a);
+			List<? extends Object> path = data.getGame().findShortestPath(a.getLocation().getId(), nearestProv.a.getId(), a);
 			// path.size = 0 means that army can't reach target province
 			// path.size = 1 means that path contains only from province
 			if (path.size() > 1) {

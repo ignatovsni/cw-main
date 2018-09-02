@@ -12,18 +12,14 @@ import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.WorldMap;
 import com.cwsni.world.services.GameGenerator;
-import com.cwsni.world.services.algorithms.GameAlgorithms;
 
-public class GameAlgorithmsTest {
+public class PathFinderTest {
 
 	private Game game;
-	private GameAlgorithms gameAlgorithms;
 
 	@Before
 	public void init() {
-		gameAlgorithms = new GameAlgorithms();
 		GameGenerator gg = new GameGenerator();
-		gg.setGameAlgorithms(gameAlgorithms);
 		GameParams gameParams = new GameParams();
 		gameParams.setSeed(System.currentTimeMillis());
 		gameParams.setRows(10);
@@ -36,7 +32,7 @@ public class GameAlgorithmsTest {
 	public void testPath() {
 		WorldMap map = game.getMap();
 		assertEquals(100, map.getProvinces().size());
-		List<Object> path = findShortestPath(map, 0, 1);
+		List<? extends Object> path = findShortestPath(map, 0, 1);
 		assertEquals(Arrays.asList(0, 1), path);
 
 		path = findShortestPath(map, 5, 0);
@@ -59,7 +55,7 @@ public class GameAlgorithmsTest {
 		// System.out.println(path);
 	}
 
-	private List<Object> findShortestPath(WorldMap map, int fromId, int toId) {
+	private List<? extends Object> findShortestPath(WorldMap map, int fromId, int toId) {
 		return map.findShortestPath(fromId, toId, null);
 	}
 
