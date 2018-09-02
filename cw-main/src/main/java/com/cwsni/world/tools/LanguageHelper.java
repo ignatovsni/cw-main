@@ -3,10 +3,12 @@ package com.cwsni.world.tools;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,12 +28,10 @@ public class LanguageHelper {
 		System.out.println("Created new file for " + language);
 	}
 
-	private Map<String, String> readLanguageFile(String language) throws FileNotFoundException, IOException {
+	public Map<String, String> readLanguageFile(String language) throws FileNotFoundException, IOException {
 		File languageFile = new File(getLanguageMessagesFullPath(language));
-
 		Map<String, String> languageMessages = new HashMap<>();
-		FileReader in = new FileReader(languageFile);
-		BufferedReader br = new BufferedReader(in);
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(languageFile), "UTF-8"));
 		br.lines().forEach(line -> {
 			int idx = line.indexOf("=");
 			if (idx > 0) {
@@ -39,7 +39,6 @@ public class LanguageHelper {
 			}
 		});
 		br.close();
-		in.close();
 		return languageMessages;
 	}
 
@@ -48,8 +47,7 @@ public class LanguageHelper {
 		String languageDirectory = getLanguageDirectoryFullPath();
 		List<String> resultRows = new ArrayList<>();
 		File baseFile = new File(languageDirectory + File.separator + "messages.properties");
-		FileReader in = new FileReader(baseFile);
-		BufferedReader br = new BufferedReader(in);
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(baseFile), "UTF-8"));
 		int allRows = 0;
 		int usedValues = 0;
 		int needToUpdateValues = 0;
@@ -71,7 +69,6 @@ public class LanguageHelper {
 			allRows++;
 		}
 		br.close();
-		in.close();
 		System.out.println("Created new row lists for '" + language + "'; allRows = " + allRows + "; usedValues = "
 				+ usedValues + "; needToUpdateValues = " + needToUpdateValues);
 		return resultRows;
@@ -79,8 +76,7 @@ public class LanguageHelper {
 
 	private void writeNewLanguageFile(String language, List<String> resultRows) throws IOException {
 		File languageFile = new File(getLanguageMessagesFullPath(language) + ".new");
-		FileWriter out = new FileWriter(languageFile);
-		BufferedWriter bw = new BufferedWriter(out);
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(languageFile), "UTF-8"));
 		resultRows.stream().forEach(row -> {
 			try {
 				bw.write(row);
@@ -90,16 +86,23 @@ public class LanguageHelper {
 			}
 		});
 		bw.close();
-		out.close();
 	}
 
 	private String getLanguageMessagesFullPath(String language) {
-		return getLanguageDirectoryFullPath() + File.separator + "messages_" + language + ".properties";
+		StringBuilder sb = new StringBuilder();
+		sb.append(getLanguageDirectoryFullPath());
+		sb.append(File.separator);
+		sb.append("messages");
+		if (language != null && !language.isEmpty()) {
+			sb.append("_");
+			sb.append(language);
+		}
+		sb.append(".properties");
+		return sb.toString();
 	}
 
-	private String getLanguageDirectoryFullPath() {
-		return System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator
-				+ "resources" + File.separator + "messages";
+	protected String getLanguageDirectoryFullPath() {
+		return System.getProperty("user.dir") + File.separator + "data" + File.separator + "languages";
 	}
 
 }

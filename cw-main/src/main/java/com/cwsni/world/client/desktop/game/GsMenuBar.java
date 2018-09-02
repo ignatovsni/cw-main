@@ -1,11 +1,20 @@
 package com.cwsni.world.client.desktop.game;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.ApplicationSettings;
+import com.cwsni.world.client.desktop.locale.DefaultLocaleMessageSource;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -18,14 +27,22 @@ import javafx.scene.input.KeyCombination;
 @Scope("prototype")
 public class GsMenuBar extends MenuBar {
 
+	private static final Log logger = LogFactory.getLog(GsMenuBar.class);
+
 	@Autowired
 	private LocaleMessageSource messageSource;
+
+	@Autowired
+	private ApplicationSettings applicationSettings;
+
+	private GameScene gameScene;
 
 	private String getMessage(String code) {
 		return messageSource.getMessage(code);
 	}
 
 	public void init(GameScene gameScene) {
+		this.gameScene = gameScene;
 		Menu fileMenu = createFileMenu(gameScene);
 		Menu worldMenu = createWorldMenu(gameScene);
 		Menu toolsMenu = createToolsMenu(gameScene);
@@ -108,8 +125,35 @@ public class GsMenuBar extends MenuBar {
 		MenuItem settingsEditorMenuItem = new MenuItem(getMessage("menu.settings.application"));
 		settingsEditorMenuItem.setOnAction(event -> gameScene.editSettings());
 
-		menu.getItems().setAll(settingsEditorMenuItem);
+		List<MenuItem> defaultMenuItems = new ArrayList<>();
+		defaultMenuItems.add(settingsEditorMenuItem);
+		defaultMenuItems.add(new SeparatorMenuItem());
+		menu.getItems().addAll(defaultMenuItems);
+
+		menu.setOnShowing(e -> {
+			menu.getItems().clear();
+			menu.getItems().addAll(defaultMenuItems);
+			DefaultLocaleMessageSource languageService = (DefaultLocaleMessageSource) messageSource;
+			Map<String, String> languages = languageService.getAvailableLanguages();
+			languages.entrySet().forEach(entry -> {
+				CheckMenuItem newLanguageMenuItem = new CheckMenuItem(entry.getValue());
+				newLanguageMenuItem.setSelected(entry.getKey().equals(applicationSettings.getLanguage()));
+				newLanguageMenuItem.setOnAction(event -> setLanguage(entry.getKey(), entry.getValue()));
+				menu.getItems().add(newLanguageMenuItem);
+			});
+		});
+
 		return menu;
+	}
+
+	private void setLanguage(String code, String label) {
+		if (applicationSettings.getLanguage().equals(code)) {
+			return;
+		}
+		logger.info("change language to [code=" + code + ", label=" + label + "]");
+		applicationSettings.setLanguage(code);
+		applicationSettings.savePropertiesToFile();
+		gameScene.refreshAllForLanguageChange();
 	}
 
 }

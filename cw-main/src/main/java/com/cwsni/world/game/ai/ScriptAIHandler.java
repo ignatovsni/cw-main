@@ -37,14 +37,13 @@ import groovy.lang.Script;
 @Component
 @Qualifier("scriptAIHandler")
 public class ScriptAIHandler {
-	
+
 	@Autowired
-	private	ApplicationSettings applicationSettings; 
+	private ApplicationSettings applicationSettings;
 
 	public static final String DEFAULT_SCRIPT = "default";
 	// public static final String DEFAULT_SCRIPT = "[java]";
 	private static final String JAVA_INTERNAL_AI = "[java]";
-	private static final String AI_SCRIPTS_FOLDER_WITH_SLASH = "ai-scripts/";
 	private static final String AI_SCRIPTS_FOLDER = "ai-scripts";
 
 	private static final Log logger = LogFactory.getLog(ScriptAIHandler.class);
@@ -100,13 +99,13 @@ public class ScriptAIHandler {
 
 	private String loadScriptFromResources(String fileName) {
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream in = classloader.getResourceAsStream(AI_SCRIPTS_FOLDER_WITH_SLASH + fileName);
+		InputStream in = classloader.getResourceAsStream(AI_SCRIPTS_FOLDER + File.separator + fileName);
 		String scriptText = loadScript(in);
 		return scriptText;
 	}
 
 	private String loadScriptFromFile(String fileName) {
-		fileName = AI_SCRIPTS_FOLDER_WITH_SLASH + fileName;
+		fileName = AI_SCRIPTS_FOLDER + File.separator + fileName;
 		final File file = new File(fileName);
 		if (!file.exists() || file.isDirectory() || !file.canRead()) {
 			return null;
@@ -154,10 +153,10 @@ public class ScriptAIHandler {
 
 	public List<String> getListOfAvailableScripts() {
 		Set<String> setOfScriptsName = new HashSet<>();
-		final File file = new File(AI_SCRIPTS_FOLDER);
-		if (file.exists() && file.isDirectory() && file.canRead()) {
-			for (File app : file.listFiles()) {
-				String fileName = app.getName();
+		File folder = new File(AI_SCRIPTS_FOLDER);
+		if (folder.exists() && folder.isDirectory() && folder.canRead()) {
+			for (File file : folder.listFiles()) {
+				String fileName = file.getName();
 				int idx = fileName.lastIndexOf(".country.groovy");
 				if (idx < 0) {
 					continue;

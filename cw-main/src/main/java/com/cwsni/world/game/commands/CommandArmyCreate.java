@@ -1,6 +1,5 @@
 package com.cwsni.world.game.commands;
 
-import com.cwsni.world.CwException;
 import com.cwsni.world.model.engine.Army;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.Province;
@@ -8,6 +7,7 @@ import com.cwsni.world.model.player.PCountry;
 import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPProvince;
 import com.cwsni.world.util.ComparisonTool;
+import com.cwsni.world.util.CwException;
 
 public class CommandArmyCreate extends CommandArmy {
 

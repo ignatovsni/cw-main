@@ -13,12 +13,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.cwsni.world.CwException;
 import com.cwsni.world.model.data.Color;
 import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataState;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.util.ComparisonTool;
+import com.cwsni.world.util.CwException;
 import com.cwsni.world.util.CwRandom;
 
 public class State {

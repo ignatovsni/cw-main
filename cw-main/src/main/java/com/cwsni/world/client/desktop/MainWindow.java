@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
+import com.cwsni.world.model.engine.Game;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -67,30 +68,33 @@ public class MainWindow extends Application {
 	@Override
 	public void start(final Stage stage) {
 		this.stage = stage;
-		stage.setTitle(getMessage("main.window.title"));
-		createGameScene(stage);
-		applyUserPreferences(stage);
+		applyUserPreferences2Stage(stage, getUserProperties());
 		stage.setOnCloseRequest(e -> Platform.exit());
+		initUI(null);
 		stage.show();
 		successfulStart = true;
 	}
 
-	private void createGameScene(Stage stage) {
-		GameScene gameScene = getGameScene();
-		gameScene.init(springContext);
-		stage.setScene(gameScene);
+	private GameScene initUI(Game game) {
+		stage.setTitle(getMessage("main.window.title"));
+		GameScene gameScene = createGameScene(stage, game);
+		gameScene.applyUserPreferences(getUserProperties());
+		return gameScene;
 	}
 
-	private void applyUserPreferences(Stage stage) {
-		UserUIPreferences userPref = getUserProperties();
+	private GameScene createGameScene(Stage stage, Game game) {
+		GameScene gameScene = getGameScene();
+		gameScene.init(this, springContext, game);
+		stage.setScene(gameScene);
+		return gameScene;
+	}
+
+	private void applyUserPreferences2Stage(Stage stage, UserUIPreferences userPref) {
 		stage.setWidth(userPref.getMainWindowWidth());
 		stage.setHeight(userPref.getMainWindowHeight());
 		stage.setX(userPref.getMainWindowPosX());
 		stage.setY(userPref.getMainWindowPosY());
 		stage.setMaximized(userPref.isMainWindowMaximized());
-		if (stage.getScene() instanceof GameScene) {
-			((GameScene) stage.getScene()).applyUserPreferences(userPref);
-		}
 	}
 
 	private String getMessage(String code) {
@@ -103,6 +107,10 @@ public class MainWindow extends Application {
 
 	private UserUIPreferences getUserProperties() {
 		return springContext.getBean(UserUIPreferences.class);
+	}
+
+	public void refreshAllForLanguageChange(Game game, Integer selectedProvinceId) {
+		initUI(game).restoreSceneAfterLanguageChange(selectedProvinceId);
 	}
 
 	/*

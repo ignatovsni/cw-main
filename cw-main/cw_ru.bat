@@ -1,1 +1,0 @@
-java -jar target\cw-main-0.0.1-SNAPSHOT.jar --app.locale=RU

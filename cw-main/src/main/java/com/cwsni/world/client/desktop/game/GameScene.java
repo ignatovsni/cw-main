@@ -12,6 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.MainWindow;
 import com.cwsni.world.client.desktop.UserUIPreferences;
 import com.cwsni.world.client.desktop.game.CountriesPropertiesWindow.RowCountry;
 import com.cwsni.world.client.desktop.game.SearchOnMapWindow.SearchResult;
@@ -136,37 +137,18 @@ public class GameScene extends Scene {
 	private Map<MapMode, Stage> otherMapWindows;
 	private Map<MapMode, DWorldMap> otherMaps;
 
+	private MainWindow mainWindow;
 	private ConfigurableApplicationContext springContext;
 
 	public GameScene() {
 		super(new BorderPane());
 	}
 
-	public void init(ConfigurableApplicationContext springContext) {
+	public void init(MainWindow mainWindow, ConfigurableApplicationContext springContext, Game oldGame) {
+		this.mainWindow = mainWindow;
 		this.springContext = springContext;
 
-		// tabs and menu
-		timeControl.init(this);
-		mapToolBar.init(this);
-		menuBar.init(this);
-
-		// info panels
-		globalInfoPane.init(this);
-		provInfoPane.init(this);
-		provScienceInfoPane.init(this);
-		provArmiesInfoPane.init(this);
-		countryInfoPane.init(this);
-		provEventsInfoPane.init(this);
-
-		{
-			// windows
-			// It is better to get them from spring context when they are needed.
-			createGameWindow.init(this);
-			countriesPropertiesWindow.init(this);
-			searchOnMapWindow.init(this);
-			groovyConsoleWindow.init(this);
-			settingsEditorWindow.init(this);
-		}
+		initComponents();
 
 		VBox rightInfoPanes = new VBox();
 		rightInfoPanes.getChildren().addAll(countryInfoPane, provInfoPane, provScienceInfoPane, provArmiesInfoPane,
@@ -208,7 +190,32 @@ public class GameScene extends Scene {
 		otherMapWindows = new HashMap<>();
 		otherMaps = new HashMap<>();
 
-		setupGame(gameGenerator.createEmptyGame());
+		setupGame(oldGame != null ? oldGame : gameGenerator.createEmptyGame());
+	}
+
+	private void initComponents() {
+		// tabs and menu
+		timeControl.init(this);
+		mapToolBar.init(this);
+		menuBar.init(this);
+
+		// info panels
+		globalInfoPane.init(this);
+		provInfoPane.init(this);
+		provScienceInfoPane.init(this);
+		provArmiesInfoPane.init(this);
+		countryInfoPane.init(this);
+		provEventsInfoPane.init(this);
+
+		{
+			// windows
+			// It is better to get them from spring context when they are needed.
+			createGameWindow.init(this);
+			countriesPropertiesWindow.init(this);
+			searchOnMapWindow.init(this);
+			groovyConsoleWindow.init(this);
+			settingsEditorWindow.init(this);
+		}
 	}
 
 	public ConfigurableApplicationContext getSpringContext() {
@@ -633,5 +640,15 @@ public class GameScene extends Scene {
 			}
 		});
 	}
+
+	public void refreshAllForLanguageChange() {
+		mainWindow.refreshAllForLanguageChange(game, selectedProvinceId);
+	}
+	
+	public void restoreSceneAfterLanguageChange(Integer id) {
+		selectAndShowProvince(game.getMap().findProvById(id));
+	}
+
+
 
 }

@@ -10,7 +10,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.cwsni.world.CwException;
 import com.cwsni.world.model.data.Color;
 import com.cwsni.world.model.data.DataCountry;
 import com.cwsni.world.model.data.DataMoneyBudget;
@@ -19,6 +18,7 @@ import com.cwsni.world.model.data.DataScienceBudget;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.HistoryDataCountry;
 import com.cwsni.world.util.ComparisonTool;
+import com.cwsni.world.util.CwException;
 import com.cwsni.world.util.CwRandom;
 
 public class Country {

@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.cwsni.world.CwException;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.data.DataPopulation;
@@ -24,6 +23,7 @@ import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.events.Event;
 import com.cwsni.world.model.data.events.EventEpidemic;
+import com.cwsni.world.util.CwException;
 
 public class Population {
 

@@ -49,7 +49,7 @@ public class UserUIPreferences extends AbstractSettings {
 	}
 
 	public void setMainWindowPosX(Integer mainWindowPosX) {
-		this.mainWindowPosX = mainWindowPosX;
+		this.mainWindowPosX = Math.min(1000, Math.max(0, mainWindowPosX));
 	}
 
 	public Integer getMainWindowPosY() {
@@ -57,7 +57,7 @@ public class UserUIPreferences extends AbstractSettings {
 	}
 
 	public void setMainWindowPosY(Integer mainWindowPosY) {
-		this.mainWindowPosY = mainWindowPosY;
+		this.mainWindowPosY = Math.min(800, Math.max(0, mainWindowPosY));
 	}
 
 	public boolean isMainWindowMaximized() {

@@ -11,12 +11,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.cwsni.world.CwException;
 import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
+import com.cwsni.world.util.CwException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -60,6 +60,10 @@ public class GameRepository {
 	}
 
 	public void quickSaveGame(Game game) {
+		if (game.getMap().getProvinces().isEmpty()) {
+			logger.trace("do not quick save because the map is empty");
+			return;
+		}
 		logger.trace("quick save : " + game.logDescription());
 		File file = new File(getQuickSaveFullPath());
 		saveGame(game, file);

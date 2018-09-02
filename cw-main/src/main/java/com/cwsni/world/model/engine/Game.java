@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.cwsni.world.CwException;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.data.GameParams;
@@ -19,6 +18,7 @@ import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 import com.cwsni.world.services.GameEventListener;
 import com.cwsni.world.services.algorithms.GameAlgorithms;
 import com.cwsni.world.util.ComparisonTool;
+import com.cwsni.world.util.CwException;
 
 public class Game implements EventTarget {
 

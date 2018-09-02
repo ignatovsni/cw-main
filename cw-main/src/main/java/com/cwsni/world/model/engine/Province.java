@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.cwsni.world.CwException;
 import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataProvince;
 import com.cwsni.world.model.data.DataScience;
@@ -23,6 +22,7 @@ import com.cwsni.world.model.data.events.EventCollection;
 import com.cwsni.world.model.data.events.EventEpidemic;
 import com.cwsni.world.model.data.events.EventTarget;
 import com.cwsni.world.util.ComparisonTool;
+import com.cwsni.world.util.CwException;
 
 public class Province implements EventTarget {
 

@@ -10,18 +10,20 @@ public class ProvincePassabilityCriteria {
 
 	public ProvincePassabilityCriteria(Country country) {
 		this.country = country;
-		this.game = country.getGame();
+		if (country != null) {
+			this.game = country.getGame();
+		}
 	}
 
 	public boolean isPassable(Province p) {
 		if (p.getTerrainType().isMountain()) {
 			return false;
 		}
-		if (p.getTerrainType().isWater()) {
-			return country.getReachableWaterProvinces().contains(p);
-		}
 		if (p.getCountry() == null) {
 			return true;
+		}
+		if (p.getTerrainType().isWater()) {
+			return country.getReachableWaterProvinces().contains(p);
 		}
 		if (p.getCountry().equals(country)) {
 			return true;

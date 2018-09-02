@@ -1,4 +1,4 @@
-package com.cwsni.world;
+package com.cwsni.world.util;
 
 public class CwException extends RuntimeException {
 

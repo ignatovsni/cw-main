@@ -15,6 +15,7 @@ public class ApplicationSettings extends AbstractSettings {
 	private int autoSaveTurnStep = 10;
 	private int autoSaveMaxFiles = 10;
 	private int multithreadingAIThreads = 8;
+	private String language = "";
 
 	@Override
 	@PostConstruct
@@ -58,6 +59,14 @@ public class ApplicationSettings extends AbstractSettings {
 	@JsonIgnore
 	public int getAIScriptsPoolSize() {
 		return getMultithreadingAIThreads();
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 }
