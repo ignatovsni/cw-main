@@ -3,7 +3,7 @@ package com.cwsni.world.model.player.interfaces;
 import java.util.Map;
 
 import com.cwsni.world.game.ai.JavaAIHandler;
-import com.cwsni.world.game.ai.ScriptAIHandler.ScriptAIHandlerWrapper;
+import com.cwsni.world.game.scripts.AbstractScriptHandler.ScriptHandlerWrapper;
 
 public interface IData4Country {
 
@@ -13,10 +13,12 @@ public interface IData4Country {
 
 	Integer getCountryId();
 
+	IPRandom getRandom();
+
 	JavaAIHandler getJavaAIHandler();
-	
-	ScriptAIHandlerWrapper getScriptHandler();
-	
+
+	ScriptHandlerWrapper getScriptHandler();
+
 	Map<Object, Object> getAiRecords();
 
 }

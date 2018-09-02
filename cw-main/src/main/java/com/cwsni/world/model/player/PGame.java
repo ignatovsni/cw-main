@@ -22,6 +22,7 @@ import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPGameParams;
 import com.cwsni.world.model.player.interfaces.IPProvince;
+import com.cwsni.world.model.player.interfaces.IPRandom;
 import com.cwsni.world.model.player.interfaces.IPRelationshipsCollection;
 import com.cwsni.world.model.player.interfaces.IPState;
 import com.cwsni.world.model.player.interfaces.IPTurn;
@@ -171,6 +172,10 @@ public class PGame implements IPGame {
 
 	public Map<Object, Object> getAiRecords() {
 		return country.getAiRecords();
+	}
+
+	public IPRandom getRandom() {
+		return new PRandom(game.getGameParams());
 	}
 
 }

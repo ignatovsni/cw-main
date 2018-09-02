@@ -66,7 +66,7 @@ public class JavaAIHandler {
 		double thisCountryPureWarStrength = getPureWarStrength(data, country);
 		double thisCountryStrength = countriesCurrentWarStrength.get(country.getId());
 		IPGame game = data.getGame();
-		IPRandom rnd = game.getGameParams().getRandom();
+		IPRandom rnd = data.getRandom();
 		Map<Integer, IPRWar> countriesWithWar = game.getRelationships().getCountriesWithWar(country.getId());
 		Map<Integer, IPRTruce> countriesWithTruce = game.getRelationships().getCountriesWithTruce(country.getId());
 		Map<Integer, IPRTribute> countriesWithTribute = game.getRelationships()

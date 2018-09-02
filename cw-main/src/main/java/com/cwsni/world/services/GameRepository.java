@@ -34,7 +34,7 @@ public class GameRepository {
 	private ApplicationSettings applicationSettings;
 
 	@Autowired
-	private GameEventListener gameEventListener;
+	private PlayerEventListener gameEventListener;
 
 	@PostConstruct
 	public void init() {

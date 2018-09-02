@@ -15,7 +15,7 @@ import com.cwsni.world.model.data.events.Event;
 import com.cwsni.world.model.data.events.EventCollection;
 import com.cwsni.world.model.data.events.EventTarget;
 import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
-import com.cwsni.world.services.GameEventListener;
+import com.cwsni.world.services.PlayerEventListener;
 import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.CwException;
 
@@ -33,7 +33,7 @@ public class Game implements EventTarget {
 	private RelationshipsCollection relationships;
 
 	private LocaleMessageSource messageSource;
-	private GameEventListener gameEventListener;
+	private PlayerEventListener gameEventListener;
 	private int lastAutoSaveTurn;
 
 	public List<Event> getEvents() {
@@ -88,7 +88,7 @@ public class Game implements EventTarget {
 		return data.logDescription();
 	}
 
-	public GameEventListener getGameEventListener() {
+	public PlayerEventListener getGameEventListener() {
 		return gameEventListener;
 	}
 
@@ -279,7 +279,7 @@ public class Game implements EventTarget {
 		data.setTurn(turn);
 	}
 
-	public void buildFrom(DataGame dataGame, LocaleMessageSource messageSource, GameEventListener gameEventListener) {
+	public void buildFrom(DataGame dataGame, LocaleMessageSource messageSource, PlayerEventListener gameEventListener) {
 		this.data = dataGame;
 		this.messageSource = messageSource;
 		this.gameEventListener = gameEventListener;

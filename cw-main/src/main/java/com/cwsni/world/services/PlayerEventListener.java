@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.model.engine.Game;
 
 @Component
-public class GameEventListener {
+public class PlayerEventListener {
 
 	// private static final Log logger = LogFactory.getLog(GameEventListener.class);
 

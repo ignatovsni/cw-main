@@ -36,7 +36,7 @@ public class GameGenerator {
 	private LocaleMessageSource messageSource;
 
 	@Autowired
-	private GameEventListener gameEventListener;
+	private PlayerEventListener gameEventListener;
 
 	private class TempData {
 		Map<Integer, DataProvince> provByIds = new HashMap<>();

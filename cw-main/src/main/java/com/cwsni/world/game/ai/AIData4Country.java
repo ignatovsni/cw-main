@@ -2,22 +2,23 @@ package com.cwsni.world.game.ai;
 
 import java.util.Map;
 
-import com.cwsni.world.game.ai.ScriptAIHandler.ScriptAIHandlerWrapper;
+import com.cwsni.world.game.scripts.AbstractScriptHandler.ScriptHandlerWrapper;
 import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.model.player.interfaces.IData4Country;
 import com.cwsni.world.model.player.interfaces.IPCountry;
 import com.cwsni.world.model.player.interfaces.IPGame;
+import com.cwsni.world.model.player.interfaces.IPRandom;
 
 public class AIData4Country implements IData4Country {
 	private PGame game;
 	private JavaAIHandler javaAIHandler;
-	private ScriptAIHandlerWrapper scriptAIHandlerWrapper;
+	private ScriptHandlerWrapper scriptAIHandlerWrapper;
 
 	public AIData4Country(PGame game) {
 		this.game = game;
 	}
 
-	protected void initNewTurn(JavaAIHandler javaAIHandler, ScriptAIHandlerWrapper scriptAIHandlerWrapper) {
+	protected void initNewTurn(JavaAIHandler javaAIHandler, ScriptHandlerWrapper scriptAIHandlerWrapper) {
 		this.javaAIHandler = javaAIHandler;
 		this.scriptAIHandlerWrapper = scriptAIHandlerWrapper;
 	}
@@ -43,13 +44,18 @@ public class AIData4Country implements IData4Country {
 	}
 
 	@Override
-	public ScriptAIHandlerWrapper getScriptHandler() {
+	public ScriptHandlerWrapper getScriptHandler() {
 		return scriptAIHandlerWrapper;
 	}
 
 	@Override
 	public Map<Object, Object> getAiRecords() {
 		return game.getAiRecords();
+	}
+
+	@Override
+	public IPRandom getRandom() {
+		return game.getRandom();
 	}
 
 }
