@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.client.desktop.locale.DefaultLocaleMessageSource;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
+import com.cwsni.world.services.GameGeneralController;
 
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
@@ -29,13 +30,16 @@ public class GsMenuBar extends MenuBar {
 
 	private static final Log logger = LogFactory.getLog(GsMenuBar.class);
 
+	private GameScene gameScene;
+
 	@Autowired
 	private LocaleMessageSource messageSource;
 
 	@Autowired
 	private ApplicationSettings applicationSettings;
 
-	private GameScene gameScene;
+	@Autowired
+	private GameGeneralController gameGeneralController;
 
 	private String getMessage(String code) {
 		return messageSource.getMessage(code);
@@ -45,9 +49,10 @@ public class GsMenuBar extends MenuBar {
 		this.gameScene = gameScene;
 		Menu fileMenu = createFileMenu(gameScene);
 		Menu worldMenu = createWorldMenu(gameScene);
+		Menu mapMenu = createMapMenu(gameScene);
 		Menu toolsMenu = createToolsMenu(gameScene);
 		Menu settingsMenu = createSettingsMenu(gameScene);
-		getMenus().setAll(fileMenu, worldMenu, toolsMenu, settingsMenu);
+		getMenus().setAll(fileMenu, worldMenu, mapMenu, toolsMenu, settingsMenu);
 	}
 
 	private Menu createFileMenu(GameScene gameScene) {
@@ -95,27 +100,38 @@ public class GsMenuBar extends MenuBar {
 		return menu;
 	}
 
-	private Menu createToolsMenu(GameScene gameScene) {
-		Menu menu = new Menu(getMessage("menu.tools"));
+	private Menu createMapMenu(GameScene gameScene) {
+		Menu menu = new Menu(getMessage("menu.map"));
 
-		MenuItem searchOnMapMenuItem = new MenuItem(getMessage("menu.tools.search-on-map"));
+		MenuItem searchOnMapMenuItem = new MenuItem(getMessage("menu.map.search-on-map"));
 		searchOnMapMenuItem.setOnAction(event -> gameScene.searchOnMap());
 		searchOnMapMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
+
+		MenuItem scaleToDefaultMenuItem = new MenuItem(getMessage("menu.map.scale-to-default"));
+		scaleToDefaultMenuItem.setOnAction(event -> gameScene.scaleMapToDefault());
+		scaleToDefaultMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.PAGE_UP, KeyCombination.CONTROL_DOWN));
+
+		MenuItem scaleToFitMenuItem = new MenuItem(getMessage("menu.map.scale-to-fit"));
+		scaleToFitMenuItem.setOnAction(event -> gameScene.scaleMapToFitAllContent());
+		scaleToFitMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.PAGE_DOWN, KeyCombination.CONTROL_DOWN));
+
+		menu.getItems().setAll(searchOnMapMenuItem, new SeparatorMenuItem(), scaleToDefaultMenuItem,
+				scaleToFitMenuItem);
+		return menu;
+	}
+
+	private Menu createToolsMenu(GameScene gameScene) {
+		Menu menu = new Menu(getMessage("menu.tools"));
 
 		MenuItem scriptConsoleMenuItem = new MenuItem(getMessage("menu.tools.script-console"));
 		scriptConsoleMenuItem.setOnAction(event -> gameScene.runGroovyConsole());
 		scriptConsoleMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
 
-		MenuItem scaleToDefaultMenuItem = new MenuItem(getMessage("menu.tools.scale-to-default"));
-		scaleToDefaultMenuItem.setOnAction(event -> gameScene.scaleMapToDefault());
-		scaleToDefaultMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.PAGE_UP, KeyCombination.CONTROL_DOWN));
+		MenuItem cacheResetMenuItem = new MenuItem(getMessage("menu.tools.app-caches-reset"));
+		cacheResetMenuItem.setOnAction(event -> gameGeneralController.resetAppCaches());
+		cacheResetMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
 
-		MenuItem scaleToFitMenuItem = new MenuItem(getMessage("menu.tools.scale-to-fit"));
-		scaleToFitMenuItem.setOnAction(event -> gameScene.scaleMapToFitAllContent());
-		scaleToFitMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.PAGE_DOWN, KeyCombination.CONTROL_DOWN));
-
-		menu.getItems().setAll(searchOnMapMenuItem, new SeparatorMenuItem(), scriptConsoleMenuItem,
-				new SeparatorMenuItem(), scaleToDefaultMenuItem, scaleToFitMenuItem);
+		menu.getItems().setAll(scriptConsoleMenuItem, new SeparatorMenuItem(), cacheResetMenuItem);
 		return menu;
 	}
 

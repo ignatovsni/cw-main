@@ -62,7 +62,10 @@ public class ScriptAIHandler {
 
 	public void processCountry(IData4Country data) {
 		BlockingQueue<Script> scriptPool = getScriptForCountry(data);
-		invokeMethod(scriptPool, "processCountry", data);
+		Map<String, Object> mapBinding = new HashMap<>();
+		mapBinding.put("data", data);
+		mapBinding.put("game", data.getGame());
+		invokeMethod(mapBinding, scriptPool, "processCountry", null);
 	}
 
 	private BlockingQueue<Script> getScriptForCountry(IData4Country data) {
@@ -74,11 +77,13 @@ public class ScriptAIHandler {
 		return getScriptByName(scriptName);
 	}
 
-	private void invokeMethod(BlockingQueue<Script> scriptPool, String methodName, Object args) {
+	private void invokeMethod(Map<String, Object> mapBinding, BlockingQueue<Script> scriptPool, String methodName,
+			Object args) {
 		if (scriptPool != null) {
 			Script script = scriptPool.poll();
 			if (script != null) {
 				try {
+					script.setBinding(new Binding(mapBinding));
 					script.invokeMethod(methodName, args);
 				} finally {
 					// clean bindings to avoid memory leaks

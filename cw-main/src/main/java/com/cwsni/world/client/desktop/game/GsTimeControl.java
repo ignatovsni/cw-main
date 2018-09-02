@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.client.desktop.UserUIPreferences;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
-import com.cwsni.world.game.ai.ScriptAIHandler;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -34,9 +33,6 @@ public class GsTimeControl extends BorderPane {
 
 	@Autowired
 	private LocaleMessageSource messageSource;
-
-	@Autowired
-	private ScriptAIHandler scriptAIHandler;
 
 	private GameScene gameScene;
 
@@ -105,7 +101,6 @@ public class GsTimeControl extends BorderPane {
 			logger.info("totalMemory: " + DataFormatter.toLong(Runtime.getRuntime().totalMemory()));
 			logger.info("maxMemory: " + DataFormatter.toLong(Runtime.getRuntime().maxMemory()));
 			logger.info("freeMemory: " + DataFormatter.toLong(Runtime.getRuntime().freeMemory()));
-			scriptAIHandler.clearCache();
 		});
 
 		buttons = new ArrayList<>();

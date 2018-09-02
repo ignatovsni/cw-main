@@ -1,4 +1,4 @@
-def processCountry(data) {
+def processCountry() {
 	//processCountryWithScript(data);
 	processCountryWithJava(data);
 }

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,8 +37,13 @@ public class DefaultLocaleMessageSource implements LocaleMessageSource {
 
 	@PostConstruct
 	private void init() {
+		clearCache();
+	}
+
+	public void clearCache() {
 		currentLanguage = DEFAULT_LANGUAGE_CODE;
 		defaultLanguageMessages = readMessagesForLanguage(currentLanguage);
+		messages = null;
 	}
 
 	@Override
@@ -45,24 +51,16 @@ public class DefaultLocaleMessageSource implements LocaleMessageSource {
 		String appLanguage = applicationSettings.getLanguage();
 		if (messages == null || !appLanguage.equals(currentLanguage)) {
 			messages = readMessagesForLanguage(appLanguage);
-			if (messages != null) {
-				currentLanguage = appLanguage;
-			} else {
-				currentLanguage = DEFAULT_LANGUAGE_CODE;
-			}
+			currentLanguage = appLanguage;
 		}
-		if (messages != null) {
-			String value = messages.get(code);
+		String value = messages.get(code);
+		if (value == null) {
+			value = defaultLanguageMessages.get(code);
 			if (value == null) {
-				value = defaultLanguageMessages.get(code);
-				if (value == null) {
-					value = code;
-				}
+				value = code;
 			}
-			return value;
-		} else {
-			return null;
 		}
+		return value;
 	}
 
 	private Map<String, String> readMessagesForLanguage(String code) {
@@ -76,7 +74,7 @@ public class DefaultLocaleMessageSource implements LocaleMessageSource {
 			return lh.readLanguageFile(code);
 		} catch (Exception e) {
 			logger.error("failed to read language file for language code=" + code, e);
-			return null;
+			return Collections.emptyMap();
 		}
 	}
 
