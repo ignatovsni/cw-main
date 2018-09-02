@@ -24,7 +24,7 @@ import javafx.scene.layout.VBox;
 
 @Component
 @Scope("prototype")
-public class SettingsEditorWindow extends Dialog<ButtonType> {
+public class AppSettingsEditorWindow extends Dialog<ButtonType> {
 
 	@Autowired
 	private LocaleMessageSource messageSource;
@@ -36,18 +36,16 @@ public class SettingsEditorWindow extends Dialog<ButtonType> {
 	private CheckBox autoSaveCheckBox;
 	private TextField autoSaveTurnSteps;
 	private TextField autoSaveMaxFiles;
-	private TextField multithreadingAIThreads;
 
 	private String getMessage(String code) {
 		return messageSource.getMessage(code);
 	}
 
 	public void init(GameScene gameScene) {
-		setTitle(getMessage("window.application-settings.title"));
-		ButtonType okButtonType = new ButtonType(getMessage("window.application-settings.button.ok"),
-				ButtonData.OK_DONE);
+		setTitle(getMessage("window.app-settings.title"));
+		ButtonType okButtonType = new ButtonType(getMessage("window.app-settings.button.ok"), ButtonData.OK_DONE);
 		getDialogPane().getButtonTypes().add(okButtonType);
-		ButtonType cancelButtonType = new ButtonType(getMessage("window.application-settings.button.cancel"),
+		ButtonType cancelButtonType = new ButtonType(getMessage("window.app-settings.button.cancel"),
 				ButtonData.CANCEL_CLOSE);
 		getDialogPane().getButtonTypes().add(cancelButtonType);
 
@@ -63,23 +61,16 @@ public class SettingsEditorWindow extends Dialog<ButtonType> {
 		autoSaveMaxFiles = new TextField();
 		DialogUtil.textFieldOnlyDigits(autoSaveMaxFiles);
 
-		multithreadingAIThreads = new TextField();
-		DialogUtil.textFieldOnlyDigits(multithreadingAIThreads);
-
 		int idx = 0;
 
-		addRow("window.application-settings.autosave.section.label", grid, idx++, null);
-		addRow("window.application-settings.autosave.use", grid, idx++, autoSaveCheckBox);
-		addRow("window.application-settings.autosave.turn-step", grid, idx++, autoSaveTurnSteps);
-		addRow("window.application-settings.autosave.max-files", grid, idx++, autoSaveMaxFiles);
-
-		addRow(null, grid, idx++, null);
-		addRow("window.application-settings.multithreading.section.label", grid, idx++, null);
-		addRow("window.application-settings.multithreading.ai.threads", grid, idx++, multithreadingAIThreads);
+		addRow("window.app-settings.autosave.section.label", grid, idx++, null);
+		addRow("window.app-settings.autosave.use", grid, idx++, autoSaveCheckBox);
+		addRow("window.app-settings.autosave.turn-step", grid, idx++, autoSaveTurnSteps);
+		addRow("window.app-settings.autosave.max-files", grid, idx++, autoSaveMaxFiles);
 
 		addRow(null, grid, idx++, null);
 
-		Label warningAboutChanges = new Label(getMessage("window.application-settings.warning-about-changes"));
+		Label warningAboutChanges = new Label(getMessage("window.app-settings.warning-about-changes"));
 		VBox paneContent = new VBox();
 		paneContent.getChildren().addAll(grid, warningAboutChanges);
 		getDialogPane().setContent(paneContent);
@@ -109,7 +100,6 @@ public class SettingsEditorWindow extends Dialog<ButtonType> {
 		autoSaveCheckBox.setSelected(applicationSettings.isUseAutoSave());
 		autoSaveTurnSteps.setText(String.valueOf(applicationSettings.getAutoSaveTurnStep()));
 		autoSaveMaxFiles.setText(String.valueOf(applicationSettings.getAutoSaveMaxFiles()));
-		multithreadingAIThreads.setText(String.valueOf(applicationSettings.getMultithreadingAIThreads()));
 	}
 
 	private void addRow(String msgCode, GridPane grid, int row, Node node) {
@@ -132,8 +122,6 @@ public class SettingsEditorWindow extends Dialog<ButtonType> {
 				.setAutoSaveTurnStep(toInt(autoSaveTurnSteps.getText(), applicationSettings.getAutoSaveTurnStep()));
 		applicationSettings
 				.setAutoSaveMaxFiles(toInt(autoSaveMaxFiles.getText(), applicationSettings.getAutoSaveMaxFiles()));
-		applicationSettings.setMultithreadingAIThreads(
-				toInt(multithreadingAIThreads.getText(), applicationSettings.getMultithreadingAIThreads()));
 
 		applicationSettings.savePropertiesToFile();
 	}

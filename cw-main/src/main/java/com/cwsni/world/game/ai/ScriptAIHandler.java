@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -45,7 +46,6 @@ public class ScriptAIHandler {
 	public static final String DEFAULT_SCRIPT = "default";
 	private static final String JAVA_INTERNAL_AI = "[java]";
 	private static final String AI_SCRIPTS_FOLDER = "data" + File.separator + "ai-scripts";
-	private static final int MAX_ALLLOWED_STACK = 10;
 
 	private Map<String, BlockingQueue<Script>> scriptsCache;
 
@@ -83,7 +83,12 @@ public class ScriptAIHandler {
 
 	private Object invokeScriptMethod(Map<String, Object> mapBinding, String scriptName,
 			BlockingQueue<Script> scriptPool, String methodName, Object args) {
-		Script script = scriptPool.poll();
+		Script script = null;
+		try {
+			script = scriptPool.poll(100, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			throw new CwException(e);
+		}
 		try {
 			if (script == null) {
 				logger.warn("scriptPool.poll() returned null");
@@ -97,9 +102,10 @@ public class ScriptAIHandler {
 				scriptsThreadLocalBinding.set(new Binding(mapBinding));
 			}
 			script.setBinding(scriptsThreadLocalBinding.get());
-			if (scriptsThreadLocalStack.get().size() > MAX_ALLLOWED_STACK) {
-				String msg = "scripts stack may not be more than MAX_ALLLOWED_STACK (" + MAX_ALLLOWED_STACK
-						+ "). Current stack: " + scriptsThreadLocalStack.get();
+			if (scriptsThreadLocalStack.get().size() > applicationSettings.getScriptsMaxStackDeep()) {
+				String msg = "scripts stack may not be more than MAX_ALLLOWED_STACK ("
+						+ applicationSettings.getScriptsMaxStackDeep() + "). Current stack: "
+						+ scriptsThreadLocalStack.get();
 				System.out.println(msg);
 				throw new CwException(msg);
 			}
@@ -128,7 +134,7 @@ public class ScriptAIHandler {
 				if (scriptText != null) {
 					String commonSection = loadScriptFromFile("common-section.groovy");
 					scriptText = commonSection + "\n" + scriptText;
-					int aiScriptsPoolSize = applicationSettings.getAIScriptsPoolSize();
+					int aiScriptsPoolSize = applicationSettings.getAiScriptsPoolSize();
 					scriptsQueue = new LinkedBlockingQueue<>(aiScriptsPoolSize);
 					GroovyShell groovyShell = new GroovyShell();
 					for (int i = 0; i < aiScriptsPoolSize; i++) {

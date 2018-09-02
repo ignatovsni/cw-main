@@ -4,7 +4,6 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @Component
@@ -16,6 +15,8 @@ public class ApplicationSettings extends AbstractSettings {
 	private int autoSaveMaxFiles = 10;
 	private int multithreadingAIThreads = 8;
 	private String language = "";
+	private int aiScriptsPoolSize = 16;
+	private int scriptsMaxStackDeep = 10;
 
 	@Override
 	@PostConstruct
@@ -56,17 +57,28 @@ public class ApplicationSettings extends AbstractSettings {
 		this.multithreadingAIThreads = Math.min(64, Math.max(1, multithreadingAIThreads));
 	}
 
-	@JsonIgnore
-	public int getAIScriptsPoolSize() {
-		return getMultithreadingAIThreads() * 10;
-	}
-
 	public String getLanguage() {
 		return language;
 	}
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	public int getAiScriptsPoolSize() {
+		return aiScriptsPoolSize;
+	}
+
+	public void setAiScriptsPoolSize(int aiScriptsPoolSize) {
+		this.aiScriptsPoolSize = aiScriptsPoolSize;
+	}
+
+	public int getScriptsMaxStackDeep() {
+		return scriptsMaxStackDeep;
+	}
+
+	public void setScriptsMaxStackDeep(int scriptsMaxStackDeep) {
+		this.scriptsMaxStackDeep = scriptsMaxStackDeep;
 	}
 
 }

@@ -12,4 +12,8 @@ public class CwException extends RuntimeException {
 		super(msg, e);
 	}
 
+	public CwException(InterruptedException e) {
+		super(e);
+	}
+
 }

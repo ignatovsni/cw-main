@@ -114,7 +114,7 @@ public class GameScene extends Scene {
 	private GroovyConsoleWindow groovyConsoleWindow;
 
 	@Autowired
-	private SettingsEditorWindow settingsEditorWindow;
+	private AppSettingsEditorWindow settingsEditorWindow;
 
 	@Autowired
 	private ScriptAIHandler scriptAIHandler;
