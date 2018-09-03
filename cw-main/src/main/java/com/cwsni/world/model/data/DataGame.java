@@ -3,7 +3,6 @@ package com.cwsni.world.model.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cwsni.world.model.data.events.Event;
 import com.cwsni.world.model.data.relationships.DataRelationshipsCollection;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -19,7 +18,7 @@ public class DataGame {
 	private List<DataCountry> countries = new ArrayList<>();
 	private HistoryData history = new HistoryData();
 	private List<DataState> states = new ArrayList<>();
-	private List<Event> events = new ArrayList<>();
+	private List<DataEvent> events = new ArrayList<>();
 	private DataRelationshipsCollection relationships = new DataRelationshipsCollection();
 	private int lastEventId;
 	private int lastCountryId;
@@ -35,11 +34,11 @@ public class DataGame {
 		this.gameParams = gameParams;
 	}
 
-	public List<Event> getEvents() {
+	public List<DataEvent> getEvents() {
 		return events;
 	}
 
-	public void setEvents(List<Event> events) {
+	public void setEvents(List<DataEvent> events) {
 		this.events = events;
 	}
 

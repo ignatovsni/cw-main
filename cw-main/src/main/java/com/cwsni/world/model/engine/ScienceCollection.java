@@ -7,7 +7,6 @@ import java.util.function.Function;
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
-import com.cwsni.world.model.data.events.Event;
 
 public class ScienceCollection {
 
@@ -48,9 +47,6 @@ public class ScienceCollection {
 	private void growScience(Game game, DataScienceCollection maxScience, Province p) {
 		DataScienceCollection.allGetter4Science()
 				.forEach(scienceGetter -> growScienceType(game, p, data, maxScience, scienceGetter));
-		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
-			data.getMedicine().setAmount(data.getMedicine().getAmount() + 1);
-		}
 	}
 
 	public void mergeFrom(ScienceCollection from, double ownFraction) {

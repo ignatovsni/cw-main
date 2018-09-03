@@ -21,6 +21,7 @@ import com.cwsni.world.game.commands.CommandArmyMove;
 import com.cwsni.world.game.commands.CommandArmySplit;
 import com.cwsni.world.game.commands.CommandDiplomacy;
 import com.cwsni.world.game.commands.CommandErrorHandler;
+import com.cwsni.world.game.events.GameEventHandler;
 import com.cwsni.world.model.engine.Army;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Game;
@@ -44,6 +45,9 @@ public class GameHandler {
 
 	@Autowired
 	private GameDataModelLocker gameDataModelLocker;
+
+	@Autowired
+	private GameEventHandler gameEventHandler;
 
 	public void processNewTurns(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn,
 			Runnable afterTurnProcessing) {
@@ -76,7 +80,9 @@ public class GameHandler {
 		getCommandsFromAI(pGames);
 		gameDataModelLocker.runLocked(() -> {
 			executeCommands(game, pGames);
-			game.processNewTurn();
+			game.processNewTurnBeforeEvents();
+			gameEventHandler.processNewTurn(game);
+			game.processNewTurnAfterEvents();
 		});
 	}
 

@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.Point;
-import com.cwsni.world.model.data.events.Event;
+import com.cwsni.world.model.data.old_events.Event;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Culture;
 import com.cwsni.world.model.engine.GameTransientStats;
@@ -457,6 +457,8 @@ class DProvince extends Group {
 	}
 
 	private void drawDiseaseMode(Polygon polygon) {
+		// TODO
+		/*
 		if (getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
 			fillPolygon(polygon, Color.RED);
 		} else if (getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC_PROTECTED)) {
@@ -464,6 +466,7 @@ class DProvince extends Group {
 		} else {
 			fillPolygon(polygon, Color.GREY);
 		}
+		*/
 	}
 
 	private void updatePoints() {

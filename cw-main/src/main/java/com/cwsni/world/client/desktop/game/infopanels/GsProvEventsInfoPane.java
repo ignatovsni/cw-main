@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
-import com.cwsni.world.model.data.events.Event;
+import com.cwsni.world.model.data.old_events.Event;
 import com.cwsni.world.model.engine.Province;
 
 import javafx.scene.control.Label;
@@ -40,11 +40,14 @@ public class GsProvEventsInfoPane extends InternalInfoPane {
 			return;
 		}
 		Province prov = gameScene.getSelectedProvince();
+		// TODO
+		/*
 		List<Event> events = new ArrayList<Event>(prov.getEvents().getEvents());
 		events.forEach(e -> {
 			pane.getChildren().add(createWithAlignment(e.getTitle(), true));
 			pane.getChildren().add(createWithAlignment(e.getDescription(), false));
 		});
+		*/
 	}
 
 	private Pane createWithAlignment(String txt, boolean al) {
@@ -61,6 +64,7 @@ public class GsProvEventsInfoPane extends InternalInfoPane {
 	@Override
 	protected boolean hasDataForUser() {
 		Province prov = gameScene.getSelectedProvince();
-		return (prov != null && !prov.getEvents().getEvents().isEmpty());
+		// TODO return (prov != null && !prov.getEvents().getEvents().isEmpty());
+		return false;
 	}
 }

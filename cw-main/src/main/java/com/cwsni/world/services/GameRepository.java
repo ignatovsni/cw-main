@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.cwsni.world.client.desktop.ApplicationSettings;
-import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.util.CwException;
@@ -26,9 +25,6 @@ public class GameRepository {
 
 	final static String QUICK_SAVE_FILE_NAME = "quick-save.cw";
 	final static String SAVE_DIRECTORY = "saves";
-
-	@Autowired
-	private LocaleMessageSource messageSource;
 
 	@Autowired
 	private ApplicationSettings applicationSettings;
@@ -95,7 +91,7 @@ public class GameRepository {
 		try {
 			DataGame dataGame = objectMapper.readValue(file, DataGame.class);
 			game = new Game();
-			game.buildFrom(dataGame, messageSource, gameEventListener);
+			game.buildFrom(dataGame, gameEventListener);
 			logger.trace("loading is successful : " + game.logDescription());
 		} catch (IOException e) {
 			logger.error("loading is failed ", e);

@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import com.cwsni.world.algorithms.PathFinder;
 import com.cwsni.world.model.data.DataWorldMap;
-import com.cwsni.world.model.data.events.Event;
 import com.cwsni.world.util.ComparisonTool;
 
 public class WorldMap {
@@ -31,10 +30,6 @@ public class WorldMap {
 
 	Game getGame() {
 		return game;
-	}
-
-	public void remove(Event e) {
-		getProvinces().forEach(p -> p.removeEvent(e));
 	}
 
 	public void buildFrom(Game game, DataWorldMap map) {

@@ -175,7 +175,8 @@ public class PGame implements IPGame {
 	}
 
 	public IPRandom getRandom() {
-		return new PRandom(game.getGameParams());
+		// we need stable rnd numbers for better testing and for network game
+		return new PRandom(game.getRandomForCurrentTurn(getCountry().getId()));
 	}
 
 }

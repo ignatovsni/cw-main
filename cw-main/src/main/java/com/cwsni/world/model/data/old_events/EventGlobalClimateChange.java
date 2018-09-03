@@ -1,4 +1,4 @@
-package com.cwsni.world.model.data.events;
+package com.cwsni.world.model.data.old_events;
 
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
@@ -33,9 +33,9 @@ public class EventGlobalClimateChange extends Event {
 		e.setVisibleForUser(true);
 		e.setStartTurn(game.getTurn().getTurn());
 		e.setDuration(gParams.getEventGlobalClimateChangeDuration());
-		game.addEvent(e);
-		game.getMap().getProvinces().stream().filter(p -> p.getTerrainType().isSoilPossible())
-				.forEach(p -> p.addEvent(e));
+		//game.addEvent(e);		
+		//game.getMap().getProvinces().stream().filter(p -> p.getTerrainType().isSoilPossible())
+		//		.forEach(p -> p.addEvent(e));
 		return e;
 	}
 

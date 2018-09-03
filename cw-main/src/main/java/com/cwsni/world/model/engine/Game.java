@@ -6,39 +6,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.GameStats;
 import com.cwsni.world.model.data.Turn;
-import com.cwsni.world.model.data.events.Event;
-import com.cwsni.world.model.data.events.EventCollection;
-import com.cwsni.world.model.data.events.EventTarget;
 import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 import com.cwsni.world.services.PlayerEventListener;
 import com.cwsni.world.util.ComparisonTool;
+import com.cwsni.world.util.CwBaseRandom;
 import com.cwsni.world.util.CwException;
 
-public class Game implements EventTarget {
+public class Game {
 
 	private DataGame data;
 	private GameTransientStats gameTransientStats;
 	private WorldMap map;
 	private History history;
-	private EventCollection events;
+	private EventCollection eventsCollection;
 	private CountryCollection countries;
 	private StateCollection states;
 	private Map<Integer, Army> armies;
 	private Map<Integer, Map<Integer, Army>> newArmiesWithIdLessThanZero;
 	private RelationshipsCollection relationships;
 
-	private LocaleMessageSource messageSource;
 	private PlayerEventListener gameEventListener;
 	private int lastAutoSaveTurn;
-
-	public List<Event> getEvents() {
-		return events.getEvents();
-	}
 
 	public int nextEventId() {
 		return data.nextEventId();
@@ -92,25 +84,8 @@ public class Game implements EventTarget {
 		return gameEventListener;
 	}
 
-	@Override
-	public void addEvent(Event e) {
-		data.getEvents().add(e);
-		events.addEvent(e);
-	}
-
-	@Override
-	public void removeEvent(Event e) {
-		getMap().remove(e);
-		data.getEvents().remove(e);
-		events.removeEvent(e);
-	}
-
-	public Event findEventById(Integer id) {
-		return events.getEventById(id);
-	}
-
 	public boolean hasEventWithType(String type) {
-		return events.hasEventWithType(type);
+		return eventsCollection.hasEventWithType(type);
 	}
 
 	public List<Country> getCountries() {
@@ -166,7 +141,7 @@ public class Game implements EventTarget {
 		this.gameTransientStats = stats;
 	}
 
-	public void processNewTurn() {
+	public void processNewTurnBeforeEvents() {
 		getTurn().increment();
 		processFights();
 		dismissEmptyArmies();
@@ -175,7 +150,9 @@ public class Game implements EventTarget {
 		dismissEmptyCountries();
 		processNewProbablyStates();
 		map.getProvinces().forEach(p -> p.processNewTurn());
-		Event.processEvents(this, messageSource);
+	}
+
+	public void processNewTurnAfterEvents() {
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
 		countries.getCountries().forEach(c -> c.calculateBaseBudget());
 		countries.getCountries().forEach(c -> c.calculateBudgetWithAgreements());
@@ -279,16 +256,15 @@ public class Game implements EventTarget {
 		data.setTurn(turn);
 	}
 
-	public void buildFrom(DataGame dataGame, LocaleMessageSource messageSource, PlayerEventListener gameEventListener) {
+	public void buildFrom(DataGame dataGame, PlayerEventListener gameEventListener) {
 		this.data = dataGame;
-		this.messageSource = messageSource;
 		this.gameEventListener = gameEventListener;
 
 		armies = new HashMap<>();
 		newArmiesWithIdLessThanZero = new HashMap<>();
 
-		events = new EventCollection();
-		events.buildFrom(this, data.getEvents());
+		eventsCollection = new EventCollection();
+		eventsCollection.buildFrom(this, data.getEvents());
 
 		map = new WorldMap();
 		map.buildFrom(this, data.getMap());
@@ -372,6 +348,20 @@ public class Game implements EventTarget {
 
 	public void setLastAutoSaveTurn(int lastAutoSaveTurn) {
 		this.lastAutoSaveTurn = lastAutoSaveTurn;
+	}
+
+	public CwBaseRandom getRandomForCurrentTurn(Long externalSeed) {
+		long seed = (long) (getTurn().getTurn() + 1) * (getCountries().size() + 1)
+				+ (externalSeed != null ? externalSeed : 1);
+		return new CwBaseRandom(seed);
+	}
+
+	public CwBaseRandom getRandomForCurrentTurn(int externalSeed) {
+		return getRandomForCurrentTurn((long) externalSeed);
+	}
+
+	public EventCollection getEventsCollection() {
+		return eventsCollection;
 	}
 
 }

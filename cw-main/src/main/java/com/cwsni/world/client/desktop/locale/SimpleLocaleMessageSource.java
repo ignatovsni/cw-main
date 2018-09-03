@@ -18,6 +18,7 @@ public class SimpleLocaleMessageSource implements LocaleMessageSource {
 	protected String currentLanguage;
 	protected Map<String, String> messages;
 	protected Map<String, String> defaultLanguageMessages;
+	protected String languagesFolder;
 
 	protected ApplicationSettings applicationSettings;
 
@@ -64,8 +65,15 @@ public class SimpleLocaleMessageSource implements LocaleMessageSource {
 	}
 
 	protected String getLanguagesFolder() {
-		// TODO Auto-generated method stub
-		return null;
+		return languagesFolder;
+	}
+
+	public void setLanguagesFolder(String languagesFolder) {
+		this.languagesFolder = languagesFolder;
+	}
+
+	public void setApplicationSettings(ApplicationSettings applicationSettings) {
+		this.applicationSettings = applicationSettings;
 	}
 
 }

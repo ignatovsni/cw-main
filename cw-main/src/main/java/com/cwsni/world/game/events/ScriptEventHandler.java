@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,23 @@ public class ScriptEventHandler extends AbstractScriptHandler {
 	@Autowired
 	private ApplicationSettings applicationSettings;
 
-	private static final String EVENTS_SCRIPTS_FOLDER = "data" + File.separator + "events";
+	protected static final String EVENTS_SCRIPTS_FOLDER = "data" + File.separator + "events";
 	protected static final String MAIN_SCRIPT_NAME_PART = ".main";
+
+	@Override
+	protected int getScriptsPoolSize() {
+		return applicationSettings.getEventsScriptsPoolSize();
+	}
+
+	@Override
+	protected String getScriptFolderPath() {
+		return EVENTS_SCRIPTS_FOLDER;
+	}
+
+	@Override
+	protected int getScriptsMaxStackDeep() {
+		return applicationSettings.getScriptsMaxStackDeep();
+	}
 
 	public List<String> getListOfAvailableEventsScripts() {
 		Set<String> setOfScriptsName = new HashSet<>();
@@ -40,18 +56,7 @@ public class ScriptEventHandler extends AbstractScriptHandler {
 		return names;
 	}
 
-	@Override
-	protected int getScriptsPoolSize() {
-		return applicationSettings.getEventsScriptsPoolSize();
-	}
-
-	@Override
-	protected String getScriptFolderPath() {
-		return EVENTS_SCRIPTS_FOLDER;
-	}
-
-	@Override
-	protected int getScriptsMaxStackDeep() {
-		return applicationSettings.getScriptsMaxStackDeep();
+	public Object processEvent(Map<String, Object> mapBinding, String scriptName, String methodName, Object args) {
+		return invokeScriptMethod(mapBinding, scriptName + MAIN_SCRIPT_NAME_PART, methodName, args);
 	}
 }

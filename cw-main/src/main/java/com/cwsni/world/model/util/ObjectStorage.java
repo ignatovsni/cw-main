@@ -43,11 +43,11 @@ public class ObjectStorage<O, K, T> {
 		}
 	}
 
-	public Set<K> getKeys() {
+	protected Set<K> getKeys() {
 		return keys;
 	}
 
-	public void setKeys(Set<K> keys) {
+	protected void setKeys(Set<K> keys) {
 		this.keys = keys;
 	}
 

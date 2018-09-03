@@ -21,8 +21,8 @@ import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
-import com.cwsni.world.model.data.events.Event;
-import com.cwsni.world.model.data.events.EventEpidemic;
+import com.cwsni.world.model.data.old_events.Event;
+import com.cwsni.world.model.data.old_events.EventEpidemic;
 import com.cwsni.world.util.CwException;
 
 public class Population {
@@ -407,11 +407,6 @@ public class Population {
 		});
 	}
 
-	public static void processEventsNewTurn(Province prov, Game game) {
-		List<Event> provEvents = new ArrayList<>(prov.getEvents().getEvents());
-		provEvents.forEach(e -> Event.processEvent(game, prov, e));
-	}
-
 	private static void dieFromHunger(Game game, Province from, double fraction) {
 		double kf = Math.min(fraction / 5, 0.1);
 		game.getGameStats().addDiedFromHunger(from.getPopulationAmount() * kf);
@@ -511,19 +506,24 @@ public class Population {
 		if (state != null) {
 			Double maxStateLoyalty = state.getMaxStateLoyalty();
 			p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyIncreasingForState(), maxStateLoyalty);
+			// TODO
+			/*
 			if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
 				p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyDecreasingEpidemic(), maxStateLoyalty);
 			}
+			*/
 		}
 
 		if (country == null) {
 			return;
 		}
 
-		// decreasing - diseases
+		// decreasing - diseases TODO
+		/*
 		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
 			p.addLoyaltyToCountry(country.getId(), gParams.getPopulationLoyaltyDecreasingEpidemic());
 		}
+		*/
 
 		// decreasing - overpopulation
 		if (p.getPopulationExcess() > 1) {
@@ -586,11 +586,13 @@ public class Population {
 				+ " " + messageSource.getMessage("info.pane.prov.country.loyalty.description.default-decreasing"))
 				.append("\n");
 
-		// decreasing - diseases
+		// decreasing - diseases TODOS
+		/*
 		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
 			sb.append(gParams.getPopulationLoyaltyDecreasingEpidemic() * 100 + " "
 					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.epidemic")).append("\n");
 		}
+		*/
 
 		// decreasing - overpopulation
 		if (p.getPopulationExcess() > 1) {

@@ -1,9 +1,7 @@
 package com.cwsni.world.model.data;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.cwsni.world.client.desktop.util.DataFormatter;
 
@@ -31,7 +29,6 @@ public class DataProvince {
 	 */
 	private int infrastructure;
 	private List<DataPopulation> population;
-	private Set<Integer> events;
 	private double wealth;
 
 	public DataProvince() {
@@ -45,7 +42,6 @@ public class DataProvince {
 		this.population = new ArrayList<>(1);
 		this.neighbors = new ArrayList<>();
 		this.terrainType = TerrainType.OCEAN;
-		events = new HashSet<>();
 	}
 
 	@Override
@@ -63,13 +59,13 @@ public class DataProvince {
 		return ((DataProvince) obj).getId() == getId();
 	}
 
-	public List<Integer> getNeighbors() {
-		return neighbors;
-	}
-	
 	@Override
 	public String toString() {
 		return "province with id = " + getId() + ";";
+	}
+
+	public List<Integer> getNeighbors() {
+		return neighbors;
 	}
 
 	public void setNeighbors(List<Integer> neighbors) {
@@ -130,14 +126,6 @@ public class DataProvince {
 
 	public void setTerrainType(TerrainType terrainType) {
 		this.terrainType = terrainType;
-	}
-
-	public Set<Integer> getEvents() {
-		return events;
-	}
-
-	public void setEvents(Set<Integer> eventsIds) {
-		this.events = eventsIds;
 	}
 
 	public int getSize() {

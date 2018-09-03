@@ -23,16 +23,13 @@ public class GlobalLocaleMessageSource extends SimpleLocaleMessageSource {
 
 	@Autowired
 	public void setApplicationSettings(ApplicationSettings applicationSettings) {
-		this.applicationSettings = applicationSettings;
+		super.setApplicationSettings(applicationSettings);
 	}
 
 	@PostConstruct
 	protected void init() {
+		setLanguagesFolder(LANGUAGES_FOLDER);
 		super.init();
-	}
-
-	protected String getLanguagesFolder() {
-		return LANGUAGES_FOLDER;
 	}
 
 	public Map<String, String> getAvailableLanguages() {

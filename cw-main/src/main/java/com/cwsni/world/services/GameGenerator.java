@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.algorithms.PathFinder;
-import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.data.DataCulture;
 import com.cwsni.world.model.data.DataGame;
@@ -31,9 +30,6 @@ import com.cwsni.world.util.CwRandom;
 
 @Component
 public class GameGenerator {
-
-	@Autowired
-	private LocaleMessageSource messageSource;
 
 	@Autowired
 	private PlayerEventListener gameEventListener;
@@ -66,7 +62,7 @@ public class GameGenerator {
 		fillPopulation(dataGame);
 		fillInfrastructure(dataGame);
 		Game game = new Game();
-		game.buildFrom(dataGame, messageSource, gameEventListener);
+		game.buildFrom(dataGame, gameEventListener);
 		gameParams.getRandom().resetWithSeed(gameParams.getSeed());
 		return game;
 	}

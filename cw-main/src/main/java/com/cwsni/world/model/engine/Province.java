@@ -17,20 +17,16 @@ import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
-import com.cwsni.world.model.data.events.Event;
-import com.cwsni.world.model.data.events.EventCollection;
-import com.cwsni.world.model.data.events.EventEpidemic;
-import com.cwsni.world.model.data.events.EventTarget;
+import com.cwsni.world.model.data.old_events.EventEpidemic;
 import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.CwException;
 
-public class Province implements EventTarget {
+public class Province {
 
 	private DataProvince data;
 	private List<Province> neighbors;
 	private List<Population> population;
 	private WorldMap map;
-	private EventCollection events;
 	private List<Population> immigrants;
 	private Country country;
 	private State state;
@@ -125,10 +121,6 @@ public class Province implements EventTarget {
 	public double getSoilFertility() {
 		// science
 		double v = getSoilFertilityBasePlusAgriculture(getScienceAgriculture());
-		// climate change
-		for (Event e : getEvents().getEventsWithType(Event.EVENT_GLOBAL_CLIMATE_CHANGE)) {
-			v *= e.getEffectDouble1();
-		}
 		// infrastructure
 		if (getPopulationAmount() > 0) {
 			v = v * 0.5 * (1 + getInfrastructurePercent());
@@ -197,10 +189,6 @@ public class Province implements EventTarget {
 		return data.getSize();
 	}
 
-	public EventCollection getEvents() {
-		return events;
-	}
-
 	public int getPopulationAmount() {
 		return getPopulation().stream().mapToInt(p -> p.getAmount()).sum();
 	}
@@ -239,20 +227,9 @@ public class Province implements EventTarget {
 		return EventEpidemic.getDiseaseResistance(getScienceMedicine());
 	}
 
-	@Override
-	public void addEvent(Event e) {
-		getEvents().addEvent(e);
-	}
-
-	@Override
-	public void removeEvent(Event e) {
-		getEvents().removeEvent(e);
-	}
-
 	public void buildFrom(WorldMap worldMap, DataProvince dp) {
 		this.map = worldMap;
 		this.data = dp;
-		events = new EventCollection();
 		neighbors = new ArrayList<>();
 		population = new ArrayList<>();
 		immigrants = new ArrayList<>();
@@ -262,7 +239,6 @@ public class Province implements EventTarget {
 			population.add(pop);
 		});
 		data.getNeighbors().forEach(id -> neighbors.add(map.findProvById(id)));
-		events.buildFrom(dp, worldMap.getGame());
 
 		armies = new ArrayList<>();
 	}
@@ -354,7 +330,6 @@ public class Province implements EventTarget {
 			Population.processLoyaltyNewTurn(this, map.getGame());
 			Culture.influenceOfCountry(this, map.getGame());
 		}
-		Population.processEventsNewTurn(this, map.getGame());
 		processNaturalInfrastructure();
 		removeDiedPops();
 		processLifeInTheCountryNewTurn();

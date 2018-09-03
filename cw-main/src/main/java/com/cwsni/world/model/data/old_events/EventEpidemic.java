@@ -1,4 +1,4 @@
-package com.cwsni.world.model.data.events;
+package com.cwsni.world.model.data.old_events;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public class EventEpidemic extends Event {
 		do {
 			core = game.getMap().findProvById(gParams.getRandom().nextInt(game.getMap().getProvinces().size()));
 		} while (core == null || core.getPopulationAmount() == 0);
-		core.addEvent(e);
+		//core.addEvent(e);
 		e.setEffectDouble1(DataFormatter
 				.doubleWith2points(gParams.getEventEpidemicContagiousness() * gParams.getRandom().nextNormalDouble()));
 		e.setEffectDouble2(DataFormatter
@@ -39,7 +39,7 @@ public class EventEpidemic extends Event {
 		e.setVisibleForUser(true);
 		e.setStartTurn(game.getTurn().getTurn());
 		e.setDuration(gParams.getRandom().nextInt(gParams.getEventEpidemicDuration()));
-		game.addEvent(e);
+		//game.addEvent(e);
 		return e;
 	}
 
@@ -53,6 +53,7 @@ public class EventEpidemic extends Event {
 		}
 		Population.dieFromDisease(game, p, oldE.getEffectDouble2());
 		GameParams gParams = game.getGameParams();
+		/*
 		List<Province> neighbors = p.getNeighbors().stream()
 				.filter(n -> (n.getPopulationAmount() > 0) && !n.getEvents().hasEventWithType(EVENT_EPIDEMIC)
 						&& !n.getEvents().hasEventWithType(EVENT_EPIDEMIC_PROTECTED))
@@ -70,6 +71,7 @@ public class EventEpidemic extends Event {
 					e.setDescription(oldE.getDescription());
 					n.addEvent(e);
 				});
+		*/
 
 	}
 
@@ -89,8 +91,8 @@ public class EventEpidemic extends Event {
 		e.setDescription("Protection against epidemics");
 		// e.setTitle("event.epidemic.protected.title");
 		// e.setDescription("event.epidemic.protected.title");
-		game.addEvent(e);
-		p.getEvents().addEvent(e);
+		//game.addEvent(e);
+		//p.getEvents().addEvent(e);
 	}
 
 	public static double getDiseaseResistance(double scienceMedicine) {

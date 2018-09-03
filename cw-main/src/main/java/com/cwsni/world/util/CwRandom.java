@@ -1,29 +1,13 @@
 package com.cwsni.world.util;
 
-import java.util.Random;
-
-public class CwRandom {
-
-	private Random random;
+public class CwRandom extends CwBaseRandom {
 
 	public CwRandom(long seed) {
-		resetWithSeed(seed);
+		super(seed);
 	}
-	
+
 	public void resetWithSeed(long seed) {
-		random = new Random(seed);
-	}
-
-	public Integer nextInt(int bound) {
-		return random.nextInt(bound);
-	}
-
-	public double nextDouble() {
-		return random.nextDouble();
-	}
-
-	public double nextNormalDouble() {
-		return Math.min(1, Math.max(0, (random.nextGaussian()/5 + 0.5)));
+		internalResetWithSeed(seed);
 	}
 
 	public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.cwsni.world.model.data.events;
+package com.cwsni.world.model.data.old_events;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -113,20 +113,21 @@ public class Event {
 	// ---------------- static section -----------------------------
 
 	public static void processEvents(Game game, LocaleMessageSource messageSource) {
-		deactivateFinishedEvents(game, messageSource);
+		//deactivateFinishedEvents(game, messageSource);
 		EventGlobalClimateChange.processNewEvent(game, messageSource);
 		EventEpidemic.processNewEvent(game, messageSource);
 	}
 
+	/*
 	private static void deactivateFinishedEvents(Game game, LocaleMessageSource messageSource) {
-		List<Event> finishedEvents = game.getEvents().stream().filter(e -> e.isFinished(game))
+		List<Event> finishedEvents = game.getEventsCollection().stream().filter(e -> e.isFinished(game))
 				.collect(Collectors.toList());
 		finishedEvents.forEach(e -> {
 			game.removeEvent(e);
 			finish(game, e, messageSource);
 		});
 	}
-
+*/
 	protected static void finish(Game game, Event e, LocaleMessageSource messageSource) {
 		switch (e.getType()) {
 		case EVENT_GLOBAL_CLIMATE_CHANGE:
