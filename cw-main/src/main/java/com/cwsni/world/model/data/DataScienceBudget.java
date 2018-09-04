@@ -1,11 +1,19 @@
 package com.cwsni.world.model.data;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class DataScienceBudget {
 
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 0)
 	private double agricultureWeight;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 0)
 	private double administrationWeight;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 0)
 	private double medicineWeight;
 
 	public DataScienceBudget() {
@@ -19,7 +27,7 @@ public class DataScienceBudget {
 	}
 
 	public void setAgricultureWeight(double agricultureWeight) {
-		this.agricultureWeight = DataFormatter.doubleWith3points(agricultureWeight);
+		this.agricultureWeight = agricultureWeight;
 	}
 
 	public double getAdministrationWeight() {
@@ -27,7 +35,7 @@ public class DataScienceBudget {
 	}
 
 	public void setAdministrationWeight(double administrationWeight) {
-		this.administrationWeight = DataFormatter.doubleWith3points(administrationWeight);
+		this.administrationWeight = administrationWeight;
 	}
 
 	public double getMedicineWeight() {
@@ -35,7 +43,7 @@ public class DataScienceBudget {
 	}
 
 	public void setMedicineWeight(double medicineWeight) {
-		this.medicineWeight = DataFormatter.doubleWith3points(medicineWeight);
+		this.medicineWeight = medicineWeight;
 	}
 
 }

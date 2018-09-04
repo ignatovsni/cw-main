@@ -1,5 +1,9 @@
 package com.cwsni.world.model.data;
 
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 public class DataArmy {
 	/**
 	 * Maybe id should be string as "country-id" + "-" +"army-id" - to avoid
@@ -8,9 +12,15 @@ public class DataArmy {
 	 * max++;
 	 */
 	private int id;
-	private int training;
-	private int organisation;
-	private int equipment;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 4)
+	private double training;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 4)
+	private double organisation;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 4)
+	private double equipment;
 	private Integer province;
 	private DataPopulation population;
 
@@ -20,30 +30,6 @@ public class DataArmy {
 	public DataArmy(int id) {
 		this.id = id;
 		this.population = new DataPopulation();
-	}
-
-	public int getTraining() {
-		return training;
-	}
-
-	public void setTraining(int training) {
-		this.training = training;
-	}
-
-	public int getOrganisation() {
-		return organisation;
-	}
-
-	public void setOrganisation(int organisation) {
-		this.organisation = organisation;
-	}
-
-	public int getEquipment() {
-		return equipment;
-	}
-
-	public void setEquipment(int equipment) {
-		this.equipment = equipment;
 	}
 
 	public Integer getProvince() {
@@ -68,6 +54,30 @@ public class DataArmy {
 
 	public void setPopulation(DataPopulation population) {
 		this.population = population;
+	}
+
+	public double getTraining() {
+		return training;
+	}
+
+	public void setTraining(double training) {
+		this.training = training;
+	}
+
+	public double getOrganisation() {
+		return organisation;
+	}
+
+	public void setOrganisation(double organisation) {
+		this.organisation = organisation;
+	}
+
+	public double getEquipment() {
+		return equipment;
+	}
+
+	public void setEquipment(double equipment) {
+		this.equipment = equipment;
 	}
 
 }

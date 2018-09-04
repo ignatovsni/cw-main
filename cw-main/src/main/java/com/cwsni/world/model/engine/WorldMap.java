@@ -108,9 +108,9 @@ public class WorldMap {
 	}
 
 	public Set<ProvinceBorder> getCountriesBorders() {
-		if (countriesBordersWasRefreshedAtTurn != game.getTurn().getTurn()) {
+		if (countriesBordersWasRefreshedAtTurn != game.getTurn().getDateTurn()) {
 			countriesBorders = refreshCountriesBorders();
-			countriesBordersWasRefreshedAtTurn = game.getTurn().getTurn();
+			countriesBordersWasRefreshedAtTurn = game.getTurn().getDateTurn();
 		}
 		return countriesBorders;
 	}

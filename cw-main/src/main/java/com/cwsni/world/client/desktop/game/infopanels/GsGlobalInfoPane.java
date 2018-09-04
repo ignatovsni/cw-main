@@ -41,7 +41,7 @@ public class GsGlobalInfoPane extends InternalInfoPane {
 	}
 
 	protected void refreshInfoInternal() {
-		setLabelText(valuesTurnLabel, DataFormatter.toString(gameScene.getGame().getTurn().getTurnTexToDisplay()));
+		setLabelText(valuesTurnLabel, DataFormatter.toString(gameScene.getGame().getTurn().getDateTexToDisplay()));
 		setLabelText(valuesCountriesLabel, DataFormatter.toString(gameScene.getGame().getCountries().size()));
 		setLabelTextWithLongFormatterAndValueTooltip(valuesTotalPopsLabel,
 				gameScene.getGame().getGameTransientStats().getPopulationTotal());

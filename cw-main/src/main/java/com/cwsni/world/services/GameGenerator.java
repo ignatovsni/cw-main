@@ -21,10 +21,10 @@ import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataProvince;
 import com.cwsni.world.model.data.DataScienceCollection;
+import com.cwsni.world.model.data.DataTurn;
 import com.cwsni.world.model.data.DataWorldMap;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.TerrainType;
-import com.cwsni.world.model.data.Turn;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.util.CwRandom;
 
@@ -50,7 +50,7 @@ public class GameGenerator {
 	public Game createGame(GameParams gameParams) {
 		TempData tData = new TempData();
 		DataGame dataGame = new DataGame(gameParams);
-		dataGame.setTurn(new Turn(0));
+		dataGame.setTurn(new DataTurn());
 		createMap(dataGame, tData);
 		createTerrain(dataGame, tData);
 		createMountaints(dataGame, tData);

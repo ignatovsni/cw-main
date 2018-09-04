@@ -75,7 +75,7 @@ public class AgreementCollection<DT extends DataRBaseAgreement, ET extends RBase
 		DT dt = dtSupplier.get();
 		dt.setMasterId(countryId);
 		dt.setSlaveId(targetCountryId);
-		dt.setStartTurn(game.getTurn().getTurn());
+		dt.setStartTurn(game.getTurn().getDateTurn());
 		dataModelSet.add(dt);
 		return registerAgreement(game, dt);
 	}

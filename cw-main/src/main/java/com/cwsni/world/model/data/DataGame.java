@@ -14,7 +14,7 @@ public class DataGame {
 	private String version = CURRENT_VERSION;
 	private GameParams gameParams;
 	private DataWorldMap map;
-	private Turn turn;
+	private DataTurn turn;
 	private List<DataCountry> countries = new ArrayList<>();
 	private HistoryData history = new HistoryData();
 	private List<DataState> states = new ArrayList<>();
@@ -78,11 +78,11 @@ public class DataGame {
 		this.gameParams = gameParams;
 	}
 
-	public Turn getTurn() {
+	public DataTurn getTurn() {
 		return turn;
 	}
 
-	public void setTurn(Turn turn) {
+	public void setTurn(DataTurn turn) {
 		this.turn = turn;
 	}
 

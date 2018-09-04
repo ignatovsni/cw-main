@@ -1,5 +1,7 @@
 package com.cwsni.world.model.data;
 
+import com.cwsni.world.model.engine.Turn;
+
 public class HistoryDataCountry {
 
 	private static final int MAX_AGE_OF_COUNTRY_RECORD = 2000;
@@ -45,7 +47,7 @@ public class HistoryDataCountry {
 	}
 
 	public boolean isCanBeRemoved(Turn turn) {
-		int turnNumber = turn.getTurn();
+		int turnNumber = turn.getDateTurn();
 		return getTurnOfRecord() < turnNumber - MAX_AGE_OF_COUNTRY_RECORD
 				|| getFirstTurnOfDisappearance() < (turnNumber - getTurnsOfExistence());
 	}

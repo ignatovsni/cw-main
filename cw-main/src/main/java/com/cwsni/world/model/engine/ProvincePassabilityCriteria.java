@@ -16,6 +16,7 @@ public class ProvincePassabilityCriteria {
 	}
 
 	public boolean isPassable(Province p) {
+		// TODO probably it is worth it to cache data for country per turn
 		if (p.getTerrainType().isMountain()) {
 			return false;
 		}

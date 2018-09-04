@@ -1,10 +1,16 @@
 package com.cwsni.world.model.data;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class Point {
 
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 2)
 	private double x;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 2)
 	private double y;
 
 	public Point() {
@@ -12,8 +18,8 @@ public class Point {
 	}
 
 	public Point(double x, double y) {
-		this.x = DataFormatter.doubleWith2points(x);
-		this.y = DataFormatter.doubleWith2points(y);
+		this.x = x;
+		this.y = y;
 	}
 
 	public double getX() {

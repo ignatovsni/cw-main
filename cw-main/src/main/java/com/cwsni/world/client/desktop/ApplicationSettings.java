@@ -14,6 +14,7 @@ public class ApplicationSettings extends AbstractSettings {
 	private int autoSaveTurnStep = 10;
 	private int autoSaveMaxFiles = 10;
 	private int multithreadingAIThreads = 8;
+	private int multithreadingMaxWaitAllTasksPerTurnSeconds = 2;
 	private String language = "";
 	private int scriptsMaxStackDeep = 10;
 	private int aiScriptsPoolSize = 16;
@@ -88,6 +89,14 @@ public class ApplicationSettings extends AbstractSettings {
 
 	public void setEventsScriptsPoolSize(int eventsScriptsPoolSize) {
 		this.eventsScriptsPoolSize = eventsScriptsPoolSize;
+	}
+
+	public int getMultithreadingMaxWaitAllTasksPerTurnSeconds() {
+		return multithreadingMaxWaitAllTasksPerTurnSeconds;
+	}
+
+	public void setMultithreadingMaxWaitAllTasksPerTurnSeconds(int multithreadingMaxWaitAllTasksPerTurnSeconds) {
+		this.multithreadingMaxWaitAllTasksPerTurnSeconds = multithreadingMaxWaitAllTasksPerTurnSeconds;
 	}
 
 }

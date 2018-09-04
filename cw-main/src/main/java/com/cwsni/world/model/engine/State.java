@@ -151,6 +151,10 @@ public class State {
 		CREATED, RESTORED, JOINED
 	}
 
+	protected Turn getTurn() {
+		return game.getTurn();
+	}
+
 	private void processRebels(Country revoltAttractionToCountry) {
 		if (isRevoltSuccessfulThisTurn) {
 			return;
@@ -177,6 +181,7 @@ public class State {
 			return;
 		}
 
+		double rebelChanceCoeff = getTurn().probablilityPerWeek(gParams.getPopulationLoyaltyRebelChanceCoeffPerWeek());
 		double loyaltyToOriginalCountry = getLoayltyToCountry(originaltCountry.getId(), statePopulation);
 		Set<Integer> countriesIds = getCountriesWithLoyalty();
 		if (revoltAttractionToCountry != null) {
@@ -193,8 +198,7 @@ public class State {
 					diffLoaylty += gParams.getPopulationLoyaltyRebelChainAdditionalLoyalty();
 					diffLoaylty *= gParams.getPopulationLoyaltyRebelChainProbabilityMultiplicator();
 				}
-				if (diffLoaylty > 0
-						&& diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > random.nextDouble()) {
+				if (diffLoaylty > 0 && diffLoaylty * rebelChanceCoeff > random.nextDouble()) {
 					TypeOfRebelCountry typeC = revoltToCountry(countryId, stateCapital);
 					if (typeC != null) {
 						isRevoltSuccessfulThisTurn = true;
@@ -214,7 +218,7 @@ public class State {
 		double stateLoyalty = getLoayltyToState(statePopulation);
 		double diffLoaylty = stateLoyalty - loyaltyToOriginalCountry
 				- gParams.getPopulationLoyaltyRebelToStateThreshold();
-		if (diffLoaylty > 0 && diffLoaylty * gParams.getPopulationLoyaltyRebelChanceCoeff() > random.nextDouble()) {
+		if (diffLoaylty > 0 && diffLoaylty * rebelChanceCoeff > random.nextDouble()) {
 			TypeOfRebelCountry typeC = revoltToState(stateCapital, random);
 			if (typeC != null) {
 				isRevoltSuccessfulThisTurn = true;

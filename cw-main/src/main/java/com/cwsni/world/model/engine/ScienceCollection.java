@@ -61,8 +61,8 @@ public class ScienceCollection {
 		GameParams gParams = game.getGameParams();
 
 		// natural pops science
-		double scienceIncrease = Math.max(1,
-				+(Math.log10((double) p.getPopulationAmount() * gParams.getScienceBaseIncreasePerTurnPerPerson())));
+		double scienceIncrease = Math.max(1, +(Math.log10((double) p.getPopulationAmount()
+				* game.getTurn().addPerWeek(gParams.getScienceBaseIncreasePerPersonPerWeek()))));
 		double newAmount = scienceType.getAmount() + scienceIncrease;
 		// province.totalPopulation instead of population.amount,
 		// because people develop science together
@@ -102,9 +102,9 @@ public class ScienceCollection {
 
 	private void spendMoneyForScienceProvince(Game game, Province p, double money) {
 		ScienceBudget scienceBudget = p.getCountry().getScienceBudget();
-		data.getAdministration().addAmount(scienceBudget.getAdministrationFraction(money));
-		data.getAgriculture().addAmount(scienceBudget.getAgricultureFraction(money));
-		data.getMedicine().addAmount(scienceBudget.getMedicineFraction(money));
+		data.getAdministration().addAmount(scienceBudget.getAdministrationFraction(game, money));
+		data.getAgriculture().addAmount(scienceBudget.getAgricultureFraction(game, money));
+		data.getMedicine().addAmount(scienceBudget.getMedicineFraction(game, money));
 	}
 
 	// --------------------- static ----------------------------------

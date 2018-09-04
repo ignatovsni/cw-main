@@ -31,7 +31,7 @@ public class EventGlobalClimateChange extends Event {
 		e.setId(game.nextEventId());
 		e.setType(EVENT_GLOBAL_CLIMATE_CHANGE);
 		e.setVisibleForUser(true);
-		e.setStartTurn(game.getTurn().getTurn());
+		e.setStartTurn(game.getTurn().getDateTurn());
 		e.setDuration(gParams.getEventGlobalClimateChangeDuration());
 		//game.addEvent(e);		
 		//game.getMap().getProvinces().stream().filter(p -> p.getTerrainType().isSoilPossible())

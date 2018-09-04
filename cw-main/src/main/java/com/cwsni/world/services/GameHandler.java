@@ -13,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.game.GsTimeMode;
 import com.cwsni.world.game.ai.AIHandler;
 import com.cwsni.world.game.commands.Command;
 import com.cwsni.world.game.commands.CommandArmyCreate;
@@ -25,6 +24,7 @@ import com.cwsni.world.game.events.GameEventHandler;
 import com.cwsni.world.model.engine.Army;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.model.engine.TimeMode;
 import com.cwsni.world.model.engine.ProvinceBorder;
 import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.util.ComparisonTool;
@@ -49,7 +49,7 @@ public class GameHandler {
 	@Autowired
 	private GameEventHandler gameEventHandler;
 
-	public void processNewTurns(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn,
+	public void processNewTurns(Game game, TimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn,
 			Runnable afterTurnProcessing) {
 		taskExecutor.processManagerThread(() -> {
 			processTurns(game, timeMode, autoTurn, pauseBetweenTurn);
@@ -57,18 +57,17 @@ public class GameHandler {
 		});
 	}
 
-	private void processTurns(Game game, GsTimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn) {
+	private void processTurns(Game game, TimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn) {
 		try {
-			for (int i = 0; i < timeMode.getTurnPerTime(); i++) {
-				processOneTurn(game);
-			}
+			game.getTurn().setTimeMode(timeMode);
+			processOneTurn(game);
 			gameRepository.autoSave(game);
 		} catch (Exception e) {
 			logError(e);
 		}
 		if (autoTurn && pauseBetweenTurn) {
 			try {
-				Thread.sleep(50 * Math.max((10 - timeMode.getTurnPerTime()), 0));
+				Thread.sleep(50 * Math.max((10 - timeMode.getDateTurnPerTime()), 0));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

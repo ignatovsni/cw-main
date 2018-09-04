@@ -1,10 +1,11 @@
-package com.cwsni.world.client.desktop;
+package com.cwsni.world;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import com.cwsni.world.client.desktop.UserUIPreferences;
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.engine.Game;

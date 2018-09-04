@@ -1,9 +1,13 @@
 package com.cwsni.world.model.data.relationships;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class DataRTribute extends DataRBaseAgreement {
 
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 2)
 	private double tax;
 
 	@Override
@@ -20,7 +24,7 @@ public class DataRTribute extends DataRBaseAgreement {
 	}
 
 	public void setTax(double tax) {
-		this.tax = DataFormatter.doubleWith2points(Math.min(0.9, Math.max(0.1, tax)));
+		this.tax = Math.min(0.9, Math.max(0.1, tax));
 	}
 
 }

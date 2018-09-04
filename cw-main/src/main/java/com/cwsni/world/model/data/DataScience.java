@@ -1,10 +1,17 @@
 package com.cwsni.world.model.data;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class DataScience {
 
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 3)
 	private double amount;
+
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 3)
 	private double max;
 
 	public DataScience() {
@@ -25,9 +32,9 @@ public class DataScience {
 			System.out.println("DataScience: amount < 0");
 			amount = 0;
 		}
-		this.amount = DataFormatter.doubleWith3points(amount);
+		this.amount = amount;
 		if (this.amount > 10000000) {
-			System.out.println("DataScience: amount > 1,000,000");
+			//System.out.println("DataScience: amount > 1,000,000");
 		}
 		if (this.amount > max) {
 			max = this.amount;
@@ -43,7 +50,7 @@ public class DataScience {
 	}
 
 	public void setMax(double max) {
-		this.max = DataFormatter.doubleWith3points(max);
+		this.max = max;
 	}
 
 	public DataScience createClone() {

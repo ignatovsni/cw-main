@@ -34,12 +34,12 @@ public class GameTransientStats {
 	private InternalFutureTask<DoubleSummaryStatistics> soilFertility;
 	private InternalFutureTask<Double> soilFertilityMedian;
 
-	private InternalFutureTask<IntSummaryStatistics> scienceAgricultureInProvince;
-	private InternalFutureTask<Integer> scienceAgricultureMedianInProvince;
-	private InternalFutureTask<IntSummaryStatistics> scienceMedicineInProvince;
-	private InternalFutureTask<Integer> scienceMedicineMedianInProvince;
-	private InternalFutureTask<IntSummaryStatistics> scienceAdministrationInProvince;
-	private InternalFutureTask<Integer> scienceAdministrationMedianInProvince;
+	private InternalFutureTask<DoubleSummaryStatistics> scienceAgricultureInProvince;
+	private InternalFutureTask<Double> scienceAgricultureMedianInProvince;
+	private InternalFutureTask<DoubleSummaryStatistics> scienceMedicineInProvince;
+	private InternalFutureTask<Double> scienceMedicineMedianInProvince;
+	private InternalFutureTask<DoubleSummaryStatistics> scienceAdministrationInProvince;
+	private InternalFutureTask<Double> scienceAdministrationMedianInProvince;
 
 	public GameTransientStats(Game game) {
 		this.game = game;
@@ -106,34 +106,34 @@ public class GameTransientStats {
 		}, 0.0);
 
 		scienceAgricultureInProvince = new InternalFutureTask<>(() -> {
-			return getPopulationPossibleProvinces().mapToInt(p -> p.getScienceAgriculture()).summaryStatistics();
-		}, new IntSummaryStatistics());
+			return getPopulationPossibleProvinces().mapToDouble(p -> p.getScienceAgriculture()).summaryStatistics();
+		}, new DoubleSummaryStatistics());
 
 		scienceAgricultureMedianInProvince = new InternalFutureTask<>(() -> {
-			int v = new MedianFinder().findMedianInteger(
+			double v = new MedianFinder().findMedianDouble(
 					getPopulationPossibleProvinces().map(p -> p.getScienceAgriculture()).collect(Collectors.toList()));
 			return v;
-		}, 0);
+		}, 0.0);
 
 		scienceMedicineInProvince = new InternalFutureTask<>(() -> {
-			return getPopulationPossibleProvinces().mapToInt(p -> p.getScienceMedicine()).summaryStatistics();
-		}, new IntSummaryStatistics());
+			return getPopulationPossibleProvinces().mapToDouble(p -> p.getScienceMedicine()).summaryStatistics();
+		}, new DoubleSummaryStatistics());
 
 		scienceMedicineMedianInProvince = new InternalFutureTask<>(() -> {
-			int v = new MedianFinder().findMedianInteger(
+			double v = new MedianFinder().findMedianDouble(
 					getPopulationPossibleProvinces().map(p -> p.getScienceMedicine()).collect(Collectors.toList()));
 			return v;
-		}, 0);
+		}, 0.0);
 
 		scienceAdministrationInProvince = new InternalFutureTask<>(() -> {
-			return getPopulationPossibleProvinces().mapToInt(p -> p.getScienceAdministration()).summaryStatistics();
-		}, new IntSummaryStatistics());
+			return getPopulationPossibleProvinces().mapToDouble(p -> p.getScienceAdministration()).summaryStatistics();
+		}, new DoubleSummaryStatistics());
 
 		scienceAdministrationMedianInProvince = new InternalFutureTask<>(() -> {
-			int v = new MedianFinder().findMedianInteger(getPopulationPossibleProvinces()
+			double v = new MedianFinder().findMedianDouble(getPopulationPossibleProvinces()
 					.map(p -> p.getScienceAdministration()).collect(Collectors.toList()));
 			return v;
-		}, 0);
+		}, 0.0);
 	}
 
 	private Stream<Province> getPopulationPossibleProvinces() {
@@ -196,7 +196,7 @@ public class GameTransientStats {
 		return soilFertilityMedian.get();
 	}
 
-	public int getScienceAgricultureMaxInProvince() {
+	public double getScienceAgricultureMaxInProvince() {
 		return scienceAgricultureInProvince.get().getMax();
 	}
 
@@ -204,11 +204,11 @@ public class GameTransientStats {
 		return scienceAgricultureInProvince.get().getAverage();
 	}
 
-	public int getScienceAgricultureMedianInProvince() {
+	public double getScienceAgricultureMedianInProvince() {
 		return scienceAgricultureMedianInProvince.get();
 	}
 
-	public int getScienceMedicineMaxInProvince() {
+	public double getScienceMedicineMaxInProvince() {
 		return scienceMedicineInProvince.get().getMax();
 	}
 
@@ -216,11 +216,11 @@ public class GameTransientStats {
 		return scienceMedicineInProvince.get().getAverage();
 	}
 
-	public int getScienceMedicineMedianInProvince() {
+	public double getScienceMedicineMedianInProvince() {
 		return scienceMedicineMedianInProvince.get();
 	}
 
-	public int getScienceAdministrationMaxInProvince() {
+	public double getScienceAdministrationMaxInProvince() {
 		return scienceAdministrationInProvince.get().getMax();
 	}
 
@@ -228,7 +228,7 @@ public class GameTransientStats {
 		return scienceAdministrationInProvince.get().getAverage();
 	}
 
-	public int getScienceAdministrationMedianInProvince() {
+	public double getScienceAdministrationMedianInProvince() {
 		return scienceAdministrationMedianInProvince.get();
 	}
 

@@ -36,7 +36,7 @@ public class RelationshipsCollection {
 
 	public void processNewTurn() {
 		wars.agreements.forEach(war -> war.resetPeaceOffer());
-		new HashSet<>(truces.agreements).stream().filter(truce -> truce.getEndTurn() < game.getTurn().getTurn())
+		new HashSet<>(truces.agreements).stream().filter(truce -> truce.getEndTurn() < game.getTurn().getDateTurn())
 				.forEach(truce -> truces.removeAgreement(truce));
 	}
 

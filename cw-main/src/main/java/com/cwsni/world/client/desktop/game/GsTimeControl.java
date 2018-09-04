@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.client.desktop.UserUIPreferences;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.model.engine.TimeMode;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -56,7 +57,7 @@ public class GsTimeControl extends BorderPane {
 		pauseButton.setTooltip(new Tooltip(getMessage("info.pane.time.button.pause") + "\n"
 				+ getMessage("info.pane.time.tooltip.press-key") + " [0]"));
 		pauseButton.setOnAction(e -> {
-			pressButton(pauseButton, GsTimeMode.PAUSE);
+			pressButton(pauseButton, TimeMode.PAUSE);
 		});
 		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT0), () -> pauseButton.fire());
 		// gameScene.putHotKey(new KeyCodeCombination(KeyCode.SPACE), () ->
@@ -64,34 +65,34 @@ public class GsTimeControl extends BorderPane {
 		pauseButton.setEffect(new Lighting());
 
 		Button startButton = new Button(getMessage(">"));
-		startButton.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + "\n"
+		startButton.setTooltip(new Tooltip(getMessage("info.pane.time.button.start.week") + "\n"
 				+ getMessage("info.pane.time.tooltip.press-key") + " [1]"));
 		startButton.setOnAction(e -> {
-			pressButton(startButton, GsTimeMode.RUN);
+			pressButton(startButton, TimeMode.WEEK);
 		});
 		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT1), () -> startButton.fire());
 
 		Button startButton_2 = new Button(getMessage(">>"));
-		startButton_2.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + " 2x\n"
+		startButton_2.setTooltip(new Tooltip(getMessage("info.pane.time.button.start.month") + "\n"
 				+ getMessage("info.pane.time.tooltip.press-key") + " [2]"));
 		startButton_2.setOnAction(e -> {
-			pressButton(startButton_2, GsTimeMode.RUN_2);
+			pressButton(startButton_2, TimeMode.MONTH);
 		});
 		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT2), () -> startButton_2.fire());
 
 		Button startButton_5 = new Button(getMessage(">>>"));
-		startButton_5.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + " 5x\n"
+		startButton_5.setTooltip(new Tooltip(getMessage("info.pane.time.button.start.year") + "\n"
 				+ getMessage("info.pane.time.tooltip.press-key") + " [3]"));
 		startButton_5.setOnAction(e -> {
-			pressButton(startButton_5, GsTimeMode.RUN_5);
+			pressButton(startButton_5, TimeMode.YEAR);
 		});
 		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT3), () -> startButton_5.fire());
 
 		Button startButton_10 = new Button(getMessage(">>>>"));
-		startButton_10.setTooltip(new Tooltip(getMessage("info.pane.time.button.start") + " 10x\n"
+		startButton_10.setTooltip(new Tooltip(getMessage("info.pane.time.button.start.year-10") + "\n"
 				+ getMessage("info.pane.time.tooltip.press-key") + " [4]"));
 		startButton_10.setOnAction(e -> {
-			pressButton(startButton_10, GsTimeMode.RUN_10);
+			pressButton(startButton_10, TimeMode.YEAR_10);
 		});
 		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT4), () -> startButton_10.fire());
 
@@ -141,7 +142,7 @@ public class GsTimeControl extends BorderPane {
 		labelPauseBetweenTurn.setDisable(!rbAutoTurn.isSelected());
 	}
 
-	private void pressButton(Button buttonMode, GsTimeMode timeMode) {
+	private void pressButton(Button buttonMode, TimeMode timeMode) {
 		if (gameScene.getTimeMode() != timeMode) {
 			buttons.forEach(b -> b.setEffect(null));
 			buttonMode.setEffect(new Lighting());
@@ -154,7 +155,7 @@ public class GsTimeControl extends BorderPane {
 	public void enablePauseButton() {
 		buttons.forEach(b -> b.setEffect(null));
 		pauseButton.setEffect(new Lighting());
-		gameScene.setTimeModeAndRun(GsTimeMode.PAUSE);
+		gameScene.setTimeModeAndRun(TimeMode.PAUSE);
 	}
 
 	protected String getMessage(String code) {

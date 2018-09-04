@@ -27,11 +27,11 @@ public class History {
 		HistoryDataCountry hdc = findCountry(c.getId());
 		if (hdc == null) {
 			hdc = new HistoryDataCountry();
-			hdc.update(c.getCountryData(), game.getTurn().getTurn());
+			hdc.update(c.getCountryData(), game.getTurn().getDateTurn());
 			data.getCountries().add(hdc);
 			countries.put(c.getId(), hdc);
 		} else {
-			hdc.update(c.getCountryData(), game.getTurn().getTurn());
+			hdc.update(c.getCountryData(), game.getTurn().getDateTurn());
 		}
 	}
 
@@ -44,10 +44,10 @@ public class History {
 	}
 
 	public void processNewTurn() {
-		if (lastCleaningTurn > game.getTurn().getTurn() - 10) {
+		if (lastCleaningTurn > game.getTurn().getDateTurn() - 10) {
 			return;
 		}
-		lastCleaningTurn = game.getTurn().getTurn();
+		lastCleaningTurn = game.getTurn().getDateTurn();
 		Iterator<Entry<Integer, HistoryDataCountry>> iter = countries.entrySet().iterator();
 		while (iter.hasNext()) {
 			Entry<Integer, HistoryDataCountry> entry = iter.next();

@@ -12,7 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.MainWindow;
+import com.cwsni.world.MainWindow;
 import com.cwsni.world.client.desktop.UserUIPreferences;
 import com.cwsni.world.client.desktop.game.CountriesPropertiesWindow.RowCountry;
 import com.cwsni.world.client.desktop.game.SearchOnMapWindow.SearchResult;
@@ -32,6 +32,7 @@ import com.cwsni.world.game.ai.ScriptAIHandler;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.Province;
+import com.cwsni.world.model.engine.TimeMode;
 import com.cwsni.world.services.GameDataModelLocker;
 import com.cwsni.world.services.GameGenerator;
 import com.cwsni.world.services.GameHandler;
@@ -130,7 +131,7 @@ public class GameScene extends Scene {
 	private Integer selectedProvinceId;
 
 	private MapMode mapMode = MapMode.GEO;
-	private GsTimeMode timeMode = GsTimeMode.PAUSE;
+	private TimeMode timeMode = TimeMode.PAUSE;
 	private boolean autoTurn = true;
 	private boolean pauseBetweenTurn = true;
 
@@ -384,7 +385,7 @@ public class GameScene extends Scene {
 		return game;
 	}
 
-	public GsTimeMode getTimeMode() {
+	public TimeMode getTimeMode() {
 		return timeMode;
 	}
 
@@ -406,11 +407,11 @@ public class GameScene extends Scene {
 		return game.getMap().findProvById(selectedProvinceId);
 	}
 
-	public void setTimeModeAndRun(GsTimeMode newMode) {
+	public void setTimeModeAndRun(TimeMode newMode) {
 		runLocked(() -> {
-			GsTimeMode oldMode = timeMode;
+			TimeMode oldMode = timeMode;
 			this.timeMode = newMode;
-			if (newMode != GsTimeMode.PAUSE && oldMode == GsTimeMode.PAUSE) {
+			if (newMode != TimeMode.PAUSE && oldMode == TimeMode.PAUSE) {
 				startProcessingNewTurn();
 			}
 		});
@@ -420,7 +421,7 @@ public class GameScene extends Scene {
 		if (getGame().getMap().getProvinces().isEmpty()) {
 			return;
 		}
-		if (timeMode == GsTimeMode.PAUSE) {
+		if (timeMode == TimeMode.PAUSE) {
 			return;
 		}
 		gameHadler.processNewTurns(game, timeMode, autoTurn, pauseBetweenTurn,
@@ -644,11 +645,9 @@ public class GameScene extends Scene {
 	public void refreshAllForLanguageChange() {
 		mainWindow.refreshAllForLanguageChange(game, selectedProvinceId);
 	}
-	
+
 	public void restoreSceneAfterLanguageChange(Integer id) {
 		selectAndShowProvince(game.getMap().findProvById(id));
 	}
-
-
 
 }

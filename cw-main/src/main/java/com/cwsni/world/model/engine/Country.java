@@ -323,8 +323,8 @@ public class Country {
 			isNeedRefreshReachableProvincesThroughWater = false;
 		}
 		refreshPopulation();
-		data.setCasualties(
-				(long) (1.0 * data.getCasualties() * game.getGameParams().getPopulationCasualtiesCoeffPerYear()));
+		data.setCasualties((long) (1.0 * data.getCasualties()
+				* game.getTurn().multiplyPerYear(game.getGameParams().getPopulationCasualtiesCoeffPerYear())));
 	}
 
 	private void refreshLandReachableBorderAlienProvs() {
@@ -342,7 +342,7 @@ public class Country {
 	}
 
 	private void refreshWaterMaxDistance() {
-		int science = 0;
+		double science = 0;
 		if (getCapital() != null) {
 			science = getCapital().getScienceAdministration();
 		} else if (!getProvinces().isEmpty()) {
@@ -352,7 +352,7 @@ public class Country {
 		int newWaterMaxDistance;
 		int threshold = 20000;
 		if (science > threshold) {
-			newWaterMaxDistance = 4 + science / threshold;
+			newWaterMaxDistance = (int) (4 + science / threshold);
 		} else {
 			newWaterMaxDistance = (int) Math.log10(science);
 		}
@@ -545,7 +545,7 @@ public class Country {
 	private static DataCountry createDefaultDataCountry(Game game) {
 		DataCountry dc = new DataCountry();
 		dc.setColor(createNewColorForCountry(game));
-		dc.setTurnOfCreation(game.getTurn().getTurn());
+		dc.setTurnOfCreation(game.getTurn().getDateTurn());
 		dc.setFocus(CountryFocus.createFocusForNewCountry(game));
 		dc.setBudget(new DataMoneyBudget());
 		dc.setScienceBudget(new DataScienceBudget());

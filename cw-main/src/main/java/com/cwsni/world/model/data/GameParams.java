@@ -32,7 +32,7 @@ public class GameParams {
 	// ------------End of Map generation section--------
 
 	// ------------Turn procession section--------
-	private double populationBaseGrowth = 0.01;
+	private double populationBaseGrowthPerYear = 0.01;
 	private double populationBaseMigration = 0.0005;
 	private double populationMaxExcess = 1.2;
 	private double populationMaxInCapital = 1.3;
@@ -42,18 +42,18 @@ public class GameParams {
 	private double populationRecruitPercentBaseMax = 0.1;
 	private double populationRecruitPercentBaseRestore = 0.01;
 
-	private double populationLoyaltyDecreasingCoeffDefault = 0.99;
+	private double populationLoyaltyDecreasingCoeffDefaultPerYear = 0.99;
 	private double populationLoyaltyDecreasingEpidemic = -0.002;
-	private double populationLoyaltyDecreasingOverpopulation = -0.001;
-	private double populationLoyaltyIncreasingGovernmnentCoeff = 0.01;
-	private double populationLoyaltyIncreasingCapital = 0.005;
-	private double populationLoyaltyIncreasingForLifeInTheCountry = 0.001;
-	private double populationLoyaltyIncreasingForState = 0.02;
+	private double populationLoyaltyDecreasingOverpopulationPerYear = -0.001;
+	private double populationLoyaltyIncreasingGovernmnentCoeffPerYear = 0.01;
+	private double populationLoyaltyIncreasingCapitalPerYear = 0.005;
+	private double populationLoyaltyIncreasingForLifeInTheCountryPerYear = 0.001;
+	private double populationLoyaltyIncreasingForStatePerYear = 0.02;
 	private double populationLoyaltyWealthThreshold = 0.5;
-	private double populationLoyaltyWealthThresholdCoeff = 0.01;
+	private double populationLoyaltyWealthThresholdCoeffPerYear = 0.01;
 	private double populationLoyaltyArmySoldiersToPopulationThreshold = 0.1;
 	private double populationLoyaltyArmyMax = 0.8;
-	private double populationLoyaltyRebelChanceCoeff = 0.1;
+	private double populationLoyaltyRebelChanceCoeffPerWeek = 0.005;
 	private double populationLoyaltyRebelToStateThreshold = 0.2;
 	private double populationLoyaltyRebelToCountryThreshold = 0.2;
 	private double populationLoyaltyRebelChainAdditionalLoyalty = 0.5;
@@ -71,9 +71,9 @@ public class GameParams {
 
 	private int newCountryPopulationMin = 10000;
 	private int newCountryScienceAdministrationMin = 100;
-	private double newCountryProbability = 0.01;
+	private double newCountryProbabilityPerWeek = 0.0001;
 
-	private double scienceBaseIncreasePerTurnPerPerson = 0.01;
+	private double scienceBaseIncreasePerPersonPerWeek = 0.005;
 	private double scienceNaturalGrowthLimitPerPerson = 0.01;
 	private double scienceExchangeWithMaxPerTurn = 0.02;
 	private double scienceExchangeFromNeighborsFractionFromMax = 0.9;
@@ -86,7 +86,7 @@ public class GameParams {
 
 	private double armyFightRandomness = 0.2;
 	private double armyFightBasePercentOfLoss = 0.2;
-	private int armyMinAllowedOrganization = 10;
+	private double armyMinAllowedOrganization = 0.1;
 	private int armyMinAllowedSoldiers = 50;
 	private double armySoldiersToPopulationForSubjugation = 0.1;
 	private double provinceLossFromFight = 0.1;
@@ -133,12 +133,12 @@ public class GameParams {
 		this.eventGlobalClimateChangeProbability = eventGlobalClimateChangeProbability;
 	}
 
-	public double getPopulationBaseGrowth() {
-		return populationBaseGrowth;
+	public double getPopulationBaseGrowthPerYear() {
+		return populationBaseGrowthPerYear;
 	}
 
-	public void setPopulationBaseGrowth(double populationBaseGrowthPercent) {
-		this.populationBaseGrowth = populationBaseGrowthPercent;
+	public void setPopulationBaseGrowthPerYear(double populationBaseGrowthPerYear) {
+		this.populationBaseGrowthPerYear = populationBaseGrowthPerYear;
 	}
 
 	public double getSoilAreaCorePointsPerProvinces() {
@@ -356,14 +356,6 @@ public class GameParams {
 		this.scienceAgricultureMultiplicatorForFertility = scienceAgricultureMultiplicatorForFertility;
 	}
 
-	public double getScienceBaseIncreasePerTurnPerPerson() {
-		return scienceBaseIncreasePerTurnPerPerson;
-	}
-
-	public void setScienceBaseIncreasePerTurnPerPerson(double scienceBaseIncreasePerTurnPerPerson) {
-		this.scienceBaseIncreasePerTurnPerPerson = scienceBaseIncreasePerTurnPerPerson;
-	}
-
 	public double getScienceExchangeWithMaxPerTurn() {
 		return scienceExchangeWithMaxPerTurn;
 	}
@@ -436,14 +428,6 @@ public class GameParams {
 		this.newCountryScienceAdministrationMin = newCountryScienceAdministrationMin;
 	}
 
-	public double getNewCountryProbability() {
-		return newCountryProbability;
-	}
-
-	public void setNewCountryProbability(double newCountryProbability) {
-		this.newCountryProbability = newCountryProbability;
-	}
-
 	public double getArmyFightRandomness() {
 		return armyFightRandomness;
 	}
@@ -452,11 +436,11 @@ public class GameParams {
 		this.armyFightRandomness = armyFightRandomness;
 	}
 
-	public int getArmyMinAllowedOrganization() {
+	public double getArmyMinAllowedOrganization() {
 		return armyMinAllowedOrganization;
 	}
 
-	public void setArmyMinAllowedOrganization(int armyMinAllowedOrganization) {
+	public void setArmyMinAllowedOrganization(double armyMinAllowedOrganization) {
 		this.armyMinAllowedOrganization = armyMinAllowedOrganization;
 	}
 
@@ -598,28 +582,28 @@ public class GameParams {
 		this.populationLoyaltyDecreasingEpidemic = populationLoyaltyDecreasingEpidemic;
 	}
 
-	public double getPopulationLoyaltyDecreasingOverpopulation() {
-		return populationLoyaltyDecreasingOverpopulation;
+	public double getPopulationLoyaltyDecreasingOverpopulationPerYear() {
+		return populationLoyaltyDecreasingOverpopulationPerYear;
 	}
 
-	public void setPopulationLoyaltyDecreasingOverpopulation(double populationLoyaltyDecreasingOverpopulation) {
-		this.populationLoyaltyDecreasingOverpopulation = populationLoyaltyDecreasingOverpopulation;
+	public void setPopulationLoyaltyDecreasingOverpopulationPerYear(double populationLoyaltyDecreasingOverpopulation) {
+		this.populationLoyaltyDecreasingOverpopulationPerYear = populationLoyaltyDecreasingOverpopulation;
 	}
 
-	public double getPopulationLoyaltyIncreasingGovernmnentCoeff() {
-		return populationLoyaltyIncreasingGovernmnentCoeff;
+	public double getPopulationLoyaltyIncreasingGovernmnentCoeffPerYear() {
+		return populationLoyaltyIncreasingGovernmnentCoeffPerYear;
 	}
 
-	public void setPopulationLoyaltyIncreasingGovernmnentCoeff(double populationLoyaltyIncreasingGovernmnentCoeff) {
-		this.populationLoyaltyIncreasingGovernmnentCoeff = populationLoyaltyIncreasingGovernmnentCoeff;
+	public void setPopulationLoyaltyIncreasingGovernmnentCoeffPerYear(double populationLoyaltyIncreasingGovernmnentCoeff) {
+		this.populationLoyaltyIncreasingGovernmnentCoeffPerYear = populationLoyaltyIncreasingGovernmnentCoeff;
 	}
 
-	public double getPopulationLoyaltyIncreasingCapital() {
-		return populationLoyaltyIncreasingCapital;
+	public double getPopulationLoyaltyIncreasingCapitalPerYear() {
+		return populationLoyaltyIncreasingCapitalPerYear;
 	}
 
-	public void setPopulationLoyaltyIncreasingCapital(double populationLoyaltyIncreasingCapital) {
-		this.populationLoyaltyIncreasingCapital = populationLoyaltyIncreasingCapital;
+	public void setPopulationLoyaltyIncreasingCapitalPerYear(double populationLoyaltyIncreasingCapital) {
+		this.populationLoyaltyIncreasingCapitalPerYear = populationLoyaltyIncreasingCapital;
 	}
 
 	public double getBudgetSpendMoneyPerPerson() {
@@ -638,12 +622,12 @@ public class GameParams {
 		this.populationLoyaltyWealthThreshold = populationLoyaltyWealthThreshold;
 	}
 
-	public double getPopulationLoyaltyWealthThresholdCoeff() {
-		return populationLoyaltyWealthThresholdCoeff;
+	public double getPopulationLoyaltyWealthThresholdCoeffPerYear() {
+		return populationLoyaltyWealthThresholdCoeffPerYear;
 	}
 
-	public void setPopulationLoyaltyWealthThresholdCoeff(double populationLoyaltyWealthThresholdCoeff) {
-		this.populationLoyaltyWealthThresholdCoeff = populationLoyaltyWealthThresholdCoeff;
+	public void setPopulationLoyaltyWealthThresholdCoeffPerYear(double populationLoyaltyWealthThresholdCoeff) {
+		this.populationLoyaltyWealthThresholdCoeffPerYear = populationLoyaltyWealthThresholdCoeff;
 	}
 
 	public double getPopulationLoyaltyArmySoldiersToPopulationThreshold() {
@@ -663,12 +647,12 @@ public class GameParams {
 		this.populationLoyaltyArmyMax = populationLoyaltyArmyMax;
 	}
 
-	public double getPopulationLoyaltyRebelChanceCoeff() {
-		return populationLoyaltyRebelChanceCoeff;
+	public double getPopulationLoyaltyRebelChanceCoeffPerWeek() {
+		return populationLoyaltyRebelChanceCoeffPerWeek;
 	}
 
-	public void setPopulationLoyaltyRebelChanceCoeff(double populationLoyaltyRebelChanceCoeff) {
-		this.populationLoyaltyRebelChanceCoeff = populationLoyaltyRebelChanceCoeff;
+	public void setPopulationLoyaltyRebelChanceCoeffPerWeek(double populationLoyaltyRebelChanceCoeff) {
+		this.populationLoyaltyRebelChanceCoeffPerWeek = populationLoyaltyRebelChanceCoeff;
 	}
 
 	public double getPopulationLoyaltyRebelToStateThreshold() {
@@ -713,29 +697,29 @@ public class GameParams {
 		this.populationLoyaltyRebelNewCountriesTakeMoneyForYears = populationLoyaltyRebelNewCountriesTakeMoneyForYears;
 	}
 
-	public double getPopulationLoyaltyIncreasingForState() {
-		return populationLoyaltyIncreasingForState;
+	public double getPopulationLoyaltyIncreasingForStatePerYear() {
+		return populationLoyaltyIncreasingForStatePerYear;
 	}
 
-	public void setPopulationLoyaltyIncreasingForState(double populationLoyaltyIncreasingForState) {
-		this.populationLoyaltyIncreasingForState = populationLoyaltyIncreasingForState;
+	public void setPopulationLoyaltyIncreasingForStatePerYear(double populationLoyaltyIncreasingForState) {
+		this.populationLoyaltyIncreasingForStatePerYear = populationLoyaltyIncreasingForState;
 	}
 
-	public double getPopulationLoyaltyIncreasingForLifeInTheCountry() {
-		return populationLoyaltyIncreasingForLifeInTheCountry;
+	public double getPopulationLoyaltyIncreasingForLifeInTheCountryPerYear() {
+		return populationLoyaltyIncreasingForLifeInTheCountryPerYear;
 	}
 
-	public void setPopulationLoyaltyIncreasingForLifeInTheCountry(
+	public void setPopulationLoyaltyIncreasingForLifeInTheCountryPerYear(
 			double populationLoyaltyIncreasingForLifeInTheCountry) {
-		this.populationLoyaltyIncreasingForLifeInTheCountry = populationLoyaltyIncreasingForLifeInTheCountry;
+		this.populationLoyaltyIncreasingForLifeInTheCountryPerYear = populationLoyaltyIncreasingForLifeInTheCountry;
 	}
 
-	public double getPopulationLoyaltyDecreasingCoeffDefault() {
-		return populationLoyaltyDecreasingCoeffDefault;
+	public double getPopulationLoyaltyDecreasingCoeffDefaultPerYear() {
+		return populationLoyaltyDecreasingCoeffDefaultPerYear;
 	}
 
-	public void setPopulationLoyaltyDecreasingCoeffDefault(double populationLoyaltyDecreasingCoeffDefault) {
-		this.populationLoyaltyDecreasingCoeffDefault = populationLoyaltyDecreasingCoeffDefault;
+	public void setPopulationLoyaltyDecreasingCoeffDefaultPerYear(double populationLoyaltyDecreasingCoeffDefault) {
+		this.populationLoyaltyDecreasingCoeffDefaultPerYear = populationLoyaltyDecreasingCoeffDefault;
 	}
 
 	public double getFocusMinGoal() {
@@ -856,6 +840,22 @@ public class GameParams {
 
 	public void setAiRecordMaxTextSize(int aiRecordMaxTextSize) {
 		this.aiRecordMaxTextSize = aiRecordMaxTextSize;
+	}
+
+	public double getNewCountryProbabilityPerWeek() {
+		return newCountryProbabilityPerWeek;
+	}
+
+	public void setNewCountryProbabilityPerYear(double newCountryProbabilityPerWeek) {
+		this.newCountryProbabilityPerWeek = newCountryProbabilityPerWeek;
+	}
+
+	public double getScienceBaseIncreasePerPersonPerWeek() {
+		return scienceBaseIncreasePerPersonPerWeek;
+	}
+
+	public void setScienceBaseIncreasePerPersonPerWeek(double scienceBaseIncreasePerPersonPerWeek) {
+		this.scienceBaseIncreasePerPersonPerWeek = scienceBaseIncreasePerPersonPerWeek;
 	}
 
 }

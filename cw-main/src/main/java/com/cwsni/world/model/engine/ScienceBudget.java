@@ -36,30 +36,33 @@ public class ScienceBudget {
 
 	public double getTotalWeight() {
 		double tw = data.getAgricultureWeight() + data.getAdministrationWeight() + data.getMedicineWeight();
-		if (tw<=0) {
+		if (tw <= 0) {
 			tw = 1;
 		}
 		return tw;
 	}
 
-	private double calcHowToIncreaseScience(double v) {
+	private double calcHowToIncreaseScience(Game game, double v) {
 		if (v > 0) {
-			return Math.log(v);
+			// v - per turn here, we need to scale for equal increasing because we use Math.log.
+			// Math.log (50) != Math.log(1) / 50 
+			double coeff = TimeMode.YEAR.getDateTurnPerTime() / game.getTurn().getTimeMode().getDateTurnPerTime();
+			return Math.log(v * coeff) / coeff;
 		} else {
 			return 0;
 		}
 	}
 
-	public double getAdministrationFraction(double money) {
-		return calcHowToIncreaseScience(money * getAdministrationWeight() / getTotalWeight());
+	public double getAdministrationFraction(Game game, double money) {
+		return calcHowToIncreaseScience(game, money * getAdministrationWeight() / getTotalWeight());
 	}
 
-	public double getAgricultureFraction(double money) {
-		return calcHowToIncreaseScience(money * getAgricultureWeight() / getTotalWeight());
+	public double getAgricultureFraction(Game game, double money) {
+		return calcHowToIncreaseScience(game, money * getAgricultureWeight() / getTotalWeight());
 	}
 
-	public double getMedicineFraction(double money) {
-		return calcHowToIncreaseScience(money * getMedicineWeight() / getTotalWeight());
+	public double getMedicineFraction(Game game, double money) {
+		return calcHowToIncreaseScience(game, money * getMedicineWeight() / getTotalWeight());
 	}
 
 }

@@ -1,7 +1,9 @@
 package com.cwsni.world.game.ai;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -9,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.model.player.interfaces.IData4Country;
 import com.cwsni.world.model.player.interfaces.IPGame;
@@ -27,23 +30,32 @@ public class AIHandler {
 
 	@Autowired
 	private GameExecutorService taskExecutor;
+	
+	@Autowired
+	private ApplicationSettings applicationSettings;
 
 	public void processNewTurn(List<PGame> pGames) {
+		List<Future<?>> tasks = new ArrayList<>(pGames.size());
 		CountDownLatch latch = new CountDownLatch(pGames.size());
 		for (IPGame pg : pGames) {
 			try {
-				taskExecutor.processOneAI(() -> processCountry(pg, latch));
-				// processCountry(pg, latch);
+				Future<?> task = taskExecutor.processOneAI(() -> processCountry(pg, latch));
+				tasks.add(task);
 			} catch (Exception e) {
 				logger.error("Failed to process AI for country with id=" + pg.getAIData().getCountryId(), e);
 			}
 		}
 		try {
-			int seconds = 2;
-			boolean isSuccessful = latch.await(seconds, TimeUnit.SECONDS);
+			int secondsToWait = applicationSettings.getMultithreadingMaxWaitAllTasksPerTurnSeconds();
+			boolean isSuccessful = latch.await(secondsToWait, TimeUnit.SECONDS);
 			if (!isSuccessful) {
-				logger.error("AIHandler::processNewTurn has waited too long (seconds=" + seconds
+				logger.error("AIHandler::processNewTurn has waited too long (seconds=" + secondsToWait
 						+ "). Not all tasks were completed");
+				for (Future<?> task : tasks) {
+					if (!task.isDone() && !task.isCancelled()) {
+						task.cancel(false);
+					}
+				}
 			}
 		} catch (InterruptedException e) {
 			logger.error(e);

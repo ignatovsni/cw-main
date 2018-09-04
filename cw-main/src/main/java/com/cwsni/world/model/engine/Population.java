@@ -21,8 +21,6 @@ import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
-import com.cwsni.world.model.data.old_events.Event;
-import com.cwsni.world.model.data.old_events.EventEpidemic;
 import com.cwsni.world.util.CwException;
 
 public class Population {
@@ -44,6 +42,10 @@ public class Population {
 
 	protected Game getGame() {
 		return game;
+	}
+
+	protected Turn getTurn() {
+		return game.getTurn();
 	}
 
 	public int getAmount() {
@@ -193,10 +195,6 @@ public class Population {
 		}
 	}
 
-	public double getDiseaseResistance() {
-		return EventEpidemic.getDiseaseResistance(getScience().getMedicine().getAmount());
-	}
-
 	protected DataPopulation getPopulationData() {
 		return data;
 	}
@@ -218,7 +216,7 @@ public class Population {
 	}
 
 	protected double getWealthLevel() {
-		return getWealth() / getAmount() / getGame().getGameParams().getBudgetMaxWealthPerPerson();
+		return getWealth() / (getAmount() + 1) / getGame().getGameParams().getBudgetMaxWealthPerPerson();
 	}
 
 	private void setWealth(double wealth) {
@@ -258,7 +256,7 @@ public class Population {
 		}
 		currentLoyalty = Math.min(Math.max(currentLoyalty + delta, 0),
 				maxLoyalty != null ? maxLoyalty : DataPopulation.LOYALTY_MAX);
-		currentLoyalty = DataFormatter.doubleWith4points(currentLoyalty);
+		currentLoyalty = DataFormatter.doubleWithPrecison(currentLoyalty, 6);
 		if (currentLoyalty < DataPopulation.LOYALTY_MAX / 120 && delta <= 0) {
 			loyalties.remove(id);
 		} else {
@@ -327,8 +325,8 @@ public class Population {
 	}
 
 	private void processCasualtiesNewTurn() {
-		data.setCasualties(
-				(long) (1.0 * data.getCasualties() * getGame().getGameParams().getPopulationCasualtiesCoeffPerYear()));
+		data.setCasualties((long) (1.0 * data.getCasualties()
+				* game.getTurn().multiplyPerYear(getGame().getGameParams().getPopulationCasualtiesCoeffPerYear())));
 	}
 
 	protected long getCasualties() {
@@ -385,9 +383,10 @@ public class Population {
 		if (currentPopFromMax < 1) {
 			if (prov.getSoilFertility() >= 1) {
 				// growth pops
+				double populationBaseGrowth = game.getTurn()
+						.multiplyPerYear(1 + gParams.getPopulationBaseGrowthPerYear());
 				prov.getPopulation().forEach(p -> {
-					int newAmount = (int) (p.getAmount()
-							* (1 + gParams.getPopulationBaseGrowth() + p.getDiseaseResistance() / 100));
+					int newAmount = (int) (p.getAmount() * populationBaseGrowth);
 					newAmount = (int) Math.min(newAmount, populationAmount / currentPopFromMax);
 					p.setAmount(newAmount);
 				});
@@ -400,9 +399,10 @@ public class Population {
 			dieFromOverpopulation(game, prov, 1 - 1 / currentPopFromMax);
 		}
 		// recruits pool growth && casualties decreasing
+		double populationRecruitPercentRestore = game.getTurn()
+				.addPerYear(game.getGameParams().getPopulationRecruitPercentBaseRestore());
 		prov.getPopulation().forEach(p -> {
-			p.setRecruitedPercent(
-					p.getRecruitedPercent() - game.getGameParams().getPopulationRecruitPercentBaseRestore());
+			p.setRecruitedPercent(p.getRecruitedPercent() - populationRecruitPercentRestore);
 			p.processCasualtiesNewTurn();
 		});
 	}
@@ -418,7 +418,8 @@ public class Population {
 	public static void dieFromDisease(Game game, Province from, double deathRate) {
 		// regular population
 		from.getPopulation().forEach(p -> {
-			double effectiveDeathRate = deathRate * (1 - p.getDiseaseResistance());
+			int diseaseResistance = 0; // TODO in events
+			double effectiveDeathRate = deathRate * (1 - diseaseResistance);
 			int died = (int) (p.getAmount() * effectiveDeathRate);
 			p.setAmount(p.getAmount() - died);
 			game.getGameStats().addDiedFromDisease(died);
@@ -472,16 +473,17 @@ public class Population {
 	}
 
 	public void processLifeInTheCountryNewTurn() {
+		int delta = (int) getTurn().addPerWeek(1);
 		Integer countryId = province.getCountryId();
 		if (countryId != null) {
 			Integer value = data.getLifeInCountries().get(countryId);
-			value = 2 + (value != null ? value : 0);
+			value = delta * 2 + (value != null ? value : 0);
 			data.getLifeInCountries().put(countryId, value);
 		}
 		Iterator<Entry<Integer, Integer>> iter = data.getLifeInCountries().entrySet().iterator();
 		while (iter.hasNext()) {
 			Entry<Integer, Integer> entry = iter.next();
-			int value = entry.getValue() - 1;
+			int value = entry.getValue() - delta;
 			if (value > 0) {
 				data.getLifeInCountries().put(entry.getKey(), value);
 			} else {
@@ -495,23 +497,27 @@ public class Population {
 		if (provPopulationAmount == 0) {
 			return;
 		}
+		Turn turn = game.getTurn();
 		Country country = p.getCountry();
 		State state = p.getState();
 		GameParams gParams = game.getGameParams();
 
 		// decreasing - regular (mostly for other countries and states)
-		p.decreaseLoyaltyToAllCountries(gParams.getPopulationLoyaltyDecreasingCoeffDefault());
-		p.decreaseLoyaltyToAllStates(gParams.getPopulationLoyaltyDecreasingCoeffDefault());
+		double populationLoyaltyDecreasingCoeff = turn
+				.multiplyPerYear(gParams.getPopulationLoyaltyDecreasingCoeffDefaultPerYear());
+		p.decreaseLoyaltyToAllCountries(populationLoyaltyDecreasingCoeff);
+		p.decreaseLoyaltyToAllStates(populationLoyaltyDecreasingCoeff);
 
 		if (state != null) {
 			Double maxStateLoyalty = state.getMaxStateLoyalty();
-			p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyIncreasingForState(), maxStateLoyalty);
+			p.addLoyaltyToState(state.getId(), turn.addPerYear(gParams.getPopulationLoyaltyIncreasingForStatePerYear()),
+					maxStateLoyalty);
 			// TODO
 			/*
-			if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
-				p.addLoyaltyToState(state.getId(), gParams.getPopulationLoyaltyDecreasingEpidemic(), maxStateLoyalty);
-			}
-			*/
+			 * if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
+			 * p.addLoyaltyToState(state.getId(),
+			 * gParams.getPopulationLoyaltyDecreasingEpidemic(), maxStateLoyalty); }
+			 */
 		}
 
 		if (country == null) {
@@ -520,15 +526,16 @@ public class Population {
 
 		// decreasing - diseases TODO
 		/*
-		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
-			p.addLoyaltyToCountry(country.getId(), gParams.getPopulationLoyaltyDecreasingEpidemic());
-		}
-		*/
+		 * if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
+		 * p.addLoyaltyToCountry(country.getId(),
+		 * gParams.getPopulationLoyaltyDecreasingEpidemic()); }
+		 */
 
 		// decreasing - overpopulation
 		if (p.getPopulationExcess() > 1) {
 			p.addLoyaltyToCountry(country.getId(),
-					gParams.getPopulationLoyaltyDecreasingOverpopulation() * p.getPopulationExcess());
+					turn.addPerYear(gParams.getPopulationLoyaltyDecreasingOverpopulationPerYear())
+							* p.getPopulationExcess());
 		}
 
 		// increasing/decreasing - wealth
@@ -540,16 +547,17 @@ public class Population {
 				wealthLevel = 1;
 			}
 			double delta = (wealthLevel - gParams.getPopulationLoyaltyWealthThreshold())
-					* gParams.getPopulationLoyaltyWealthThresholdCoeff();
+					* turn.addPerYear(gParams.getPopulationLoyaltyWealthThresholdCoeffPerYear());
 			pop.addLoyaltyToCountry(country.getId(), delta);
 		}
 
 		// increasing - government influence
-		p.addLoyaltyToCountry(country.getId(),
-				p.getGovernmentInfluence() * gParams.getPopulationLoyaltyIncreasingGovernmnentCoeff());
+		p.addLoyaltyToCountry(country.getId(), p.getGovernmentInfluence()
+				* turn.addPerYear(gParams.getPopulationLoyaltyIncreasingGovernmnentCoeffPerYear()));
 		// increasing - capital influence
 		if (p.equals(country.getCapital())) {
-			p.addLoyaltyToCountry(country.getId(), gParams.getPopulationLoyaltyIncreasingCapital());
+			p.addLoyaltyToCountry(country.getId(),
+					turn.addPerYear(gParams.getPopulationLoyaltyIncreasingCapitalPerYear()));
 		}
 
 		// increasing - life in the country
@@ -558,16 +566,18 @@ public class Population {
 			if (value == null) {
 				return 0.0;
 			} else {
-				return value * pop.getAmount();
+				return 1.0 * value * pop.getAmount();
 			}
 		}).sum() / provPopulationAmount;
 		if (lifeInTheCountry > 0) {
-			double delta = Math.log10(lifeInTheCountry) * gParams.getPopulationLoyaltyIncreasingForLifeInTheCountry();
+			double delta = Math.log10(lifeInTheCountry)
+					* turn.addPerYear(gParams.getPopulationLoyaltyIncreasingForLifeInTheCountryPerYear());
 			p.addLoyaltyToCountry(country.getId(), delta);
 		}
 	}
 
-	public static String createDescriptionForLoyaltyChanges(Game game, Province p, LocaleMessageSource messageSource) {
+	public static String createDescriptionForLoyaltyChangesPerYear(Game game, Province p,
+			LocaleMessageSource messageSource) {
 		int provPopulationAmount = p.getPopulationAmount();
 		if (provPopulationAmount == 0) {
 			return null;
@@ -582,21 +592,21 @@ public class Population {
 		// decreasing - regular (mostly for other countries and states)
 		sb.append("-"
 				+ DataFormatter.doubleWith2points(p.getLoyaltyToCountry(country.getId())
-						* (1 - gParams.getPopulationLoyaltyDecreasingCoeffDefault()) * 100)
+						* (1 - gParams.getPopulationLoyaltyDecreasingCoeffDefaultPerYear()) * 100)
 				+ " " + messageSource.getMessage("info.pane.prov.country.loyalty.description.default-decreasing"))
 				.append("\n");
 
 		// decreasing - diseases TODOS
 		/*
-		if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
-			sb.append(gParams.getPopulationLoyaltyDecreasingEpidemic() * 100 + " "
-					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.epidemic")).append("\n");
-		}
-		*/
+		 * if (p.getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
+		 * sb.append(gParams.getPopulationLoyaltyDecreasingEpidemic() * 100 + " " +
+		 * messageSource.getMessage(
+		 * "info.pane.prov.country.loyalty.description.epidemic")).append("\n"); }
+		 */
 
 		// decreasing - overpopulation
 		if (p.getPopulationExcess() > 1) {
-			double delta = gParams.getPopulationLoyaltyDecreasingOverpopulation() * p.getPopulationExcess();
+			double delta = gParams.getPopulationLoyaltyDecreasingOverpopulationPerYear() * p.getPopulationExcess();
 			sb.append(DataFormatter.doubleWith2points(delta * 100) + " "
 					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.overpopulation"))
 					.append("\n");
@@ -609,7 +619,7 @@ public class Population {
 		for (Population pop : p.getPopulation()) {
 			double wealthLevel = (pop.getWealthLevel() + provinceWealthLevel) / 2;
 			delta += (wealthLevel - gParams.getPopulationLoyaltyWealthThreshold())
-					* gParams.getPopulationLoyaltyWealthThresholdCoeff() * pop.getAmount();
+					* gParams.getPopulationLoyaltyWealthThresholdCoeffPerYear() * pop.getAmount();
 		}
 		delta /= provincePopulation;
 		if (delta > 0) {
@@ -619,12 +629,12 @@ public class Population {
 				+ messageSource.getMessage("info.pane.prov.country.loyalty.description.wealth")).append("\n");
 
 		// increasing - government influence
-		delta = p.getGovernmentInfluence() * gParams.getPopulationLoyaltyIncreasingGovernmnentCoeff();
+		delta = p.getGovernmentInfluence() * gParams.getPopulationLoyaltyIncreasingGovernmnentCoeffPerYear();
 		sb.append("+" + DataFormatter.doubleWith2points(delta * 100) + " "
 				+ messageSource.getMessage("info.pane.prov.country.loyalty.description.government-influence"))
 				.append("\n");
 		if (p.equals(country.getCapital())) {
-			sb.append("+" + gParams.getPopulationLoyaltyIncreasingCapital() * 100 + " "
+			sb.append("+" + gParams.getPopulationLoyaltyIncreasingCapitalPerYear() * 100 + " "
 					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.capital")).append("\n");
 		}
 
@@ -638,7 +648,7 @@ public class Population {
 			}
 		}).sum() / provPopulationAmount;
 		if (lifeInTheCountry > 0) {
-			delta = Math.log10(lifeInTheCountry) * gParams.getPopulationLoyaltyIncreasingForLifeInTheCountry();
+			delta = Math.log10(lifeInTheCountry) * gParams.getPopulationLoyaltyIncreasingForLifeInTheCountryPerYear();
 			sb.append("+" + DataFormatter.doubleWith2points(delta * 100) + " "
 					+ messageSource
 							.getMessage("info.pane.prov.country.loyalty.description.population.life-in-the-country"))

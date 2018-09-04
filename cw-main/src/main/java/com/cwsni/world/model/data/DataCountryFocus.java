@@ -1,6 +1,8 @@
 package com.cwsni.world.model.data;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class DataCountryFocus {
 
@@ -9,8 +11,14 @@ public class DataCountryFocus {
 	public static final double MAX_VALUE = 10;
 	public static final double MIN_STEP = 0.0001;
 
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 4)
 	private double focus;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 4)
 	private double goal;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 4)
 	private double step;
 
 	public double getFocus() {
@@ -34,7 +42,7 @@ public class DataCountryFocus {
 	}
 
 	public void setStep(double step) {
-		this.step = DataFormatter.doubleWith4points(Math.max(DataCountryFocus.MIN_STEP, step));
+		this.step = Math.max(DataCountryFocus.MIN_STEP, step);
 	}
 
 	@Override
@@ -52,7 +60,7 @@ public class DataCountryFocus {
 	}
 
 	public static double normalizeFocus(double value) {
-		return DataFormatter.doubleWith4points(Math.min(MAX_VALUE, Math.max(MIN_VALUE, value)));
+		return Math.min(MAX_VALUE, Math.max(MIN_VALUE, value));
 	}
 
 }

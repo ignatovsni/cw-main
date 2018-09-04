@@ -3,16 +3,22 @@ package com.cwsni.world.model.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class DataPopulation {
 
 	public static Double LOYALTY_MAX = 1.0;
 
 	private int amount;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 4)
 	private double recruitedPercent;
 	private DataScienceCollection science = new DataScienceCollection();
 	private DataCulture culture = new DataCulture();
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 0)
 	private double wealth;
 	private Map<Integer, Double> loyaltyToCountries = new HashMap<>();
 	private Map<Integer, Double> loyaltyToStates = new HashMap<>();
@@ -55,7 +61,7 @@ public class DataPopulation {
 	}
 
 	public void setWealth(double wealth) {
-		this.wealth = DataFormatter.doubleWith2points(wealth);
+		this.wealth = wealth;
 	}
 
 	public Map<Integer, Double> getLoyaltyToCountries() {
@@ -87,8 +93,7 @@ public class DataPopulation {
 	}
 
 	public void setRecruitedPercent(double recruitedPercent) {
-		recruitedPercent = Math.min(1, Math.max(0, recruitedPercent));
-		this.recruitedPercent = DataFormatter.doubleWith4points(recruitedPercent);
+		this.recruitedPercent = Math.min(1, Math.max(0, recruitedPercent));
 	}
 
 	public long getCasualties() {

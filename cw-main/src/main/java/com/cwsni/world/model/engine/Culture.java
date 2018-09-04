@@ -54,13 +54,14 @@ public class Culture {
 		return (to * ownFraction + from * (1 - ownFraction));
 	}
 
-	private void influenceOfCountry(Province p) {
+	private void influenceOfCountry(Province p, Game game) {
 		Country c = p.getCountry();
 		if (c == null || c.getCapitalId() == null) {
 			return;
 		}
-		double ownFraction = 0.999 - Math.min(0.001, Math.log10(c.getCapital().getScienceAdministration() + 1) / 10000)
-				* p.getGovernmentInfluence();
+
+		double perWeek = Math.log10(c.getCapital().getScienceAdministration() + 1) / 100000;
+		double ownFraction = 0.9999 - Math.min(0.0001, game.getTurn().addPerWeek(perWeek)) * p.getGovernmentInfluence();
 		Color color = c.getColor();
 		data.setRed(merge(data.getRed(), color.getR(), ownFraction));
 		data.setGreen(merge(data.getGreen(), color.getG(), ownFraction));
@@ -69,8 +70,8 @@ public class Culture {
 
 	// --------------- static section -----------------------
 
-	public static void influenceOfCountry(Province p, Game game) {
-		p.getPopulation().forEach(pop -> pop.getCulture().influenceOfCountry(p));
+	public static void influenceOfCountryFor(Province p, Game game) {
+		p.getPopulation().forEach(pop -> pop.getCulture().influenceOfCountry(p, game));
 	}
 
 }

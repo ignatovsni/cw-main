@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.GameStats;
-import com.cwsni.world.model.data.Turn;
 import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 import com.cwsni.world.services.PlayerEventListener;
 import com.cwsni.world.util.ComparisonTool;
@@ -19,6 +18,7 @@ import com.cwsni.world.util.CwException;
 public class Game {
 
 	private DataGame data;
+	private Turn turn;
 	private GameTransientStats gameTransientStats;
 	private WorldMap map;
 	private History history;
@@ -69,7 +69,7 @@ public class Game {
 	}
 
 	public Turn getTurn() {
-		return data.getTurn();
+		return turn;
 	}
 
 	public History getHistory() {
@@ -227,12 +227,13 @@ public class Game {
 	}
 
 	private void processNewProbablyCountries() {
+		double probability = getTurn().probablilityPerWeek(getGameParams().getNewCountryProbabilityPerWeek());
 		map.getProvinces().stream()
 				.filter(p -> p.getCountry() == null
 						&& p.getPopulationAmount() > getGameParams().getNewCountryPopulationMin()
 						&& p.getScienceAdministration() > getGameParams().getNewCountryScienceAdministrationMin())
 				.forEach(p -> {
-					if (getGameParams().getRandom().nextDouble() <= getGameParams().getNewCountryProbability()) {
+					if (getGameParams().getRandom().nextDouble() <= probability) {
 						Country.createNewCountry(this, p);
 					}
 				});
@@ -252,13 +253,12 @@ public class Game {
 		data.setGameStats(gameStats);
 	}
 
-	public void setTurn(Turn turn) {
-		data.setTurn(turn);
-	}
-
 	public void buildFrom(DataGame dataGame, PlayerEventListener gameEventListener) {
 		this.data = dataGame;
 		this.gameEventListener = gameEventListener;
+
+		turn = new Turn();
+		turn.buildFrom(this, data.getTurn());
 
 		armies = new HashMap<>();
 		newArmiesWithIdLessThanZero = new HashMap<>();
@@ -351,7 +351,7 @@ public class Game {
 	}
 
 	public CwBaseRandom getRandomForCurrentTurn(Long externalSeed) {
-		long seed = (long) (getTurn().getTurn() + 1) * (getCountries().size() + 1)
+		long seed = (long) (getTurn().getDateTurn() + 1) * (getCountries().size() + 1)
 				+ (externalSeed != null ? externalSeed : 1);
 		return new CwBaseRandom(seed);
 	}

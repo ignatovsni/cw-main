@@ -43,9 +43,9 @@ public class GsProvScienceInfoPane extends InternalInfoPane {
 		Province prov = gameScene.getSelectedProvince();
 		switch (prov.getTerrainType()) {
 		case GRASSLAND:
-			setLabelTextWithLongFormatterAndValueTooltip(valuesScienceAgriculture, prov.getScienceAgriculture());
-			setLabelTextWithLongFormatterAndValueTooltip(valuesScienceMedicine, prov.getScienceMedicine());
-			setLabelTextWithLongFormatterAndValueTooltip(valuesScienceAdministration, prov.getScienceAdministration());
+			setLabelTextWithLongFormatterAndValueTooltip(valuesScienceAgriculture, (long) prov.getScienceAgriculture());
+			setLabelTextWithLongFormatterAndValueTooltip(valuesScienceMedicine, (long) prov.getScienceMedicine());
+			setLabelTextWithLongFormatterAndValueTooltip(valuesScienceAdministration, (long) prov.getScienceAdministration());
 			break;
 		case OCEAN:
 		case MOUNTAIN:

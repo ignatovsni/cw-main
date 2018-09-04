@@ -1,11 +1,19 @@
 package com.cwsni.world.model.data;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class DataCulture {
 
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 5)
 	private double red;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 5)
 	private double green;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 5)
 	private double blue;
 
 	public double getRed() {
@@ -38,7 +46,6 @@ public class DataCulture {
 		} else if (v >= 255) {
 			return 255;
 		}
-		v = DataFormatter.doubleWith3points(v);
 		return v;
 	}
 

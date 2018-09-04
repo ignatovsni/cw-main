@@ -104,13 +104,14 @@ public class GameRepository {
 		if (!applicationSettings.isUseAutoSave()) {
 			return;
 		}
-		int turn = game.getTurn().getTurn();
-		if (game.getLastAutoSaveTurn() > turn - applicationSettings.getAutoSaveTurnStep()) {
+		int processedTurn = game.getTurn().getProcessedTurn();
+		if (game.getLastAutoSaveTurn() > processedTurn - applicationSettings.getAutoSaveTurnStep()) {
 			return;
 		}
 		// save
-		saveGame(game, new File(getSaveDirectoryFullPath() + File.separator + "autosave-" + turn + ".cw"));
-		game.setLastAutoSaveTurn(turn);
+		saveGame(game, new File(
+				getSaveDirectoryFullPath() + File.separator + "autosave-" + game.getTurn().getDateTexToDisplay() + ".cw"));
+		game.setLastAutoSaveTurn(processedTurn);
 
 		// delete old autosaves
 		File saveDirectory = new File(getSaveDirectoryFullPath());

@@ -56,7 +56,9 @@ public class MoneyBudget {
 
 	protected void calculateBaseBudget() {
 		baseIncome = country.getProvinces().stream().mapToDouble(p -> p.getFederalIncomePerYear()).sum();
+		baseIncome = getTurn().addPerYear(baseIncome);
 		armyCost = country.getArmies().stream().mapToDouble(a -> a.getCostPerYear()).sum();
+		armyCost = getTurn().addPerYear(armyCost);
 		totalIncome = baseIncome;
 		availableMoneyForArmy = totalIncome * data.getArmyWeight() / getTotalWeight() - armyCost;
 	}
@@ -121,6 +123,10 @@ public class MoneyBudget {
 	public void addMoneyForNewRebelCountry(int populationLoyaltyRebelNewCountriesTakeMoneyForYears) {
 		calculateBaseBudget();
 		data.setMoney(totalIncome * populationLoyaltyRebelNewCountriesTakeMoneyForYears);
+	}
+	
+	protected Turn getTurn() {
+		return country.getGame().getTurn();
 	}
 
 }

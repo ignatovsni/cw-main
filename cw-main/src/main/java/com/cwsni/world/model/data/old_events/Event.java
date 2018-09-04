@@ -107,7 +107,7 @@ public class Event {
 
 	@JsonIgnore
 	public boolean isFinished(Game game) {
-		return game.getTurn().getTurn() > getStartTurn() + getDuration();
+		return game.getTurn().getDateTurn() > getStartTurn() + getDuration();
 	}
 
 	// ---------------- static section -----------------------------

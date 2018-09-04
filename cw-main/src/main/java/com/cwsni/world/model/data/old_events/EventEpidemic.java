@@ -37,14 +37,14 @@ public class EventEpidemic extends Event {
 		e.setId(game.nextEventId());
 		e.setType(EVENT_EPIDEMIC);
 		e.setVisibleForUser(true);
-		e.setStartTurn(game.getTurn().getTurn());
+		e.setStartTurn(game.getTurn().getDateTurn());
 		e.setDuration(gParams.getRandom().nextInt(gParams.getEventEpidemicDuration()));
 		//game.addEvent(e);
 		return e;
 	}
 
 	public static void processEpidemicEvent(Game game, Province p, Event oldE) {
-		if (oldE.getStartTurn() >= game.getTurn().getTurn()) {
+		if (oldE.getStartTurn() >= game.getTurn().getDateTurn()) {
 			return;
 		}
 		if (oldE.isFinished(game)) {
@@ -84,7 +84,7 @@ public class EventEpidemic extends Event {
 		e.setId(game.nextEventId());
 		e.setType(EVENT_EPIDEMIC_PROTECTED);
 		e.setVisibleForUser(true);
-		e.setStartTurn(game.getTurn().getTurn());
+		e.setStartTurn(game.getTurn().getDateTurn());
 		e.setDuration(gParams.getEventEpidemicProtectionDuration());
 		// TODO LocaleMessageSource messageSource
 		e.setTitle("Protection against epidemics");

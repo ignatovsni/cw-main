@@ -3,7 +3,9 @@ package com.cwsni.world.model.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class DataProvince {
 
@@ -29,6 +31,9 @@ public class DataProvince {
 	 */
 	private int infrastructure;
 	private List<DataPopulation> population;
+
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 0)
 	private double wealth;
 
 	public DataProvince() {
@@ -149,7 +154,7 @@ public class DataProvince {
 	}
 
 	public void setWealth(double wealth) {
-		this.wealth = DataFormatter.doubleWith3points(wealth);
+		this.wealth = wealth;
 	}
 
 	public int getContinentId() {

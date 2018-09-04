@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.cwsni.world.model.data.DataArmy;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.model.data.util.DataNormalizer;
 import com.cwsni.world.util.ComparisonTool;
 
 public class Army {
@@ -40,27 +41,27 @@ public class Army {
 		population.setAmount(soldiers);
 	}
 
-	public int getTraining() {
+	public double getTraining() {
 		return data.getTraining();
 	}
 
-	public void setTraining(int training) {
+	public void setTraining(double training) {
 		data.setTraining(training);
 	}
 
-	public int getOrganisation() {
+	public double getOrganisation() {
 		return data.getOrganisation();
 	}
 
-	public void setOrganisation(int organisation) {
+	public void setOrganisation(double organisation) {
 		data.setOrganisation(organisation);
 	}
 
-	public int getEquipment() {
+	public double getEquipment() {
 		return data.getEquipment();
 	}
 
-	public void setEquipment(int equipment) {
+	public void setEquipment(double equipment) {
 		data.setEquipment(equipment);
 	}
 
@@ -119,12 +120,12 @@ public class Army {
 		return isCanFightThisTurn;
 	}
 
-	private void changeOrganization(int delta) {
-		data.setOrganisation(Math.min(100, data.getOrganisation() + delta));
+	private void changeOrganization(double delta) {
+		data.setOrganisation(DataNormalizer.minMax(data.getOrganisation() + delta, 0, 1));
 	}
 
-	private void changeTraining(int delta) {
-		data.setTraining(Math.max(50, Math.min(200, data.getTraining() + delta)));
+	private void changeTraining(double delta) {
+		data.setTraining(DataNormalizer.minMax(data.getTraining() + delta, 0.5, 2));
 	}
 
 	private void changeSoldiers(int delta) {
@@ -138,12 +139,11 @@ public class Army {
 	}
 
 	public double getEffectiveness() {
-		return 1.0 * data.getOrganisation() / 100 * data.getTraining() / 100
-				* country.getFocus().getArmyStrengthInfluence();
+		return data.getOrganisation() * data.getTraining() * country.getFocus().getArmyStrengthInfluence();
 	}
 
 	public double getStrength() {
-		return 1.0 * getEffectiveness() * getSoldiers();
+		return getEffectiveness() * getSoldiers();
 	}
 
 	public void dismiss() {
@@ -167,7 +167,7 @@ public class Army {
 				return;
 			}
 			moveFrom = getLocation();
-			changeOrganization(-2);
+			changeOrganization(getTurn().addPerWeek(-0.01));
 			setProvince(destination);
 			isCanMoveThisTurn = false;
 		} else {
@@ -176,12 +176,22 @@ public class Army {
 	}
 
 	private void processEffectivenessInNewTurn() {
-		changeOrganization(20);
-		if (getTraining() < 100) {
-			changeTraining(5);
-		} else if (getTraining() > 100) {
-			changeTraining(-1);
+		changeOrganization(getTurn().addPerWeek(0.05));
+		if (getTraining() < 1) {
+			changeTraining(getTurn().addPerWeek(0.01));
+			if (getTraining() > 1) {
+				setTraining(1);
+			}
+		} else if (getTraining() > 1) {
+			changeTraining(getTurn().addPerWeek(-0.02));
+			if (getTraining() < 1) {
+				setTraining(1);
+			}
 		}
+	}
+
+	protected Turn getTurn() {
+		return country.getGame().getTurn();
 	}
 
 	public void processNewTurn() {
@@ -293,8 +303,8 @@ public class Army {
 		Army a = new Army();
 		a.buildFrom(country, new DataArmy(country.getGame().nextArmyId()));
 		a.setEquipment(1);
-		a.setOrganisation(100);
-		a.setTraining(50);
+		a.setOrganisation(1);
+		a.setTraining(0.5);
 		return a;
 	}
 
@@ -317,13 +327,13 @@ public class Army {
 
 	private static void processFightResult(Game game, List<Army> winner, List<Army> loser, double result) {
 		winner.forEach(a -> {
-			a.changeOrganization((int) Math.round(-10 / result));
+			a.changeOrganization((int) Math.round(-0.1 / result));
 			a.changeTraining(5);
 			int delta = (int) (game.getGameParams().getArmyFightBasePercentOfLoss() * a.getSoldiers() / result);
 			a.diedInBattle(delta);
 		});
 		loser.forEach(a -> {
-			a.changeOrganization((int) Math.round(-10 * result));
+			a.changeOrganization((int) Math.round(-0.1 * result));
 			a.changeTraining(5);
 			int delta = (int) (game.getGameParams().getArmyFightBasePercentOfLoss() * a.getSoldiers() * result);
 			a.diedInBattle(delta);

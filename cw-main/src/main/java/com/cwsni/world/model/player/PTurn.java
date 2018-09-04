@@ -1,6 +1,7 @@
 package com.cwsni.world.model.player;
 
-import com.cwsni.world.model.data.Turn;
+import com.cwsni.world.model.engine.TimeMode;
+import com.cwsni.world.model.engine.Turn;
 import com.cwsni.world.model.player.interfaces.IPTurn;
 
 public class PTurn implements IPTurn {
@@ -13,12 +14,17 @@ public class PTurn implements IPTurn {
 	
 	@Override
 	public int getCurrentTurn() {
-		return turn.getTurn();
+		return turn.getDateTurn();
 	}
 	
 	@Override
 	public int getYearsAfter(int turn) {
 		return this.turn.howManyYearsHavePassedSinceTurn(turn);
+	}
+
+	@Override
+	public TimeMode getCurrentTimeMode() {
+		return this.turn.getTimeMode();
 	}
 
 }

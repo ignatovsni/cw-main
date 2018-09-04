@@ -137,27 +137,27 @@ public class Province {
 		return data.getSoilFertility();
 	}
 
-	public int getScienceAgriculture() {
+	public double getScienceAgriculture() {
 		return getScienceTypeValue(ds -> ds.getAgriculture());
 	}
 
-	public int getScienceMedicine() {
+	public double getScienceMedicine() {
 		return getScienceTypeValue(ds -> ds.getMedicine());
 	}
 
-	public int getScienceAdministration() {
+	public double getScienceAdministration() {
 		return getScienceTypeValue(ds -> ds.getAdministration());
 	}
 
-	private int getScienceTypeValue(Function<ScienceCollection, DataScience> getter4Science) {
+	private double getScienceTypeValue(Function<ScienceCollection, DataScience> getter4Science) {
 		int populationAmount = getPopulationAmount();
 		if (populationAmount == 0) {
 			return 0;
 		}
-		long scienceValue = (long) (getPopulation().stream()
+		double scienceValue = (double) (getPopulation().stream()
 				.mapToDouble(pop -> pop.getAmount() * getter4Science.apply(pop.getScience()).getAmount()).sum()
 				/ populationAmount);
-		return (int) scienceValue;
+		return scienceValue;
 	}
 
 	public int getSoilArea() {
@@ -328,7 +328,7 @@ public class Province {
 			Population.migrateNewTurn(this, map.getGame());
 			Population.growPopulationNewTurn(this, map.getGame());
 			Population.processLoyaltyNewTurn(this, map.getGame());
-			Culture.influenceOfCountry(this, map.getGame());
+			Culture.influenceOfCountryFor(this, map.getGame());
 		}
 		processNaturalInfrastructure();
 		removeDiedPops();
@@ -400,8 +400,9 @@ public class Province {
 		if (country == null) {
 			return 0;
 		}
-		return Math.max(map.getGame().getGameParams().getProvinceInfluenceFromCapitalWithoutCapital(),
+		double govInfl = Math.max(map.getGame().getGameParams().getProvinceInfluenceFromCapitalWithoutCapital(),
 				getRawGovernmentInfluence() + country.getFocus().getGovernmentFlatBonus());
+		return govInfl;
 	}
 
 	private double getRawGovernmentInfluence() {
@@ -537,10 +538,14 @@ public class Province {
 		return income;
 	}
 
+	protected Turn getTurn() {
+		return map.getGame().getTurn();
+	}
+
 	private void processTaxesAndOthersInNewTurn() {
 		GameParams gParams = map.getGame().getGameParams();
 		int populationAmount = getPopulationAmount();
-		double income = getLocalIncomePerYear();
+		double income = getTurn().addPerYear(getLocalIncomePerYear());
 		double wealthForProvince = income / 3;
 		double wealthForPops = income / 3;
 		double wealthForInfrastructure = income / 3;
@@ -569,8 +574,8 @@ public class Province {
 						wealthForPops / populationAmount * p.getAmount());
 				p.addWealth(addWealth);
 				// people need money to support their life style
-				double spendMoneyPerPerson = gParams.getBudgetSpendMoneyPerPerson() * p.getWealth() / p.getAmount()
-						/ gParams.getBudgetMaxWealthPerPerson();
+				double spendMoneyPerPerson = getTurn().addPerYear(gParams.getBudgetSpendMoneyPerPerson())
+						* p.getWealth() / p.getAmount() / gParams.getBudgetMaxWealthPerPerson();
 				p.addWealth(-p.getAmount() * spendMoneyPerPerson);
 				income -= addWealth;
 			}

@@ -22,7 +22,8 @@ public class ScriptAIHandler extends AbstractScriptHandler {
 	@Autowired
 	private ApplicationSettings applicationSettings;
 
-	public static final String DEFAULT_SCRIPT = "default";
+	public static final String DEFAULT_SCRIPT = "[java]";
+	//public static final String DEFAULT_SCRIPT = "default";
 	private static final String JAVA_INTERNAL_AI = "[java]";
 	private static final String AI_SCRIPTS_FOLDER = "data" + File.separator + "ai-scripts";
 	protected static final String MAIN_SCRIPT_NAME_PART = ".main";

@@ -1,17 +1,31 @@
 package com.cwsni.world.model.data;
 
-import com.cwsni.world.client.desktop.util.DataFormatter;
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class DataMoneyBudget {
 
 	private static double MAX_MONEY = Math.pow(1000, 3);
 
-	private double savingsMoney;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 0)
+	private double money;
 
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 0)
 	private double savingWeight;
+
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 0)
 	private double scienceWeight;
+
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 0)
 	private double armyWeight;
-	
+
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 2)
 	private double provinceTax;
 
 	public DataMoneyBudget() {
@@ -22,11 +36,11 @@ public class DataMoneyBudget {
 	}
 
 	public double getMoney() {
-		return savingsMoney;
+		return money;
 	}
 
 	public void setMoney(double money) {
-		this.savingsMoney = Math.min(DataFormatter.doubleWith3points(money), MAX_MONEY);
+		this.money = Math.min(money, MAX_MONEY);
 	}
 
 	public double getSavingWeight() {
@@ -34,7 +48,7 @@ public class DataMoneyBudget {
 	}
 
 	public void setSavingWeight(double savingWeight) {
-		this.savingWeight = DataFormatter.doubleWith3points(savingWeight);
+		this.savingWeight = savingWeight;
 	}
 
 	public double getScienceWeight() {
@@ -42,7 +56,7 @@ public class DataMoneyBudget {
 	}
 
 	public void setScienceWeight(double scienceWeight) {
-		this.scienceWeight = DataFormatter.doubleWith3points(scienceWeight);
+		this.scienceWeight = scienceWeight;
 	}
 
 	public double getArmyWeight() {
@@ -50,7 +64,7 @@ public class DataMoneyBudget {
 	}
 
 	public void setArmyWeight(double armyWeight) {
-		this.armyWeight = DataFormatter.doubleWith3points(armyWeight);
+		this.armyWeight = armyWeight;
 	}
 
 	public double getProvinceTax() {
@@ -58,7 +72,7 @@ public class DataMoneyBudget {
 	}
 
 	public void setProvinceTax(double provinceTax) {
-		this.provinceTax = Math.max(0, Math.min(1, DataFormatter.doubleWith3points(provinceTax)));
+		this.provinceTax = Math.max(0, Math.min(1, provinceTax));
 	}
 
 }
