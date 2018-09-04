@@ -1,5 +1,6 @@
 package com.cwsni.world.algorithms;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -82,54 +83,111 @@ public class PathFinder<ObjectType, KeyType> {
 
 	public List<KeyType> findShortestPath(ObjectType nodeFrom, ObjectType nodeTo,
 			Function<ObjectType, KeyType> keySupplier, Function<ObjectType, Collection<ObjectType>> neigborsSupplier) {
-		return findShortestPathInternal(createNode(nodeFrom, keySupplier, neigborsSupplier),
+		return findShortestPathInternalTwoDirection(createNode(nodeFrom, keySupplier, neigborsSupplier),
 				createNode(nodeTo, keySupplier, neigborsSupplier));
 	}
 
-	private Node<ObjectType, KeyType> createNode(ObjectType node,
-			Function<ObjectType, KeyType> keySupplier, Function<ObjectType, Collection<ObjectType>> neigborsSupplier) {
+	private Node<ObjectType, KeyType> createNode(ObjectType node, Function<ObjectType, KeyType> keySupplier,
+			Function<ObjectType, Collection<ObjectType>> neigborsSupplier) {
 		return new Node<ObjectType, KeyType>(node, keySupplier, neigborsSupplier);
 	}
 
-	private List<KeyType> findShortestPathInternal(Node<ObjectType, KeyType> nodeFrom,
+	private List<KeyType> findShortestPathInternalOneDirection(Node<ObjectType, KeyType> nodeFrom,
 			Node<ObjectType, KeyType> nodeTo) {
 		HeapComparable<Pair<Node<ObjectType, KeyType>, Double>> fromArea = new HeapComparable<>();
 		Map<Node<ObjectType, KeyType>, Pair<Node<ObjectType, KeyType>, Double>> fromAreaDistance = new HashMap<>();
 		fromArea.put(new Pair<>(nodeFrom, 0.0));
 		fromAreaDistance.put(nodeFrom, new Pair<>(null, 0.0));
-
 		while (fromArea.size() > 0 && !fromAreaDistance.containsKey(nodeTo)) {
-			stepWave(fromArea, fromAreaDistance);
+			stepWaveOneDirection(fromArea, fromAreaDistance);
 		}
+		return extractPath(nodeTo, fromAreaDistance);
+	}
 
+	private void stepWaveOneDirection(HeapComparable<Pair<Node<ObjectType, KeyType>, Double>> heap,
+			Map<Node<ObjectType, KeyType>, Pair<Node<ObjectType, KeyType>, Double>> visited) {
+		Pair<Node<ObjectType, KeyType>, Double> p = heap.poll();
+		for (Node<ObjectType, KeyType> n : p.first.getNeighbors()) {
+			if (!visited.containsKey(n)) {
+				// now distance between all nodes = 1
+				double distance = p.second + 1;
+				heap.put(new Pair<>(n, distance));
+				visited.put(n, new Pair<>(p.first, distance));
+			}
+		}
+	}
+
+	private List<KeyType> extractPath(Node<ObjectType, KeyType> nodeTo,
+			Map<Node<ObjectType, KeyType>, Pair<Node<ObjectType, KeyType>, Double>> fromAreaDistance) {
 		List<KeyType> path;
-		Pair<Node<ObjectType, KeyType>, Double> toNode = fromAreaDistance.get(nodeTo);
-		if (toNode != null) {
+		Pair<Node<ObjectType, KeyType>, Double> destNode = fromAreaDistance.get(nodeTo);
+		if (destNode != null) {
 			// found
 			path = new LinkedList<>();
 			path.add(0, nodeTo.getKey());
-
-			while (toNode != null && toNode.first != null) {
-				path.add(0, toNode.first.getKey());
-				toNode = fromAreaDistance.get(toNode.first);
+			while (destNode != null && destNode.first != null) {
+				path.add(0, destNode.first.getKey());
+				destNode = fromAreaDistance.get(destNode.first);
 			}
-
 		} else {
 			path = Collections.emptyList();
 		}
-
 		return path;
 	}
 
-	private void stepWave(HeapComparable<Pair<Node<ObjectType, KeyType>, Double>> heap,
-			Map<Node<ObjectType, KeyType>, Pair<Node<ObjectType, KeyType>, Double>> visited) {
+	private List<KeyType> findShortestPathInternalTwoDirection(Node<ObjectType, KeyType> nodeFrom,
+			Node<ObjectType, KeyType> nodeTo) {
+		if (nodeFrom.equals(nodeTo)) {
+			List<KeyType> list = new ArrayList<>();
+			list.add(nodeFrom.getKey());
+			return list;
+		}
+
+		HeapComparable<Pair<Node<ObjectType, KeyType>, Double>> fromArea = new HeapComparable<>();
+		Map<Node<ObjectType, KeyType>, Pair<Node<ObjectType, KeyType>, Double>> fromAreaDistance = new HashMap<>();
+		fromArea.put(new Pair<>(nodeFrom, 0.0));
+		fromAreaDistance.put(nodeFrom, new Pair<>(null, 0.0));
+
+		HeapComparable<Pair<Node<ObjectType, KeyType>, Double>> toArea = new HeapComparable<>();
+		Map<Node<ObjectType, KeyType>, Pair<Node<ObjectType, KeyType>, Double>> toAreaDistance = new HashMap<>();
+		toArea.put(new Pair<>(nodeTo, 0.0));
+		toAreaDistance.put(nodeTo, new Pair<>(null, 0.0));
+
+		Node<ObjectType, KeyType> intersectioNode = null;
+		while (intersectioNode == null && fromArea.size() > 0 && toArea.size() > 0) {
+			intersectioNode = stepWaveTwoDirection(fromArea, fromAreaDistance, toAreaDistance);
+			if (intersectioNode == null) {
+				intersectioNode = stepWaveTwoDirection(toArea, toAreaDistance, fromAreaDistance);
+			}
+		}
+		if (fromAreaDistance.containsKey(nodeTo)) {
+			return extractPath(nodeTo, fromAreaDistance);
+		} else {
+			List<KeyType> pathFromStart = extractPath(intersectioNode, fromAreaDistance);
+			List<KeyType> pathFromEndToIntersectNode = extractPath(intersectioNode, toAreaDistance);
+			for (int i = pathFromEndToIntersectNode.size() - 2; i >= 0; i--) {
+				pathFromStart.add(pathFromEndToIntersectNode.get(i));
+			}
+			return pathFromStart;
+		}
+	}
+
+	private Node<ObjectType, KeyType> stepWaveTwoDirection(HeapComparable<Pair<Node<ObjectType, KeyType>, Double>> heap,
+			Map<Node<ObjectType, KeyType>, Pair<Node<ObjectType, KeyType>, Double>> visited,
+			Map<Node<ObjectType, KeyType>, Pair<Node<ObjectType, KeyType>, Double>> anotherVisited) {
 		Pair<Node<ObjectType, KeyType>, Double> p = heap.poll();
-		p.first.getNeighbors().stream().filter(n -> !visited.containsKey(n)).forEach(n -> {
-			// now distance between all nodes = 1
-			double distance = p.second + 1;
-			heap.put(new Pair<>(n, distance));
-			visited.put(n, new Pair<>(p.first, distance));
-		});
+		for (Node<ObjectType, KeyType> n : p.first.getNeighbors()) {
+			if (!visited.containsKey(n)) {
+				// now distance between all nodes = 1
+				double distance = p.second + 1;
+				heap.put(new Pair<>(n, distance));
+				visited.put(n, new Pair<>(p.first, distance));
+				if (anotherVisited.containsKey(n)) {
+					return n; // found intersection, end of search
+				}
+			}
+		}
+		return null;
 	}
 
 }
