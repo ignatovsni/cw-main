@@ -231,7 +231,7 @@ public class Game {
 		map.getProvinces().stream()
 				.filter(p -> p.getCountry() == null
 						&& p.getPopulationAmount() > getGameParams().getNewCountryPopulationMin()
-						&& p.getScienceAdministration() > getGameParams().getNewCountryScienceAdministrationMin())
+						&& getScienceModificators().isNewCountryPossible(p))
 				.forEach(p -> {
 					if (getGameParams().getRandom().nextDouble() <= probability) {
 						Country.createNewCountry(this, p);
@@ -362,6 +362,10 @@ public class Game {
 
 	public EventCollection getEventsCollection() {
 		return eventsCollection;
+	}
+
+	public ScienceModificators getScienceModificators() {
+		return new ScienceModificators(this);
 	}
 
 }

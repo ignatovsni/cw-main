@@ -344,20 +344,7 @@ public class Country {
 	}
 
 	private void refreshWaterMaxDistance() {
-		double science = 0;
-		if (getCapital() != null) {
-			science = getCapital().getScienceAdministration();
-		} else if (!getProvinces().isEmpty()) {
-			science = getProvinces().iterator().next().getScienceAdministration();
-		}
-		science = Math.max(1, science);
-		int newWaterMaxDistance;
-		int threshold = 20000;
-		if (science > threshold) {
-			newWaterMaxDistance = (int) (4 + science / threshold);
-		} else {
-			newWaterMaxDistance = (int) Math.log10(science);
-		}
+		int newWaterMaxDistance = game.getScienceModificators().getMaxWaterDistance(this);
 		if (newWaterMaxDistance != waterMaxDistance) {
 			waterMaxDistance = newWaterMaxDistance;
 			isNeedRefreshReachableProvincesThroughWater = true;

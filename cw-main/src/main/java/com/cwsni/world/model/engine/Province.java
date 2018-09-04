@@ -120,7 +120,8 @@ public class Province {
 
 	public double getSoilFertility() {
 		// science
-		double v = getSoilFertilityBasePlusAgriculture(getScienceAgriculture());
+		// double v = getSoilFertilityBasePlusAgriculture(getScienceAgriculture());
+		double v = map.getGame().getScienceModificators().getSoilFertilityBasePlusAgriculture(this);
 		// infrastructure
 		if (getPopulationAmount() > 0) {
 			v = v * 0.5 * (1 + getInfrastructurePercent());
@@ -129,8 +130,7 @@ public class Province {
 	}
 
 	public double getSoilFertilityBasePlusAgriculture(double agriculture) {
-		return getSoilNaturalFertility()
-				* (1 + agriculture * map.getGame().getGameParams().getScienceAgricultureMultiplicatorForFertility());
+		return map.getGame().getScienceModificators().getSoilFertilityBasePlusAgriculture(this, agriculture);
 	}
 
 	public double getSoilNaturalFertility() {
@@ -224,6 +224,7 @@ public class Province {
 	}
 
 	public double getDiseaseResistance() {
+		// TODO
 		return EventEpidemic.getDiseaseResistance(getScienceMedicine());
 	}
 
@@ -424,9 +425,10 @@ public class Province {
 			if (distToCapital < 1) {
 				return capitalInfluence;
 			}
-			double adminScience = 10 + getScienceAdministration() + country.getCapital().getScienceAdministration();
+			double effectiveDistanceFromStateCapitalToCountryCapital = map.getGame().getScienceModificators()
+					.getEffectiveDistanceFromStateCapitalToCountryCapital(country, this, distToCapital);
 			double coeffWithDist = gParams.getProvinceInfluenceFromCapitalForStateWithDistanceDecrease();
-			double stateInfluence = Math.pow(coeffWithDist, distToCapital / Math.log10(adminScience) * 2);
+			double stateInfluence = Math.pow(coeffWithDist, effectiveDistanceFromStateCapitalToCountryCapital);
 			return Math.max(stateInfluence, capitalInfluence);
 		} else {
 			if (getState().getCapital() == null || !country.equals(getState().getCapital().getCountry())) {
@@ -450,8 +452,8 @@ public class Province {
 		if (country.getCapitalId() == null) {
 			return gParams.getProvinceInfluenceFromCapitalWithoutCapital();
 		}
-		double adminScience = 10 + getScienceAdministration() + country.getCapital().getScienceAdministration();
-		double distanceToCapitalWithScience = getDistanceToCapital() - Math.log10(adminScience) / 3;
+		double distanceToCapitalWithScience = map.getGame().getScienceModificators()
+				.getEffectiveDistanceFromProvinceToCountryCapital(country, this, getDistanceToCapital());
 		if (distanceToCapitalWithScience <= 0) {
 			return 1;
 		} else {
