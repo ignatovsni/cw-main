@@ -150,7 +150,7 @@ public class Country {
 	}
 
 	public double getIncome() {
-		return budget.getIncome();
+		return budget.getIncomePerYear();
 	}
 
 	public CountryFocus getFocus() {
@@ -399,7 +399,9 @@ public class Country {
 	private void processScienceNewTurn() {
 		Province capital = getCapital();
 		if (capital != null) {
-			capital.spendMoneyForScience(budget.getAvailableMoneyForScience());
+			double money = budget.getAvailableMoneyForScience();
+			capital.spendMoneyForScience(money);
+			budget.spendMoneyForScience(money);
 		}
 	}
 

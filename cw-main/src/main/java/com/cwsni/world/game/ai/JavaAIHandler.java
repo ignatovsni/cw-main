@@ -41,7 +41,7 @@ public class JavaAIHandler {
 		manageDiplomacy(data);
 		processArmyBudget(data);
 		mergeAndSplitArmies(data);
-		moveArmies(data);		
+		moveArmies(data);
 	}
 
 	public void manageMoneyBudget(IData4Country data) {
@@ -229,10 +229,12 @@ public class JavaAIHandler {
 	}
 
 	public void processArmyBudget(IData4Country data) {
+		Collection<IPArmy> armies = data.getCountry().getArmies();
 		IPGameParams params = data.getGame().getGameParams();
 		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
-		double availableMoneyForArmy = budget.getAvailableMoneyForArmy();
-		Collection<IPArmy> armies = data.getCountry().getArmies();
+		double armyBudget = budget.getIncomePerYear() * budget.getArmyWeight() / budget.getTotalWeight();
+		double armyCost = armies.stream().mapToDouble(a -> a.getCostPerYear()).sum();
+		double availableMoneyForArmy = armyBudget - armyCost;
 		if (availableMoneyForArmy < 0 && !armies.isEmpty()) {
 			// we spend all money for existing armies
 			// try to dismiss some
@@ -426,7 +428,8 @@ public class JavaAIHandler {
 				? nearestLandProv
 				: nearestLandProvThroughWater;
 		if (nearestProv.a != null) {
-			List<? extends Object> path = data.getGame().findShortestPath(a.getLocation().getId(), nearestProv.a.getId(), a);
+			List<? extends Object> path = data.getGame().findShortestPath(a.getLocation().getId(),
+					nearestProv.a.getId(), a);
 			// path.size = 0 means that army can't reach target province
 			// path.size = 1 means that path contains only from province
 			if (path.size() > 1) {

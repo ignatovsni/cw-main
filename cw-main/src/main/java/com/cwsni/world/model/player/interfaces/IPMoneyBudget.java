@@ -2,17 +2,19 @@ package com.cwsni.world.model.player.interfaces;
 
 public interface IPMoneyBudget {
 
-	double getAvailableMoneyForArmy();
-
 	double getMoney();
 
-	double getProvinceTax();
+	double getIncomePerYear();
+	
+	double getProvinceTax();	
 
 	double getArmyWeight();
 
 	double getScienceWeight();
 
 	double getSavingWeight();
+	
+	double getTotalWeight();
 
 	void setProvinceTax(double provinceTax);
 

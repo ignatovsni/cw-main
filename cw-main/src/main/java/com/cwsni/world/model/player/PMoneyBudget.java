@@ -25,11 +25,6 @@ public class PMoneyBudget implements IPMoneyBudget {
 	}
 
 	@Override
-	public double getAvailableMoneyForArmy() {
-		return budget.getAvailableMoneyForArmy();
-	}
-
-	@Override
 	public double getMoney() {
 		return budget.getMoney();
 	}
@@ -84,6 +79,16 @@ public class PMoneyBudget implements IPMoneyBudget {
 		}
 		((PGame) country.getGame()).addCommand(cmdMoneyBudget);
 		return cmdMoneyBudget;
+	}
+
+	@Override
+	public double getIncomePerYear() {
+		return budget.getIncomePerYear();
+	}
+
+	@Override
+	public double getTotalWeight() {
+		return budget.getTotalWeight();
 	}
 
 }

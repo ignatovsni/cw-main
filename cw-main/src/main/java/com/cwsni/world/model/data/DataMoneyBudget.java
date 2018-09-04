@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class DataMoneyBudget {
 
-	private static double MAX_MONEY = Math.pow(1000, 3);
+	private static double MAX_MONEY = Math.pow(1000, 6);
 
 	@JsonSerialize(using = DoubleContextualSerializer.class)
 	@Precision(precision = 0)

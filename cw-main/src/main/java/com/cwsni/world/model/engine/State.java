@@ -249,7 +249,6 @@ public class State {
 				getProvinces().stream().filter(p -> ComparisonTool.isEqual(countryFrom.getId(), p.getCountryId()))
 						.forEach(p -> countryTo.addProvince(p));
 				countryTo.setCapital(stateCapital);
-				countryTo.getMoneyBudget().getAvailableMoneyForScience();
 				countryTo.getMoneyBudget().addMoneyForNewRebelCountry(
 						game.getGameParams().getPopulationLoyaltyRebelNewCountriesTakeMoneyForYears());
 				game.getGameEventListener().event(game, "Rebels restored the country " + countryTo.getName()
@@ -300,7 +299,6 @@ public class State {
 		getProvinces().stream().filter(p -> ComparisonTool.isEqual(countryFrom.getId(), p.getCountryId()))
 				.forEach(p -> countryTo.addProvince(p));
 		countryTo.setCapital(stateCapital);
-		countryTo.getMoneyBudget().getAvailableMoneyForScience();
 		countryTo.getMoneyBudget().addMoneyForNewRebelCountry(
 				game.getGameParams().getPopulationLoyaltyRebelNewCountriesTakeMoneyForYears());
 		return typeOfRebelCountry;
