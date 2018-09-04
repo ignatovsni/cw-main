@@ -57,7 +57,9 @@ public class SimpleLocaleMessageSource implements LocaleMessageSource {
 					return getLanguagesFolder();
 				}
 			};
-			return lh.readLanguageFile(code);
+			Map<String, String> messages = lh.readLanguageFile(code);
+			messages.entrySet().forEach(e -> e.setValue(e.getValue().replace("\\n", "\n")));
+			return messages;
 		} catch (Exception e) {
 			logger.error("failed to read language file for language code=" + code, e);
 			return Collections.emptyMap();
