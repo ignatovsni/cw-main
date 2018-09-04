@@ -45,7 +45,7 @@ public interface IPCountry {
 
 	double getFocusLevel();
 	
-	public long getCasualties();
+	public double getCasualties();
 	
 	public double getLoyaltyToCountryFromCountryCasualties();
 	

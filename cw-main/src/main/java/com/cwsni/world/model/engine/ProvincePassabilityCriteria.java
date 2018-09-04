@@ -20,14 +20,34 @@ public class ProvincePassabilityCriteria {
 		if (p.getTerrainType().isMountain()) {
 			return false;
 		}
+		if (country.equals(p.getCountry())) {
+			return true;
+		}
+
+		// do not let to go too far too earlier
+		int year = game.getTurn().getYear();
+		if (year < 2000) {
+			Province capital = country.getCapital();
+			if (capital == null) {
+				// it is a bad country :)
+				return false;
+			}
+			double science = capital.getScienceAdministration();
+			double maxDistance = science / 1000 * country.getFocus().getValue() + 1;
+
+			double distance = game.getMap().findDistanceApproximateCountOfProvinces(capital, p);
+			// double maxDistance = 1.0 * year / 50 * country.getFocus().getValue() + 2;
+
+			if (distance > maxDistance) {
+				return false;
+			}
+		}
+
 		if (p.getCountry() == null) {
 			return true;
 		}
 		if (p.getTerrainType().isWater()) {
 			return country.getReachableWaterProvinces().contains(p);
-		}
-		if (p.getCountry().equals(country)) {
-			return true;
 		}
 		if (game.getRelationships().getCountriesWithWar(country.getId()).keySet().contains(p.getCountryId())) {
 			return true;

@@ -46,10 +46,17 @@ public class JavaAIHandler {
 
 	public void manageMoneyBudget(IData4Country data) {
 		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
-		budget.setProvinceTax(0.5);
-		budget.setArmyWeight(1);
-		budget.setScienceWeight(1);
-		budget.setSavingWeight(1);
+		if (data.isWar()) {
+			budget.setProvinceTax(0.6);
+			budget.setArmyWeight(3);
+			budget.setScienceWeight(1);
+			budget.setSavingWeight(1);
+		} else {
+			budget.setProvinceTax(0.3);
+			budget.setArmyWeight(1);
+			budget.setScienceWeight(1);
+			budget.setSavingWeight(1);
+		}
 	}
 
 	public void manageScienceBudget(IData4Country data) {
@@ -235,6 +242,10 @@ public class JavaAIHandler {
 		double armyBudget = budget.getIncomePerYear() * budget.getArmyWeight() / budget.getTotalWeight();
 		double armyCost = armies.stream().mapToDouble(a -> a.getCostPerYear()).sum();
 		double availableMoneyForArmy = armyBudget - armyCost;
+		if (!data.isWar()) {
+			availableMoneyForArmy += budget.getMoney() * 0.2;
+		}
+
 		if (availableMoneyForArmy < 0 && !armies.isEmpty()) {
 			// we spend all money for existing armies
 			// try to dismiss some
@@ -444,7 +455,7 @@ public class JavaAIHandler {
 		IPProvince nearestProv = null;
 		double minDistance = Double.MAX_VALUE;
 		for (IPProvince p : provinces) {
-			if (p.equals(armyLocation) || !p.canBeSubjugatedByMe()) {
+			if (p.equals(armyLocation) || !p.canBeSubjugatedByMe() || !p.isPassable(null)) {
 				continue;
 			}
 			double distance = data.getGame().findDistance(armyLocation, p);

@@ -34,7 +34,7 @@ public class DataScience {
 		}
 		this.amount = amount;
 		if (this.amount > 10000000) {
-			//System.out.println("DataScience: amount > 1,000,000");
+			System.out.println("DataScience: amount > 1,000,000");
 		}
 		if (this.amount > max) {
 			max = this.amount;

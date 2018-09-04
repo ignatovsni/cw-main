@@ -189,7 +189,7 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
-	public long getCasualties() {
+	public double getCasualties() {
 		return country.getCasualties();
 	}
 

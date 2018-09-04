@@ -63,7 +63,7 @@ public class WorldMap {
 	/**
 	 * It must count provinces!! not just distance
 	 */
-	public double findDistanceApproximateProvinces(Province p1, Province p2) {
+	public double findDistanceApproximateCountOfProvinces(Province p1, Province p2) {
 		// We use hexagons with known radius, so we can use it.
 		// TODO (!) We can do better - use real math for hexagons.
 		return Math
@@ -73,7 +73,7 @@ public class WorldMap {
 	}
 
 	public double findDistanceApproximateCountOfProvinces(int provId1, int provId2) {
-		return findDistanceApproximateProvinces(findProvById(provId1), findProvById(provId2));
+		return findDistanceApproximateCountOfProvinces(findProvById(provId1), findProvById(provId2));
 	}
 
 	private Set<ProvinceBorder> refreshCountriesBorders() {

@@ -38,7 +38,7 @@ public class Turn {
 	public int getProcessedTurn() {
 		return data.getProcessedTurn();
 	}
-	
+
 	public void increment() {
 		data.setLastDateStep(timeMode.getDateTurnPerTime());
 		data.setDateTurn(data.getDateTurn() + timeMode.getDateTurnPerTime());
@@ -114,6 +114,10 @@ public class Turn {
 			return value;
 		}
 		return 1 - Math.pow(1 - value, 1.0 * timeMode.getDateTurnPerTime() / TimeMode.WEEK.getDateTurnPerTime());
+	}
+
+	public int getYear() {
+		return data.getDateTurn() / TimeMode.YEAR.getDateTurnPerTime();
 	}
 
 }

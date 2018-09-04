@@ -474,7 +474,7 @@ public class Province {
 			if (ComparisonTool.isEqual(capitalId, getId())) {
 				distanceToCapital = 0;
 			} else {
-				distanceToCapital = map.findDistanceApproximateProvinces(country.getCapital(), this);
+				distanceToCapital = map.findDistanceApproximateCountOfProvinces(country.getCapital(), this);
 			}
 			oldCapitalId = capitalId;
 		}
@@ -493,7 +493,7 @@ public class Province {
 			if (ComparisonTool.isEqual(capitalId, getId())) {
 				distanceToStateCapital = 0;
 			} else {
-				distanceToStateCapital = map.findDistanceApproximateProvinces(getState().getCapital(), this);
+				distanceToStateCapital = map.findDistanceApproximateCountOfProvinces(getState().getCapital(), this);
 			}
 			oldStateCapitalId = capitalId;
 		}
@@ -692,6 +692,20 @@ public class Province {
 			}
 		}
 		return Math.max(0, Math.min(loyalty, DataPopulation.LOYALTY_MAX));
+	}
+
+	/**
+	 * only for UI
+	 */
+	public double getRawLoyaltyToCountryForUI() {
+		int populationAmount = getPopulationAmount();
+		if (getCountryId() == null || populationAmount == 0) {
+			return 0;
+		} else {
+			return getPopulation().stream()
+					.mapToDouble(pop -> pop.getAmount() * pop.getLoyaltyToCountry(getCountryId())).sum()
+					/ populationAmount;
+		}
 	}
 
 	Set<Integer> getCountriesWithLoyalty() {

@@ -75,14 +75,14 @@ public class ScienceCollection {
 
 		// science from max leveled people
 		double scienceLocalMax = scienceType.getMax();
-		double deltaWithLocalMax = (scienceLocalMax - newAmount) * gParams.getScienceExchangeWithMaxPerTurn();
+		double scienceExchangeWithMaxPerTurn = game.getTurn().addPerYear(gParams.getScienceExchangeWithMaxPerTurn());
+		double deltaWithLocalMax = (scienceLocalMax - newAmount) * scienceExchangeWithMaxPerTurn;
 		if (deltaWithLocalMax > 0) {
 			scienceType.setMax(scienceLocalMax - deltaWithLocalMax);
 		}
 
 		// science from neighbors
-		double deltaWithNeighborsMax = (maxScienceType.getAmount() - newAmount)
-				* gParams.getScienceExchangeWithMaxPerTurn();
+		double deltaWithNeighborsMax = (maxScienceType.getAmount() - newAmount) * scienceExchangeWithMaxPerTurn;
 
 		if (deltaWithLocalMax > 0 || deltaWithNeighborsMax > 0) {
 			newAmount += Math.max(deltaWithLocalMax, deltaWithNeighborsMax);

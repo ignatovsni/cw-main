@@ -58,7 +58,7 @@ public class GameParams {
 	private double populationLoyaltyRebelToCountryThreshold = 0.2;
 	private double populationLoyaltyRebelChainAdditionalLoyalty = 0.5;
 	private double populationLoyaltyRebelChainProbabilityMultiplicator = 10.0;
-	private int populationLoyaltyRebelNewCountriesTakeMoneyForYears = 5;
+	private int populationLoyaltyRebelNewCountriesTakeMoneyForYears = 50;
 
 	private double populationCasualtiesCoeffPerYear = 0.95;
 	private double populationCasualtiesLocalLoyaltyMaxSuffer = 0.5;

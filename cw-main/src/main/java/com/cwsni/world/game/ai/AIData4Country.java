@@ -58,4 +58,9 @@ public class AIData4Country implements IData4Country {
 		return game.getRandom();
 	}
 
+	@Override
+	public boolean isWar() {
+		return !getGame().getRelationships().getCountriesWithWar(getCountryId()).isEmpty();
+	}
+
 }

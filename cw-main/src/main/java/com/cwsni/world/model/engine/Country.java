@@ -323,8 +323,10 @@ public class Country {
 			isNeedRefreshReachableProvincesThroughWater = false;
 		}
 		refreshPopulation();
-		data.setCasualties((long) (1.0 * data.getCasualties()
-				* game.getTurn().multiplyPerYear(game.getGameParams().getPopulationCasualtiesCoeffPerYear())));
+		double multiplyPerYear = game.getTurn()
+				.multiplyPerYear(game.getGameParams().getPopulationCasualtiesCoeffPerYear());
+		data.setCasualties(data.getCasualties() * multiplyPerYear);
+		data.setRebelAddChances(data.getRebelAddChances() * multiplyPerYear);
 	}
 
 	private void refreshLandReachableBorderAlienProvs() {
@@ -453,7 +455,7 @@ public class Country {
 		return getArmies().stream().mapToLong(a -> a.getSoldiers()).sum();
 	}
 
-	public long getCasualties() {
+	public double getCasualties() {
 		return data.getCasualties();
 	}
 
@@ -469,9 +471,9 @@ public class Country {
 		if (populationAmount == 0) {
 			return 0;
 		}
-		long casualties = getCasualties();
+		double casualties = getCasualties();
 		return -Math.min(getGame().getGameParams().getPopulationCasualtiesGlobalLoyaltyMaxSuffer(),
-				1.0 * casualties / populationAmount);
+				casualties / populationAmount);
 	}
 
 	public void checkAndCleanAiRecords() {
@@ -499,6 +501,14 @@ public class Country {
 			getAiRecords().clear();
 			logger.warn(msgAboutClean);
 		}
+	}
+
+	protected double getRebelAddChances() {
+		return data.getRebelAddChances();
+	}
+
+	protected void setRebelAddChances(double rebelAddChances) {
+		data.setRebelAddChances(rebelAddChances);
 	}
 
 	// --------------------- static -------------------------------

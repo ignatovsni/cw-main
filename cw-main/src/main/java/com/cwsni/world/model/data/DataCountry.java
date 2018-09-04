@@ -8,7 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cwsni.world.game.ai.ScriptAIHandler;
+import com.cwsni.world.model.data.util.DoubleContextualSerializer;
+import com.cwsni.world.model.data.util.Precision;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonPropertyOrder({ "id", "name", "color", "capital", "firstCapital", "focus", "budget", "scienceBudget", "isAI" })
 public class DataCountry {
@@ -30,7 +33,10 @@ public class DataCountry {
 	/**
 	 * died people by different reasons (mostly fights and diseases)
 	 */
-	private long casualties;
+	private double casualties;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 5)
+	private double rebelAddChances;
 	private Map<Object, Object> aiRecords = new HashMap<>();
 
 	public int getId() {
@@ -165,11 +171,11 @@ public class DataCountry {
 		this.turnsOfExistence = turnsOfExistence;
 	}
 
-	public long getCasualties() {
+	public double getCasualties() {
 		return casualties;
 	}
 
-	public void setCasualties(long casualties) {
+	public void setCasualties(double casualties) {
 		this.casualties = casualties;
 	}
 
@@ -179,6 +185,14 @@ public class DataCountry {
 
 	public void setAiRecords(Map<Object, Object> aiRecords) {
 		this.aiRecords = aiRecords;
+	}
+
+	public double getRebelAddChances() {
+		return rebelAddChances;
+	}
+
+	public void setRebelAddChances(double rebelAddChances) {
+		this.rebelAddChances = rebelAddChances;
 	}
 
 }

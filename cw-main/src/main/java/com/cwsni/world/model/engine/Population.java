@@ -21,6 +21,7 @@ import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.CwException;
 
 public class Population {
@@ -257,7 +258,8 @@ public class Population {
 		currentLoyalty = Math.min(Math.max(currentLoyalty + delta, 0),
 				maxLoyalty != null ? maxLoyalty : DataPopulation.LOYALTY_MAX);
 		currentLoyalty = DataFormatter.doubleWithPrecison(currentLoyalty, 6);
-		if (currentLoyalty < DataPopulation.LOYALTY_MAX / 120 && delta <= 0) {
+		if ((currentLoyalty < DataPopulation.LOYALTY_MAX / 100 && delta <= 0) && (province == null
+				|| province.getCountry() == null || !ComparisonTool.isEqual(province.getCountryId(), id))) {
 			loyalties.remove(id);
 		} else {
 			loyalties.put(id, currentLoyalty);
@@ -352,7 +354,7 @@ public class Population {
 			// regular migration
 			mPops = (int) (from.getPopulationAmount() * gParams.getPopulationBaseMigration());
 		}
-		if (mPops > provsTo.size()) {
+		if (mPops > provsTo.size() * 50) {
 			int mPopsToEachNeighbor = mPops / provsTo.size();
 			provsTo.forEach(p -> migrateTo(from, mPopsToEachNeighbor, p));
 		}
@@ -386,8 +388,8 @@ public class Population {
 				double populationBaseGrowth = game.getTurn()
 						.multiplyPerYear(1 + gParams.getPopulationBaseGrowthPerYear());
 				prov.getPopulation().forEach(p -> {
-					int newAmount = (int) (p.getAmount() * populationBaseGrowth);
-					newAmount = (int) Math.min(newAmount, populationAmount / currentPopFromMax);
+					int newAmount = (int) (1.0 * p.getAmount() * populationBaseGrowth);
+					newAmount = (int) Math.min(newAmount, 1.0 * populationAmount / currentPopFromMax);
 					p.setAmount(newAmount);
 				});
 			} else {
@@ -505,8 +507,10 @@ public class Population {
 		// decreasing - regular (mostly for other countries and states)
 		double populationLoyaltyDecreasingCoeff = turn
 				.multiplyPerYear(gParams.getPopulationLoyaltyDecreasingCoeffDefaultPerYear());
+		double rl = p.getLoyaltyToCountry();
 		p.decreaseLoyaltyToAllCountries(populationLoyaltyDecreasingCoeff);
 		p.decreaseLoyaltyToAllStates(populationLoyaltyDecreasingCoeff);
+		double rl2 = p.getLoyaltyToCountry();
 
 		if (state != null) {
 			Double maxStateLoyalty = state.getMaxStateLoyalty();
@@ -656,6 +660,10 @@ public class Population {
 		}
 
 		sb.append("---------------\n");
+		// current raw loyalty
+		sb.append("=" + DataFormatter.doubleWithPrecison(p.getRawLoyaltyToCountryForUI() * 100, 4) + " "
+				+ messageSource.getMessage("info.pane.prov.country.loyalty.description.current")).append("\n");
+
 		// increasing - temporary from army
 		long lfa = Math.round(p.getLoyaltyToCountryFromArmy() * 100);
 		if (lfa != 0) {

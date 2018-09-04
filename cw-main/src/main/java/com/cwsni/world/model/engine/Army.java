@@ -328,13 +328,13 @@ public class Army {
 	private static void processFightResult(Game game, List<Army> winner, List<Army> loser, double result) {
 		winner.forEach(a -> {
 			a.changeOrganization((int) Math.round(-0.1 / result));
-			a.changeTraining(5);
+			a.changeTraining(0.05);
 			int delta = (int) (game.getGameParams().getArmyFightBasePercentOfLoss() * a.getSoldiers() / result);
 			a.diedInBattle(delta);
 		});
 		loser.forEach(a -> {
 			a.changeOrganization((int) Math.round(-0.1 * result));
-			a.changeTraining(5);
+			a.changeTraining(0.05);
 			int delta = (int) (game.getGameParams().getArmyFightBasePercentOfLoss() * a.getSoldiers() * result);
 			a.diedInBattle(delta);
 		});

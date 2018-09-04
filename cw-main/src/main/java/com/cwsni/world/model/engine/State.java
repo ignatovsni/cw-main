@@ -182,6 +182,7 @@ public class State {
 		}
 
 		double rebelChanceCoeff = getTurn().probablilityPerWeek(gParams.getPopulationLoyaltyRebelChanceCoeffPerWeek());
+		rebelChanceCoeff *= (1 + originaltCountry.getRebelAddChances());
 		double loyaltyToOriginalCountry = getLoayltyToCountry(originaltCountry.getId(), statePopulation);
 		Set<Integer> countriesIds = getCountriesWithLoyalty();
 		if (revoltAttractionToCountry != null) {
@@ -202,6 +203,7 @@ public class State {
 					TypeOfRebelCountry typeC = revoltToCountry(countryId, stateCapital);
 					if (typeC != null) {
 						isRevoltSuccessfulThisTurn = true;
+						originaltCountry.setRebelAddChances(originaltCountry.getRebelAddChances() + 0.01);
 						Country rebelCountry = stateCapital.getCountry();
 						getNeighbors().forEach(n -> n.processRebels(rebelCountry));
 						if (TypeOfRebelCountry.RESTORED.equals(typeC)) {
@@ -222,6 +224,7 @@ public class State {
 			TypeOfRebelCountry typeC = revoltToState(stateCapital, random);
 			if (typeC != null) {
 				isRevoltSuccessfulThisTurn = true;
+				originaltCountry.setRebelAddChances(originaltCountry.getRebelAddChances() + 0.01);
 				Country rebelCountry = stateCapital.getCountry();
 				getNeighbors().forEach(n -> n.processRebels(rebelCountry));
 				rebelCountry.getProvinces()

@@ -70,7 +70,8 @@ public class GsProvArmiesInfoPane extends InternalInfoPane {
 			// addRow(getMessage("info.pane.prov.army.soldiers"), grid, idx++,
 			// DataFormatter.formatLongNumber(a.getSoldiers()));
 			RowValue row = addRow(DataFormatter.formatLongNumber(a.getSoldiers()), grid, idx++,
-					a.getOrganisation() + "/" + a.getTraining() + "/" + a.getEquipment());
+					(long)DataFormatter.doubleWithPrecison(a.getOrganisation() * 100, 0) + "/"
+							+ (long)DataFormatter.doubleWithPrecison(a.getTraining() * 100, 0) + "/" + a.getEquipment());
 			row.setNameColumnTooltip(getMessage("info.pane.prov.army.soldiers"));
 			row.setValueColumnTooltip(getMessage("info.pane.prov.army.effectiveness"));
 		}

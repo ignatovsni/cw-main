@@ -44,9 +44,10 @@ public class ScienceBudget {
 
 	private double calcHowToIncreaseScience(Game game, double v) {
 		if (v > 0) {
-			// v - per turn here, we need to scale for equal increasing because we use Math.log.
-			// Math.log (50) != Math.log(1) / 50 
-			double coeff = TimeMode.YEAR.getDateTurnPerTime() / game.getTurn().getTimeMode().getDateTurnPerTime();
+			// v - per turn here, we need to scale for equal increasing because we use
+			// Math.log.
+			// Math.log (50) != Math.log(1) / 50
+			double coeff = 1.0 * TimeMode.YEAR.getDateTurnPerTime() / game.getTurn().getTimeMode().getDateTurnPerTime();
 			return Math.log(v * coeff) / coeff;
 		} else {
 			return 0;

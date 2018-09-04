@@ -20,5 +20,7 @@ public interface IData4Country {
 	ScriptHandlerWrapper getScriptHandler();
 
 	Map<Object, Object> getAiRecords();
+	
+	boolean isWar();
 
 }
