@@ -4,16 +4,16 @@ import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 
 public class EventProcessorInfo {
 
-	private String id;
+	private String scriptId;
 	private LocaleMessageSource messageSource;
 
 	public EventProcessorInfo(String scriptId, LocaleMessageSource localeMessageSource) {
-		this.id = scriptId;
+		this.scriptId = scriptId;
 		this.messageSource = localeMessageSource;
 	}
 	
-	public String getId() {
-		return id;
+	public String getScriptId() {
+		return scriptId;
 	}
 	
 	public LocaleMessageSource getMessageSource() {

@@ -1,6 +1,5 @@
 package com.cwsni.world.client.desktop.game.infopanels;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,10 +11,8 @@ import org.springframework.stereotype.Component;
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
 import com.cwsni.world.game.events.GameEventHandler;
-import com.cwsni.world.model.data.DataEvent;
-import com.cwsni.world.model.data.old_events.Event;
+import com.cwsni.world.model.engine.Event;
 import com.cwsni.world.model.engine.Province;
-import com.cwsni.world.model.engine.modifiers.ModifierSource;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -28,7 +25,7 @@ public class GsProvEventsInfoPane extends InternalInfoPane {
 
 	@Autowired
 	private GameEventHandler gameEventHandler;
-	
+
 	private GameScene gameScene;
 	private Pane pane;
 
@@ -50,15 +47,15 @@ public class GsProvEventsInfoPane extends InternalInfoPane {
 		}
 		Province prov = gameScene.getSelectedProvince();
 		Set<Object> eventsIds = prov.getModifiers().getAllEvents();
-		Map<DataEvent, List<String>> descriptions = gameEventHandler.getDescriptionForEvents(eventsIds);
+		Map<Event, List<String>> descriptions = gameEventHandler.getDescriptionForEvents(gameScene.getGame(),
+				eventsIds);
 		// TODO
 		/*
-		List<Event> events = new ArrayList<Event>(prov.getEvents().getEvents());
-		events.forEach(e -> {
-			pane.getChildren().add(createWithAlignment(e.getTitle(), true));
-			pane.getChildren().add(createWithAlignment(e.getDescription(), false));
-		});
-		*/
+		 * List<Event> events = new ArrayList<Event>(prov.getEvents().getEvents());
+		 * events.forEach(e -> {
+		 * pane.getChildren().add(createWithAlignment(e.getTitle(), true));
+		 * pane.getChildren().add(createWithAlignment(e.getDescription(), false)); });
+		 */
 	}
 
 	private Pane createWithAlignment(String txt, boolean al) {

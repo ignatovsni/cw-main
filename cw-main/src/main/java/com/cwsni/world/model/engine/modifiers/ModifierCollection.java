@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.cwsni.world.model.data.DataEvent;
+import com.cwsni.world.model.engine.Event;
 import com.cwsni.world.util.ComparisonTool;
 
 public class ModifierCollection<T> {
@@ -50,7 +50,7 @@ public class ModifierCollection<T> {
 		return Collections.emptySet();
 	}
 
-	public Set<Modifier<T>> findByEvent(DataEvent event) {
+	public Set<Modifier<T>> findByEvent(Event event) {
 		return findBySource(new ModifierSource(ModifierSourceType.EVENT, event.getId()));
 	}
 
@@ -134,7 +134,7 @@ public class ModifierCollection<T> {
 		modifiersForSource.forEach(m -> remove(m));
 	}
 
-	public void removeByEvent(DataEvent event) {
+	public void removeByEvent(Event event) {
 		removeBySource(new ModifierSource(ModifierSourceType.EVENT, event.getId()));
 	}
 
@@ -178,8 +178,8 @@ public class ModifierCollection<T> {
 	}
 
 	public Set<Object> getAllEvents() {
-		return modifiersBySource.keySet().stream().filter(source -> ModifierSourceType.EVENT.equals(source.getType())).map(source -> source.getId())
-				.collect(Collectors.toSet());
+		return modifiersBySource.keySet().stream().filter(source -> ModifierSourceType.EVENT.equals(source.getType()))
+				.map(source -> source.getId()).collect(Collectors.toSet());
 	}
 
 }

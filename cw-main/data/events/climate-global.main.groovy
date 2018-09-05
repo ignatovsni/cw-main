@@ -12,7 +12,7 @@ import com.cwsni.world.model.engine.modifiers.*
 
 def processNewTurn() {
 	log 'processNewTurn ' + EVENT_TYPE;
-	def events =  data.eventCollection.findEventsByType(EVENT_TYPE);
+	def events =  data.events.findEventsByThisType();
 	if (events.isEmpty()) {
     	checkNewEvent();  
 	} else {
@@ -27,12 +27,12 @@ def processNewTurn() {
 
 def prepareGameAfterLoading() {
 	log 'prepareGameAfterLoading ' + EVENT_TYPE;
-	def events =  data.eventCollection.findEventsByType(EVENT_TYPE);
+	def events =  data.events.findEventsByThisType();
 	if (!events.isEmpty()) {
     	def copyEvents = new ArrayList(events);
     	// only one event can be active
     	for(int i=1; i<copyEvents.size(); i++) {
-			removeEvent(copyEvents[i]);
+			removeEvent(copyEvents[i]);76
 		}
     	activateEvent(copyEvents[0]);
 	}       
@@ -46,61 +46,70 @@ def checkNewEvent() {
 	log 'checkNewEvent';
 	if (data.rnd.nextDouble() > data.game.turn.probablilityPerYear(climateChangeProbability) ) {return null;}
 	log 'creating new event';
-	def event = data.eventCollection.createAndAddNewEvent(EVENT_TYPE);
-	event.data.endTurn = data.game.turn.calculateFutureTurnAfterYears(climateChangeDuration);
-	event.data.step = data.rnd.nextDouble() < climateChangeBadProbability	
+	def event = data.events.createAndAddNewEvent();
+	event.info.endTurn = data.game.turn.calculateFutureTurnAfterYears(climateChangeDuration);
+	event.info.step = data.rnd.nextDouble() < climateChangeBadProbability	
 				? - climateChangeStep
 				: + climateChangeStep;
-	event.data.effect = 1 + data.game.turn.addPerYear(event.data.step);
-	event.data.evolve = true;	
+	event.info.effect = 1 + data.game.turn.addPerYear(event.info.step);
+	event.info.evolve = true;	
 	activateEvent(event);	
 	log 'created new event ' + event;
 	return event;
 }
 
 def activateEvent(event) {
-	data.game.map.provinces.stream().filter({p -> p.getTerrainType().isSoilPossible()}).forEach({p -> p.modifiers.add(
-		Modifier.createModifierByEvent(ProvinceModifier.SOIL_FERTILITY, ModifierType.MULTIPLY, event.data.effect, event))});
+	data.game.map.provinces.stream().filter({p -> p.getTerrainType().isSoilPossible()}).forEach({p -> 
+		data.events.addModifier(p, ProvinceModifier.SOIL_FERTILITY, ModifierType.MULTIPLY, event.info.effect, event)});
 }
 
 def updateModifiers(event) {
+	/*
 	data.game.map.provinces.stream().filter({p -> p.getTerrainType().isSoilPossible()}).forEach(
 		{ p -> 
 			def modifiers = p.modifiers.findByEvent(event);
-			p.modifiers.update(modifiers[0], event.data.effect);
+			p.modifiers.update(modifiers[0], event.info.effect);
+		});
+	*/
+	event.provinceModifiers.entrySet().forEach({entry ->
+			def province = entry.key;
+			def modifiers = entry.value;
+			modifiers.forEach({modifier -> province.modifiers.update(modifier, event.info.effect)});
 		});
 }
 
 def processExistingEvent(event) {
 	log 'processExistingEvent';
-	if (event.data.endTurn < data.game.turn.dateTurn) {
-		if (event.data.evolve && data.rnd.nextDouble() < data.game.turn.probablilityPerYear(climateChangeContinueProbability)) {
+	if (event.info.endTurn < data.game.turn.dateTurn) {
+		if (event.info.evolve && data.rnd.nextDouble() < data.game.turn.probablilityPerYear(climateChangeContinueProbability)) {
 			// start moving back to normal climate
 			log 'start moving back to normal climate';
-			event.data.evolve = false;
-			event.data.step = event.data.effect > 1	? - climateChangeStep : climateChangeStep;
+			event.info.evolve = false;
+			event.info.step = event.info.effect > 1	? - climateChangeStep : climateChangeStep;
 		}
-		event.data.endTurn = data.game.turn.calculateFutureTurnAfterYears(climateChangeDuration);
+		event.info.endTurn = data.game.turn.calculateFutureTurnAfterYears(climateChangeDuration);
 	}
-	event.data.effect = event.data.effect + data.game.turn.addPerYear(event.data.step);
-	if (!event.data.evolve && (event.data.effect >= 1 && event.data.step >= 0 
-							|| event.data.effect <= 1 && event.data.step <= 0 || event.data.step == 0 ) ) {
+	event.info.effect = event.info.effect + data.game.turn.addPerYear(event.info.step);
+	if (!event.info.evolve && (event.info.effect >= 1 && event.info.step >= 0 
+							|| event.info.effect <= 1 && event.info.step <= 0 || event.info.step == 0 ) ) {
 		removeEvent(event);
 	} else {
-		if (event.data.effect > climateMaxImpact) {
-			event.data.effect =  climateMaxImpact;
-		} else if (event.data.effect < climateMinImpact) {
-			event.data.effect = climateMinImpact;
+		if (event.info.effect > climateMaxImpact) {
+			event.info.effect =  climateMaxImpact;
+		} else if (event.info.effect < climateMinImpact) {
+			event.info.effect = climateMinImpact;
 		}
 		updateModifiers(event)
 	}
-	log event.data.effect
+	log event.info.effect
 }
 
 def removeEvent(event) {
 	log 'removeEvent ' + event;
+	/*
 	data.game.map.provinces.stream().filter({p -> p.getTerrainType().isSoilPossible()}).forEach(
 		{ p -> p.modifiers.removeByEvent(event) });
-	data.eventCollection.removeEvent(event);	
+	*/
+	data.events.removeEvent(event);	
 }
 

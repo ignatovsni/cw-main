@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.client.desktop.locale.SimpleLocaleMessageSource;
-import com.cwsni.world.model.data.DataEvent;
+import com.cwsni.world.model.engine.Event;
 import com.cwsni.world.model.engine.Game;
 
 @Component
@@ -39,6 +39,7 @@ public class GameEventHandler {
 		eventsInfo = new HashMap<>();
 		List<String> scripts = scriptEventHandler.getListOfAvailableEventsScripts();
 		for (String scriptId : scripts) {
+			// TODO file name for messages
 			SimpleLocaleMessageSource localeMessageSource = new SimpleLocaleMessageSource();
 			localeMessageSource.setApplicationSettings(applicationSettings);
 			localeMessageSource.setLanguagesFolder(ScriptEventHandler.EVENTS_SCRIPTS_FOLDER);
@@ -51,9 +52,9 @@ public class GameEventHandler {
 		checkInitialization();
 		for (EventProcessorInfo epi : eventsInfo.values()) {
 			try {
-				scriptEventHandler.processEvent(createBinding(game), epi.getId(), "processNewTurn", null);
+				scriptEventHandler.processEvent(createBinding(game, epi), epi.getScriptId(), "processNewTurn", null);
 			} catch (Exception e) {
-				logger.error("failed to process event type=" + epi.getId(), e);
+				logger.error("failed to process event type=" + epi.getScriptId(), e);
 			}
 		}
 	}
@@ -62,26 +63,34 @@ public class GameEventHandler {
 		checkInitialization();
 		for (EventProcessorInfo epi : eventsInfo.values()) {
 			try {
-				scriptEventHandler.processEvent(createBinding(game), epi.getId(), "prepareGameAfterLoading", null);
+				scriptEventHandler.processEvent(createBinding(game, epi), epi.getScriptId(), "prepareGameAfterLoading",
+						null);
 			} catch (Exception e) {
-				logger.error("failed to process event type=" + epi.getId(), e);
+				logger.error("failed to process event type=" + epi.getScriptId(), e);
 			}
 		}
-		// TODO if we do not have scripts for some events, probably we need to remove them 
+		// TODO if we do not have scripts for some events, probably we need to remove
+		// them
 	}
 
-	private Map<String, Object> createBinding(Game game) {
+	private Map<String, Object> createBinding(Game game, EventProcessorInfo epi) {
 		Map<String, Object> mapBinding = new HashMap<>();
-		DataForEvent data = new DataForEvent(game,
+		DataForEvent data = new DataForEvent(game, epi,
 				game.getRandomForCurrentTurn(game.getEventsCollection().getEvents().size()),
 				scriptEventHandler.getWrapper());
 		mapBinding.put("data", data);
 		return mapBinding;
 	}
 
-	public Map<DataEvent, List<String>> getDescriptionForEvents(Set<Object> eventsIds) {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<Event, List<String>> getDescriptionForEvents(Game game, Set<Object> eventsIds) {
+		Map<Event, List<String>> result = new HashMap<>(eventsInfo.size());
+		for (Object id : eventsIds) {
+			Event event = game.getEventsCollection().findEventById((Integer) id);
+			if (event != null) {
+				// TODO
+			}
+		}
+		return result;
 	}
 
 }

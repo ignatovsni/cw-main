@@ -9,21 +9,25 @@ import com.cwsni.world.model.data.DataEvent;
 import com.cwsni.world.model.util.ObjectStorage;
 import com.cwsni.world.util.CwException;
 
-public class EventCollection extends ObjectStorage<DataEvent, Integer, String> {
+public class EventCollection extends ObjectStorage<Event, Integer, String> {
 
 	private Game game;
 
-	protected void buildFrom(Game game, List<DataEvent> events) {
+	protected void buildFrom(Game game, List<DataEvent> dataEvents) {
 		this.game = game;
-		events.forEach(e -> registerEvent(e));
+		dataEvents.forEach(de -> {
+			Event e = new Event();
+			e.buildFrom(game, de);
+			registerEvent(e);
+		});
 	}
 
-	public void addEvent(DataEvent e) {
-		game.getGameData().getEvents().add(e);
+	public void addEvent(Event e) {
+		game.getGameData().getEvents().add(e.getData());
 		registerEvent(e);
 	}
 
-	private void registerEvent(DataEvent e) {
+	private void registerEvent(Event e) {
 		if (e.getId() <= 0) {
 			throw new CwException("event id should be initiazed");
 		}
@@ -33,39 +37,41 @@ public class EventCollection extends ObjectStorage<DataEvent, Integer, String> {
 		add(e, e.getId(), e.getType());
 	}
 
-	public void removeEvent(DataEvent e) {
+	public void removeEvent(Event e) {
 		remove(e, e.getId(), e.getType());
-		game.getGameData().getEvents().remove(e);
+		game.getGameData().getEvents().remove(e.getData());
 	}
 
-	public List<DataEvent> getEvents() {
+	public List<Event> getEvents() {
 		return Collections.unmodifiableList(getObjects());
 	}
 
 	public boolean hasEventWithType(String type) {
-		Map<Integer, DataEvent> events = getObjectsByType().get(type);
+		Map<Integer, Event> events = getObjectsByType().get(type);
 		return !(events == null || events.isEmpty());
 	}
 
-	public Collection<DataEvent> findEventsByType(String type) {
-		Map<Integer, DataEvent> map = getObjectsByType().get(type);
+	public Collection<Event> findEventsByType(String type) {
+		Map<Integer, Event> map = getObjectsByType().get(type);
 		return map != null ? map.values() : Collections.emptyList();
 	}
 
-	public DataEvent findEventById(Integer id) {
+	public Event findEventById(Integer id) {
 		return getObjectByKey(id);
 	}
 
-	public DataEvent createNewEvent(String type) {
-		DataEvent e = new DataEvent();
-		e.setType(type);
-		e.setId(game.nextEventId());
-		e.setStartTurn(game.getTurn().getDateTurn());
+	public Event createNewEvent(String type) {
+		DataEvent de = new DataEvent();
+		de.setType(type);
+		de.setId(game.nextEventId());
+		de.setStartTurn(game.getTurn().getDateTurn());
+		Event e = new Event();
+		e.buildFrom(game, de);
 		return e;
 	}
 
-	public DataEvent createAndAddNewEvent(String type) {
-		DataEvent e = createNewEvent(type);
+	public Event createAndAddNewEvent(String type) {
+		Event e = createNewEvent(type);
 		addEvent(e);
 		return e;
 	}
