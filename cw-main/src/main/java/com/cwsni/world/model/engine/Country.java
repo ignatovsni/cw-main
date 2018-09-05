@@ -422,6 +422,11 @@ public class Country {
 		// it can depend on country science development
 		return game.getGameParams().getArmySoldiersToPopulationForSubjugation();
 	}
+	
+	public double getArmySoldiersToPopulationForSubjugationLeaveInProvince() {
+		// it can depend on country science development
+		return game.getGameParams().getArmySoldiersToPopulationForSubjugationLeaveInProvince();
+	}
 
 	private void refreshPopulation() {
 		populationAmount = getProvinces().stream().mapToLong(p -> p.getPopulationAmount()).sum();

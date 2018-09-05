@@ -200,31 +200,6 @@ public class Army {
 		moveFrom = null;
 		processEffectivenessInNewTurn();
 		population.processNewTurnAsArmy();
-		Province currentProv = getLocation();
-		Country locationCountry = currentProv.getCountry();
-		if (getCountry().equals(locationCountry)) {
-			// our land, doing nothing
-			return;
-		}
-		// Check maybe we may subjugate
-		if (currentProv.getTerrainType().isPopulationPossible()) {
-			if (locationCountry != null && !country.getGame().getRelationships().getCountriesWithWar(country.getId())
-					.containsKey(locationCountry.getId())) {
-				return;
-			}
-			long totalSoldiers = currentProv.getArmies().stream()
-					.filter(a -> ComparisonTool.isEqual(a.getCountry().getId(), getCountry().getId()))
-					.mapToLong(a -> a.getSoldiers()).sum();
-			double successfulInvasion = totalSoldiers
-					/ (currentProv.getPopulationAmount() * getCountry().getArmySoldiersToPopulationForSubjugation());
-			currentProv.sufferFromInvasion(getSoldiers(), successfulInvasion);
-			if (successfulInvasion >= 1) {
-				if (locationCountry != null) {
-					locationCountry.removeProvince(currentProv);
-				}
-				getCountry().addProvince(currentProv);
-			}
-		}
 	}
 
 	private void retreat() {
@@ -295,6 +270,42 @@ public class Army {
 		} else {
 			addPopulation(armyFrom.population.createNewPopFromThis(soldiers));
 		}
+	}
+
+	public void subjugateProvince() {
+		Province currentProv = getLocation();
+		if (currentProv == null || !currentProv.getTerrainType().isPopulationPossible()) {
+			return;
+		}
+		Country locationCountry = currentProv.getCountry();
+		if (getCountry().equals(locationCountry) || locationCountry != null && !getGame().getRelationships()
+				.getCountriesWithWar(country.getId()).containsKey(locationCountry.getId())) {
+			return;
+		}
+		double totalSoldiers = currentProv.getArmies().stream()
+				.filter(a -> ComparisonTool.isEqual(a.getCountry().getId(), getCountry().getId()))
+				.mapToLong(a -> a.getSoldiers()).sum();
+		double populationAmount = currentProv.getPopulationAmount();
+		double successfulInvasion = totalSoldiers
+				/ (populationAmount * getCountry().getArmySoldiersToPopulationForSubjugation());
+		int soldiers = getSoldiers();
+		currentProv.sufferFromInvasion(soldiers, successfulInvasion);
+		if (successfulInvasion >= 1) {
+			int needSoldiersToSubjugate = (int) (populationAmount
+					* getGame().getGameParams().getArmySoldiersToPopulationForSubjugationLeaveInProvince());
+			if (soldiers < needSoldiersToSubjugate) {
+				return;
+			}
+			if (locationCountry != null) {
+				locationCountry.removeProvince(currentProv);
+			}
+			getCountry().addProvince(currentProv);
+			dismissSoldiers(needSoldiersToSubjugate);
+		}
+	}
+
+	protected Game getGame() {
+		return country.getGame();
 	}
 
 	// ---------------------------- static -----------------------------

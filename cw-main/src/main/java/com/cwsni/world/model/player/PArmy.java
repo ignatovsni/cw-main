@@ -6,6 +6,7 @@ import com.cwsni.world.game.commands.CommandArmyDismiss;
 import com.cwsni.world.game.commands.CommandArmyMerge;
 import com.cwsni.world.game.commands.CommandArmyMove;
 import com.cwsni.world.game.commands.CommandArmySplit;
+import com.cwsni.world.game.commands.CommandArmySubjugate;
 import com.cwsni.world.model.engine.Army;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
@@ -157,6 +158,12 @@ public class PArmy implements IPArmy {
 			game.addCommand(mergeCommand);
 		}
 	}
+	
+	@Override
+	public void subjugateProvince() {
+		CommandArmySubjugate subjugateCommand = new CommandArmySubjugate(id);
+		game.addCommand(subjugateCommand);
+	}
 
 	double getAgriculture() {
 		// it works only for existing armies (not for created or splitted at the same
@@ -164,8 +171,11 @@ public class PArmy implements IPArmy {
 		return army != null ? army.getScienceAgriculture() : 0;
 	}
 
+	// ---------------- client change model section ----------------- 
+	
 	public void cmcAddSoldiers(int howManySoldiers) {
 		soldiers += howManySoldiers;
 	}
+
 
 }

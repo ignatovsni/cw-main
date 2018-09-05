@@ -179,6 +179,11 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
+	public double getArmySoldiersToPopulationForSubjugationLeaveInProvince() {
+		return country.getArmySoldiersToPopulationForSubjugationLeaveInProvince();
+	}
+
+	@Override
 	public long getPopulationAmount() {
 		return country.getPopulationAmount();
 	}

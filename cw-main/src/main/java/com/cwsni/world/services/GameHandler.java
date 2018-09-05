@@ -20,12 +20,13 @@ import com.cwsni.world.game.commands.CommandArmyMove;
 import com.cwsni.world.game.commands.CommandArmySplit;
 import com.cwsni.world.game.commands.CommandDiplomacy;
 import com.cwsni.world.game.commands.CommandErrorHandler;
+import com.cwsni.world.game.commands.CommandProvinceSetCapital;
 import com.cwsni.world.game.events.GameEventHandler;
 import com.cwsni.world.model.engine.Army;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Game;
-import com.cwsni.world.model.engine.TimeMode;
 import com.cwsni.world.model.engine.ProvinceBorder;
+import com.cwsni.world.model.engine.TimeMode;
 import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.util.ComparisonTool;
 
@@ -89,6 +90,7 @@ public class GameHandler {
 		CommandErrorHandler errorHandler = new CommandErrorHandler();
 		try {
 			preProcessCommands(game, pGames, errorHandler);
+			processCommandsWithFilter(game, pGames, c -> (c instanceof CommandProvinceSetCapital));
 			processCommandsWithFilter(game, pGames,
 					c -> (c instanceof CommandArmyCreate) || (c instanceof CommandArmySplit));
 			processCommandsWithFilter(game, pGames, c -> (c instanceof CommandDiplomacy));

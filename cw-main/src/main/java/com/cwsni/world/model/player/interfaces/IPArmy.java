@@ -39,4 +39,6 @@ public interface IPArmy {
 
 	int getId();
 
+	void subjugateProvince();
+
 }

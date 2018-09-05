@@ -374,7 +374,7 @@ public class JavaAIHandler {
 				army.dismiss(army.getSoldiers() / 2);
 				return;
 			} else if (isAbleToSubjugate(data, army, location)) {
-				// alien province and army is able to subjugate it, stay here
+				army.subjugateProvince();
 				return;
 			}
 		}

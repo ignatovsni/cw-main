@@ -89,6 +89,7 @@ public class GameParams {
 	private double armyMinAllowedOrganization = 0.1;
 	private int armyMinAllowedSoldiers = 50;
 	private double armySoldiersToPopulationForSubjugation = 0.1;
+	private double armySoldiersToPopulationForSubjugationLeaveInProvince = 0.01;
 	private double provinceLossFromFight = 0.1;
 
 	private double provinceInfluenceFromCapitalWithDistanceDecrease = 0.8;
@@ -802,6 +803,15 @@ public class GameParams {
 
 	public void setScienceBaseIncreasePerPersonPerWeek(double scienceBaseIncreasePerPersonPerWeek) {
 		this.scienceBaseIncreasePerPersonPerWeek = scienceBaseIncreasePerPersonPerWeek;
+	}
+
+	public double getArmySoldiersToPopulationForSubjugationLeaveInProvince() {
+		return armySoldiersToPopulationForSubjugationLeaveInProvince;
+	}
+
+	public void setArmySoldiersToPopulationForSubjugationLeaveInProvince(
+			double armySoldiersToPopulationForSubjugationLeaveInProvince) {
+		this.armySoldiersToPopulationForSubjugationLeaveInProvince = armySoldiersToPopulationForSubjugationLeaveInProvince;
 	}
 
 }

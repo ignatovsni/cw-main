@@ -621,6 +621,9 @@ public class Province {
 	}
 
 	protected void sufferFromInvasion(int soldiers, double successfulInvasion) {
+		if (getPopulation().isEmpty()) {
+			return;
+		}
 		double loss = map.getGame().getGameParams().getProvinceLossFromFight();
 		loss = Math.min(0.1, loss * soldiers / getPopulationAmount() * successfulInvasion);
 		setWealth(data.getWealth() * (1 - loss));

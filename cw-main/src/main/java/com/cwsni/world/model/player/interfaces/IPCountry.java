@@ -48,6 +48,8 @@ public interface IPCountry {
 	public double getCasualties();
 	
 	public double getLoyaltyToCountryFromCountryCasualties();
+
+	double getArmySoldiersToPopulationForSubjugationLeaveInProvince();
 	
 
 }
