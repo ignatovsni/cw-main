@@ -18,9 +18,6 @@ def processNewTurn() {
 	} else {
     	def copyEvents = new ArrayList(events);
     	// only one event can be active
-    	for(int i=1; i<copyEvents.size(); i++) {
-			removeEvent(copyEvents[i]);
-		}
     	processExistingEvent(copyEvents[0]);
 	}
 }
@@ -31,9 +28,6 @@ def prepareGameAfterLoading() {
 	if (!events.isEmpty()) {
     	def copyEvents = new ArrayList(events);
     	// only one event can be active
-    	for(int i=1; i<copyEvents.size(); i++) {
-			removeEvent(copyEvents[i]);76
-		}
     	activateEvent(copyEvents[0]);
 	}       
 }
@@ -64,13 +58,6 @@ def activateEvent(event) {
 }
 
 def updateModifiers(event) {
-	/*
-	data.game.map.provinces.stream().filter({p -> p.getTerrainType().isSoilPossible()}).forEach(
-		{ p -> 
-			def modifiers = p.modifiers.findByEvent(event);
-			p.modifiers.update(modifiers[0], event.info.effect);
-		});
-	*/
 	event.provinceModifiers.entrySet().forEach({entry ->
 			def province = entry.key;
 			def modifiers = entry.value;
@@ -80,6 +67,7 @@ def updateModifiers(event) {
 
 def processExistingEvent(event) {
 	log 'processExistingEvent';
+	event.markAsProcessed();
 	if (event.info.endTurn < data.game.turn.dateTurn) {
 		if (event.info.evolve && data.rnd.nextDouble() < data.game.turn.probablilityPerYear(climateChangeContinueProbability)) {
 			// start moving back to normal climate
@@ -106,10 +94,6 @@ def processExistingEvent(event) {
 
 def removeEvent(event) {
 	log 'removeEvent ' + event;
-	/*
-	data.game.map.provinces.stream().filter({p -> p.getTerrainType().isSoilPossible()}).forEach(
-		{ p -> p.modifiers.removeByEvent(event) });
-	*/
-	data.events.removeEvent(event);	
+	event.removeFromGame();
 }
 

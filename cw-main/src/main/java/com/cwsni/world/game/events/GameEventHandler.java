@@ -69,8 +69,7 @@ public class GameEventHandler {
 				logger.error("failed to process event type=" + epi.getScriptId(), e);
 			}
 		}
-		// TODO if we do not have scripts for some events, probably we need to remove
-		// them
+		game.getEventsCollection().checkOldUntouchedEvents();
 	}
 
 	private Map<String, Object> createBinding(Game game, EventProcessorInfo epi) {

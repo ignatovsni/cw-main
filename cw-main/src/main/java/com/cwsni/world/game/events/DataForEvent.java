@@ -23,11 +23,6 @@ public class DataForEvent {
 			return game.getEventsCollection().createAndAddNewEvent(epi.getScriptId());
 		}
 
-		public void removeEvent(Event e) {
-			e.removeModifiers();
-			game.getEventsCollection().removeEvent(e);
-		}
-
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public Modifier addModifier(Province p, Object feature, ModifierType type, Double value, Event event) {
 			Modifier<ProvinceModifier> modifier = Modifier

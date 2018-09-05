@@ -15,8 +15,10 @@ public class Event {
 
 	private DataEvent data;
 	private Map<Province, List<Modifier<ProvinceModifier>>> provinceModifiers;
+	private Game game;
 
 	public void buildFrom(Game game, DataEvent data) {
+		this.game = game;
 		this.data = data;
 		provinceModifiers = new HashMap<>();
 	}
@@ -58,6 +60,14 @@ public class Event {
 		return data.getType();
 	}
 
+	public void markAsProcessed() {
+		data.setLastProcessedTurn(game.getTurn().getProcessedTurn());
+	}
+
+	public int getLastProcessedTurn() {
+		return data.getLastProcessedTurn();
+	}
+
 	public void addProvinceModifier(Province p, Modifier<ProvinceModifier> modifier) {
 		List<Modifier<ProvinceModifier>> modifiers = provinceModifiers.get(p);
 		if (modifiers == null) {
@@ -75,6 +85,11 @@ public class Event {
 		ModifierSource source = new ModifierSource(ModifierSourceType.EVENT, getId());
 		provinceModifiers.keySet().forEach(p -> p.getModifiers().removeBySource(source));
 		provinceModifiers.clear();
+	}
+
+	public void removeFromGame() {
+		removeModifiers();
+		game.getEventsCollection().removeEvent(this);
 	}
 
 }

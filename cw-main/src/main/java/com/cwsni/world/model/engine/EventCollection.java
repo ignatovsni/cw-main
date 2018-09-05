@@ -1,5 +1,6 @@
 package com.cwsni.world.model.engine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -64,7 +65,8 @@ public class EventCollection extends ObjectStorage<Event, Integer, String> {
 		DataEvent de = new DataEvent();
 		de.setType(type);
 		de.setId(game.nextEventId());
-		de.setStartTurn(game.getTurn().getDateTurn());
+		de.setCreatedTurn(game.getTurn().getDateTurn());
+		de.setLastProcessedTurn(game.getTurn().getDateTurn());
 		Event e = new Event();
 		e.buildFrom(game, de);
 		return e;
@@ -74,6 +76,13 @@ public class EventCollection extends ObjectStorage<Event, Integer, String> {
 		Event e = createNewEvent(type);
 		addEvent(e);
 		return e;
+	}
+
+	public void checkOldUntouchedEvents() {
+		int turnToDelete = game.getTurn().getProcessedTurn() - 100;
+		List<Event> copy = new ArrayList<>(getEvents());
+		copy.stream().filter(event -> event.getLastProcessedTurn() < turnToDelete)
+				.forEach(event -> event.removeFromGame());
 	}
 
 }

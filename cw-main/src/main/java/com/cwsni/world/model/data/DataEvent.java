@@ -7,7 +7,8 @@ public class DataEvent {
 
 	private String type;
 	private int id;
-	private int startTurn;
+	private int createdTurn;
+	private int lastProcessedTurn;
 	private Map<Object, Object> info = new HashMap<>();
 
 	@Override
@@ -47,20 +48,28 @@ public class DataEvent {
 		this.id = id;
 	}
 
-	public int getStartTurn() {
-		return startTurn;
-	}
-
-	public void setStartTurn(int startTurn) {
-		this.startTurn = startTurn;
-	}
-
 	public Map<Object, Object> getInfo() {
 		return info;
 	}
 
 	public void setInfo(Map<Object, Object> info) {
 		this.info = info;
+	}
+
+	public int getCreatedTurn() {
+		return createdTurn;
+	}
+
+	public void setCreatedTurn(int createdTurn) {
+		this.createdTurn = createdTurn;
+	}
+
+	public int getLastProcessedTurn() {
+		return lastProcessedTurn;
+	}
+
+	public void setLastProcessedTurn(int lastTouchTurn) {
+		this.lastProcessedTurn = lastTouchTurn;
 	}
 
 }
