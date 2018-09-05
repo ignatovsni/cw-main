@@ -19,10 +19,12 @@ public class SimpleLocaleMessageSource implements LocaleMessageSource {
 	protected Map<String, String> messages;
 	protected Map<String, String> defaultLanguageMessages;
 	protected String languagesFolder;
+	private String languagesFileNameStartWith = "messages";
+	private String languagesFileNameEndWith = ".properties";
 
 	protected ApplicationSettings applicationSettings;
 
-	protected void init() {
+	public void init() {
 		clearCache();
 	}
 
@@ -56,12 +58,27 @@ public class SimpleLocaleMessageSource implements LocaleMessageSource {
 				protected String getLanguageDirectoryFullPath() {
 					return getLanguagesFolder();
 				}
+
+				protected String getFileNameStartWith() {
+					return getLanguagesFileNameStartWith();
+				}
+
+				protected String getFileNameEndWith() {
+					return getLanguagesFileNameEndWith();
+				}
 			};
 			Map<String, String> messages = lh.readLanguageFile(code);
-			messages.entrySet().forEach(e -> e.setValue(e.getValue().replace("\\n", "\n")));
+			messages.entrySet().forEach(e -> {
+				e.setValue(e.getValue().replace("\\n", "\n"));
+				e.setValue(e.getValue().replace("\\t", "\t"));
+			});
 			return messages;
 		} catch (Exception e) {
-			logger.error("failed to read language file for language code=" + code, e);
+			if (logger.isTraceEnabled()) {
+				logger.trace("failed to read language file for language code=" + code, e);
+			} else {
+				logger.warn("failed to read language file for language code=" + code);
+			}
 			return Collections.emptyMap();
 		}
 	}
@@ -76,6 +93,22 @@ public class SimpleLocaleMessageSource implements LocaleMessageSource {
 
 	public void setApplicationSettings(ApplicationSettings applicationSettings) {
 		this.applicationSettings = applicationSettings;
+	}
+
+	public String getLanguagesFileNameStartWith() {
+		return languagesFileNameStartWith;
+	}
+
+	public void setLanguagesFileNameStartWith(String languagesFileNameStartWith) {
+		this.languagesFileNameStartWith = languagesFileNameStartWith;
+	}
+
+	public String getLanguagesFileNameEndWith() {
+		return languagesFileNameEndWith;
+	}
+
+	public void setLanguagesFileNameEndWith(String languagesFileNameEndWith) {
+		this.languagesFileNameEndWith = languagesFileNameEndWith;
 	}
 
 }

@@ -19,6 +19,7 @@ public class ApplicationSettings extends AbstractSettings {
 	private int scriptsMaxStackDeep = 10;
 	private int aiScriptsPoolSize = 16;
 	private int eventsScriptsPoolSize = 16;
+	private int eventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns = 100;
 
 	@Override
 	@PostConstruct
@@ -97,6 +98,15 @@ public class ApplicationSettings extends AbstractSettings {
 
 	public void setMultithreadingMaxWaitAllTasksPerTurnSeconds(int multithreadingMaxWaitAllTasksPerTurnSeconds) {
 		this.multithreadingMaxWaitAllTasksPerTurnSeconds = multithreadingMaxWaitAllTasksPerTurnSeconds;
+	}
+
+	public int getEventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns() {
+		return eventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns;
+	}
+
+	public void setEventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns(
+			int eventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns) {
+		this.eventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns = eventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns;
 	}
 
 }

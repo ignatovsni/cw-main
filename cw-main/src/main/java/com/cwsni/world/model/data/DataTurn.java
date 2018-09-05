@@ -33,8 +33,12 @@ public class DataTurn {
 	}
 
 	public String getDateTexToDisplay() {
-		int year = dateTurn / TimeMode.YEAR.getDateTurnPerTime() - 4000;
-		int week = dateTurn % TimeMode.YEAR.getDateTurnPerTime();
+		return getDateTexToDisplay(dateTurn);
+	}
+
+	public String getDateTexToDisplay(int turn) {
+		int year = turn / TimeMode.YEAR.getDateTurnPerTime() - 4000;
+		int week = turn % TimeMode.YEAR.getDateTurnPerTime();
 		StringBuilder sb = new StringBuilder();
 		sb.append(Math.abs(year));
 		if (year < 0) {

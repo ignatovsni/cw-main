@@ -35,6 +35,10 @@ public class Turn {
 		return data.getDateTexToDisplay();
 	}
 
+	public String getDateTexToDisplay(int turn) {
+		return data.getDateTexToDisplay(turn);
+	}
+
 	public int getProcessedTurn() {
 		return data.getProcessedTurn();
 	}
@@ -61,7 +65,7 @@ public class Turn {
 	 * It can be useful if I decide to use turns less than year.
 	 */
 	public int howManyYearsHavePassedSinceTurn(int pastTurn) {
-		return (getDateTurn() - pastTurn) / TimeMode.YEAR.getDateTurnPerTime();
+		return howManyYears(getDateTurn() - pastTurn);
 	}
 
 	public int calculateFutureTurnAfterYears(int years) {
@@ -115,7 +119,7 @@ public class Turn {
 		}
 		return 1 - Math.pow(1 - value, 1.0 * timeMode.getDateTurnPerTime() / TimeMode.WEEK.getDateTurnPerTime());
 	}
-	
+
 	public double probablilityPerYear(double value) {
 		if (TimeMode.YEAR.equals(timeMode)) {
 			return value;
@@ -124,7 +128,11 @@ public class Turn {
 	}
 
 	public int getYear() {
-		return data.getDateTurn() / TimeMode.YEAR.getDateTurnPerTime();
+		return howManyYears(data.getDateTurn());
+	}
+
+	public int howManyYears(int turn) {
+		return turn / TimeMode.YEAR.getDateTurnPerTime();
 	}
 
 }

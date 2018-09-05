@@ -48,7 +48,7 @@ public class LanguageHelper {
 			throws FileNotFoundException, IOException {
 		String languageDirectory = getLanguageDirectoryFullPath();
 		List<String> resultRows = new ArrayList<>();
-		File baseFile = new File(languageDirectory + File.separator + "messages.properties");
+		File baseFile = new File(languageDirectory + File.separator + getFileNameStartWith() + getFileNameEndWith());
 		try (FileInputStream fis = new FileInputStream(baseFile);
 				InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 				BufferedReader br = new BufferedReader(isr)) {
@@ -97,13 +97,21 @@ public class LanguageHelper {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getLanguageDirectoryFullPath());
 		sb.append(File.separator);
-		sb.append("messages");
+		sb.append(getFileNameStartWith());
 		if (language != null && !language.isEmpty()) {
 			sb.append("_");
 			sb.append(language);
 		}
-		sb.append(".properties");
+		sb.append(getFileNameEndWith());
 		return sb.toString();
+	}
+
+	protected String getFileNameStartWith() {
+		return "messages";
+	}
+	
+	protected String getFileNameEndWith() {
+		return ".properties";
 	}
 
 	protected String getLanguageDirectoryFullPath() {

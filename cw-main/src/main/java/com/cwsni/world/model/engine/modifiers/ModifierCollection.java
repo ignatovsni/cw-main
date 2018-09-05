@@ -182,4 +182,8 @@ public class ModifierCollection<T> {
 				.map(source -> source.getId()).collect(Collectors.toSet());
 	}
 
+	public boolean isEmpty() {
+		return modifiersBySource.isEmpty();
+	}
+
 }

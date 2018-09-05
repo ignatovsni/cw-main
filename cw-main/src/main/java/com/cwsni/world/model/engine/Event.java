@@ -91,5 +91,9 @@ public class Event {
 		removeModifiers();
 		game.getEventsCollection().removeEvent(this);
 	}
+	
+	public int getCreatedTurn() {
+		return data.getCreatedTurn();
+	}
 
 }

@@ -2,6 +2,7 @@ package com.cwsni.world.client.desktop.game.infopanels;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.cwsni.world.model.engine.Event;
 import com.cwsni.world.model.engine.Province;
 
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -47,32 +49,26 @@ public class GsProvEventsInfoPane extends InternalInfoPane {
 		}
 		Province prov = gameScene.getSelectedProvince();
 		Set<Object> eventsIds = prov.getModifiers().getAllEvents();
-		Map<Event, List<String>> descriptions = gameEventHandler.getDescriptionForEvents(gameScene.getGame(),
-				eventsIds);
-		// TODO
-		/*
-		 * List<Event> events = new ArrayList<Event>(prov.getEvents().getEvents());
-		 * events.forEach(e -> {
-		 * pane.getChildren().add(createWithAlignment(e.getTitle(), true));
-		 * pane.getChildren().add(createWithAlignment(e.getDescription(), false)); });
-		 */
+		Map<Event, List<String>> descriptions = gameEventHandler
+				.getTitleAndShortDescriptionsForEvents(gameScene.getGame(), eventsIds);
+		for (Entry<Event, List<String>> entry : descriptions.entrySet()) {
+			String title = entry.getValue().get(0);
+			String shortDescription = entry.getValue().get(1);
+			pane.getChildren().add(createWithAlignment(title, shortDescription));
+		}
 	}
 
-	private Pane createWithAlignment(String txt, boolean al) {
+	private Pane createWithAlignment(String title, String shortDescription) {
 		BorderPane pane = new BorderPane();
-		Label lblMsg = new Label(txt);
-		if (al) {
-			pane.setLeft(lblMsg);
-		} else {
-			pane.setRight(lblMsg);
-		}
+		Label lblMsg = new Label(title);
+		pane.setLeft(lblMsg);
+		lblMsg.setTooltip(new Tooltip(shortDescription));
 		return pane;
 	}
 
 	@Override
 	protected boolean hasDataForUser() {
 		Province prov = gameScene.getSelectedProvince();
-		// TODO return (prov != null && !prov.getEvents().getEvents().isEmpty());
-		return false;
+		return prov != null && !prov.getModifiers().isEmpty();
 	}
 }

@@ -78,8 +78,11 @@ public class EventCollection extends ObjectStorage<Event, Integer, String> {
 		return e;
 	}
 
-	public void checkOldUntouchedEvents() {
-		int turnToDelete = game.getTurn().getProcessedTurn() - 100;
+	/**
+	 *  Clean up mess if events are not processing
+	 */
+	public void checkOldUntouchedEvents(int maxUntouchedProcessedTurn) {
+		int turnToDelete = game.getTurn().getProcessedTurn() - maxUntouchedProcessedTurn;
 		List<Event> copy = new ArrayList<>(getEvents());
 		copy.stream().filter(event -> event.getLastProcessedTurn() < turnToDelete)
 				.forEach(event -> event.removeFromGame());

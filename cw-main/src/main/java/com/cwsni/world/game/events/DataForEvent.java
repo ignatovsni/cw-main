@@ -63,4 +63,8 @@ public class DataForEvent {
 		return scriptEventsWrapper;
 	}
 
+	public String getMessage(String code) {
+		return epi.getMessageSource().getMessage(code);
+	}
+
 }

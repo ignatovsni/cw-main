@@ -27,7 +27,7 @@ public class GlobalLocaleMessageSource extends SimpleLocaleMessageSource {
 	}
 
 	@PostConstruct
-	protected void init() {
+	public void init() {
 		setLanguagesFolder(LANGUAGES_FOLDER);
 		super.init();
 	}
