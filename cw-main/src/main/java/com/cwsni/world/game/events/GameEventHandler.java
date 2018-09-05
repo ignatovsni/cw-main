@@ -3,6 +3,7 @@ package com.cwsni.world.game.events;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.client.desktop.locale.SimpleLocaleMessageSource;
+import com.cwsni.world.model.data.DataEvent;
 import com.cwsni.world.model.engine.Game;
 
 @Component
@@ -49,19 +51,37 @@ public class GameEventHandler {
 		checkInitialization();
 		for (EventProcessorInfo epi : eventsInfo.values()) {
 			try {
-				processNewTurn(game, epi);
+				scriptEventHandler.processEvent(createBinding(game), epi.getId(), "processNewTurn", null);
 			} catch (Exception e) {
 				logger.error("failed to process event type=" + epi.getId(), e);
 			}
 		}
 	}
 
-	private void processNewTurn(Game game, EventProcessorInfo epi) {
+	public void activateEventsAfterLoading(Game game) {
+		checkInitialization();
+		for (EventProcessorInfo epi : eventsInfo.values()) {
+			try {
+				scriptEventHandler.processEvent(createBinding(game), epi.getId(), "prepareGameAfterLoading", null);
+			} catch (Exception e) {
+				logger.error("failed to process event type=" + epi.getId(), e);
+			}
+		}
+		// TODO if we do not have scripts for some events, probably we need to remove them 
+	}
+
+	private Map<String, Object> createBinding(Game game) {
 		Map<String, Object> mapBinding = new HashMap<>();
 		DataForEvent data = new DataForEvent(game,
-				game.getRandomForCurrentTurn(game.getEventsCollection().getEvents().size()));
+				game.getRandomForCurrentTurn(game.getEventsCollection().getEvents().size()),
+				scriptEventHandler.getWrapper());
 		mapBinding.put("data", data);
-		scriptEventHandler.processEvent(mapBinding, epi.getId(), "processEvent", null);
+		return mapBinding;
+	}
+
+	public Map<DataEvent, List<String>> getDescriptionForEvents(Set<Object> eventsIds) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

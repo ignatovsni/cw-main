@@ -107,31 +107,16 @@ public class GameParams {
 
 	private int truceDurationInYears = 20;
 
-	private double eventGlobalClimateChangeProbability = 0.01;
-	private double eventGlobalClimateChangeContinueProbability = 0.8;
-	private double eventGlobalClimateChangeBadProbability = 0.7;
-	private double eventGlobalClimateChangeMultiplicator = 0.02;
-	private double eventGlobalClimateMaxChange = 0.2;
-	private int eventGlobalClimateChangeDuration = 10;
-
 	private double eventEpidemicProbability = 0.01;
 	private double eventEpidemicContagiousness = 0.5;
 	private double eventEpidemicDeathRate = 0.4;
 	private int eventEpidemicDuration = 10;
 	private int eventEpidemicProtectionDuration = 40;
 	// ------------End of turn procession section--------
-	
+
 	// ------------service section--------------------------
 	private int aiRecordMaxTextSize = 1000;
 	// ------------End of service section-------------------
-
-	public double getEventGlobalClimateChangeProbability() {
-		return eventGlobalClimateChangeProbability;
-	}
-
-	public void setEventGlobalClimateChangeProbability(double eventGlobalClimateChangeProbability) {
-		this.eventGlobalClimateChangeProbability = eventGlobalClimateChangeProbability;
-	}
 
 	public double getPopulationBaseGrowthPerYear() {
 		return populationBaseGrowthPerYear;
@@ -252,38 +237,6 @@ public class GameParams {
 		this.minSoilFertilityToStartPopulation = minSoilFertilityToStartPopulation;
 	}
 
-	public double getEventGlobalClimateChangeContinueProbability() {
-		return eventGlobalClimateChangeContinueProbability;
-	}
-
-	public void setEventGlobalClimateChangeContinueProbability(double eventGlobalClimateChangeContinueProbability) {
-		this.eventGlobalClimateChangeContinueProbability = eventGlobalClimateChangeContinueProbability;
-	}
-
-	public int getEventGlobalClimateChangeDuration() {
-		return eventGlobalClimateChangeDuration;
-	}
-
-	public void setEventGlobalClimateChangeDuration(int eventGlobalClimateChangeDuration) {
-		this.eventGlobalClimateChangeDuration = eventGlobalClimateChangeDuration;
-	}
-
-	public double getEventGlobalClimateChangeMultiplicator() {
-		return eventGlobalClimateChangeMultiplicator;
-	}
-
-	public void setEventGlobalClimateChangeMultiplicator(double eventGlobalClimateChangeMultiplicator) {
-		this.eventGlobalClimateChangeMultiplicator = eventGlobalClimateChangeMultiplicator;
-	}
-
-	public double getEventGlobalClimateChangeBadProbability() {
-		return eventGlobalClimateChangeBadProbability;
-	}
-
-	public void setEventGlobalClimateChangeBadProbability(double eventGlobalClimateChangeBadProbability) {
-		this.eventGlobalClimateChangeBadProbability = eventGlobalClimateChangeBadProbability;
-	}
-
 	public double getEventEpidemicProbability() {
 		return eventEpidemicProbability;
 	}
@@ -322,14 +275,6 @@ public class GameParams {
 
 	public void setEventEpidemicProtectionDuration(int eventEpidemicProtectionDuration) {
 		this.eventEpidemicProtectionDuration = eventEpidemicProtectionDuration;
-	}
-
-	public double getEventGlobalClimateMaxChange() {
-		return eventGlobalClimateMaxChange;
-	}
-
-	public void setEventGlobalClimateMaxChange(double eventGlobalClimateMaxChange) {
-		this.eventGlobalClimateMaxChange = eventGlobalClimateMaxChange;
 	}
 
 	public double getPopulationBaseMigration() {
@@ -594,7 +539,8 @@ public class GameParams {
 		return populationLoyaltyIncreasingGovernmnentCoeffPerYear;
 	}
 
-	public void setPopulationLoyaltyIncreasingGovernmnentCoeffPerYear(double populationLoyaltyIncreasingGovernmnentCoeff) {
+	public void setPopulationLoyaltyIncreasingGovernmnentCoeffPerYear(
+			double populationLoyaltyIncreasingGovernmnentCoeff) {
 		this.populationLoyaltyIncreasingGovernmnentCoeffPerYear = populationLoyaltyIncreasingGovernmnentCoeff;
 	}
 

@@ -13,7 +13,17 @@ public class EventCollection extends ObjectStorage<DataEvent, Integer, String> {
 
 	private Game game;
 
+	protected void buildFrom(Game game, List<DataEvent> events) {
+		this.game = game;
+		events.forEach(e -> registerEvent(e));
+	}
+
 	public void addEvent(DataEvent e) {
+		game.getGameData().getEvents().add(e);
+		registerEvent(e);
+	}
+
+	private void registerEvent(DataEvent e) {
 		if (e.getId() <= 0) {
 			throw new CwException("event id should be initiazed");
 		}
@@ -25,6 +35,7 @@ public class EventCollection extends ObjectStorage<DataEvent, Integer, String> {
 
 	public void removeEvent(DataEvent e) {
 		remove(e, e.getId(), e.getType());
+		game.getGameData().getEvents().remove(e);
 	}
 
 	public List<DataEvent> getEvents() {
@@ -45,15 +56,17 @@ public class EventCollection extends ObjectStorage<DataEvent, Integer, String> {
 		return getObjectByKey(id);
 	}
 
-	protected void buildFrom(Game game, List<DataEvent> events) {
-		this.game = game;
-		events.forEach(e -> addEvent(e));
-	}
-
 	public DataEvent createNewEvent(String type) {
 		DataEvent e = new DataEvent();
 		e.setType(type);
 		e.setId(game.nextEventId());
+		e.setStartTurn(game.getTurn().getDateTurn());
+		return e;
+	}
+
+	public DataEvent createAndAddNewEvent(String type) {
+		DataEvent e = createNewEvent(type);
+		addEvent(e);
 		return e;
 	}
 

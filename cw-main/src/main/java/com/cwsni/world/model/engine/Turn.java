@@ -115,6 +115,13 @@ public class Turn {
 		}
 		return 1 - Math.pow(1 - value, 1.0 * timeMode.getDateTurnPerTime() / TimeMode.WEEK.getDateTurnPerTime());
 	}
+	
+	public double probablilityPerYear(double value) {
+		if (TimeMode.YEAR.equals(timeMode)) {
+			return value;
+		}
+		return 1 - Math.pow(1 - value, 1.0 * timeMode.getDateTurnPerTime() / TimeMode.YEAR.getDateTurnPerTime());
+	}
 
 	public int getYear() {
 		return data.getDateTurn() / TimeMode.YEAR.getDateTurnPerTime();

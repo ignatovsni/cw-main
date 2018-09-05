@@ -1,8 +1,5 @@
 package com.cwsni.world.model.data.old_events;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.Province;
@@ -114,7 +111,6 @@ public class Event {
 
 	public static void processEvents(Game game, LocaleMessageSource messageSource) {
 		//deactivateFinishedEvents(game, messageSource);
-		EventGlobalClimateChange.processNewEvent(game, messageSource);
 		EventEpidemic.processNewEvent(game, messageSource);
 	}
 
@@ -130,9 +126,6 @@ public class Event {
 */
 	protected static void finish(Game game, Event e, LocaleMessageSource messageSource) {
 		switch (e.getType()) {
-		case EVENT_GLOBAL_CLIMATE_CHANGE:
-			EventGlobalClimateChange.finishEvent(game, e, messageSource);
-			break;
 		case EVENT_EPIDEMIC:
 			// made in processEvent
 			break;

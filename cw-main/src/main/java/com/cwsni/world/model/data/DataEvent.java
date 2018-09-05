@@ -7,7 +7,8 @@ public class DataEvent {
 
 	private String type;
 	private int id;
-	private Map<Object, Object> eventData = new HashMap<>();
+	private int startTurn;
+	private Map<Object, Object> data = new HashMap<>();
 
 	@Override
 	public int hashCode() {
@@ -46,12 +47,20 @@ public class DataEvent {
 		this.id = id;
 	}
 
-	public Map<Object, Object> getEventData() {
-		return eventData;
+	public Map<Object, Object> getData() {
+		return data;
 	}
 
-	public void setEventData(Map<Object, Object> eventData) {
-		this.eventData = eventData;
+	public void setData(Map<Object, Object> data) {
+		this.data = data;
+	}
+
+	public int getStartTurn() {
+		return startTurn;
+	}
+
+	public void setStartTurn(int startTurn) {
+		this.startTurn = startTurn;
 	}
 
 }

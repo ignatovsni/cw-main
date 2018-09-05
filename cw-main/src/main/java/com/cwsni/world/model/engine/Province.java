@@ -18,6 +18,8 @@ import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
 import com.cwsni.world.model.data.old_events.EventEpidemic;
+import com.cwsni.world.model.engine.modifiers.ModifierCollection;
+import com.cwsni.world.model.engine.modifiers.ProvinceModifier;
 import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.CwException;
 
@@ -36,6 +38,7 @@ public class Province {
 	private Integer oldStateCapitalId;
 	private double distanceToStateCapital;
 	private Boolean hasWaterNeighbor;
+	private ModifierCollection<ProvinceModifier> modifiers;
 
 	@Override
 	public int hashCode() {
@@ -134,7 +137,7 @@ public class Province {
 	}
 
 	public double getSoilNaturalFertility() {
-		return data.getSoilFertility();
+		return modifiers.getModifiedValue(ProvinceModifier.SOIL_FERTILITY, data.getSoilFertility());
 	}
 
 	public double getScienceAgriculture() {
@@ -231,6 +234,7 @@ public class Province {
 	public void buildFrom(WorldMap worldMap, DataProvince dp) {
 		this.map = worldMap;
 		this.data = dp;
+		modifiers = new ModifierCollection<>();
 		neighbors = new ArrayList<>();
 		population = new ArrayList<>();
 		immigrants = new ArrayList<>();
@@ -242,6 +246,10 @@ public class Province {
 		data.getNeighbors().forEach(id -> neighbors.add(map.findProvById(id)));
 
 		armies = new ArrayList<>();
+	}
+
+	public ModifierCollection<ProvinceModifier> getModifiers() {
+		return modifiers;
 	}
 
 	private void processSoilArea() {

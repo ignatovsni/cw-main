@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.cwsni.world.client.desktop.ApplicationSettings;
+import com.cwsni.world.game.events.GameEventHandler;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.util.CwException;
@@ -31,6 +32,9 @@ public class GameRepository {
 
 	@Autowired
 	private PlayerEventListener gameEventListener;
+	
+	@Autowired
+	private GameEventHandler gameEventHandler; 
 
 	@PostConstruct
 	public void init() {
@@ -92,6 +96,7 @@ public class GameRepository {
 			DataGame dataGame = objectMapper.readValue(file, DataGame.class);
 			game = new Game();
 			game.buildFrom(dataGame, gameEventListener);
+			gameEventHandler.activateEventsAfterLoading(game);
 			logger.trace("loading is successful : " + game.logDescription());
 		} catch (IOException e) {
 			logger.error("loading is failed ", e);

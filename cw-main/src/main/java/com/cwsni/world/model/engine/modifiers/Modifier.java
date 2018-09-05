@@ -1,5 +1,7 @@
 package com.cwsni.world.model.engine.modifiers;
 
+import com.cwsni.world.model.data.DataEvent;
+
 public class Modifier<T> {
 
 	private T feature;
@@ -19,6 +21,7 @@ public class Modifier<T> {
 		if (!(obj instanceof Modifier)) {
 			return false;
 		}
+		@SuppressWarnings("rawtypes")
 		Modifier otherObj = (Modifier) obj;
 		return otherObj.getType().equals(getType()) && otherObj.getFeature().equals(getFeature())
 				&& otherObj.getSource().equals(getSource());
@@ -26,11 +29,11 @@ public class Modifier<T> {
 
 	@Override
 	public String toString() {
-		return "Modifier: feature=" + getFeature() + ", type=" + getType() + ", source=" + getSource();
+		return "Modifier: feature=" + getFeature() + ", type=" + getType() + ", source=" + getSource() + ", value=" + getValue();
 	}
 
-	protected Modifier(T feature, ModifierType type, ModifierSourceType sourceType, Object sourceId,
-			Double value) {
+	protected Modifier(T feature, ModifierType type, Double value, ModifierSourceType sourceType,
+			Object sourceId) {
 		this.feature = feature;
 		this.type = type;
 		this.source = new ModifierSource(sourceType, sourceId);
@@ -52,10 +55,15 @@ public class Modifier<T> {
 	public Double getValue() {
 		return value;
 	}
+	
+	protected void setValue(Double value) {
+		this.value = value;
+	}
 
 	// -------------------------- static section --------------------------------
-	public static Modifier createModifierByEvent(Object feature, ModifierType type, Object sourceId, Double value) {
-		return new Modifier(feature, type, ModifierSourceType.EVENT, sourceId, value);
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Modifier createModifierByEvent(Object feature, ModifierType type, Double value, DataEvent event) {
+		return new Modifier(feature, type, value, ModifierSourceType.EVENT, event.getId());
 	}
 
 }

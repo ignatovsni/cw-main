@@ -2,14 +2,20 @@ package com.cwsni.world.client.desktop.game.infopanels;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.InternalInfoPane;
+import com.cwsni.world.game.events.GameEventHandler;
+import com.cwsni.world.model.data.DataEvent;
 import com.cwsni.world.model.data.old_events.Event;
 import com.cwsni.world.model.engine.Province;
+import com.cwsni.world.model.engine.modifiers.ModifierSource;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -20,6 +26,9 @@ import javafx.scene.layout.VBox;
 @Scope("prototype")
 public class GsProvEventsInfoPane extends InternalInfoPane {
 
+	@Autowired
+	private GameEventHandler gameEventHandler;
+	
 	private GameScene gameScene;
 	private Pane pane;
 
@@ -40,6 +49,8 @@ public class GsProvEventsInfoPane extends InternalInfoPane {
 			return;
 		}
 		Province prov = gameScene.getSelectedProvince();
+		Set<Object> eventsIds = prov.getModifiers().getAllEvents();
+		Map<DataEvent, List<String>> descriptions = gameEventHandler.getDescriptionForEvents(eventsIds);
 		// TODO
 		/*
 		List<Event> events = new ArrayList<Event>(prov.getEvents().getEvents());

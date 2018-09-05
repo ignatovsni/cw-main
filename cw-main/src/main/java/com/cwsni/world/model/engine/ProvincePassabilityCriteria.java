@@ -8,11 +8,12 @@ public class ProvincePassabilityCriteria {
 	private Country country;
 	private Game game;
 
+	protected ProvincePassabilityCriteria() {
+	}
+
 	public ProvincePassabilityCriteria(Country country) {
 		this.country = country;
-		if (country != null) {
-			this.game = country.getGame();
-		}
+		this.game = country.getGame();
 	}
 
 	public boolean isPassable(Province p) {
