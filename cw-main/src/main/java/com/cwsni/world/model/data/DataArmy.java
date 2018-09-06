@@ -11,7 +11,7 @@ public class DataArmy {
 	 * value while the game is loading and then make 1) min--; 2) find max; 3)
 	 * max++;
 	 */
-	private int id;
+	private long id;
 	@JsonSerialize(using = DoubleContextualSerializer.class)
 	@Precision(precision = 4)
 	private double training;
@@ -27,7 +27,7 @@ public class DataArmy {
 	public DataArmy() {
 	}
 
-	public DataArmy(int id) {
+	public DataArmy(long id) {
 		this.id = id;
 		this.population = new DataPopulation();
 	}
@@ -40,11 +40,11 @@ public class DataArmy {
 		this.province = province;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

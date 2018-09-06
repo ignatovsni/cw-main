@@ -20,7 +20,7 @@ public class PArmy implements IPArmy {
 	private CommandArmyMove moveCommand;
 	private boolean isCanMove;
 
-	private int id;
+	private long id;
 	private Integer locationId;
 	private int soldiers = 0;
 
@@ -29,7 +29,7 @@ public class PArmy implements IPArmy {
 		this.army = army;
 	}
 
-	PArmy(PGame game, int id, Integer locationId, int soldiers) {
+	PArmy(PGame game, long id, Integer locationId, int soldiers) {
 		this.game = game;
 		this.id = id;
 		this.locationId = locationId;
@@ -52,13 +52,13 @@ public class PArmy implements IPArmy {
 	}
 
 	@Override
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
 	@Override
 	public int hashCode() {
-		return getId();
+		return (int) getId();
 	}
 
 	@Override

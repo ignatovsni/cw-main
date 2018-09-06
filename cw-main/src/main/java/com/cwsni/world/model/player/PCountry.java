@@ -154,7 +154,7 @@ public class PCountry implements IPCountry {
 	}
 
 	@Override
-	public IPArmy findArmyById(int armyId) {
+	public IPArmy findArmyById(long armyId) {
 		for (IPArmy a : armies) {
 			if (a.getId() == armyId) {
 				return a;
@@ -215,7 +215,7 @@ public class PCountry implements IPCountry {
 		armies.remove(army);
 	}
 
-	public PArmy cmcCreateArmy(int armyId, IPProvince destination, int soldiers) {
+	public PArmy cmcCreateArmy(long armyId, IPProvince destination, int soldiers) {
 		soldiers = Math.min(soldiers, destination.getAvailablePeopleForRecruiting());
 		PArmy newArmy = new PArmy(game, armyId, destination.getId(), soldiers);
 		addArmy(newArmy);
@@ -223,7 +223,7 @@ public class PCountry implements IPCountry {
 		return newArmy;
 	}
 
-	public Object cmcSplitArmy(PArmy army, int newArmyId, int soldiers) {
+	public Object cmcSplitArmy(PArmy army, long newArmyId, int soldiers) {
 		PArmy newArmy = new PArmy(game, newArmyId, army.getLocation().getId(), soldiers);
 		addArmy(newArmy);
 		army.cmcAddSoldiers(-soldiers);

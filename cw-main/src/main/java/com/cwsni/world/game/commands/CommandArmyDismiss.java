@@ -11,7 +11,7 @@ public class CommandArmyDismiss extends CommandArmy {
 	 */
 	private int howManySoldiers;
 
-	public CommandArmyDismiss(int armyId, int howManySoldiersNeedToDismiss) {
+	public CommandArmyDismiss(long armyId, int howManySoldiersNeedToDismiss) {
 		super(armyId);
 		this.howManySoldiers = howManySoldiersNeedToDismiss;
 	}

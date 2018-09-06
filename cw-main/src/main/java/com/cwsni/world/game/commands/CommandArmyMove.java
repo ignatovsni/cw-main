@@ -8,7 +8,7 @@ public class CommandArmyMove extends CommandArmy {
 
 	private Integer destinationProvId;
 
-	public CommandArmyMove(int armyId, Integer destinationProvId) {
+	public CommandArmyMove(long armyId, Integer destinationProvId) {
 		super(armyId);
 		this.destinationProvId = destinationProvId;
 	}

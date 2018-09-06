@@ -33,7 +33,7 @@ public interface IPCountry {
 
 	String getAiScriptName();
 
-	IPArmy findArmyById(int armyId);
+	IPArmy findArmyById(long armyId);
 
 	Collection<IPArmy> findArmiesInProv(IPProvince province);
 

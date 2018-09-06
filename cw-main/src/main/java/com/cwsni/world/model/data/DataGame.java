@@ -20,10 +20,10 @@ public class DataGame {
 	private List<DataState> states = new ArrayList<>();
 	private List<DataEvent> events = new ArrayList<>();
 	private DataRelationshipsCollection relationships = new DataRelationshipsCollection();
-	private int lastEventId;
 	private int lastCountryId;
 	private int lastStateId;
-	private int lastArmyId;
+	private int lastEventId;
+	private long lastArmyId;
 
 	private GameStats gameStats = new GameStats();
 
@@ -120,15 +120,15 @@ public class DataGame {
 		return ++lastCountryId;
 	}
 
-	public int getLastArmyId() {
+	public long getLastArmyId() {
 		return lastArmyId;
 	}
 
-	public void setLastArmyId(int lastArmyId) {
+	public void setLastArmyId(long lastArmyId) {
 		this.lastArmyId = lastArmyId;
 	}
 
-	public int nextArmyId() {
+	public long nextArmyId() {
 		return ++lastArmyId;
 	}
 

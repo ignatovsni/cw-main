@@ -6,10 +6,10 @@ import com.cwsni.world.model.player.PCountry;
 
 public class CommandArmyMerge extends CommandArmy {
 
-	private int armyFromId;
+	private long armyFromId;
 	private int soldiers;
 
-	public CommandArmyMerge(int armyToId, int armyFromId, int soldiers) {
+	public CommandArmyMerge(long armyToId, long armyFromId, int soldiers) {
 		super(armyToId);
 		this.armyFromId = armyFromId;
 		this.soldiers = soldiers;

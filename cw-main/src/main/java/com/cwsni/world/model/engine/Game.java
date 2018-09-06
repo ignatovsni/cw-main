@@ -25,8 +25,8 @@ public class Game {
 	private EventCollection eventsCollection;
 	private CountryCollection countries;
 	private StateCollection states;
-	private Map<Integer, Army> armies;
-	private Map<Integer, Map<Integer, Army>> newArmiesWithIdLessThanZero;
+	private Map<Long, Army> armies;
+	private Map<Integer, Map<Long, Army>> newArmiesWithIdLessThanZero;
 	private RelationshipsCollection relationships;
 
 	private PlayerEventListener gameEventListener;
@@ -44,7 +44,7 @@ public class Game {
 		return data.nextStateId();
 	}
 
-	public int nextArmyId() {
+	public long nextArmyId() {
 		return data.nextArmyId();
 	}
 
@@ -306,18 +306,18 @@ public class Game {
 		armies.remove(a.getId());
 	}
 
-	public Army findArmyById(Integer id) {
+	public Army findArmyById(Long id) {
 		return armies.get(id);
 	}
 
 	/**
 	 * Client side creates new armies with id < 0.
 	 */
-	public Army findArmyByIdForCommand(Integer countryId, Integer armyId) {
+	public Army findArmyByIdForCommand(Integer countryId, Long armyId) {
 		if (armyId >= 0) {
 			return findArmyById(armyId);
 		} else {
-			Map<Integer, Army> idsForCountry = newArmiesWithIdLessThanZero.get(countryId);
+			Map<Long, Army> idsForCountry = newArmiesWithIdLessThanZero.get(countryId);
 			if (idsForCountry != null) {
 				return idsForCountry.get(armyId);
 			} else {
@@ -326,11 +326,11 @@ public class Game {
 		}
 	}
 
-	public void registerNewArmyWithIdLessThanZero(int countryId, int armyId, Army army) {
+	public void registerNewArmyWithIdLessThanZero(int countryId, long armyId, Army army) {
 		if (armyId >= 0) {
 			throw new CwException("armyId for new army must be < 0");
 		}
-		Map<Integer, Army> idsForCountry = newArmiesWithIdLessThanZero.get(countryId);
+		Map<Long, Army> idsForCountry = newArmiesWithIdLessThanZero.get(countryId);
 		if (idsForCountry == null) {
 			idsForCountry = new HashMap<>();
 			newArmiesWithIdLessThanZero.put(countryId, idsForCountry);

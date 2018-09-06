@@ -7,13 +7,13 @@ import com.cwsni.world.util.ComparisonTool;
 
 abstract public class CommandArmy extends Command {
 
-	protected int armyId;
+	protected long armyId;
 
-	public CommandArmy(int armyId) {
+	public CommandArmy(long armyId) {
 		this.armyId = armyId;
 	}
 
-	public int getArmyId() {
+	public long getArmyId() {
 		return armyId;
 	}
 
@@ -29,7 +29,7 @@ abstract public class CommandArmy extends Command {
 	@Override
 	abstract public void apply();
 
-	protected Army getAndCheckArmy(int idOfArmy) {
+	protected Army getAndCheckArmy(long idOfArmy) {
 		Army army = country.getGame().findArmyByIdForCommand(country.getId(), idOfArmy);
 		if (army == null) {
 			addError("army = null");
@@ -42,7 +42,7 @@ abstract public class CommandArmy extends Command {
 		return army;
 	}
 
-	protected PArmy getAndCheckArmy(IPCountry country, int idOfArmy) {
+	protected PArmy getAndCheckArmy(IPCountry country, long idOfArmy) {
 		PArmy army = (PArmy) country.findArmyById(idOfArmy);
 		if (army == null) {
 			addError("army = null");

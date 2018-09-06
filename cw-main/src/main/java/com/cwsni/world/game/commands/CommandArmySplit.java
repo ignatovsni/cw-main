@@ -9,10 +9,10 @@ import com.cwsni.world.util.CwException;
 
 public class CommandArmySplit extends CommandArmy {
 
-	private int newArmyId;
+	private long newArmyId;
 	private int soldiers;
 
-	public CommandArmySplit(int armyId, int newArmyId, int soldiers) {
+	public CommandArmySplit(long armyId, int newArmyId, int soldiers) {
 		super(armyId);
 		this.newArmyId = newArmyId;
 		this.soldiers = soldiers;

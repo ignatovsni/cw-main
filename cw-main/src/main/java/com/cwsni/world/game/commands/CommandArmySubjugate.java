@@ -8,7 +8,7 @@ import com.cwsni.world.util.ComparisonTool;
 
 public class CommandArmySubjugate extends CommandArmy {
 
-	public CommandArmySubjugate(int armyId) {
+	public CommandArmySubjugate(long armyId) {
 		super(armyId);
 	}
 

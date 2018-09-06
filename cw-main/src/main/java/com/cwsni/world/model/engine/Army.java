@@ -21,7 +21,7 @@ public class Army {
 	private boolean isCanMoveThisTurn = true;
 	private boolean isCanFightThisTurn = true;
 
-	public int getId() {
+	public long getId() {
 		return data.getId();
 	}
 
@@ -103,7 +103,7 @@ public class Army {
 
 	@Override
 	public int hashCode() {
-		return data.getId();
+		return (int) data.getId();
 	}
 
 	@Override

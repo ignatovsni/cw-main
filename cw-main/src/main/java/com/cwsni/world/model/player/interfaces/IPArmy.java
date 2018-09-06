@@ -37,7 +37,7 @@ public interface IPArmy {
 
 	void merge(IPArmy fromArmy, int soldiers);
 
-	int getId();
+	long getId();
 
 	void subjugateProvince();
 
