@@ -69,7 +69,7 @@ public class ScienceModificators {
 
 	public double getOwnFractionForCulture(Province capital, Province p) {
 		double perYear = Math.log10(capital.getScienceAdministration() + 1) / 10000;
-		double ownFraction = 0.9999 - Math.max(0.0001, game.getTurn().addPerYear(perYear)) * p.getGovernmentInfluence();
+		double ownFraction = 0.9999 - game.getTurn().addPerYear(Math.min(0.001, perYear)) * p.getGovernmentInfluence();
 		return ownFraction;
 	}
 

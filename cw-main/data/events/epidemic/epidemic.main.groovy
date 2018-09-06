@@ -37,11 +37,12 @@ def getTitleAndShortDescription(event, languageCode, target) {
 }
 
 def log(msg) {
-	println msg;
+	//println msg;
 }
 
 def checkNewEvent() {
 	log 'checkNewEvent';
+	return;
 	//if (data.rnd.nextDouble() > data.game.turn.probablilityPerYear(eventEpidemicProbability) ) {return null;}
 	def core = null;
 	def counter = 0;
@@ -66,9 +67,10 @@ def checkNewEvent() {
 }
 
 def activateEvent(event) {
-	event.info.provinces.entrySet().each {entry ->
-		data.events.addModifier(p, ProvinceModifier.SOIL_FERTILITY, ModifierType.MULTIPLY, event.info.effect, event);
-	}
+// TODO yes, to provinces, not population
+//	event.info.provinces.entrySet().each {entry ->
+//		data.events.addModifier(p, ProvinceModifier.SOIL_FERTILITY, ModifierType.MULTIPLY, event.info.effect, event);
+//	}
 }
 
 def updateModifiers(event) {

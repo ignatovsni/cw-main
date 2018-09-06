@@ -37,6 +37,7 @@ public class Population {
 	public Population(Game game) {
 		this.game = game;
 		data = new DataPopulation();
+		data.setId(game.nextPopulationId());
 		science = new ScienceCollection(data.getScience());
 		culture = new Culture(data.getCulture());
 	}
@@ -51,6 +52,10 @@ public class Population {
 
 	public int getAmount() {
 		return data.getAmount();
+	}
+	
+	public long getId() {
+		return data.getId();
 	}
 
 	protected void setAmount(int amount) {
@@ -507,10 +512,8 @@ public class Population {
 		// decreasing - regular (mostly for other countries and states)
 		double populationLoyaltyDecreasingCoeff = turn
 				.multiplyPerYear(gParams.getPopulationLoyaltyDecreasingCoeffDefaultPerYear());
-		double rl = p.getLoyaltyToCountry();
 		p.decreaseLoyaltyToAllCountries(populationLoyaltyDecreasingCoeff);
 		p.decreaseLoyaltyToAllStates(populationLoyaltyDecreasingCoeff);
-		double rl2 = p.getLoyaltyToCountry();
 
 		if (state != null) {
 			Double maxStateLoyalty = state.getMaxStateLoyalty();

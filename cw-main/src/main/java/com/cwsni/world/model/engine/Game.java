@@ -47,6 +47,10 @@ public class Game {
 	public long nextArmyId() {
 		return data.nextArmyId();
 	}
+	
+	public long nextPopulationId() {
+		return data.nextPopulationId();
+	}
 
 	public WorldMap getMap() {
 		return map;

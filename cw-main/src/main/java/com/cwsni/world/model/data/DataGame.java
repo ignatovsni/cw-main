@@ -24,6 +24,7 @@ public class DataGame {
 	private int lastStateId;
 	private int lastEventId;
 	private long lastArmyId;
+	private long lastPopulationId;
 
 	private GameStats gameStats = new GameStats();
 
@@ -132,6 +133,10 @@ public class DataGame {
 		return ++lastArmyId;
 	}
 
+	public long nextPopulationId() {
+		return ++lastPopulationId;
+	}
+
 	public int getLastStateId() {
 		return lastStateId;
 	}
@@ -166,6 +171,14 @@ public class DataGame {
 
 	public void setRelationships(DataRelationshipsCollection relationships) {
 		this.relationships = relationships;
+	}
+
+	public long getLastPopulationId() {
+		return lastPopulationId;
+	}
+
+	public void setLastPopulationId(long lastPopulationId) {
+		this.lastPopulationId = lastPopulationId;
 	}
 
 }

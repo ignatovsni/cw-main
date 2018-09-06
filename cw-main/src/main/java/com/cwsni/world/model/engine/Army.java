@@ -235,8 +235,9 @@ public class Army {
 	}
 
 	public void addPopulation(Population pop) {
-		if (pop.getAmount() == 0) {
+		if (population.getAmount() == 0) {
 			population = pop;
+			data.setPopulation(pop.getPopulationData());
 		} else {
 			population.addPop(pop);
 		}

@@ -30,6 +30,9 @@ public class DataArmy {
 	public DataArmy(long id) {
 		this.id = id;
 		this.population = new DataPopulation();
+		// it is not necessarily because army will get new population from province
+		// population
+		// population.setId(game.nextPopulationId());
 	}
 
 	public Integer getProvince() {

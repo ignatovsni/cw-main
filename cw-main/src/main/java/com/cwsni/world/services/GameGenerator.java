@@ -380,6 +380,7 @@ public class GameGenerator {
 		game.getMap().getProvinces().stream().filter(p -> (p.getTerrainType().isPopulationPossible())).forEach(p -> {
 			if (p.getSoilFertility() >= gParams.getMinSoilFertilityToStartPopulation()) {
 				DataPopulation pop = new DataPopulation();
+				pop.setId(game.nextPopulationId());
 				pop.setAmount((int) (p.getSoilFertility() * gParams.getPopulationAtStart()));
 				initCulture(p, pop, game);
 				initScience(pop, gParams);

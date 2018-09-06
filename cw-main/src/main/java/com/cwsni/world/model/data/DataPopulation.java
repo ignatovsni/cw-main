@@ -11,6 +11,7 @@ public class DataPopulation {
 
 	public static Double LOYALTY_MAX = 1.0;
 
+	private long id;
 	private int amount;
 	@JsonSerialize(using = DoubleContextualSerializer.class)
 	@Precision(precision = 4)
@@ -102,6 +103,14 @@ public class DataPopulation {
 
 	public void setCasualties(long casualties) {
 		this.casualties = casualties;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 }
