@@ -23,6 +23,8 @@ public class ScriptEventHandler extends AbstractScriptHandler {
 	protected static final String EVENTS_SCRIPTS_FOLDER = "data" + File.separator + "events";
 	protected static final String MAIN_SCRIPT_NAME_PART = ".main";
 
+	protected ThreadLocal<String> subFolder = new ThreadLocal<>();
+
 	@Override
 	protected int getScriptsPoolSize() {
 		return applicationSettings.getEventsScriptsPoolSize();
@@ -30,7 +32,11 @@ public class ScriptEventHandler extends AbstractScriptHandler {
 
 	@Override
 	protected String getScriptFolderPath() {
-		return EVENTS_SCRIPTS_FOLDER;
+		if (subFolder.get() == null) {
+			return EVENTS_SCRIPTS_FOLDER;
+		} else {
+			return EVENTS_SCRIPTS_FOLDER + File.separator + subFolder.get();
+		}
 	}
 
 	@Override
@@ -42,13 +48,21 @@ public class ScriptEventHandler extends AbstractScriptHandler {
 		Set<String> setOfScriptsName = new HashSet<>();
 		File folder = new File(EVENTS_SCRIPTS_FOLDER);
 		if (folder.exists() && folder.isDirectory() && folder.canRead()) {
-			for (File file : folder.listFiles()) {
-				String fileName = file.getName();
-				int idx = fileName.lastIndexOf(MAIN_SCRIPT_NAME_PART + ".groovy");
-				if (idx < 0) {
-					continue;
+			for (File subFolder : folder.listFiles()) {
+				if (subFolder.isDirectory() && folder.canRead()) {
+					for (File file : subFolder.listFiles()) {
+						if (!file.isDirectory()) {
+							String fileName = file.getName();
+							int idx = fileName.lastIndexOf(MAIN_SCRIPT_NAME_PART + ".groovy");
+							if (idx >= 0) {
+								String eventScriptId = fileName.substring(0, idx);
+								if (subFolder.getName().equals(eventScriptId)) {
+									setOfScriptsName.add(eventScriptId);
+								}
+							}
+						}
+					}
 				}
-				setOfScriptsName.add(fileName.substring(0, idx));
 			}
 		}
 		List<String> names = new ArrayList<>(setOfScriptsName);
@@ -57,6 +71,9 @@ public class ScriptEventHandler extends AbstractScriptHandler {
 	}
 
 	public Object processEvent(Map<String, Object> mapBinding, String scriptName, String methodName, Object args) {
-		return invokeScriptMethod(mapBinding, scriptName + MAIN_SCRIPT_NAME_PART, methodName, args);
+		subFolder.set(scriptName);
+		Object result = invokeScriptMethod(mapBinding, scriptName + MAIN_SCRIPT_NAME_PART, methodName, args);
+		subFolder.set(null);
+		return result;
 	}
 }

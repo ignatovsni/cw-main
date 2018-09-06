@@ -1,5 +1,6 @@
 package com.cwsni.world.game.events;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +54,7 @@ public class GameEventHandler {
 		for (String scriptId : scripts) {
 			SimpleLocaleMessageSource localeMessageSource = new SimpleLocaleMessageSource();
 			localeMessageSource.setApplicationSettings(applicationSettings);
-			localeMessageSource.setLanguagesFolder(ScriptEventHandler.EVENTS_SCRIPTS_FOLDER);
+			localeMessageSource.setLanguagesFolder(ScriptEventHandler.EVENTS_SCRIPTS_FOLDER  + File.separator + scriptId);
 			localeMessageSource.setLanguagesFileNameStartWith(scriptId + LANGUAGES_FILE_NAME_MID_WITH);
 			localeMessageSource.setLanguagesFileNameEndWith(LANGUAGES_FILE_NAME_END_WITH);
 			localeMessageSource.init();
