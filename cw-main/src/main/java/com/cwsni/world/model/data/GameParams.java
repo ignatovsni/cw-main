@@ -108,11 +108,6 @@ public class GameParams {
 
 	private int truceDurationInYears = 20;
 
-	private double eventEpidemicProbability = 0.01;
-	private double eventEpidemicContagiousness = 0.5;
-	private double eventEpidemicDeathRate = 0.4;
-	private int eventEpidemicDuration = 10;
-	private int eventEpidemicProtectionDuration = 40;
 	// ------------End of turn procession section--------
 
 	// ------------service section--------------------------
@@ -236,46 +231,6 @@ public class GameParams {
 
 	public void setMinSoilFertilityToStartPopulation(double minSoilFertilityToStartPopulation) {
 		this.minSoilFertilityToStartPopulation = minSoilFertilityToStartPopulation;
-	}
-
-	public double getEventEpidemicProbability() {
-		return eventEpidemicProbability;
-	}
-
-	public void setEventEpidemicProbability(double eventEpidemicProbability) {
-		this.eventEpidemicProbability = eventEpidemicProbability;
-	}
-
-	public double getEventEpidemicContagiousness() {
-		return eventEpidemicContagiousness;
-	}
-
-	public void setEventEpidemicContagiousness(double eventEpidemicContagiousness) {
-		this.eventEpidemicContagiousness = eventEpidemicContagiousness;
-	}
-
-	public double getEventEpidemicDeathRate() {
-		return eventEpidemicDeathRate;
-	}
-
-	public void setEventEpidemicDeathRate(double eventEpidemicDeathRate) {
-		this.eventEpidemicDeathRate = eventEpidemicDeathRate;
-	}
-
-	public int getEventEpidemicDuration() {
-		return eventEpidemicDuration;
-	}
-
-	public void setEventEpidemicDuration(int eventEpidemicDuration) {
-		this.eventEpidemicDuration = eventEpidemicDuration;
-	}
-
-	public int getEventEpidemicProtectionDuration() {
-		return eventEpidemicProtectionDuration;
-	}
-
-	public void setEventEpidemicProtectionDuration(int eventEpidemicProtectionDuration) {
-		this.eventEpidemicProtectionDuration = eventEpidemicProtectionDuration;
 	}
 
 	public double getPopulationBaseMigration() {

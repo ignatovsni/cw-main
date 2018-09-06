@@ -12,6 +12,7 @@ import com.cwsni.world.model.engine.Province;
 
 public class EventEpidemic extends Event {
 
+	/*
 	public static void processNewEvent(Game game, LocaleMessageSource messageSource) {
 		GameParams gParams = game.getGameParams();
 		if (gParams.getRandom().nextDouble() > gParams.getEventEpidemicProbability()) {
@@ -31,6 +32,7 @@ public class EventEpidemic extends Event {
 		e.setDescription(messageSource.getMessage("event.epidemic.influence") + " " + e.getEffectDouble1() + "/"
 				+ e.getEffectDouble2());
 	}
+	 */
 
 	private static Event createEvent(Game game, GameParams gParams) {
 		Event e = new Event();
@@ -38,7 +40,7 @@ public class EventEpidemic extends Event {
 		e.setType(EVENT_EPIDEMIC);
 		e.setVisibleForUser(true);
 		e.setStartTurn(game.getTurn().getDateTurn());
-		e.setDuration(gParams.getRandom().nextInt(gParams.getEventEpidemicDuration()));
+		//e.setDuration(gParams.getRandom().nextInt(gParams.getEventEpidemicDuration()));
 		//game.addEvent(e);
 		return e;
 	}
@@ -85,7 +87,7 @@ public class EventEpidemic extends Event {
 		e.setType(EVENT_EPIDEMIC_PROTECTED);
 		e.setVisibleForUser(true);
 		e.setStartTurn(game.getTurn().getDateTurn());
-		e.setDuration(gParams.getEventEpidemicProtectionDuration());
+		//e.setDuration(gParams.getEventEpidemicProtectionDuration());
 		// TODO LocaleMessageSource messageSource
 		e.setTitle("Protection against epidemics");
 		e.setDescription("Protection against epidemics");

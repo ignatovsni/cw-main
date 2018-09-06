@@ -50,7 +50,7 @@ public class GsProvEventsInfoPane extends InternalInfoPane {
 		Province prov = gameScene.getSelectedProvince();
 		Set<Object> eventsIds = prov.getModifiers().getAllEvents();
 		Map<Event, List<String>> descriptions = gameEventHandler
-				.getTitleAndShortDescriptionsForEvents(gameScene.getGame(), eventsIds);
+				.getTitleAndShortDescriptionsForEvents(gameScene.getGame(), eventsIds, prov);
 		for (Entry<Event, List<String>> entry : descriptions.entrySet()) {
 			String title = entry.getValue().get(0);
 			String shortDescription = entry.getValue().get(1);

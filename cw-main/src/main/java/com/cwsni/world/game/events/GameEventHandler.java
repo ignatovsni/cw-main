@@ -27,9 +27,6 @@ public class GameEventHandler {
 	private static final String METHOD_PREPARE_GAME_AFTER_LOADING = "prepareGameAfterLoading";
 	private static final String METHOD_GET_TITLE_AND_SHORT_DESCRIPTION = "getTitleAndShortDescription";
 
-	private static final String LANGUAGES_FILE_NAME_MID_WITH = ".messages";
-	private static final String LANGUAGES_FILE_NAME_END_WITH = ".txt";
-
 	private Map<String, EventProcessorInfo> eventsInfo;
 
 	@Autowired
@@ -54,9 +51,8 @@ public class GameEventHandler {
 		for (String scriptId : scripts) {
 			SimpleLocaleMessageSource localeMessageSource = new SimpleLocaleMessageSource();
 			localeMessageSource.setApplicationSettings(applicationSettings);
-			localeMessageSource.setLanguagesFolder(ScriptEventHandler.EVENTS_SCRIPTS_FOLDER  + File.separator + scriptId);
-			localeMessageSource.setLanguagesFileNameStartWith(scriptId + LANGUAGES_FILE_NAME_MID_WITH);
-			localeMessageSource.setLanguagesFileNameEndWith(LANGUAGES_FILE_NAME_END_WITH);
+			localeMessageSource
+					.setLanguagesFolder(ScriptEventHandler.EVENTS_SCRIPTS_FOLDER + File.separator + scriptId);
 			localeMessageSource.init();
 			EventProcessorInfo epi = new EventProcessorInfo(scriptId, localeMessageSource);
 			eventsInfo.put(scriptId, epi);
@@ -106,13 +102,14 @@ public class GameEventHandler {
 		return mapBinding;
 	}
 
-	public Map<Event, List<String>> getTitleAndShortDescriptionsForEvents(Game game, Set<Object> eventsIds) {
+	public Map<Event, List<String>> getTitleAndShortDescriptionsForEvents(Game game, Set<Object> eventsIds,
+			Object target) {
 		checkInitialization();
 		Map<Event, List<String>> result = new HashMap<>(eventsInfo.size());
 		for (Object id : eventsIds) {
 			Event event = game.getEventsCollection().findEventById((Integer) id);
 			if (event != null) {
-				List<String> description = getTitleAndShortDescriptionForEvent(game, event);
+				List<String> description = getTitleAndShortDescriptionForEvent(game, event, target);
 				if (description != null) {
 					result.put(event, description);
 				}
@@ -122,14 +119,15 @@ public class GameEventHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<String> getTitleAndShortDescriptionForEvent(Game game, Event event) {
+	private List<String> getTitleAndShortDescriptionForEvent(Game game, Event event, Object target) {
 		EventProcessorInfo epi = findEventProcessorInfoByScriptId(event.getType());
 		if (epi == null) {
 			return Arrays.asList(event.getType(), getMessage("error.msg.event.script.not-found"));
 		}
 		try {
 			return (List<String>) scriptEventHandler.processEvent(createBinding(game, epi), epi.getScriptId(),
-					METHOD_GET_TITLE_AND_SHORT_DESCRIPTION, new Object[] {event, applicationSettings.getLanguage()});
+					METHOD_GET_TITLE_AND_SHORT_DESCRIPTION,
+					new Object[] { event, applicationSettings.getLanguage(), target });
 		} catch (Exception e) {
 			logger.error("failed to process event type=" + epi.getScriptId(), e);
 			return Arrays.asList(event.getType(), getMessage("error.msg.event.script.execution-error"));

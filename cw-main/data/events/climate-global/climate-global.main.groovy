@@ -1,7 +1,11 @@
 import groovy.transform.Field;
 import com.cwsni.world.model.engine.modifiers.*
 
+// EVENT_TYPE is unique code for event.
+// The application does not use it now, but can use in the future. Please, define it.
 @Field final String EVENT_TYPE = 'GLOBAL_CLIMATE_CHANGE';
+
+// Constants for events
 @Field final double climateChangeProbability = 0.01;
 @Field final double climateChangeContinueProbability = 0.8;
 @Field final double climateChangeBadProbability = 0.7;
@@ -10,6 +14,7 @@ import com.cwsni.world.model.engine.modifiers.*
 @Field final double climateMinImpact = 0.8;
 @Field final int climateChangeDuration = 10;
 
+// The application invokes this method each turn. 
 def processNewTurn() {
 	log 'processNewTurn ' + EVENT_TYPE;
 	def events =  data.events.findEventsByThisType();
@@ -22,6 +27,7 @@ def processNewTurn() {
 	}
 }
 
+// The application invokes this method after loading to restore the events impact (usualy to create modifiers).
 def prepareGameAfterLoading() {
 	log 'prepareGameAfterLoading ' + EVENT_TYPE;
 	def events =  data.events.findEventsByThisType();
@@ -30,13 +36,12 @@ def prepareGameAfterLoading() {
     	activateEvent(events[0]);
 	}       
 }
-
-def getTitleAndShortDescription(event, languageCode) {
-	def title = String.format(data.getMessage('event.title'), event.info.effect);
-	def shortDescription = String.format(data.getMessage('event.description.short'), 
-		data.game.turn.getDateTexToDisplay(event.createdTurn),
-		data.game.turn.howManyYearsHavePassedSinceTurn(event.createdTurn));
-	return [title, shortDescription];
+// The application invokes this method to get description for the user.
+// Must return the list with 2 elements: [title, short description].
+// target - the object for which was invoked this method (e.g. the province with the modifiers of this event).
+def getTitleAndShortDescription(event, languageCode, target) {
+	// Just the example how you can invoke methods of the another script.
+	return data.scriptEventsWrapper.invoke('ui_description', 'getTitleAndShortDescription', [event, languageCode]);
 }
 
 def log(msg) {

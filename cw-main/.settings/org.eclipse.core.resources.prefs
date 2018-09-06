@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
+encoding//data/events/climate-global/messages_ru.properties=UTF-8
+encoding//data/events/epidemic/messages_ru.properties=UTF-8
 encoding//data/languages/messages.properties=UTF-8
 encoding//data/languages/messages_ru.properties=UTF-8
 encoding//src/main/java=UTF-8

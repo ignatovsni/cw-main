@@ -111,7 +111,7 @@ public class Event {
 
 	public static void processEvents(Game game, LocaleMessageSource messageSource) {
 		//deactivateFinishedEvents(game, messageSource);
-		EventEpidemic.processNewEvent(game, messageSource);
+		//EventEpidemic.processNewEvent(game, messageSource);
 	}
 
 	/*
