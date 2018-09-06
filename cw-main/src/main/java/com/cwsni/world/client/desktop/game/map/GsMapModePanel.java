@@ -135,6 +135,7 @@ public class GsMapModePanel extends BorderPane {
 		addMapMode("population", MapMode.POPULATION);
 		addMapMode("government-influence", MapMode.GOVERNMENT_INFLUENCE);
 		addMapMode("loyalty", MapMode.LOYALTY);
+		addMapMode("loyalty-dangerous", MapMode.LOYALTY_DANGEROUS);
 		addMapMode("states", MapMode.STATES);
 		addMapMode("wealth", MapMode.WEALTH);
 		addMapMode("infrastructure", MapMode.INFRASTRUCTURE);

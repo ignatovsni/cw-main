@@ -50,17 +50,27 @@ public class ScienceModificators {
 		return province.getSoilNaturalFertility()
 				* (1 + agriculture * game.getGameParams().getScienceAgricultureMultiplicatorForFertility());
 	}
-	
-	public double getEffectiveDistanceFromProvinceToCountryCapital(Country country, Province province, double distToCapital) {
-		double adminScience = 10 + province.getScienceAdministration() + country.getCapital().getScienceAdministration();
+
+	public double getEffectiveDistanceFromProvinceToCountryCapital(Country country, Province province,
+			double distToCapital) {
+		double adminScience = 10 + province.getScienceAdministration()
+				+ country.getCapital().getScienceAdministration();
 		double distanceToCapitalWithScience = distToCapital - Math.log10(adminScience) * 0.3;
 		return distanceToCapitalWithScience;
 	}
-	
-	public double getEffectiveDistanceFromStateCapitalToCountryCapital(Country country, Province province, double distToCapital) {
-		double adminScience = 10 + province.getScienceAdministration() + country.getCapital().getScienceAdministration();
+
+	public double getEffectiveDistanceFromStateCapitalToCountryCapital(Country country, Province province,
+			double distToCapital) {
+		double adminScience = 10 + province.getScienceAdministration()
+				+ country.getCapital().getScienceAdministration();
 		double effectiveDistanceFromStateCapitalToCountryCapital = distToCapital / Math.log10(adminScience) * 2;
 		return effectiveDistanceFromStateCapitalToCountryCapital;
+	}
+
+	public double getOwnFractionForCulture(Province capital, Province p) {
+		double perYear = Math.log10(capital.getScienceAdministration() + 1) / 10000;
+		double ownFraction = 0.9999 - Math.max(0.0001, game.getTurn().addPerYear(perYear)) * p.getGovernmentInfluence();
+		return ownFraction;
 	}
 
 }

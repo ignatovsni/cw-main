@@ -68,7 +68,7 @@ public class GameHandler {
 		}
 		if (autoTurn && pauseBetweenTurn) {
 			try {
-				Thread.sleep(50 * Math.max((10 - timeMode.getDateTurnPerTime()), 0));
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -78,7 +78,7 @@ public class CreateGameWindow extends Dialog<ButtonType> {
 		int idx = 0;
 		addRow("window.create-game.map.size", grid, idx++, cbMapSizes);
 		addRow("window.create-game.map.ocean-fraction", grid, idx++, cbOceanFraction);
-		addRow("window.create-game.map.ocean-fraction", grid, idx++, cbMountainFraction);
+		addRow("window.create-game.map.mountain-fraction", grid, idx++, cbMountainFraction);
 		addRow("window.create-game.random-seed", grid, idx++, tfRandomSeed);
 
 		getDialogPane().setContent(grid);
@@ -117,8 +117,8 @@ public class CreateGameWindow extends Dialog<ButtonType> {
 		grid.setPadding(new Insets(0, 10, 0, 10));
 		ColumnConstraints column1 = new ColumnConstraints();
 		column1.setHalignment(HPos.RIGHT);
-		column1.setMinWidth(90);
-		column1.setMaxWidth(90);
+		column1.setPrefWidth(150);
+		column1.setMaxWidth(200);
 		grid.getColumnConstraints().add(column1);
 		ColumnConstraints column2 = new ColumnConstraints();
 		column2.setHalignment(HPos.LEFT);

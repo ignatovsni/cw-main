@@ -60,8 +60,7 @@ public class Culture {
 			return;
 		}
 
-		double perWeek = Math.log10(c.getCapital().getScienceAdministration() + 1) / 100000;
-		double ownFraction = 0.9999 - Math.min(0.0001, game.getTurn().addPerWeek(perWeek)) * p.getGovernmentInfluence();
+		double ownFraction = game.getScienceModificators().getOwnFractionForCulture(c.getCapital(), p);
 		Color color = c.getColor();
 		data.setRed(merge(data.getRed(), color.getR(), ownFraction));
 		data.setGreen(merge(data.getGreen(), color.getG(), ownFraction));
