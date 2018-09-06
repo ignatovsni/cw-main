@@ -82,7 +82,7 @@ class DProvince extends Group {
 	public void draw() {
 		MapMode mapMode = map.getMapMode();
 		if (getProvince().getTerrainType().isMountain()
-				|| getProvince().getTerrainType().isWater() && !MapMode.DIPLOMACY_REACHABLE_LANDS.equals(mapMode)) {
+				|| getProvince().getTerrainType().isWater() && !MapMode.REACHABLE_LANDS.equals(mapMode)) {
 			if (mapMode != prevMode) {
 				drawGeoMode(polygon);
 			}
@@ -103,7 +103,7 @@ class DProvince extends Group {
 			case DIPLOMACY:
 				drawDiplomacyMode(polygon);
 				break;
-			case DIPLOMACY_REACHABLE_LANDS:
+			case REACHABLE_LANDS:
 				drawDiplomacyReachableLandsMode(polygon);
 				break;
 			case GOVERNMENT_INFLUENCE:
@@ -121,7 +121,7 @@ class DProvince extends Group {
 			case INFRASTRUCTURE:
 				drawInfrastructureMode(polygon);
 				break;
-			case SOIL:
+			case SOIL_FERTILITY:
 				drawSoilFertilityMode(polygon);
 				break;
 			case SOIL_RAW_FERTILITY:
@@ -135,9 +135,6 @@ class DProvince extends Group {
 				break;
 			case SCIENCE_ADMINISTRATION:
 				drawScienceAdministrationMode(polygon);
-				break;
-			case DISEASE:
-				drawDiseaseMode(polygon);
 				break;
 			case GEO:
 				if (mapMode != prevMode) {
@@ -462,17 +459,6 @@ class DProvince extends Group {
 			pValue = new Color(1, Math.min(1 - fraction, 1), 0, 1);
 		}
 		fillPolygon(polygon, pValue);
-	}
-
-	private void drawDiseaseMode(Polygon polygon) {
-		// TODO
-		/*
-		 * if (getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC)) {
-		 * fillPolygon(polygon, Color.RED); } else if
-		 * (getProvince().getEvents().hasEventWithType(Event.EVENT_EPIDEMIC_PROTECTED))
-		 * { fillPolygon(polygon, Color.GREEN); } else { fillPolygon(polygon,
-		 * Color.GREY); }
-		 */
 	}
 
 	private void updatePoints() {

@@ -124,7 +124,7 @@ public class DWorldMap {
 
 	public void selectProvince(Integer provId) {
 		selectProvince(provincesById.get(provId));
-		if (MapMode.DIPLOMACY == mapMode || MapMode.DIPLOMACY_REACHABLE_LANDS == mapMode) {
+		if (MapMode.DIPLOMACY == mapMode || MapMode.REACHABLE_LANDS == mapMode) {
 			setMapModeAndRedraw(mapMode);
 		}
 	}

@@ -1,5 +1,8 @@
 package com.cwsni.world.client.desktop;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Component;
@@ -20,6 +23,8 @@ public class ApplicationSettings extends AbstractSettings {
 	private int aiScriptsPoolSize = 16;
 	private int eventsScriptsPoolSize = 16;
 	private int eventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns = 100;
+	
+	private List<String> mapButtonCodes = new ArrayList<>();
 
 	@Override
 	@PostConstruct
@@ -107,6 +112,14 @@ public class ApplicationSettings extends AbstractSettings {
 	public void setEventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns(
 			int eventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns) {
 		this.eventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns = eventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns;
+	}
+
+	public List<String> getMapButtonCodes() {
+		return mapButtonCodes;
+	}
+
+	public void setMapButtonCodes(List<String> mapButtonCodes) {
+		this.mapButtonCodes = mapButtonCodes;
 	}
 
 }

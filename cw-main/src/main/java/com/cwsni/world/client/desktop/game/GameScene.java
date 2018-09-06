@@ -23,7 +23,7 @@ import com.cwsni.world.client.desktop.game.infopanels.GsProvEventsInfoPane;
 import com.cwsni.world.client.desktop.game.infopanels.GsProvInfoPane;
 import com.cwsni.world.client.desktop.game.infopanels.GsProvScienceInfoPane;
 import com.cwsni.world.client.desktop.game.map.DWorldMap;
-import com.cwsni.world.client.desktop.game.map.GsMapToolBar;
+import com.cwsni.world.client.desktop.game.map.GsMapModePanel;
 import com.cwsni.world.client.desktop.game.map.MapMode;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.AlertWithStackTraceFactory;
@@ -73,7 +73,7 @@ public class GameScene extends Scene {
 	private GameGenerator gameGenerator;
 
 	@Autowired
-	private GsMapToolBar mapToolBar;
+	private GsMapModePanel mapModePanel;
 
 	@Autowired
 	private GsMenuBar menuBar;
@@ -176,7 +176,8 @@ public class GameScene extends Scene {
 
 		mapPane = new ZoomableScrollPane();
 		BorderPane mapBlock = new BorderPane();
-		mapBlock.setBottom(mapToolBar);
+		// mapBlock.setBottom(mapToolBar);
+		mapBlock.setBottom(mapModePanel);
 		mapBlock.setCenter(mapPane);
 
 		BorderPane leftSection = new BorderPane();
@@ -197,7 +198,7 @@ public class GameScene extends Scene {
 	private void initComponents() {
 		// tabs and menu
 		timeControl.init(this);
-		mapToolBar.init(this);
+		mapModePanel.init(this);
 		menuBar.init(this);
 
 		// info panels
@@ -643,6 +644,7 @@ public class GameScene extends Scene {
 	}
 
 	public void refreshAllForLanguageChange() {
+		pauseGame();
 		mainWindow.refreshAllForLanguageChange(game, selectedProvinceId);
 	}
 

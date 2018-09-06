@@ -16,9 +16,9 @@ def processNewTurn() {
 	if (events.isEmpty()) {
     	checkNewEvent();  
 	} else {
-    	def copyEvents = new ArrayList(events);
     	// only one event can be active
-    	processExistingEvent(copyEvents[0]);
+    	events[0].markAsProcessed();
+    	processExistingEvent(events[0]);
 	}
 }
 
@@ -26,10 +26,17 @@ def prepareGameAfterLoading() {
 	log 'prepareGameAfterLoading ' + EVENT_TYPE;
 	def events =  data.events.findEventsByThisType();
 	if (!events.isEmpty()) {
-    	def copyEvents = new ArrayList(events);
-    	// only one event can be active
-    	activateEvent(copyEvents[0]);
+		events[0].markAsProcessed();
+    	activateEvent(events[0]);
 	}       
+}
+
+def getTitleAndShortDescription(event, languageCode) {
+	def title = String.format(data.getMessage('event.title'), event.info.effect);
+	def shortDescription = String.format(data.getMessage('event.description.short'), 
+		data.game.turn.getDateTexToDisplay(event.createdTurn),
+		data.game.turn.howManyYearsHavePassedSinceTurn(event.createdTurn));
+	return [title, shortDescription];
 }
 
 def log(msg) {
@@ -67,7 +74,6 @@ def updateModifiers(event) {
 
 def processExistingEvent(event) {
 	log 'processExistingEvent';
-	event.markAsProcessed();
 	if (event.info.endTurn < data.game.turn.dateTurn) {
 		if (event.info.evolve && data.rnd.nextDouble() < data.game.turn.probablilityPerYear(climateChangeContinueProbability)) {
 			// start moving back to normal climate
@@ -97,11 +103,5 @@ def removeEvent(event) {
 	event.removeFromGame();
 }
 
-def getTitleAndShortDescription(event, languageCode) {
-	def title = String.format(data.getMessage('event.title'), event.info.effect);
-	def shortDescription = String.format(data.getMessage('event.description.short'), 
-		data.game.turn.getDateTexToDisplay(event.createdTurn),
-		data.game.turn.howManyYearsHavePassedSinceTurn(event.createdTurn));
-	return [title, shortDescription];
-}
+
 
