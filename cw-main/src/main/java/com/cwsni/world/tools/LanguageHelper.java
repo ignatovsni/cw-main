@@ -34,12 +34,19 @@ public class LanguageHelper {
 		try (FileInputStream fis = new FileInputStream(languageFile);
 				InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 				BufferedReader br = new BufferedReader(isr)) {
-			br.lines().forEach(line -> {
+			List<String> rows = br.lines().collect(Collectors.toList());
+			for (int i = 0; i < rows.size(); i++) {
+				String line = rows.get(i);
 				int idx = line.indexOf("=");
 				if (idx > 0) {
-					languageMessages.put(line.substring(0, idx).trim(), line.substring(idx + 1).trim());
+					String key = line.substring(0, idx).trim();
+					String value = line.substring(idx + 1).trim();
+					while (value.endsWith("\\") && i < rows.size()) {
+						value += System.getProperty("line.separator") + rows.get(++i);
+					}
+					languageMessages.put(key, value);
 				}
-			});
+			}
 		}
 		return languageMessages;
 	}
@@ -52,28 +59,32 @@ public class LanguageHelper {
 		try (FileInputStream fis = new FileInputStream(baseFile);
 				InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
 				BufferedReader br = new BufferedReader(isr)) {
-			int allRows = 0;
 			int usedValues = 0;
 			int needToUpdateValues = 0;
-			for (String line : br.lines().collect(Collectors.toList())) {
+			List<String> rows = br.lines().collect(Collectors.toList());
+			for (int i = 0; i < rows.size(); i++) {
+				String line = rows.get(i);
 				int idx = line.indexOf("=");
 				if (idx > 0) {
 					String key = line.substring(0, idx).trim();
-					String value = languageMessages.get(key);
-					if (value == null) {
-						value = line.substring(idx + 1).trim();
-						needToUpdateValues++;
-					} else {
+					String value = line.substring(idx + 1).trim();
+					while (value.endsWith("\\") && i < rows.size()) {
+						value += rows.get(++i);
+					}
+					String otherValue = languageMessages.get(key);
+					if (otherValue != null) {
+						value = otherValue;
 						usedValues++;
+					} else {
+						needToUpdateValues++;
 					}
 					resultRows.add(key + " = " + value);
 				} else {
 					resultRows.add(line);
 				}
-				allRows++;
 			}
-			System.out.println("Created new row lists for '" + language + "'; allRows = " + allRows + "; usedValues = "
-					+ usedValues + "; needToUpdateValues = " + needToUpdateValues);
+			System.out.println("Created new row lists for '" + language + "; usedValues = " + usedValues
+					+ "; needToUpdateValues = " + needToUpdateValues);
 		}
 		return resultRows;
 	}
@@ -109,7 +120,7 @@ public class LanguageHelper {
 	protected String getFileNameStartWith() {
 		return "messages";
 	}
-	
+
 	protected String getFileNameEndWith() {
 		return ".properties";
 	}

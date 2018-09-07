@@ -69,8 +69,11 @@ public class SimpleLocaleMessageSource implements LocaleMessageSource {
 			};
 			Map<String, String> messages = lh.readLanguageFile(code);
 			messages.entrySet().forEach(e -> {
+				e.setValue(e.getValue().replace(System.getProperty("line.separator"), ""));
+				e.setValue(e.getValue().replace("\n", ""));
 				e.setValue(e.getValue().replace("\\n", "\n"));
 				e.setValue(e.getValue().replace("\\t", "\t"));
+				e.setValue(e.getValue().replace("\\", ""));
 			});
 			return messages;
 		} catch (Exception e) {
