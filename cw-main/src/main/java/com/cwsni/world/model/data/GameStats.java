@@ -3,19 +3,10 @@ package com.cwsni.world.model.data;
 public class GameStats {
 
 	private double maxPopulationForAllTime;
-	private double diedFromDisease;
 	private double diedFromHunger;
 	private double diedFromOverpopulation;
 	private double diedInBattles;
 	private double diedFromInvasion;
-
-	public double getDiedFromDisease() {
-		return diedFromDisease;
-	}
-
-	public void setDiedFromDisease(double diedFromDisease) {
-		this.diedFromDisease = diedFromDisease;
-	}
 
 	public double getDiedFromHunger() {
 		return diedFromHunger;
@@ -55,10 +46,6 @@ public class GameStats {
 
 	public void setDiedFromInvasion(double diedFromInvasion) {
 		this.diedFromInvasion = diedFromInvasion;
-	}
-
-	public void addDiedFromDisease(double diedFromDisease) {
-		this.diedFromDisease += diedFromDisease;
 	}
 
 	public void addDiedFromHunger(double diedFromHunger) {

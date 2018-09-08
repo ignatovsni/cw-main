@@ -26,7 +26,7 @@ abstract public class CommandProvince extends Command {
 	abstract public void apply();
 
 	protected Province getAndCheckProvince(int provId) {
-		Province province = country.getGame().getMap().findProvById(provId);
+		Province province = country.getGame().getMap().findProvinceById(provId);
 		if (province == null) {
 			addError("destination province not found. id = " + provId);
 			return null;

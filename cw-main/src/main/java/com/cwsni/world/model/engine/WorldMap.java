@@ -24,7 +24,7 @@ public class WorldMap {
 		return provinces;
 	}
 
-	public Province findProvById(Integer id) {
+	public Province findProvinceById(Integer id) {
 		return mapProvById.get(id);
 	}
 
@@ -52,7 +52,7 @@ public class WorldMap {
 	 * 
 	 */
 	public double findDistanceBetweenProvs(int provId1, int provId2) {
-		return findDistanceBetweenProvs(findProvById(provId1), findProvById(provId2));
+		return findDistanceBetweenProvs(findProvinceById(provId1), findProvinceById(provId2));
 	}
 
 	public double findDistanceBetweenProvs(Province p1, Province p2) {
@@ -73,7 +73,7 @@ public class WorldMap {
 	}
 
 	public double findDistanceApproximateCountOfProvinces(int provId1, int provId2) {
-		return findDistanceApproximateCountOfProvinces(findProvById(provId1), findProvById(provId2));
+		return findDistanceApproximateCountOfProvinces(findProvinceById(provId1), findProvinceById(provId2));
 	}
 
 	private Set<ProvinceBorder> refreshCountriesBorders() {
@@ -122,7 +122,7 @@ public class WorldMap {
 	public List<? extends Object> findShortestPath(int fromId, int toId, Integer countryId) {
 		Country country = countryId != null ? game.findCountryById(countryId) : null;
 		ProvincePassabilityCriteria passability = new ProvincePassabilityCriteria(country);
-		return new PathFinder<Province, Integer>().findShortestPath(findProvById(fromId), findProvById(toId),
+		return new PathFinder<Province, Integer>().findShortestPath(findProvinceById(fromId), findProvinceById(toId),
 				p -> p.getId(),
 				p -> p.getNeighbors().stream().filter(n -> passability.isPassable(n)).collect(Collectors.toList()));
 	}

@@ -29,6 +29,7 @@ import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.AlertWithStackTraceFactory;
 import com.cwsni.world.client.desktop.util.ZoomableScrollPane;
 import com.cwsni.world.game.ai.ScriptAIHandler;
+import com.cwsni.world.game.events.GameEventHandler;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.Province;
@@ -121,6 +122,9 @@ public class GameScene extends Scene {
 	private ScriptAIHandler scriptAIHandler;
 
 	@Autowired
+	private GameEventHandler gameEventHandler;
+
+	@Autowired
 	private GameDataModelLocker gameDataModelLocker;
 
 	private ZoomableScrollPane mapPane;
@@ -130,7 +134,7 @@ public class GameScene extends Scene {
 	private DWorldMap worldMap;
 	private Integer selectedProvinceId;
 
-	private MapMode mapMode = MapMode.GEO;
+	private MapMode mapMode = MapMode.DEFAULT_MODE;
 	private TimeMode timeMode = TimeMode.PAUSE;
 	private boolean autoTurn = true;
 	private boolean pauseBetweenTurn = true;
@@ -228,6 +232,10 @@ public class GameScene extends Scene {
 		return messageSource;
 	}
 
+	public GameEventHandler getGameEventHandler() {
+		return gameEventHandler;
+	}
+
 	private String getMessage(String code) {
 		return messageSource.getMessage(code);
 	}
@@ -313,6 +321,7 @@ public class GameScene extends Scene {
 			this.worldMap = worldMap;
 			worldMap.setGameScene(this);
 			closeOtherMaps();
+			setMapModeAndRedraw(mapMode);
 			refreshAllVisibleInfoAndResetSelections();
 		});
 	}
@@ -405,7 +414,7 @@ public class GameScene extends Scene {
 	}
 
 	public Province getSelectedProvince() {
-		return game.getMap().findProvById(selectedProvinceId);
+		return game.getMap().findProvinceById(selectedProvinceId);
 	}
 
 	public void setTimeModeAndRun(TimeMode newMode) {
@@ -466,10 +475,10 @@ public class GameScene extends Scene {
 		return pauseBetweenTurn;
 	}
 
-	public void setMapModeAndRedraw(MapMode mapMode) {
+	public void setMapModeAndRedraw(MapMode selectedModeInfo) {
 		runLocked(() -> {
-			this.mapMode = mapMode;
-			worldMap.setMapModeAndRedraw(mapMode);
+			this.mapMode = selectedModeInfo;
+			worldMap.setMapModeAndRedraw(selectedModeInfo);
 		});
 	}
 
@@ -581,7 +590,7 @@ public class GameScene extends Scene {
 
 	public void scaleMapToDefault() {
 		mapPane.scaleToDefault();
-		Platform.runLater(() -> showProvince(game.getMap().findProvById(selectedProvinceId)));
+		Platform.runLater(() -> showProvince(game.getMap().findProvinceById(selectedProvinceId)));
 	}
 
 	public void scaleMapToFitAllContent() {
@@ -597,7 +606,7 @@ public class GameScene extends Scene {
 				if (selectedSearchResult != null) {
 					switch (selectedSearchResult.type) {
 					case PROVINCE:
-						selectAndShowProvince(game.getMap().findProvById(selectedSearchResult.id));
+						selectAndShowProvince(game.getMap().findProvinceById(selectedSearchResult.id));
 						break;
 					case COUNTRY:
 						Country country = (Country) game.findCountryById(selectedSearchResult.id);
@@ -649,7 +658,7 @@ public class GameScene extends Scene {
 	}
 
 	public void restoreSceneAfterLanguageChange(Integer id) {
-		selectAndShowProvince(game.getMap().findProvById(id));
+		selectAndShowProvince(game.getMap().findProvinceById(id));
 	}
 
 }

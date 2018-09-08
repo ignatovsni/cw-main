@@ -59,9 +59,8 @@ public class GameHandler {
 	}
 
 	private void processTurns(Game game, TimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn) {
-		try {
-			game.getTurn().setTimeMode(timeMode);
-			processOneTurn(game);
+		try {			
+			processOneTurn(game, timeMode);
 			gameRepository.autoSave(game);
 		} catch (Exception e) {
 			logError(e);
@@ -75,7 +74,8 @@ public class GameHandler {
 		}
 	}
 
-	private void processOneTurn(Game game) {
+	private void processOneTurn(Game game, TimeMode timeMode) {
+		game.getTurn().setTimeModeForNewTurn(timeMode);
 		List<PGame> pGames = game.getCountries().stream().map(c -> new PGame(c)).collect(Collectors.toList());
 		getCommandsFromAI(pGames);
 		gameDataModelLocker.runLocked(() -> {

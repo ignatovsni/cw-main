@@ -17,7 +17,6 @@ import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
-import com.cwsni.world.model.data.old_events.EventEpidemic;
 import com.cwsni.world.model.engine.modifiers.ModifierCollection;
 import com.cwsni.world.model.engine.modifiers.ProvinceModifier;
 import com.cwsni.world.util.ComparisonTool;
@@ -226,11 +225,6 @@ public class Province {
 		return map;
 	}
 
-	public double getDiseaseResistance() {
-		// TODO
-		return EventEpidemic.getDiseaseResistance(getScienceMedicine());
-	}
-
 	public void buildFrom(WorldMap worldMap, DataProvince dp) {
 		this.map = worldMap;
 		this.data = dp;
@@ -243,7 +237,7 @@ public class Province {
 			pop.buildFrom(this, dpop);
 			population.add(pop);
 		});
-		data.getNeighbors().forEach(id -> neighbors.add(map.findProvById(id)));
+		data.getNeighbors().forEach(id -> neighbors.add(map.findProvinceById(id)));
 
 		armies = new ArrayList<>();
 	}

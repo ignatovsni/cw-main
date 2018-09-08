@@ -30,7 +30,7 @@ public class SimpleLocaleMessageSource implements LocaleMessageSource {
 
 	public void clearCache() {
 		currentLanguage = DEFAULT_LANGUAGE_CODE;
-		defaultLanguageMessages = readMessagesForLanguage(currentLanguage);
+		defaultLanguageMessages = null;
 		messages = null;
 	}
 
@@ -43,6 +43,9 @@ public class SimpleLocaleMessageSource implements LocaleMessageSource {
 		}
 		String value = messages.get(code);
 		if (value == null) {
+			if (defaultLanguageMessages == null) {
+				defaultLanguageMessages = readMessagesForLanguage(currentLanguage);
+			}
 			value = defaultLanguageMessages.get(code);
 			if (value == null) {
 				value = code;

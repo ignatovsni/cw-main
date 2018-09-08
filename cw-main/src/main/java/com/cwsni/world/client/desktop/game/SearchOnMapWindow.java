@@ -142,7 +142,7 @@ public class SearchOnMapWindow extends Dialog<ButtonType> {
 			if (country != null) {
 				addCountryToSearchResults(country);
 			}
-			Province prov = game.getMap().findProvById(id);
+			Province prov = game.getMap().findProvinceById(id);
 			if (prov != null) {
 				addProvinceToSearchResults(prov);
 			}

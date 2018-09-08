@@ -26,6 +26,7 @@ public class Turn {
 
 	private DataTurn data;
 	private TimeMode timeMode = TimeMode.WEEK;
+	private TimeMode previousTimeMode = TimeMode.WEEK;
 
 	public int getDateTurn() {
 		return data.getDateTurn();
@@ -73,8 +74,13 @@ public class Turn {
 	}
 
 	@JsonIgnore
-	public void setTimeMode(TimeMode timeMode) {
-		this.timeMode = timeMode;
+	public void setTimeModeForNewTurn(TimeMode newTimeMode) {
+		this.previousTimeMode = this.timeMode;
+		this.timeMode = newTimeMode;
+	}
+	
+	public boolean isTimeModeWasChanged() {
+		return !timeMode.equals(previousTimeMode);
 	}
 
 	public TimeMode getTimeMode() {
@@ -133,6 +139,14 @@ public class Turn {
 
 	public int howManyYears(int turn) {
 		return turn / TimeMode.YEAR.getDateTurnPerTime();
+	}
+
+	public TimeMode getPreviousTimeMode() {
+		return previousTimeMode;
+	}
+
+	public void setPreviousTimeMode(TimeMode previousTimeMode) {
+		this.previousTimeMode = previousTimeMode;
 	}
 
 }

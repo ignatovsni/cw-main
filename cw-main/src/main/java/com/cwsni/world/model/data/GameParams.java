@@ -63,7 +63,6 @@ public class GameParams {
 	private double populationCasualtiesCoeffPerYear = 0.95;
 	private double populationCasualtiesLocalLoyaltyMaxSuffer = 0.5;
 	private double populationCasualtiesGlobalLoyaltyMaxSuffer = 0.2;
-	private double populationCasualtiesFromDiseasesCoeff = 0.5;
 
 	private double focusMinGoal = 0.8;
 	private double focusMaxGoal = 10.0;
@@ -702,14 +701,6 @@ public class GameParams {
 
 	public void setPopulationCasualtiesGlobalLoyaltyMaxSuffer(double populationCasualtiesGlobalLoyaltyMaxSuffer) {
 		this.populationCasualtiesGlobalLoyaltyMaxSuffer = populationCasualtiesGlobalLoyaltyMaxSuffer;
-	}
-
-	public double getPopulationCasualtiesFromDiseasesCoeff() {
-		return populationCasualtiesFromDiseasesCoeff;
-	}
-
-	public void setPopulationCasualtiesFromDiseasesCoeff(double populationCasualtiesFromDiseasesCoeff) {
-		this.populationCasualtiesFromDiseasesCoeff = populationCasualtiesFromDiseasesCoeff;
 	}
 
 	public double getProvinceEffectivenessWithoutGoverment() {

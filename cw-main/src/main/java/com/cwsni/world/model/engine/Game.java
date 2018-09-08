@@ -47,7 +47,7 @@ public class Game {
 	public long nextArmyId() {
 		return data.nextArmyId();
 	}
-	
+
 	public long nextPopulationId() {
 		return data.nextPopulationId();
 	}
@@ -153,24 +153,23 @@ public class Game {
 		processNewProbablyCountries();
 		dismissEmptyCountries();
 		processNewProbablyStates();
-		map.getProvinces().forEach(p -> p.processNewTurn());
 	}
 
 	public void processNewTurnAfterEvents() {
+		map.getProvinces().forEach(p -> p.processNewTurn());
 		map.getProvinces().forEach(p -> p.processImmigrantsAndMergePops());
+
 		countries.getCountries().forEach(c -> c.calculateBaseBudget());
 		countries.getCountries().forEach(c -> c.calculateBudgetWithAgreements());
 		countries.getCountries().forEach(c -> c.processNewTurn());
-		processStates();
-		relationships.processNewTurn();
-		history.processNewTurn();
-		calcGameStats();
-	}
 
-	private void processStates() {
 		states.getStates().forEach(c -> c.processNewTurn());
 		states.getStates().forEach(c -> c.resetFlagRevoltSuccessfulThisTurn());
 		states.getStates().forEach(c -> c.processRebels());
+
+		relationships.processNewTurn();
+		history.processNewTurn();
+		calcGameStats();
 	}
 
 	private void processFights() {

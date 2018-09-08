@@ -39,7 +39,7 @@ public class CommandArmyCreate extends CommandArmy {
 			addError("army with id = " + armyId + " is already created");
 			return;
 		}
-		Province destination = game.getMap().findProvById(destinationProvId);
+		Province destination = game.getMap().findProvinceById(destinationProvId);
 		if (destination == null) {
 			addError("destination province not found. id = " + destinationProvId);
 			return;

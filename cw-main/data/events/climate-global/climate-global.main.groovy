@@ -7,9 +7,10 @@ import com.cwsni.world.model.engine.modifiers.*
 
 // Constants for events
 @Field final double climateChangeProbability = 0.01;
-@Field final double climateChangeContinueProbability = 0.8;
+@Field final double climateChangeStopProbability = 0.005;
 @Field final double climateChangeBadProbability = 0.7;
 @Field final double climateChangeStep = 0.01;
+@Field final double climateChangeMinStep = 0.001;
 @Field final double climateMaxImpact = 1.3;
 @Field final double climateMinImpact = 0.8;
 @Field final int climateChangeDuration = 10;
@@ -36,12 +37,10 @@ def prepareGameAfterLoading() {
     	activateEvent(events[0]);
 	}       
 }
-// The application invokes this method to get description for the user.
-// Must return the list with 2 elements: [title, short description].
-// target - the object for which was invoked this method (e.g. the province with the modifiers of this event).
-def getTitleAndShortDescription(event, languageCode, target) {
-	// Just the example how you can invoke methods of the another script.
-	return data.scriptEventsWrapper.invoke('ui_description', 'getTitleAndShortDescription', [event, languageCode]);
+
+// Just the example how you can invoke the method of the another script.
+def externalInvocation(event, languageCode, target) {
+	return data.scriptEventsWrapper.invoke('ui', 'getTitleAndShortDescription', [event, languageCode]);
 }
 
 def log(msg) {
@@ -53,41 +52,49 @@ def checkNewEvent() {
 	if (data.rnd.nextDouble() > data.game.turn.probablilityPerYear(climateChangeProbability) ) {return null;}
 	log 'creating new event';
 	def event = data.events.createAndAddNewEvent();
-	event.info.endTurn = data.game.turn.calculateFutureTurnAfterYears(climateChangeDuration);
-	event.info.step = data.rnd.nextDouble() < climateChangeBadProbability	
-				? - climateChangeStep
-				: + climateChangeStep;
-	event.info.effect = 1 + data.game.turn.addPerYear(event.info.step);
+	event.info.step = createRandomStep();
+	event.info.effect = 1 + event.info.step;
 	event.info.evolve = true;	
 	activateEvent(event);	
 	log 'created new event ' + event;
 	return event;
 }
 
+def createRandomStep() {
+	def step = Math.max(climateChangeMinStep, data.rnd.nextDouble() * climateChangeStep); 
+	if (data.rnd.nextDouble() < climateChangeBadProbability) {
+		step = - step;
+	}
+	return step;
+}
+
 def activateEvent(event) {
+	def currentEffect = 1 + data.game.turn.addPerYear(event.info.effect - 1);
 	data.game.map.provinces.stream().filter({p -> p.getTerrainType().isSoilPossible()}).forEach({p -> 
-		data.events.addModifier(p, ProvinceModifier.SOIL_FERTILITY, ModifierType.MULTIPLY, event.info.effect, event)});
+		data.events.addModifier(p, ProvinceModifier.SOIL_FERTILITY, ModifierType.MULTIPLY, 
+								currentEffect, event)});
 }
 
 def updateModifiers(event) {
+	def currentEffect = 1 + data.game.turn.addPerYear(event.info.effect - 1);
 	event.provinceModifiers.entrySet().forEach({entry ->
 			def province = entry.key;
 			def modifiers = entry.value;
-			modifiers.forEach({modifier -> province.modifiers.update(modifier, event.info.effect)});
+			modifiers.forEach({modifier -> province.modifiers.update(modifier, currentEffect)});
 		});
 }
 
 def processExistingEvent(event) {
 	log 'processExistingEvent';
-	if (event.info.endTurn < data.game.turn.dateTurn) {
-		if (event.info.evolve && data.rnd.nextDouble() < data.game.turn.probablilityPerYear(climateChangeContinueProbability)) {
-			// start moving back to normal climate
-			log 'start moving back to normal climate';
-			event.info.evolve = false;
-			event.info.step = event.info.effect > 1	? - climateChangeStep : climateChangeStep;
+	if (event.info.evolve && data.rnd.nextDouble() < data.game.turn.probablilityPerYear(climateChangeStopProbability)) {
+		// start moving back to normal climate
+		log 'start moving back to normal climate';
+		event.info.evolve = false;
+		event.info.step = Math.abs(createRandomStep());
+		if (event.info.effect > 1) {
+			event.info.step = - event.info.step;
 		}
-		event.info.endTurn = data.game.turn.calculateFutureTurnAfterYears(climateChangeDuration);
-	}
+	}		
 	event.info.effect = event.info.effect + data.game.turn.addPerYear(event.info.step);
 	if (!event.info.evolve && (event.info.effect >= 1 && event.info.step >= 0 
 							|| event.info.effect <= 1 && event.info.step <= 0 || event.info.step == 0 ) ) {

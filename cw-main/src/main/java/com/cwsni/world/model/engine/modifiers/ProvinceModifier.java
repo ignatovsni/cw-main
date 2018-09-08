@@ -2,6 +2,7 @@ package com.cwsni.world.model.engine.modifiers;
 
 public enum ProvinceModifier  {
 
-	SOIL_FERTILITY
+	SOIL_FERTILITY,
+	POPULATION_AMOUNT
 	
 }

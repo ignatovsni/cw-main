@@ -24,7 +24,7 @@ public class CommandArmyMove extends CommandArmy {
 		if (army == null) {
 			return;
 		}
-		Province destination = game.getMap().findProvById(destinationProvId);
+		Province destination = game.getMap().findProvinceById(destinationProvId);
 		if (destination == null) {
 			addError("destination province not found. id = " + destinationProvId);
 			return;

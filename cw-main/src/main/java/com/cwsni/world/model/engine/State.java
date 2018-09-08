@@ -36,7 +36,7 @@ public class State {
 		this.neighbors = new HashSet<>();
 
 		data.getProvinces().forEach(pId -> {
-			Province province = game.getMap().findProvById(pId);
+			Province province = game.getMap().findProvinceById(pId);
 			province.setState(this);
 			provinces.add(province);
 		});
@@ -59,7 +59,7 @@ public class State {
 	}
 
 	public Province getCapital() {
-		return game.getMap().findProvById(data.getCapital());
+		return game.getMap().findProvinceById(data.getCapital());
 	}
 
 	public void setCapital(Province province) {

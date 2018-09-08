@@ -68,7 +68,7 @@ public class Country {
 		focus.buildFrom(this, dc.getFocus());
 
 		data.getProvinces().forEach(pId -> {
-			Province province = game.getMap().findProvById(pId);
+			Province province = game.getMap().findProvinceById(pId);
 			province.setCountry(this);
 			provinces.add(province);
 		});
@@ -114,7 +114,7 @@ public class Country {
 	}
 
 	public Province getCapital() {
-		return game.getMap().findProvById(data.getCapital());
+		return game.getMap().findProvinceById(data.getCapital());
 	}
 
 	public void setCapital(Province province) {

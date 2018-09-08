@@ -71,7 +71,7 @@ public class PathFinderTest {
 				return true;
 			}
 		};
-		return new PathFinder<Province, Integer>().findShortestPath(map.findProvById(fromId), map.findProvById(toId),
+		return new PathFinder<Province, Integer>().findShortestPath(map.findProvinceById(fromId), map.findProvinceById(toId),
 				p -> p.getId(),
 				p -> p.getNeighbors().stream().filter(n -> passability.isPassable(n)).collect(Collectors.toList()));
 	}

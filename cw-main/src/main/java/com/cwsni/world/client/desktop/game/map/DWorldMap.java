@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.util.DialogUtil;
+import com.cwsni.world.game.events.GameEventHandler;
 import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.Province;
@@ -33,7 +34,7 @@ public class DWorldMap {
 	private Group mapGroup;
 	private DProvince selectedProvince;
 	private GameScene gameScene;
-	private MapMode mapMode = MapMode.GEO;
+	private MapMode mapMode = MapMode.DEFAULT_MODE;
 	private Map<ProvinceBorder, Node> cacheBorderLines;
 	private Map<ProvinceBorder, Node> activeCountriesBorderLines;
 
@@ -124,7 +125,7 @@ public class DWorldMap {
 
 	public void selectProvince(Integer provId) {
 		selectProvince(provincesById.get(provId));
-		if (MapMode.DIPLOMACY == mapMode || MapMode.REACHABLE_LANDS == mapMode) {
+		if (MapModeEnum.DIPLOMACY.equals(mapMode.getMode()) || MapModeEnum.REACHABLE_LANDS.equals(mapMode.getMode())) {
 			setMapModeAndRedraw(mapMode);
 		}
 	}
@@ -150,6 +151,10 @@ public class DWorldMap {
 
 	public Game getGame() {
 		return game;
+	}
+
+	public GameEventHandler getGameEventHandler() {
+		return gameScene.getGameEventHandler();
 	}
 
 	public MapMode getMapMode() {

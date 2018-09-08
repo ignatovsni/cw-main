@@ -1,6 +1,7 @@
 package com.cwsni.world.client.desktop.game.map;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.stream.Stream;
 
 import com.cwsni.world.model.data.DataPopulation;
@@ -76,18 +77,38 @@ class DProvince extends Group {
 		polygon.setStrokeWidth(1);
 		getChildren().add(polygon);
 		polygon.setOnMouseClicked(e -> map.mouseClickOnProvince(this, e));
-		draw();
 	}
 
 	public void draw() {
 		MapMode mapMode = map.getMapMode();
+		if (!mapMode.isEventType()) {
+			drawProvinceByDefault(mapMode);
+		} else {
+			drawProvinceByEvent(mapMode);
+		}
+		drawCapital();
+		drawArmy();
+		prevMode = mapMode;
+	}
+
+	private void drawProvinceByEvent(MapMode mapMode) {
+		List<Double> colorList = map.getGameEventHandler().getColorForProvince(map.getGame(), province, mapMode);
+		if (colorList != null) {
+			Color color = new Color(colorList.get(0), colorList.get(1), colorList.get(2), colorList.get(3));
+			fillPolygon(polygon, color);
+		} else {
+			drawProvinceByDefault(MapMode.DEFAULT_MODE);
+		}
+	}
+
+	private void drawProvinceByDefault(MapMode mapMode) {
 		if (getProvince().getTerrainType().isMountain()
-				|| getProvince().getTerrainType().isWater() && !MapMode.REACHABLE_LANDS.equals(mapMode)) {
-			if (mapMode != prevMode) {
+				|| getProvince().getTerrainType().isWater() && !MapModeEnum.REACHABLE_LANDS.equals(mapMode.getMode())) {
+			if (!mapMode.equals(prevMode)) {
 				drawGeoMode(polygon);
 			}
 		} else {
-			switch (mapMode) {
+			switch (mapMode.getMode()) {
 			case POPULATION:
 				drawPopulationMode(polygon);
 				break;
@@ -137,7 +158,7 @@ class DProvince extends Group {
 				drawScienceAdministrationMode(polygon);
 				break;
 			case GEO:
-				if (mapMode != prevMode) {
+				if (!mapMode.equals(prevMode)) {
 					drawGeoMode(polygon);
 				}
 				break;
@@ -145,9 +166,6 @@ class DProvince extends Group {
 				break;
 			}
 		}
-		drawCapital();
-		drawArmy();
-		prevMode = mapMode;
 	}
 
 	private void drawCapital() {
@@ -515,7 +533,7 @@ class DProvince extends Group {
 		prevColor = color;
 	}
 
-	Line createBorderLine(Province neighbor) {
+	protected Line createBorderLine(Province neighbor) {
 		int neighborPosition = whatNeighborPosition(neighbor);
 		int borderFromIdx = neighborPosition;
 		int borderToIdx = (neighborPosition + 1) % SIDES;

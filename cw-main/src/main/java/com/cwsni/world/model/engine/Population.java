@@ -422,28 +422,6 @@ public class Population {
 		});
 	}
 
-	public static void dieFromDisease(Game game, Province from, double deathRate) {
-		// regular population
-		from.getPopulation().forEach(p -> {
-			int diseaseResistance = 0; // TODO in events
-			double effectiveDeathRate = deathRate * (1 - diseaseResistance);
-			int died = (int) (p.getAmount() * effectiveDeathRate);
-			p.setAmount(p.getAmount() - died);
-			game.getGameStats().addDiedFromDisease(died);
-			p.addCasualties((int) (1.0 * died * game.getGameParams().getPopulationCasualtiesFromDiseasesCoeff()),
-					from.getCountry());
-		});
-		// armies
-		double effectiveDeathRate = deathRate * (1 - from.getDiseaseResistance());
-		from.getArmies().forEach(a -> {
-			int died = (int) (a.getSoldiers() * effectiveDeathRate);
-			a.setSoldiers(a.getSoldiers() - died);
-			a.getCountry().addCasualties(
-					(int) (1.0 * died * game.getGameParams().getPopulationCasualtiesFromDiseasesCoeff()));
-			game.getGameStats().addDiedFromDisease(died);
-		});
-	}
-
 	protected void addCasualties(int delta, Country country) {
 		if (delta < 0) {
 			System.out.println("population addCasualties: delta < 0, delta=" + delta);

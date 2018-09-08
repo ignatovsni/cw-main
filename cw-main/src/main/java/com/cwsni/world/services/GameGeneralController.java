@@ -9,7 +9,6 @@ import com.cwsni.world.client.desktop.locale.GlobalLocaleMessageSource;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.game.ai.ScriptAIHandler;
 import com.cwsni.world.game.events.GameEventHandler;
-import com.cwsni.world.game.events.ScriptEventHandler;
 
 @Component
 public class GameGeneralController {
@@ -21,17 +20,13 @@ public class GameGeneralController {
 
 	@Autowired
 	private ScriptAIHandler scriptAIHandler;
-	
-	@Autowired
-	private ScriptEventHandler scriptEventHandler;
-	
+
 	@Autowired
 	private GameEventHandler eventHandler;
 
 	public void resetAppCaches() {
 		logger.info("resetAppCaches");
 		scriptAIHandler.clearCache();
-		scriptEventHandler.clearCache();
 		eventHandler.clearCache();
 		((GlobalLocaleMessageSource) messageSource).clearCache();
 	}

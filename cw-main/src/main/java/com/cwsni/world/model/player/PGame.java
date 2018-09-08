@@ -114,7 +114,7 @@ public class PGame implements IPGame {
 
 	@Override
 	public IPProvince findProvById(Integer id) {
-		return getProvince(game.getMap().findProvById(id));
+		return getProvince(game.getMap().findProvinceById(id));
 	}
 
 	@Override
