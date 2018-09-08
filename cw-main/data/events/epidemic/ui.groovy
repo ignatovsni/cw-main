@@ -64,5 +64,5 @@ def findEvent(province) {
 }
 
 def medicineImpact(province) {
-	return data.scriptEventsWrapper.invoke('epidemic.main', 'medicineImpact', province); 
+	return data.scriptEventsWrapper.invoke('epidemic', 'medicineImpact', province); 
 }

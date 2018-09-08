@@ -44,7 +44,7 @@ public class SimpleLocaleMessageSource implements LocaleMessageSource {
 		String value = messages.get(code);
 		if (value == null) {
 			if (defaultLanguageMessages == null) {
-				defaultLanguageMessages = readMessagesForLanguage(currentLanguage);
+				defaultLanguageMessages = readMessagesForLanguage(DEFAULT_LANGUAGE_CODE);
 			}
 			value = defaultLanguageMessages.get(code);
 			if (value == null) {

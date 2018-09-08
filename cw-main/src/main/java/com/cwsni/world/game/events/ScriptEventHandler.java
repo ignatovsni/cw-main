@@ -8,8 +8,6 @@ import com.cwsni.world.game.scripts.AbstractScriptHandler;
 
 public class ScriptEventHandler extends AbstractScriptHandler {
 
-	protected static final String MAIN_SCRIPT_NAME_PART = ".main";
-
 	private ApplicationSettings applicationSettings;
 	protected String scriptId;
 	private String eventsFolder;
@@ -36,7 +34,7 @@ public class ScriptEventHandler extends AbstractScriptHandler {
 	}
 
 	public Object processEvent(Map<String, Object> mapBinding, String methodName, Object args) {
-		return invokeScriptMethod(mapBinding, scriptId + MAIN_SCRIPT_NAME_PART, methodName, args);
+		return invokeScriptMethod(mapBinding, scriptId, methodName, args);
 	}
 
 	public Object processEvent(Map<String, Object> mapBinding, String scriptName, String methodName, Object args) {

@@ -30,7 +30,6 @@ public class GameEventHandler {
 	private static final Log logger = LogFactory.getLog(GameEventHandler.class);
 
 	protected static final String EVENTS_FOLDER = "data" + File.separator + "events";
-	protected static final String MAIN_SCRIPT_NAME_PART = ".main";
 
 	private static final String METHOD_PROCESS_NEW_TURN = "processNewTurn";
 	private static final String METHOD_PREPARE_GAME_AFTER_LOADING = "prepareGameAfterLoading";
@@ -79,14 +78,16 @@ public class GameEventHandler {
 		if (folder.exists() && folder.isDirectory() && folder.canRead()) {
 			for (File subFolder : folder.listFiles()) {
 				if (subFolder.isDirectory() && folder.canRead()) {
+					FILES_IN_SUBFOLDDER:
 					for (File file : subFolder.listFiles()) {
 						if (!file.isDirectory()) {
 							String fileName = file.getName();
-							int idx = fileName.lastIndexOf(MAIN_SCRIPT_NAME_PART + ".groovy");
+							int idx = fileName.lastIndexOf(".groovy");
 							if (idx >= 0) {
 								String eventScriptId = fileName.substring(0, idx);
 								if (subFolder.getName().equals(eventScriptId)) {
 									setOfScriptsName.add(eventScriptId);
+									break FILES_IN_SUBFOLDDER;
 								}
 							}
 						}
