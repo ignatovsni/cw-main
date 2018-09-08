@@ -459,7 +459,9 @@ public class Province {
 		if (distanceToCapitalWithScience <= 0) {
 			return 1;
 		} else {
-			double influence = Math.pow(gParams.getProvinceInfluenceFromCapitalWithDistanceDecrease(),
+			double influence = Math.pow(
+					map.getGame().getScienceModificators()
+							.getEffectiveProvinceInfluenceFromCapitalWithDistanceDecrease(country),
 					distanceToCapitalWithScience / country.getFocus().getGovernmentInfluenceOnDistance());
 			influence = Math.max(influence, gParams.getProvinceInfluenceFromCapitalWithoutCapital());
 			return influence;
@@ -790,7 +792,7 @@ public class Province {
 		}
 		return hasWaterNeighbor;
 	}
-	
+
 	public double getDiseaseResistanceLevel() {
 		return map.getGame().getScienceModificators().getDiseaseResistanceLevel(this);
 	}

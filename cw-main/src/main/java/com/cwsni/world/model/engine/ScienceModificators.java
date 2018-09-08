@@ -61,6 +61,17 @@ public class ScienceModificators {
 		return distanceToCapitalWithScience;
 	}
 
+	public double getEffectiveProvinceInfluenceFromCapitalWithDistanceDecrease(Country country) {
+		double base = game.getGameParams().getProvinceInfluenceFromCapitalWithDistanceDecrease();
+		Province capital = country.getCapital();
+		if (capital == null) {
+			return base;
+		}
+		double scienceLevel = DataNormalizer.minMax(Math.log10(capital.getScienceAdministration() + 10), 1, 10);
+		double realValue = DataNormalizer.minMax(base + (1 - base) * scienceLevel / 10, base, 0.999);
+		return realValue;
+	}
+
 	public double getEffectiveDistanceFromStateCapitalToCountryCapital(Country country, Province province,
 			double distToCapital) {
 		double adminScience = 10 + province.getScienceAdministration()

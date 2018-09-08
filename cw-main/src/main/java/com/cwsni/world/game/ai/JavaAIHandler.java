@@ -82,7 +82,8 @@ public class JavaAIHandler {
 
 		// check war
 		if (loyaltyToCountryFromCountryCasualties > -0.05 && thisCountryStrength >= thisCountryPureWarStrength * 0.5
-				&& 1.0 * countriesWithWar.size() / maxDesiredWars < rnd.nextDouble()) {
+				&& 1.0 * (countriesWithWar.size() + 5) / (maxDesiredWars + 5) < rnd.nextDouble() * rnd.nextDouble()
+						* rnd.nextDouble() * rnd.nextDouble() * rnd.nextDouble()) {
 			Integer weakestEnemyCountryId = null;
 			double weakestEnemyStrength = Double.MAX_VALUE;
 			for (Entry<Integer, Double> e : countriesCurrentWarStrength.entrySet()) {
@@ -243,10 +244,10 @@ public class JavaAIHandler {
 		double armyCost = armies.stream().mapToDouble(a -> a.getCostPerYear()).sum();
 		double availableMoneyForArmy = armyBudget - armyCost;
 		if (data.isWar()) {
-			availableMoneyForArmy += budget.getMoney() * 0.2;
+			availableMoneyForArmy += Math.min(budget.getMoney() * 0.1, armyBudget * 2);
 		}
 
-		if (availableMoneyForArmy < 0 && !armies.isEmpty()) {
+		if (availableMoneyForArmy < -armyBudget && !armies.isEmpty()) {
 			// we spend all money for existing armies
 			// try to dismiss some
 			// I can just sort array instead of using Heap
@@ -269,7 +270,8 @@ public class JavaAIHandler {
 			}
 		}
 
-		if (armies.size() >= MAX_ARMIES) {
+		if (armies.size() >= MAX_ARMIES || !data.isWar() || budget.getMoney() < armyBudget * 20
+				|| availableMoneyForArmy < (-armyBudget / 2)) {
 			return;
 		}
 		// new armies
