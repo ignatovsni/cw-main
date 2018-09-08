@@ -1,5 +1,7 @@
 package com.cwsni.world.model.engine;
 
+import com.cwsni.world.model.data.util.DataNormalizer;
+
 public class ScienceModificators {
 
 	private Game game;
@@ -71,6 +73,15 @@ public class ScienceModificators {
 		double perYear = Math.log10(capital.getScienceAdministration() + 1) / 10000;
 		double ownFraction = 0.9999 - game.getTurn().addPerYear(Math.min(0.001, perYear)) * p.getGovernmentInfluence();
 		return ownFraction;
+	}
+
+	public double getDiseaseResistanceLevel(Province p) {
+		return DataNormalizer.minMax(Math.log10(p.getScienceMedicine() + 10), 1, 10);
+	}
+
+	public double getPeopleGrowthFromMedicine(Province p) {
+		return DataNormalizer.minMax(getDiseaseResistanceLevel(p) / 600, 0,
+				game.getGameParams().getPopulationBaseGrowthPerYear());
 	}
 
 }

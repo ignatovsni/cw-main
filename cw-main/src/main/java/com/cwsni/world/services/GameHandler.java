@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.game.ai.AIHandler;
 import com.cwsni.world.game.commands.Command;
 import com.cwsni.world.game.commands.CommandArmyCreate;
@@ -50,6 +51,9 @@ public class GameHandler {
 	@Autowired
 	private GameEventHandler gameEventHandler;
 
+	@Autowired
+	private ApplicationSettings applicationSettings;
+
 	public void processNewTurns(Game game, TimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn,
 			Runnable afterTurnProcessing) {
 		taskExecutor.processManagerThread(() -> {
@@ -59,7 +63,7 @@ public class GameHandler {
 	}
 
 	private void processTurns(Game game, TimeMode timeMode, boolean autoTurn, boolean pauseBetweenTurn) {
-		try {			
+		try {
 			processOneTurn(game, timeMode);
 			gameRepository.autoSave(game);
 		} catch (Exception e) {
@@ -67,7 +71,7 @@ public class GameHandler {
 		}
 		if (autoTurn && pauseBetweenTurn) {
 			try {
-				Thread.sleep(1000);
+				Thread.sleep((long) (applicationSettings.getPauseBetweenTurnSeconds() * 1000));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

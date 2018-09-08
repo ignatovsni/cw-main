@@ -5,10 +5,14 @@ import groovy.transform.Field;
 @Field final EPIPEMIC_PROTECTION_COLOR = [(double)0.0, (double)1.0, (double)0.0, (double)1.0];
 
 def getTitleAndShortDescription(event, languageCode, target) {	
-	def status = checkStatus(event);
+	def status = checkStatus(target, event);
 	if (status == 1) {
-		return [String.format(data.getMessage('event.epidemic.title'), event.info.contagiousness*100, event.info.deathRate*100), 
-				String.format(data.getMessage('event.epidemic.description.short'), event.info.contagiousness*100, event.info.deathRate*100)];
+		return [String.format(data.getMessage('event.epidemic.title'),
+					event.info.contagiousness * 100,
+					event.info.deathRate * 100 * medicineImpact(target)), 
+				String.format(data.getMessage('event.epidemic.description.short'),
+					event.info.contagiousness * 100,
+					event.info.deathRate * 100 * medicineImpact(target))];
 	} else if (status == 2) {
 		return [data.getMessage('event.epidemic-resistance.titlel'), 
 				data.getMessage('event.epidemic-resistance.description.shortl')];
@@ -27,7 +31,7 @@ def getProvinceColor(province, mode) {
 	if (!province.getTerrainType().isPopulationPossible()) {
 		return null;
 	}
-	def status = checkStatus(findEvent(province));
+	def status = checkStatus(province, findEvent(province));
 	if (status == 1) {
 		return EPIPEMIC_COLOR;
 	} else if (status == 2) {
@@ -37,10 +41,12 @@ def getProvinceColor(province, mode) {
 	}
 }
 
-def checkStatus(event) {
-	if(event != null) {
+def checkStatus(province, event) {
+	if (event == null) {
+		return 0;
+	} else if(event.info.provinces.contains(province.id)) {
 	    return 1;
-	} else if(1==2) {
+	} else if(event.info.resistant.contains(province.id)) {
 	    return 2;
 	} else {
 		return 0;
@@ -50,9 +56,13 @@ def checkStatus(event) {
 def findEvent(province) {
 	def events = data.events.findEventsByThisType();
 	for (event in events) {
-		if (event.info.provinces.contains(province.id)) {
+		if (event.info.provinces.contains(province.id) || event.info.resistant.contains(province.id)) {
 			return event;  
 		}
 	}
 	return null;
+}
+
+def medicineImpact(province) {
+	return data.scriptEventsWrapper.invoke('epidemic.main', 'medicineImpact', province); 
 }

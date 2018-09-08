@@ -25,8 +25,8 @@ public class Turn {
 	 */
 
 	private DataTurn data;
-	private TimeMode timeMode = TimeMode.WEEK;
-	private TimeMode previousTimeMode = TimeMode.WEEK;
+	private TimeMode timeMode = TimeMode.PAUSE;
+	private TimeMode previousTimeMode = TimeMode.PAUSE;
 
 	public int getDateTurn() {
 		return data.getDateTurn();

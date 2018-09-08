@@ -242,7 +242,7 @@ public class JavaAIHandler {
 		double armyBudget = budget.getIncomePerYear() * budget.getArmyWeight() / budget.getTotalWeight();
 		double armyCost = armies.stream().mapToDouble(a -> a.getCostPerYear()).sum();
 		double availableMoneyForArmy = armyBudget - armyCost;
-		if (!data.isWar()) {
+		if (data.isWar()) {
 			availableMoneyForArmy += budget.getMoney() * 0.2;
 		}
 

@@ -148,9 +148,9 @@ public class Game {
 	public void processNewTurnBeforeEvents() {
 		getTurn().increment();
 		processFights();
-		dismissEmptyArmies();
 		armies.values().forEach(a -> a.processNewTurn());
 		processNewProbablyCountries();
+		dismissEmptyArmies();
 		dismissEmptyCountries();
 		processNewProbablyStates();
 	}

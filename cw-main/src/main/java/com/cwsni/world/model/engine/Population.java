@@ -21,6 +21,7 @@ import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.model.engine.modifiers.ProvinceModifier;
 import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.CwException;
 
@@ -53,7 +54,7 @@ public class Population {
 	public int getAmount() {
 		return data.getAmount();
 	}
-	
+
 	public long getId() {
 		return data.getId();
 	}
@@ -390,10 +391,10 @@ public class Population {
 		if (currentPopFromMax < 1) {
 			if (prov.getSoilFertility() >= 1) {
 				// growth pops
-				double populationBaseGrowth = game.getTurn()
-						.multiplyPerYear(1 + gParams.getPopulationBaseGrowthPerYear());
+				double populationGrowth = game.getTurn().multiplyPerYear(1 + gParams.getPopulationBaseGrowthPerYear()
+						+ game.getScienceModificators().getPeopleGrowthFromMedicine(prov));
 				prov.getPopulation().forEach(p -> {
-					int newAmount = (int) (1.0 * p.getAmount() * populationBaseGrowth);
+					int newAmount = (int) (1.0 * p.getAmount() * populationGrowth);
 					newAmount = (int) Math.min(newAmount, 1.0 * populationAmount / currentPopFromMax);
 					p.setAmount(newAmount);
 				});
@@ -411,6 +412,10 @@ public class Population {
 		prov.getPopulation().forEach(p -> {
 			p.setRecruitedPercent(p.getRecruitedPercent() - populationRecruitPercentRestore);
 			p.processCasualtiesNewTurn();
+		});
+		// modifiers
+		prov.getPopulation().forEach(p -> {
+			p.setAmount((int) prov.getModifiers().getModifiedValue(ProvinceModifier.POPULATION_AMOUNT, p.getAmount()));
 		});
 	}
 

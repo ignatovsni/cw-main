@@ -6,14 +6,13 @@ import com.cwsni.world.model.engine.modifiers.*
 @Field final String EVENT_TYPE = 'GLOBAL_CLIMATE_CHANGE';
 
 // Constants for events
-@Field final double climateChangeProbability = 0.01;
-@Field final double climateChangeStopProbability = 0.005;
-@Field final double climateChangeBadProbability = 0.7;
-@Field final double climateChangeStep = 0.01;
-@Field final double climateChangeMinStep = 0.001;
-@Field final double climateMaxImpact = 1.3;
-@Field final double climateMinImpact = 0.8;
-@Field final int climateChangeDuration = 10;
+@Field final double CLIMATE_CHANGE_PROBABILITY = 0.01;
+@Field final double CLIMATE_CHANGE_STOP_PROBABILITY = 0.005;
+@Field final double CLIMATE_CHANGE_BAD_PROBABILITY = 0.7;
+@Field final double CLIMATE_CHANGE_STEP = 0.01;
+@Field final double CLIMATE_CHANGE_MIN_STEP = 0.001;
+@Field final double CLIMATE_IMPACT_MAX = 1.3;
+@Field final double CLIMATE_IMPACT_MIN = 0.8;
 
 // The application invokes this method each turn. 
 def processNewTurn() {
@@ -49,7 +48,7 @@ def log(msg) {
 
 def checkNewEvent() {
 	log 'checkNewEvent';
-	if (data.rnd.nextDouble() > data.game.turn.probablilityPerYear(climateChangeProbability) ) {return null;}
+	if (data.rnd.nextDouble() > data.game.turn.probablilityPerYear(CLIMATE_CHANGE_PROBABILITY) ) {return null;}
 	log 'creating new event';
 	def event = data.events.createAndAddNewEvent();
 	event.info.step = createRandomStep();
@@ -61,22 +60,22 @@ def checkNewEvent() {
 }
 
 def createRandomStep() {
-	def step = Math.max(climateChangeMinStep, data.rnd.nextDouble() * climateChangeStep); 
-	if (data.rnd.nextDouble() < climateChangeBadProbability) {
+	def step = Math.max(CLIMATE_CHANGE_MIN_STEP, data.rnd.nextDouble() * CLIMATE_CHANGE_STEP); 
+	if (data.rnd.nextDouble() < CLIMATE_CHANGE_BAD_PROBABILITY) {
 		step = - step;
 	}
 	return step;
 }
 
 def activateEvent(event) {
-	def currentEffect = 1 + data.game.turn.addPerYear(event.info.effect - 1);
+	def currentEffect = event.info.effect;
 	data.game.map.provinces.stream().filter({p -> p.getTerrainType().isSoilPossible()}).forEach({p -> 
 		data.events.addModifier(p, ProvinceModifier.SOIL_FERTILITY, ModifierType.MULTIPLY, 
 								currentEffect, event)});
 }
 
 def updateModifiers(event) {
-	def currentEffect = 1 + data.game.turn.addPerYear(event.info.effect - 1);
+	def currentEffect = event.info.effect;
 	event.provinceModifiers.entrySet().forEach({entry ->
 			def province = entry.key;
 			def modifiers = entry.value;
@@ -86,7 +85,7 @@ def updateModifiers(event) {
 
 def processExistingEvent(event) {
 	log 'processExistingEvent';
-	if (event.info.evolve && data.rnd.nextDouble() < data.game.turn.probablilityPerYear(climateChangeStopProbability)) {
+	if (event.info.evolve && data.rnd.nextDouble() < data.game.turn.probablilityPerYear(CLIMATE_CHANGE_STOP_PROBABILITY)) {
 		// start moving back to normal climate
 		log 'start moving back to normal climate';
 		event.info.evolve = false;
@@ -100,10 +99,10 @@ def processExistingEvent(event) {
 							|| event.info.effect <= 1 && event.info.step <= 0 || event.info.step == 0 ) ) {
 		removeEvent(event);
 	} else {
-		if (event.info.effect > climateMaxImpact) {
-			event.info.effect =  climateMaxImpact;
-		} else if (event.info.effect < climateMinImpact) {
-			event.info.effect = climateMinImpact;
+		if (event.info.effect > CLIMATE_IMPACT_MAX) {
+			event.info.effect =  CLIMATE_IMPACT_MAX;
+		} else if (event.info.effect < CLIMATE_IMPACT_MIN) {
+			event.info.effect = CLIMATE_IMPACT_MIN;
 		}
 		updateModifiers(event)
 	}

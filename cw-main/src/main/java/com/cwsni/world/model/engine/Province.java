@@ -790,5 +790,9 @@ public class Province {
 		}
 		return hasWaterNeighbor;
 	}
+	
+	public double getDiseaseResistanceLevel() {
+		return map.getGame().getScienceModificators().getDiseaseResistanceLevel(this);
+	}
 
 }

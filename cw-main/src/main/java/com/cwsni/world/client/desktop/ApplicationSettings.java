@@ -16,13 +16,14 @@ public class ApplicationSettings extends AbstractSettings {
 	private boolean isUseAutoSave = true;
 	private int autoSaveTurnStep = 10;
 	private int autoSaveMaxFiles = 10;
-	private int multithreadingAIThreads = 8;
+	private int multithreadingAIThreads = 2;
 	private int multithreadingMaxWaitAllTasksPerTurnSeconds = 2;
 	private String language = "";
 	private int scriptsMaxStackDeep = 10;
 	private int aiScriptsPoolSize = 16;
-	private int eventsScriptsPoolSize = 16;
+	private int eventsScriptsPoolSize = 2;
 	private int eventsRemoveWhileLoadingIfDidNotTouchMoreThanTurns = 100;
+	private double pauseBetweenTurnSeconds = 0.5;
 	
 	private List<String> mapButtonCodes = new ArrayList<>();
 
@@ -120,6 +121,14 @@ public class ApplicationSettings extends AbstractSettings {
 
 	public void setMapButtonCodes(List<String> mapButtonCodes) {
 		this.mapButtonCodes = mapButtonCodes;
+	}
+
+	public double getPauseBetweenTurnSeconds() {
+		return pauseBetweenTurnSeconds;
+	}
+
+	public void setPauseBetweenTurnSeconds(double pauseBetweenTurnSeconds) {
+		this.pauseBetweenTurnSeconds = pauseBetweenTurnSeconds;
 	}
 
 }
