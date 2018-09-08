@@ -333,12 +333,20 @@ public class Province {
 			Population.processLoyaltyNewTurn(this, map.getGame());
 			Culture.influenceOfCountryFor(this, map.getGame());
 		}
+		processLocalModifiersToArmies();
 		processNaturalInfrastructure();
 		removeDiedPops();
 		processLifeInTheCountryNewTurn();
 		if (getPopulationAmount() != 0) {
 			processTaxesAndOthersInNewTurn();
 		}
+	}
+
+	private void processLocalModifiersToArmies() {
+		// Modifiers on armies. Probably it is better to place modifiers on armies.
+		// But right now it is good enough.
+		getArmies().forEach(a -> a.setSoldiers(
+				(int) getModifiers().getModifiedValue(ProvinceModifier.POPULATION_AMOUNT, a.getSoldiers())));
 	}
 
 	private void processLifeInTheCountryNewTurn() {

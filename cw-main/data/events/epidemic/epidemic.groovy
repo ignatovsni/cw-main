@@ -75,20 +75,21 @@ def activateEvent(event) {
 }
 
 def activateEventForProvinces(event, provinces) {
-	def currentEffect = data.game.turn.multiplyPerYear(1 - event.info.deathRate);
 	provinces.each {pId ->
-		def p = data.game.map.findProvinceById(pId); 
-		data.events.addModifier(p, ProvinceModifier.POPULATION_AMOUNT, ModifierType.MULTIPLY, currentEffect * medicineImpact(p), event)
+		def province = data.game.map.findProvinceById(pId); 
+		data.events.addModifier(province, ProvinceModifier.POPULATION_AMOUNT, ModifierType.MULTIPLY,
+					data.game.turn.multiplyPerYear(1 - event.info.deathRate * medicineImpact(province)), event)
 	};
 }
 
 def updateModifiers(event) {
-	def currentEffect = data.game.turn.multiplyPerYear(1 - event.info.deathRate);
-	log "time mode was changed, new death rate: " + (1-currentEffect);
 	event.provinceModifiers.entrySet().forEach({entry ->
 			def province = entry.key;
 			def modifiers = entry.value;
-			modifiers.forEach({modifier -> province.modifiers.update(modifier, currentEffect * medicineImpact(province))});
+			modifiers.forEach({modifier -> 
+				province.modifiers.update(modifier, 
+					data.game.turn.multiplyPerYear(1 - event.info.deathRate * medicineImpact(province)))
+			});
 		});
 }
 

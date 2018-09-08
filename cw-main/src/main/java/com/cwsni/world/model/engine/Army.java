@@ -37,7 +37,7 @@ public class Army {
 		return population.getAmount();
 	}
 
-	void setSoldiers(int soldiers) {
+	protected void setSoldiers(int soldiers) {
 		population.setAmount(soldiers);
 	}
 
