@@ -81,6 +81,7 @@ public class MoneyBudget {
 		double armyCostPerTurn = getTurn()
 				.addPerYear(country.getArmies().stream().mapToDouble(a -> a.getCostPerYear()).sum());
 		data.setMoney(data.getMoney() + incomePerTurn - armyCostPerTurn);
+		// TODO spend money for regular needs like to support government work (to pay salary) 
 	}
 
 	public double getTotalWeight() {

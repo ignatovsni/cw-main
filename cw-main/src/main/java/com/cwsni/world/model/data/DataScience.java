@@ -1,11 +1,16 @@
 package com.cwsni.world.model.data;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.cwsni.world.model.data.util.DoubleContextualSerializer;
 import com.cwsni.world.model.data.util.Precision;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class DataScience {
 
+	private static final Log logger = LogFactory.getLog(DataScience.class);
+	
 	@JsonSerialize(using = DoubleContextualSerializer.class)
 	@Precision(precision = 3)
 	private double amount;
@@ -29,12 +34,12 @@ public class DataScience {
 
 	public void setAmount(double amount) {
 		if (amount < 0) {
-			System.out.println("DataScience: amount < 0");
+			logger.error("DataScience: amount < 0");
 			amount = 0;
 		}
 		this.amount = amount;
 		if (this.amount > 10000000) {
-			System.out.println("DataScience: amount > 1,000,000");
+			logger.warn("DataScience: amount > 10,000,000");
 		}
 		if (this.amount > max) {
 			max = this.amount;

@@ -401,77 +401,42 @@ public class Province {
 		return data.getWealth();
 	}
 
+	/**
+	 * The government effectiveness. The difference with
+	 * {@link #getCapitalInfluence()}: it can take in account others things, not
+	 * only capital.
+	 */
 	public double getGovernmentInfluence() {
-		Country country = getCountry();
-		if (country == null) {
-			return 0;
-		}
-		double govInfl = Math.max(map.getGame().getGameParams().getProvinceInfluenceFromCapitalWithoutCapital(),
-				getRawGovernmentInfluence() + country.getFocus().getGovernmentFlatBonus());
-		return govInfl;
+		return getCapitalInfluence();
 	}
 
-	private double getRawGovernmentInfluence() {
+	/**
+	 * Influence of the capital and only the capital.
+	 */
+	public double getCapitalInfluence() {
 		Country country = getCountry();
 		if (country == null) {
 			return 0;
 		}
-		double capitalInfluence = getCapitalInfluence();
-		if (getState() == null) {
-			return capitalInfluence;
-		}
-		GameParams gParams = map.getGame().getGameParams();
-		if (this.equals(getState().getCapital())) {
-			// it is a state capital
-			if (country.getCapital() == null) {
-				return capitalInfluence;
-			}
-			double distToCapital = getDistanceToCapital();
-			if (distToCapital < 1) {
-				return capitalInfluence;
-			}
-			double effectiveDistanceFromStateCapitalToCountryCapital = map.getGame().getScienceModificators()
-					.getEffectiveDistanceFromStateCapitalToCountryCapital(country, this, distToCapital);
-			double coeffWithDist = gParams.getProvinceInfluenceFromCapitalForStateWithDistanceDecrease();
-			double stateInfluence = Math.pow(coeffWithDist, effectiveDistanceFromStateCapitalToCountryCapital);
-			return Math.max(stateInfluence, capitalInfluence);
-		} else {
-			if (getState().getCapital() == null || !country.equals(getState().getCapital().getCountry())) {
-				// no state capital or capital belongs to another country
-				return capitalInfluence;
-			} else {
-				double distToStateCapital = getDistanceToStateCapital();
-				double stateInfluence = getState().getCapital().getGovernmentInfluence()
-						* Math.pow(gParams.getProvinceInfluenceFromCapitalWithDistanceDecrease(), distToStateCapital);
-				return Math.max(stateInfluence, capitalInfluence);
-			}
-		}
-	}
-
-	protected double getCapitalInfluence() {
-		Country country = getCountry();
-		if (country == null) {
-			return 0;
-		}
+		double influence;
 		GameParams gParams = map.getGame().getGameParams();
 		if (country.getCapitalId() == null) {
-			return gParams.getProvinceInfluenceFromCapitalWithoutCapital();
-		}
-		double distanceToCapitalWithScience = map.getGame().getScienceModificators()
-				.getEffectiveDistanceFromProvinceToCountryCapital(country, this, getDistanceToCapital());
-		if (distanceToCapitalWithScience <= 0) {
-			return 1;
+			influence = gParams.getProvinceInfluenceFromCapitalWithoutCapital();
 		} else {
-			double influence = Math.pow(
-					map.getGame().getScienceModificators()
-							.getEffectiveProvinceInfluenceFromCapitalWithDistanceDecrease(country),
-					distanceToCapitalWithScience / country.getFocus().getGovernmentInfluenceOnDistance());
-			influence = Math.max(influence, gParams.getProvinceInfluenceFromCapitalWithoutCapital());
-			return influence;
+			double distToCapital = getDistanceToCapital();
+			double maxDistance = map.getGame().getScienceModificators().getMaxDistance(country);
+			if (distToCapital <= maxDistance) {
+				influence = Math.max((maxDistance - distToCapital) / maxDistance,
+						gParams.getProvinceInfluenceFromCapitalWithoutCapital());
+			} else {
+				influence = gParams.getProvinceInfluenceFromCapitalWithoutCapital();
+			}
 		}
+		return Math.max(influence + country.getFocus().getGovernmentFlatBonus(),
+				gParams.getProvinceInfluenceFromCapitalWithoutCapital());
 	}
 
-	private double getDistanceToCapital() {
+	public double getDistanceToCapital() {
 		if (getCountry() == null) {
 			return -1;
 		}
@@ -490,7 +455,7 @@ public class Province {
 		return distanceToCapital;
 	}
 
-	private double getDistanceToStateCapital() {
+	public double getDistanceToStateCapital() {
 		if (getState() == null) {
 			return -1;
 		}
@@ -590,9 +555,8 @@ public class Province {
 			}
 		}
 
-		if (income > 0) {
-			// probably we have unused money (income variable)
-			// TODO ?
+		if (income > 10) {
+			spendMoneyForScience(income);
 		}
 	}
 

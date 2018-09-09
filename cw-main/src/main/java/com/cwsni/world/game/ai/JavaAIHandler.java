@@ -81,9 +81,11 @@ public class JavaAIHandler {
 		double loyaltyToCountryFromCountryCasualties = country.getLoyaltyToCountryFromCountryCasualties();
 
 		// check war
+		// double rndNumber = rnd.nextDouble() * rnd.nextDouble() * rnd.nextDouble() *
+		// rnd.nextDouble() * rnd.nextDouble();
+		double rndNumber = rnd.nextDouble() * rnd.nextDouble();
 		if (loyaltyToCountryFromCountryCasualties > -0.05 && thisCountryStrength >= thisCountryPureWarStrength * 0.5
-				&& 1.0 * (countriesWithWar.size() + 5) / (maxDesiredWars + 5) < rnd.nextDouble() * rnd.nextDouble()
-						* rnd.nextDouble() * rnd.nextDouble() * rnd.nextDouble()) {
+				&& 1.0 * (countriesWithWar.size() + 5) / (maxDesiredWars + 5) < rndNumber) {
 			Integer weakestEnemyCountryId = null;
 			double weakestEnemyStrength = Double.MAX_VALUE;
 			for (Entry<Integer, Double> e : countriesCurrentWarStrength.entrySet()) {
@@ -244,7 +246,7 @@ public class JavaAIHandler {
 		double armyCost = armies.stream().mapToDouble(a -> a.getCostPerYear()).sum();
 		double availableMoneyForArmy = armyBudget - armyCost;
 		if (data.isWar()) {
-			availableMoneyForArmy += Math.min(budget.getMoney() * 0.1, armyBudget * 2);
+			availableMoneyForArmy += Math.min(budget.getMoney() * 0.05, armyBudget * 2);
 		}
 
 		if (availableMoneyForArmy < -armyBudget && !armies.isEmpty()) {
@@ -270,7 +272,7 @@ public class JavaAIHandler {
 			}
 		}
 
-		if (armies.size() >= MAX_ARMIES || !data.isWar() || budget.getMoney() < armyBudget * 20
+		if (armies.size() >= MAX_ARMIES || (!data.isWar() && !armies.isEmpty()) || budget.getMoney() < armyBudget * 20
 				|| availableMoneyForArmy < (-armyBudget / 2)) {
 			return;
 		}

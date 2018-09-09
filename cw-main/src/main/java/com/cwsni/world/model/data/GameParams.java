@@ -73,7 +73,7 @@ public class GameParams {
 	private int newCountryPopulationMin = 10000;
 	private int newCountryScienceAdministrationMin = 100;
 	private double newCountryProbabilityPerWeek = 0.0001;
-
+	
 	private double scienceBaseIncreasePerPersonPerWeek = 0.005;
 	private double scienceNaturalGrowthLimitPerPerson = 0.01;
 	private double scienceExchangeWithMaxPerTurn = 0.02;
@@ -81,6 +81,8 @@ public class GameParams {
 
 	private double scienceAgricultureMultiplicatorForFertility = 0.00001;
 	private double scienceAgricultureMultiplicatorForArea = 0.00005;
+	
+	private double scienceAdministrationMultiplicatorForMaxDistance = 0.0005;
 
 	private double infrastructureNaturalLimitFromPopulation = 0.8;
 	private double infrastructureNaturalLimitWithLocalGovernment = 1.0;
@@ -94,9 +96,7 @@ public class GameParams {
 	private double armySoldiersToPopulationForSubjugationLeaveInProvince = 0.01;
 	private double provinceLossFromFight = 0.1;
 
-	private double provinceInfluenceFromCapitalWithDistanceDecrease = 0.8;
-	private double provinceInfluenceFromCapitalWithoutCapital = 0.05;
-	private double provinceInfluenceFromCapitalForStateWithDistanceDecrease = 0.9;
+	private double provinceInfluenceFromCapitalWithoutCapital = 0.1;
 	private double provinceEffectivenessWithoutGoverment = 0.1;
 
 	private double budgetBaseTaxPerPerson = 1;
@@ -395,15 +395,6 @@ public class GameParams {
 		this.infrastructureNaturalLimitWithLocalGovernment = infrastructureNaturalLimitWithLocalGovernment;
 	}
 
-	public double getProvinceInfluenceFromCapitalWithDistanceDecrease() {
-		return provinceInfluenceFromCapitalWithDistanceDecrease;
-	}
-
-	public void setProvinceInfluenceFromCapitalWithDistanceDecrease(
-			double provinceInfluenceFromCapitalWithDistanceDecrease) {
-		this.provinceInfluenceFromCapitalWithDistanceDecrease = provinceInfluenceFromCapitalWithDistanceDecrease;
-	}
-
 	public double getArmySoldiersToPopulationForSubjugation() {
 		return armySoldiersToPopulationForSubjugation;
 	}
@@ -426,15 +417,6 @@ public class GameParams {
 
 	public void setProvinceInfluenceFromCapitalWithoutCapital(double provinceInfluenceFromCapitalWithoutCapital) {
 		this.provinceInfluenceFromCapitalWithoutCapital = provinceInfluenceFromCapitalWithoutCapital;
-	}
-
-	public double getProvinceInfluenceFromCapitalForStateWithDistanceDecrease() {
-		return provinceInfluenceFromCapitalForStateWithDistanceDecrease;
-	}
-
-	public void setProvinceInfluenceFromCapitalForStateWithDistanceDecrease(
-			double provinceInfluenceFromCapitalForStateWithDistanceDecrease) {
-		this.provinceInfluenceFromCapitalForStateWithDistanceDecrease = provinceInfluenceFromCapitalForStateWithDistanceDecrease;
 	}
 
 	public double getPopulationMaxInCapital() {
@@ -785,6 +767,15 @@ public class GameParams {
 
 	public void setScienceAgricultureMultiplicatorForArea(double scienceAgricultureMultiplicatorForArea) {
 		this.scienceAgricultureMultiplicatorForArea = scienceAgricultureMultiplicatorForArea;
+	}
+
+	public double getScienceAdministrationMultiplicatorForMaxDistance() {
+		return scienceAdministrationMultiplicatorForMaxDistance;
+	}
+
+	public void setScienceAdministrationMultiplicatorForMaxDistance(
+			double scienceAdministrationMultiplicatorForMaxDistance) {
+		this.scienceAdministrationMultiplicatorForMaxDistance = scienceAdministrationMultiplicatorForMaxDistance;
 	}
 
 }

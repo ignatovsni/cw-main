@@ -101,10 +101,17 @@ public class ScienceCollection {
 	}
 
 	private void spendMoneyForScienceProvince(Game game, Province p, double money) {
-		ScienceBudget scienceBudget = p.getCountry().getScienceBudget();
-		data.getAdministration().addAmount(scienceBudget.getAdministrationFraction(game, money));
-		data.getAgriculture().addAmount(scienceBudget.getAgricultureFraction(game, money));
-		data.getMedicine().addAmount(scienceBudget.getMedicineFraction(game, money));
+		if (p.getCountry() != null) {
+			ScienceBudget scienceBudget = p.getCountry().getScienceBudget();
+			data.getAdministration().addAmount(scienceBudget.getAdministrationFraction(game, money));
+			data.getAgriculture().addAmount(scienceBudget.getAgricultureFraction(game, money));
+			data.getMedicine().addAmount(scienceBudget.getMedicineFraction(game, money));
+		} else {
+			double eachScienceIncrease = ScienceBudget.calcHowToIncreaseScience(game, money / 3);
+			data.getAdministration().addAmount(eachScienceIncrease);
+			data.getAgriculture().addAmount(eachScienceIncrease);
+			data.getMedicine().addAmount(eachScienceIncrease);
+		}
 	}
 
 	// --------------------- static ----------------------------------
