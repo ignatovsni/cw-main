@@ -381,7 +381,7 @@ public class Country {
 					}
 				}
 			}
-			idx = final_idx + 1;
+			idx = final_idx;
 		}
 	}
 

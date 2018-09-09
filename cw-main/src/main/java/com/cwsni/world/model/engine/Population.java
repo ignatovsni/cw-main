@@ -400,11 +400,11 @@ public class Population {
 				});
 			} else {
 				// not enough food from fields
-				dieFromHunger(game, prov, 1 - prov.getSoilFertility());
+				dieFromHunger(game, prov, 1 - game.getTurn().multiplyPerYear(prov.getSoilFertility()));
 			}
 		} else {
 			// overpopulation
-			dieFromOverpopulation(game, prov, 1 - 1 / currentPopFromMax);
+			dieFromOverpopulation(game, prov, 1 - game.getTurn().multiplyPerYear(1 / currentPopFromMax));
 		}
 		// recruits pool growth && casualties decreasing
 		double populationRecruitPercentRestore = game.getTurn()
