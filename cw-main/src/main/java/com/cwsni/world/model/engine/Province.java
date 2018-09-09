@@ -27,6 +27,7 @@ public class Province {
 	private DataProvince data;
 	private List<Province> neighbors;
 	private List<Population> population;
+	private List<FoodResource> foodResources;
 	private WorldMap map;
 	private List<Population> immigrants;
 	private Country country;
@@ -120,6 +121,10 @@ public class Province {
 		return data.getContinentId();
 	}
 
+	public List<FoodResource> getFoodResources() {
+		return foodResources;
+	}
+
 	public double getSoilFertility() {
 		// science
 		// double v = getSoilFertilityBasePlusAgriculture(getScienceAgriculture());
@@ -136,7 +141,7 @@ public class Province {
 	}
 
 	public double getSoilNaturalFertility() {
-		return modifiers.getModifiedValue(ProvinceModifier.SOIL_FERTILITY, data.getSoilFertility());
+		return modifiers.getModifiedValue(ProvinceModifier.SOIL_FERTILITY, foodResources.get(0).getQuality());
 	}
 
 	public double getScienceAgriculture() {
@@ -162,8 +167,8 @@ public class Province {
 		return scienceValue;
 	}
 
-	public int getSoilArea() {
-		return data.getSoilArea();
+	public double getSoilArea() {
+		return foodResources.get(0).getAmount();
 	}
 
 	public int getInfrastructure() {
@@ -187,7 +192,7 @@ public class Province {
 		return data.getTerrainType();
 	}
 
-	public int getSize() {
+	public double getSize() {
 		return data.getSize();
 	}
 
@@ -232,37 +237,24 @@ public class Province {
 		neighbors = new ArrayList<>();
 		population = new ArrayList<>();
 		immigrants = new ArrayList<>();
+		foodResources = new ArrayList<>();
 		data.getPopulation().forEach(dpop -> {
 			Population pop = new Population(worldMap.getGame());
 			pop.buildFrom(this, dpop);
 			population.add(pop);
 		});
 		data.getNeighbors().forEach(id -> neighbors.add(map.findProvinceById(id)));
+		data.getFoodResources().forEach(dr -> {
+			FoodResource fr = new FoodResource();
+			fr.buildFrom(this, dr);
+			foodResources.add(fr);
+		});
 
 		armies = new ArrayList<>();
 	}
 
 	public ModifierCollection<ProvinceModifier> getModifiers() {
 		return modifiers;
-	}
-
-	private void processSoilArea() {
-		int populationAmount = getPopulationAmount();
-		double neededFieldsArea = (int) (populationAmount / getSoilFertility());
-		int currentFieldsArea = getSoilArea();
-		if (neededFieldsArea < currentFieldsArea) {
-			// degradation
-			double decreasing = Math.max(neededFieldsArea / currentFieldsArea, 0.99);
-			setSoilArea((int) (decreasing * currentFieldsArea));
-		} else {
-			// improving
-			if (populationAmount > 0) {
-				double improving = Math.min(neededFieldsArea / currentFieldsArea, 1.01);
-				int addSoilArea = (int) (currentFieldsArea * improving - currentFieldsArea);
-				addSoilArea = Math.max(addSoilArea, 100);
-				setSoilArea(currentFieldsArea + addSoilArea);
-			}
-		}
 	}
 
 	/**
@@ -287,11 +279,6 @@ public class Province {
 				setInfrastructure(currentInfrastructure + addInfrastructure);
 			}
 		}
-	}
-
-	private void setSoilArea(int newSoilArea) {
-		data.setSoilArea(Math.min(Math.max(0, newSoilArea),
-				data.getSize() * map.getGame().getGameParams().getSoilAreaPerSize()));
 	}
 
 	private void setInfrastructure(int newInfrastructure) {
@@ -325,7 +312,6 @@ public class Province {
 		if (!getTerrainType().isPopulationPossible()) {
 			return;
 		}
-		processSoilArea();
 		if (getPopulationAmount() != 0) {
 			ScienceCollection.growScienceNewTurn(this, map.getGame());
 			Population.migrateNewTurn(this, map.getGame());

@@ -50,9 +50,9 @@ public class GsMapModePanel extends BorderPane {
 	private Map<String, MapMode> possibleModes;
 	private List<String> contextMenuModes;
 	private List<String> availableDefaultModes = Arrays.asList("geo", "political", "diplomacy", "reachable-lands",
-			"culture", "population", "government-influence", "loyalty", "loyalty-dangerous", "states", "wealth", "soil",
-			"soil-raw", "infrastructure", "science.agriculture", "science.medicine", "science.administration", "geo",
-			"geo", "geo");
+			"culture", "population", "government-influence", "loyalty", "loyalty-dangerous", "states", "wealth",
+			"soil-fertility", "soil-natural-fertility", "soil-area", "infrastructure", "science.agriculture",
+			"science.medicine", "science.administration", "geo", "geo", "geo");
 	private List<String> activeButtonModes;
 
 	private String getMessage(String code) {
@@ -137,8 +137,9 @@ public class GsMapModePanel extends BorderPane {
 		addMapMode("states", MapModeEnum.STATES);
 		addMapMode("wealth", MapModeEnum.WEALTH);
 		addMapMode("infrastructure", MapModeEnum.INFRASTRUCTURE);
-		addMapMode("soil", MapModeEnum.SOIL_FERTILITY);
-		addMapMode("soil-raw", MapModeEnum.SOIL_RAW_FERTILITY);
+		addMapMode("soil-area", MapModeEnum.SOIL_AREA);
+		addMapMode("soil-fertility", MapModeEnum.SOIL_FERTILITY);
+		addMapMode("soil-natural-fertility", MapModeEnum.SOIL_NATURAL_FERTILITY);
 		contextMenuModes.add(null);
 		addMapMode("science.agriculture", MapModeEnum.SCIENCE_AGRICULTURE);
 		addMapMode("science.medicine", MapModeEnum.SCIENCE_MEDICINE);

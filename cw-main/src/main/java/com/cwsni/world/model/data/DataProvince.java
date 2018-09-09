@@ -17,15 +17,13 @@ public class DataProvince {
 	private Point center;
 	private List<Integer> neighbors;
 	private TerrainType terrainType;
-	private int size;
-	private double soilFertility;
+	@JsonSerialize(using = DoubleContextualSerializer.class)
+	@Precision(precision = 0)
+	private double size;
+	private List<DataFoodResource> foodResources;
 
 	// --------------- data section -------------------
 
-	/**
-	 * current area
-	 */
-	private int soilArea;
 	/**
 	 * size of the province, it is a synthetic concept
 	 */
@@ -46,6 +44,7 @@ public class DataProvince {
 		this.center = new Point(x, y);
 		this.population = new ArrayList<>(1);
 		this.neighbors = new ArrayList<>();
+		this.foodResources = new ArrayList<>(1);
 		this.terrainType = TerrainType.OCEAN;
 	}
 
@@ -109,22 +108,6 @@ public class DataProvince {
 		this.name = name;
 	}
 
-	public double getSoilFertility() {
-		return soilFertility;
-	}
-
-	public void setSoilFertility(double soilFertility) {
-		this.soilFertility = soilFertility;
-	}
-
-	public int getSoilArea() {
-		return soilArea;
-	}
-
-	public void setSoilArea(int soilArea) {
-		this.soilArea = soilArea;
-	}
-
 	public TerrainType getTerrainType() {
 		return terrainType;
 	}
@@ -133,11 +116,11 @@ public class DataProvince {
 		this.terrainType = terrainType;
 	}
 
-	public int getSize() {
+	public double getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
+	public void setSize(double size) {
 		this.size = size;
 	}
 
@@ -163,6 +146,14 @@ public class DataProvince {
 
 	public void setContinentId(int continentId) {
 		this.continentId = continentId;
+	}
+
+	public List<DataFoodResource> getFoodResources() {
+		return foodResources;
+	}
+
+	public void setFoodResources(List<DataFoodResource> foodResources) {
+		this.foodResources = foodResources;
 	}
 
 }

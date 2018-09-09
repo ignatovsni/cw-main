@@ -66,23 +66,33 @@ public class GsProvInfoPane extends InternalInfoPane {
 		setLabelText(valuesTerrainTypeLabel, getMessage(prov.getTerrainType().getCodeMsg()));
 		switch (prov.getTerrainType()) {
 		case GRASSLAND:
-			setLabelText(valuesSizeLabel, DataFormatter.toLong(prov.getSize()));
+			setLabelText(valuesSizeLabel, DataFormatter.toLong((long) prov.getSize()));
 			setLabelTextWithLongFormatterAndValueTooltip(valuesPopsLabel, prov.getPopulationAmount());
 			setLabelTextWithLongFormatterAndValueTooltip(valuesRecruitsLabel, prov.getAvailablePeopleForRecruiting());
 			setLabelText(valuesWealthLabel, createTextForWealth(prov));
 			setLabelText(valuesGovInfluenceLabel,
 					String.valueOf(Math.round(prov.getGovernmentInfluence() * 100)) + "%");
 			setLabelText(valuesCountryLoyalty, String.valueOf(Math.round(prov.getLoyaltyToCountry() * 100)) + "%",
-					Population.createDescriptionForLoyaltyChangesPerYear(gameScene.getGame(), prov, getMessageSource()));
+					Population.createDescriptionForLoyaltyChangesPerYear(gameScene.getGame(), prov,
+							getMessageSource()));
 			setLabelText(valuesStateLoyalty, String.valueOf(Math.round(prov.getLoyaltyToState() * 100)) + "%");
 			setLabelText(valuesInfrastructureLabel, createTextForInfrastructure(prov));
-			setLabelTextWithLongFormatterAndValueTooltip(valuesSoilAreaLabel, prov.getSoilArea());
-			setLabelText(valuesSoilFertilityLabel, DataFormatter.toFraction(prov.getSoilFertility()));
+			setLabelTextWithLongFormatterAndValueTooltip(valuesSoilAreaLabel, (long) prov.getSoilArea());
+			setLabelText(valuesSoilFertilityLabel, createTextForSoilQuality(prov));
 			break;
 		case OCEAN:
 		case MOUNTAIN:
 			break;
 		}
+	}
+
+	private String createTextForSoilQuality(Province prov) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(DataFormatter.doubleWithPrecison(prov.getSoilFertility(), 3));
+		sb.append(" (");
+		sb.append(DataFormatter.doubleWithPrecison(prov.getSoilNaturalFertility(), 3));
+		sb.append(")");
+		return sb.toString();
 	}
 
 	private String createTextForWealth(Province prov) {

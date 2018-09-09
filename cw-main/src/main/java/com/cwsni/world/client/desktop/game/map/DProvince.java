@@ -142,10 +142,13 @@ class DProvince extends Group {
 			case INFRASTRUCTURE:
 				drawInfrastructureMode(polygon);
 				break;
+			case SOIL_AREA:
+				drawSoilAreMode(polygon);
+				break;
 			case SOIL_FERTILITY:
 				drawSoilFertilityMode(polygon);
 				break;
-			case SOIL_RAW_FERTILITY:
+			case SOIL_NATURAL_FERTILITY:
 				drawSoilNaturalFertilityMode(polygon);
 				break;
 			case SCIENCE_AGRICULTURE:
@@ -427,16 +430,22 @@ class DProvince extends Group {
 		drawGradientMode(polygon, 1.0, province.getWealthLevel(), false);
 	}
 
-	private void drawSoilNaturalFertilityMode(Polygon polygon) {
-		GameTransientStats stats = map.getGame().getGameTransientStats();
-		drawGradientModeForMedian(polygon, stats.getSoilNaturalFertilityMax(), stats.getSoilNaturalFertilityAvg(),
-				stats.getSoilFertilityMedian(), province.getSoilNaturalFertility());
-	}
-
 	private void drawSoilFertilityMode(Polygon polygon) {
 		GameTransientStats stats = map.getGame().getGameTransientStats();
 		drawGradientModeForMedian(polygon, stats.getSoilFertilityMax(), stats.getSoilFertilityAvg(),
 				stats.getSoilFertilityMedian(), province.getSoilFertility());
+	}
+	
+	private void drawSoilNaturalFertilityMode(Polygon polygon) {
+		GameTransientStats stats = map.getGame().getGameTransientStats();
+		drawGradientModeForMedian(polygon, stats.getSoilNaturalFertilityMax(), stats.getSoilNaturalFertilityAvg(),
+				stats.getSoilNaturalFertilityMedian(), province.getSoilNaturalFertility());
+	}
+
+	private void drawSoilAreMode(Polygon polygon) {
+		GameTransientStats stats = map.getGame().getGameTransientStats();
+		drawGradientModeForMedian(polygon, stats.getSoilAreaMax(), stats.getSoilAreaAvg(),
+				stats.getSoilAreaMedian(), province.getSoilArea());
 	}
 
 	private void drawGradientMode(Polygon polygon, double maxValue, double provinceValue, boolean mode2) {

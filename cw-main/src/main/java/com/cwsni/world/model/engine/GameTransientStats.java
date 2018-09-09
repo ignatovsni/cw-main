@@ -28,11 +28,13 @@ public class GameTransientStats {
 
 	private InternalFutureTask<DoubleSummaryStatistics> infrastructureInProvince;
 	private InternalFutureTask<Double> infrastructureMedianInProvince;
-
+	
 	private InternalFutureTask<DoubleSummaryStatistics> soilNaturalFertility;
 	private InternalFutureTask<Double> soilNaturalFertilityMedian;
 	private InternalFutureTask<DoubleSummaryStatistics> soilFertility;
 	private InternalFutureTask<Double> soilFertilityMedian;
+	private InternalFutureTask<DoubleSummaryStatistics> soilArea;
+	private InternalFutureTask<Double> soilAreaMedian;
 
 	private InternalFutureTask<DoubleSummaryStatistics> scienceAgricultureInProvince;
 	private InternalFutureTask<Double> scienceAgricultureMedianInProvince;
@@ -51,7 +53,7 @@ public class GameTransientStats {
 
 		populationMedianInProvince = new InternalFutureTask<>(() -> {
 			int v = new MedianFinder()
-					.findMedianInteger(getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 0)
+					.findMedianIntegerAndGetZeroIfEmpty(getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 0)
 							.map(p -> p.getPopulationAmount()).collect(Collectors.toList()));
 			return v;
 		}, 0);
@@ -63,7 +65,7 @@ public class GameTransientStats {
 
 		govInfluenceMedianInProvince = new InternalFutureTask<>(() -> {
 			double v = new MedianFinder()
-					.findMedianDouble(getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 0)
+					.findMedianDoubleAndGetZeroIfEmpty(getPopulationPossibleProvinces().filter(p -> p.getPopulationAmount() > 0)
 							.map(p -> p.getGovernmentInfluence()).collect(Collectors.toList()));
 			return v;
 		}, 0.0);
@@ -75,7 +77,7 @@ public class GameTransientStats {
 		}, new DoubleSummaryStatistics());
 
 		infrastructureMedianInProvince = new InternalFutureTask<>(() -> {
-			double v = new MedianFinder().findMedianDouble(getPopulationPossibleProvinces()
+			double v = new MedianFinder().findMedianDoubleAndGetZeroIfEmpty(getPopulationPossibleProvinces()
 					.filter(p -> p.getPopulationAmount() >= getPopulationMedianInProvince())
 					.map(p -> p.getInfrastructurePercent()).collect(Collectors.toList()));
 			return v;
@@ -90,7 +92,7 @@ public class GameTransientStats {
 		}, new DoubleSummaryStatistics());
 
 		soilNaturalFertilityMedian = new InternalFutureTask<>(() -> {
-			double v = new MedianFinder().findMedianDouble(
+			double v = new MedianFinder().findMedianDoubleAndGetZeroIfEmpty(
 					getSoilPossibleProvinces().map(p -> p.getSoilNaturalFertility()).collect(Collectors.toList()));
 			return v;
 		}, 0.0);
@@ -100,8 +102,18 @@ public class GameTransientStats {
 		}, new DoubleSummaryStatistics());
 
 		soilFertilityMedian = new InternalFutureTask<>(() -> {
-			double v = new MedianFinder().findMedianDouble(
+			double v = new MedianFinder().findMedianDoubleAndGetZeroIfEmpty(
 					getSoilPossibleProvinces().map(p -> p.getSoilFertility()).collect(Collectors.toList()));
+			return v;
+		}, 0.0);
+		
+		soilArea = new InternalFutureTask<>(() -> {
+			return getSoilPossibleProvinces().mapToDouble(p -> p.getSoilArea()).summaryStatistics();
+		}, new DoubleSummaryStatistics());
+
+		soilAreaMedian = new InternalFutureTask<>(() -> {
+			double v = new MedianFinder().findMedianDoubleAndGetZeroIfEmpty(
+					getSoilPossibleProvinces().map(p -> p.getSoilArea()).collect(Collectors.toList()));
 			return v;
 		}, 0.0);
 
@@ -110,7 +122,7 @@ public class GameTransientStats {
 		}, new DoubleSummaryStatistics());
 
 		scienceAgricultureMedianInProvince = new InternalFutureTask<>(() -> {
-			double v = new MedianFinder().findMedianDouble(
+			double v = new MedianFinder().findMedianDoubleAndGetZeroIfEmpty(
 					getPopulationPossibleProvinces().map(p -> p.getScienceAgriculture()).collect(Collectors.toList()));
 			return v;
 		}, 0.0);
@@ -120,7 +132,7 @@ public class GameTransientStats {
 		}, new DoubleSummaryStatistics());
 
 		scienceMedicineMedianInProvince = new InternalFutureTask<>(() -> {
-			double v = new MedianFinder().findMedianDouble(
+			double v = new MedianFinder().findMedianDoubleAndGetZeroIfEmpty(
 					getPopulationPossibleProvinces().map(p -> p.getScienceMedicine()).collect(Collectors.toList()));
 			return v;
 		}, 0.0);
@@ -130,7 +142,7 @@ public class GameTransientStats {
 		}, new DoubleSummaryStatistics());
 
 		scienceAdministrationMedianInProvince = new InternalFutureTask<>(() -> {
-			double v = new MedianFinder().findMedianDouble(getPopulationPossibleProvinces()
+			double v = new MedianFinder().findMedianDoubleAndGetZeroIfEmpty(getPopulationPossibleProvinces()
 					.map(p -> p.getScienceAdministration()).collect(Collectors.toList()));
 			return v;
 		}, 0.0);
@@ -172,18 +184,22 @@ public class GameTransientStats {
 		return infrastructureMedianInProvince.get();
 	}
 
-	public double getSoilFertilityMax() {
-		return soilFertility.get().getMax();
+	public double getSoilAreaMax() {
+		return soilArea.get().getMax();
 	}
 
-	public double getSoilFertilityAvg() {
-		return soilFertility.get().getAverage();
+	public double getSoilAreaAvg() {
+		return soilArea.get().getAverage();
 	}
 
-	public double getSoilFertilityMedian() {
+	public double getSoilAreaMedian() {
+		return soilAreaMedian.get();
+	}
+
+	public double getSoilNaturalFertilityMedian() {
 		return soilNaturalFertilityMedian.get();
 	}
-	
+
 	public double getSoilNaturalFertilityMax() {
 		return soilNaturalFertility.get().getMax();
 	}
@@ -192,10 +208,18 @@ public class GameTransientStats {
 		return soilNaturalFertility.get().getAverage();
 	}
 
-	public double getSoilNaturalFertilityMedian() {
+	public double getSoilFertilityMedian() {
 		return soilFertilityMedian.get();
 	}
 
+	public double getSoilFertilityMax() {
+		return soilFertility.get().getMax();
+	}
+
+	public double getSoilFertilityAvg() {
+		return soilFertility.get().getAverage();
+	}
+	
 	public double getScienceAgricultureMaxInProvince() {
 		return scienceAgricultureInProvince.get().getMax();
 	}

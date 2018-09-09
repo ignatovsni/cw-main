@@ -6,6 +6,15 @@ import java.util.Collections;
 
 public class MedianFinder {
 
+	public int findMedianIntegerAndGetZeroIfEmpty(Collection<Integer> collection) {
+		Integer result = findMedianInteger(collection);
+		if (result != null) {
+			return result;
+		} else {
+			return 0;
+		}
+	}
+
 	public Integer findMedianInteger(Collection<Integer> collection) {
 		if (collection == null || collection.isEmpty()) {
 			return null;
@@ -24,7 +33,16 @@ public class MedianFinder {
 			return (arrayList.get(idx) + arrayList.get(idx - 1)) / 2;
 		}
 	}
-	
+
+	public double findMedianDoubleAndGetZeroIfEmpty(Collection<Double> collection) {
+		Double result = findMedianDouble(collection);
+		if (result != null) {
+			return result;
+		} else {
+			return 0.0;
+		}
+	}
+
 	public Double findMedianDouble(Collection<Double> collection) {
 		if (collection == null || collection.isEmpty()) {
 			return null;

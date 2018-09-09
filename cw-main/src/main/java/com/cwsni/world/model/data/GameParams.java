@@ -20,13 +20,15 @@ public class GameParams {
 	private double soilAreaCorePointsPerProvinces = 0.01;
 	private int soilAreaPerSize = 1000;
 
-	private double soilFertilityAtStartBase = 1.2;
-	private double soilFertilityAtStartCoeffForCoast = 1.2;
-	private int fractionOfMaxSoilFertility = 1;
-	private double decreaseSoilFertilityAtPoles = 0.4;
+	private double soilFertilityAtStartBase = 1.01;
+	private double soilFertilityAtStartCoeffForCoast = 1.1;
+	private double soilAreaAtStartCoeffForCoast = 1.2;
+	private double fractionOfBestFoodResource = 1;
+	private double decreaseSoilAreaAtPoles = 0.15;
+	private double decreaseSoilFertilityAtPoles = 0.15;
 
+	private double minSoilFertilityToCreatePopulaton = 1.05;
 	private int populationAtStart = 10000;
-	private double minSoilFertilityToStartPopulation = Math.min(1.1, soilFertilityAtStartBase);
 	private int scienceValueStart = 0;
 
 	// ------------End of Map generation section--------
@@ -129,14 +131,6 @@ public class GameParams {
 		this.soilAreaCorePointsPerProvinces = soilAreaCorePointsPerProvinces;
 	}
 
-	public int getFractionOfMaxSoilFertility() {
-		return fractionOfMaxSoilFertility;
-	}
-
-	public void setFractionOfMaxSoilFertility(int fractionOfMaxSoilFertility) {
-		this.fractionOfMaxSoilFertility = fractionOfMaxSoilFertility;
-	}
-
 	public double getSoilFertilityAtStartBase() {
 		return soilFertilityAtStartBase;
 	}
@@ -201,14 +195,6 @@ public class GameParams {
 		this.populationAtStart = populationAtStart;
 	}
 
-	public double getDecreaseSoilFertilityAtPoles() {
-		return decreaseSoilFertilityAtPoles;
-	}
-
-	public void setDecreaseSoilFertilityAtPoles(double decreaseSoilFertilityAtPoluses) {
-		this.decreaseSoilFertilityAtPoles = decreaseSoilFertilityAtPoluses;
-	}
-
 	public CwRandom getRandom() {
 		if (random == null) {
 			random = new CwRandom(getSeed());
@@ -222,14 +208,6 @@ public class GameParams {
 
 	public void setPopulationMaxExcess(double populationMaxExcess) {
 		this.populationMaxExcess = populationMaxExcess;
-	}
-
-	public double getMinSoilFertilityToStartPopulation() {
-		return minSoilFertilityToStartPopulation;
-	}
-
-	public void setMinSoilFertilityToStartPopulation(double minSoilFertilityToStartPopulation) {
-		this.minSoilFertilityToStartPopulation = minSoilFertilityToStartPopulation;
 	}
 
 	public double getPopulationBaseMigration() {
@@ -711,14 +689,6 @@ public class GameParams {
 		this.provinceEffectivenessWithoutGoverment = provinceEffectivenessWithoutGoverment;
 	}
 
-	public double getSoilFertilityAtStartCoeffForCoast() {
-		return soilFertilityAtStartCoeffForCoast;
-	}
-
-	public void setSoilFertilityAtStartCoeffForCoast(double soilFertilityAtStartCoeffForCoast) {
-		this.soilFertilityAtStartCoeffForCoast = soilFertilityAtStartCoeffForCoast;
-	}
-
 	public double getMountainsPerMapProvinces() {
 		return mountainsPerMapProvinces;
 	}
@@ -758,6 +728,54 @@ public class GameParams {
 	public void setArmySoldiersToPopulationForSubjugationLeaveInProvince(
 			double armySoldiersToPopulationForSubjugationLeaveInProvince) {
 		this.armySoldiersToPopulationForSubjugationLeaveInProvince = armySoldiersToPopulationForSubjugationLeaveInProvince;
+	}
+
+	public double getSoilAreaAtStartCoeffForCoast() {
+		return soilAreaAtStartCoeffForCoast;
+	}
+
+	public void setSoilAreaAtStartCoeffForCoast(double soilAreaAtStartCoeffForCoast) {
+		this.soilAreaAtStartCoeffForCoast = soilAreaAtStartCoeffForCoast;
+	}
+
+	public double getSoilFertilityAtStartCoeffForCoast() {
+		return soilFertilityAtStartCoeffForCoast;
+	}
+
+	public void setSoilFertilityAtStartCoeffForCoast(double soilFertilityAtStartCoeffForCoast) {
+		this.soilFertilityAtStartCoeffForCoast = soilFertilityAtStartCoeffForCoast;
+	}
+
+	public double getFractionOfBestFoodResource() {
+		return fractionOfBestFoodResource;
+	}
+
+	public void setFractionOfBestFoodResource(double fractionOfBestFoodResource) {
+		this.fractionOfBestFoodResource = fractionOfBestFoodResource;
+	}
+
+	public double getDecreaseSoilFertilityAtPoles() {
+		return decreaseSoilFertilityAtPoles;
+	}
+
+	public void setDecreaseSoilFertilityAtPoles(double decreaseSoilFertilityAtPoles) {
+		this.decreaseSoilFertilityAtPoles = decreaseSoilFertilityAtPoles;
+	}
+
+	public double getDecreaseSoilAreaAtPoles() {
+		return decreaseSoilAreaAtPoles;
+	}
+
+	public void setDecreaseSoilAreaAtPoles(double decreaseSoilAreaAtPoles) {
+		this.decreaseSoilAreaAtPoles = decreaseSoilAreaAtPoles;
+	}
+
+	public double getMinSoilFertilityToCreatePopulaton() {
+		return minSoilFertilityToCreatePopulaton;
+	}
+
+	public void setMinSoilFertilityToCreatePopulaton(double minSoilFertilityToCreatePopulaton) {
+		this.minSoilFertilityToCreatePopulaton = minSoilFertilityToCreatePopulaton;
 	}
 
 }

@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.algorithms.PathFinder;
-import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.data.DataCulture;
+import com.cwsni.world.model.data.DataFoodResource;
 import com.cwsni.world.model.data.DataGame;
 import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataProvince;
@@ -37,6 +37,7 @@ public class GameGenerator {
 	private class TempData {
 		Map<Integer, DataProvince> provByIds = new HashMap<>();
 		Set<Integer> coreTerrainIds = new HashSet<>();
+		Set<DataProvince> soilPossibleProvince = new HashSet<>();
 	}
 
 	public Game createTestGame() {
@@ -53,7 +54,7 @@ public class GameGenerator {
 		dataGame.setTurn(new DataTurn());
 		createMap(dataGame, tData);
 		createTerrain(dataGame, tData);
-		createMountaints(dataGame, tData);
+		createMountains(dataGame, tData);
 		int lastContinentId = defineContinents(dataGame, tData, tt -> !tt.isWater(), 0);
 		int lastOceanId = defineContinents(dataGame, tData, tt -> tt.isWater(), lastContinentId);
 		dataGame.getMap().setContinents(lastContinentId);
@@ -154,10 +155,7 @@ public class GameGenerator {
 		}
 	}
 
-	private void createMountaints(DataGame game, TempData tData) {
-		if (game.getMap().getProvinces().size() < 100) {
-			return;
-		}
+	private void createMountains(DataGame game, TempData tData) {
 		GameParams gParams = game.getGameParams();
 		int needMountains = (int) (gParams.getMountainsPerMapProvinces() * game.getMap().getProvinces().size());
 		int maxChainLength = Math.max(gParams.getRows(), gParams.getColumns());
@@ -304,39 +302,42 @@ public class GameGenerator {
 	private void fillSoil(DataGame game, TempData tData) {
 		GameParams gParams = game.getGameParams();
 		DataWorldMap map = game.getMap();
-		List<DataProvince> terrain = new ArrayList<>();
 		// initialize area attributes and find all terrain provinces
 		map.getProvinces().stream().filter(p -> p.getTerrainType().isSoilPossible()).forEach(p -> {
 			p.setSize(100);
-			// p.setSize((int) (50 + 100 * gParams.getRandom().nextNormalDouble()));
-			p.setSoilArea(p.getSize() * gParams.getSoilAreaPerSize() / 10);
-			p.setSoilFertility(gParams.getSoilFertilityAtStartBase());
-			terrain.add(p);
+			DataFoodResource foodResource = new DataFoodResource();
+			foodResource.setAmount(p.getSize() * gParams.getSoilAreaPerSize());
+			foodResource.setQuality(gParams.getSoilFertilityAtStartBase());
+			p.getFoodResources().add(foodResource);
+			tData.soilPossibleProvince.add(p);
 		});
-		fillSoilFertility(game, tData, terrain);
+		fillSoilFertility(game, tData);
 	}
 
-	private void fillSoilFertility(DataGame game, TempData tData, List<DataProvince> terrain) {
+	private void fillSoilFertility(DataGame game, TempData tData) {
 		GameParams gParams = game.getGameParams();
-		fillSoilFertilityAtPoles(tData, terrain, gParams);
+		fillSoilFertilityAtPoles(tData, gParams);
 		Set<Integer> increasedIds = new HashSet<>();
 		// setup core provs
 		// use core terrains to support soil and population on all "continents"
 		tData.coreTerrainIds.forEach(coreId -> {
 			DataProvince p = tData.provByIds.get(coreId);
-			p.setSoilFertility(p.getSoilFertility() * gParams.getSoilFertilityAtStartCoeffForCoast());
-			if (p.getSoilFertility() < gParams.getMinSoilFertilityToStartPopulation()) {
-				p.setSoilFertility(gParams.getMinSoilFertilityToStartPopulation() + 0.01);
+			if (p.getTerrainType().isSoilPossible()) {
+				DataFoodResource foodResource = p.getFoodResources().get(0);
+				foodResource.setAmount(foodResource.getAmount() * gParams.getSoilAreaAtStartCoeffForCoast());
+				foodResource.setQuality(foodResource.getQuality() * gParams.getSoilFertilityAtStartCoeffForCoast());
+				increasedIds.add(coreId);
 			}
-			increasedIds.add(coreId);
 		});
 
 		// increase soil fertility for coast
 		Set<Integer> coastIds = new HashSet<>();
-		terrain.stream().filter(p -> p.getTerrainType().isSoilPossible()).forEach(p -> {
+		tData.soilPossibleProvince.stream().filter(p -> p.getTerrainType().isSoilPossible()).forEach(p -> {
 			if (p.getNeighbors().stream().map(nId -> tData.provByIds.get(nId)).filter(n -> n.getTerrainType().isWater())
 					.findAny().isPresent()) {
-				p.setSoilFertility(p.getSoilFertility() * gParams.getSoilFertilityAtStartCoeffForCoast());
+				DataFoodResource foodResource = p.getFoodResources().get(0);
+				foodResource.setAmount(foodResource.getAmount() * gParams.getSoilAreaAtStartCoeffForCoast());
+				foodResource.setQuality(foodResource.getQuality() * gParams.getSoilFertilityAtStartCoeffForCoast());
 				coastIds.add(p.getId());
 			}
 		});
@@ -350,26 +351,39 @@ public class GameGenerator {
 			p.getNeighbors().stream().map(nID -> tData.provByIds.get(nID))
 					.filter(n -> n.getTerrainType().isSoilPossible() && !increasedIds.contains(n.getId()))
 					.forEach(n -> {
-						double fertility = (p.getSoilFertility() * gParams.getFractionOfMaxSoilFertility()
-								+ n.getSoilFertility()) / (gParams.getFractionOfMaxSoilFertility() + 1);
-						n.setSoilFertility(DataFormatter.doubleWith2points(fertility));
+						DataFoodResource provFoodResource = p.getFoodResources().get(0);
+						DataFoodResource nFoodResource = n.getFoodResources().get(0);
+						nFoodResource
+								.setQuality((provFoodResource.getQuality() * gParams.getFractionOfBestFoodResource()
+										+ nFoodResource.getQuality()) / (gParams.getFractionOfBestFoodResource() + 1));
+						queueProvs.add(n);
+						nFoodResource.setAmount((provFoodResource.getAmount() * gParams.getFractionOfBestFoodResource()
+								+ nFoodResource.getAmount()) / (gParams.getFractionOfBestFoodResource() + 1));
 						queueProvs.add(n);
 						increasedIds.add(n.getId());
 					});
 		}
 	}
 
-	private void fillSoilFertilityAtPoles(TempData tData, List<DataProvince> terrain, GameParams gParams) {
+	private void fillSoilFertilityAtPoles(TempData tData, GameParams gParams) {
+		Set<DataProvince> terrain = tData.soilPossibleProvince;
 		if (!terrain.isEmpty()) {
 			double minY = terrain.stream().mapToDouble(p -> p.getCenter().getY()).min().getAsDouble();
 			double maxY = terrain.stream().mapToDouble(p -> p.getCenter().getY()).max().getAsDouble();
-			terrain.stream().forEach(p -> {
-				double distanceToPole = (double) (1
+			tData.soilPossibleProvince.stream().forEach(p -> {
+				double distanceToPole = (1.0
 						+ Math.min(p.getCenter().getY() - minY, maxY - p.getCenter().getY())) / (maxY - minY);
 				if (distanceToPole < gParams.getDecreaseSoilFertilityAtPoles()) {
-					double fertilityDecrease = 1 - (gParams.getDecreaseSoilFertilityAtPoles() - distanceToPole)
-							/ gParams.getDecreaseSoilFertilityAtPoles();
-					p.setSoilFertility(DataFormatter.doubleWith2points(p.getSoilFertility() * fertilityDecrease));
+					DataFoodResource foodResource = p.getFoodResources().get(0);
+					foodResource.setQuality(foodResource.getQuality()
+							* (1 - (gParams.getDecreaseSoilFertilityAtPoles() - distanceToPole)
+									/ gParams.getDecreaseSoilFertilityAtPoles()));
+				}
+				if (distanceToPole < gParams.getDecreaseSoilAreaAtPoles()) {
+					DataFoodResource foodResource = p.getFoodResources().get(0);
+					foodResource.setAmount(
+							foodResource.getAmount() * (1 - (gParams.getDecreaseSoilAreaAtPoles() - distanceToPole)
+									/ gParams.getDecreaseSoilAreaAtPoles()));
 				}
 			});
 		}
@@ -378,10 +392,11 @@ public class GameGenerator {
 	private void fillPopulation(DataGame game) {
 		GameParams gParams = game.getGameParams();
 		game.getMap().getProvinces().stream().filter(p -> (p.getTerrainType().isPopulationPossible())).forEach(p -> {
-			if (p.getSoilFertility() >= gParams.getMinSoilFertilityToStartPopulation()) {
+			DataFoodResource food = p.getFoodResources().get(0);
+			if (food.getQuality() >= gParams.getMinSoilFertilityToCreatePopulaton()) {
 				DataPopulation pop = new DataPopulation();
 				pop.setId(game.nextPopulationId());
-				pop.setAmount((int) (p.getSoilFertility() * gParams.getPopulationAtStart()));
+				pop.setAmount((int) (food.getQuality() * gParams.getPopulationAtStart()));
 				initCulture(p, pop, game);
 				initScience(pop, gParams);
 				p.getPopulation().clear();
