@@ -21,6 +21,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Lighting;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -46,6 +47,8 @@ public class GsTimeControl extends BorderPane {
 
 	private Label labelPauseBetweenTurn;
 
+	private Boolean isCtrlDown;
+
 	public void init(GameScene gameScene) {
 		this.gameScene = gameScene;
 		Pane pane = createUI();
@@ -64,37 +67,10 @@ public class GsTimeControl extends BorderPane {
 		// pauseButton.fire());
 		pauseButton.setEffect(new Lighting());
 
-		Button startButton = new Button(getMessage(">"));
-		startButton.setTooltip(new Tooltip(getMessage("info.pane.time.button.start.week") + "\n"
-				+ getMessage("info.pane.time.tooltip.press-key") + " [1]"));
-		startButton.setOnAction(e -> {
-			pressButton(startButton, TimeMode.WEEK);
-		});
-		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT1), () -> startButton.fire());
-
-		Button startButton_2 = new Button(getMessage(">>"));
-		startButton_2.setTooltip(new Tooltip(getMessage("info.pane.time.button.start.month") + "\n"
-				+ getMessage("info.pane.time.tooltip.press-key") + " [2]"));
-		startButton_2.setOnAction(e -> {
-			pressButton(startButton_2, TimeMode.MONTH);
-		});
-		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT2), () -> startButton_2.fire());
-
-		Button startButton_5 = new Button(getMessage(">>>"));
-		startButton_5.setTooltip(new Tooltip(getMessage("info.pane.time.button.start.year") + "\n"
-				+ getMessage("info.pane.time.tooltip.press-key") + " [3]"));
-		startButton_5.setOnAction(e -> {
-			pressButton(startButton_5, TimeMode.YEAR);
-		});
-		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT3), () -> startButton_5.fire());
-
-		Button startButton_10 = new Button(getMessage(">>>>"));
-		startButton_10.setTooltip(new Tooltip(getMessage("info.pane.time.button.start.year-10") + "\n"
-				+ getMessage("info.pane.time.tooltip.press-key") + " [4]"));
-		startButton_10.setOnAction(e -> {
-			pressButton(startButton_10, TimeMode.YEAR_10);
-		});
-		gameScene.putHotKey(new KeyCodeCombination(KeyCode.DIGIT4), () -> startButton_10.fire());
+		Button weekButton = createButton(">", "week", TimeMode.WEEK, KeyCode.DIGIT1);
+		Button monthButton = createButton(">>", "month", TimeMode.MONTH, KeyCode.DIGIT2);
+		Button yearButton = createButton(">>>", "year", TimeMode.YEAR, KeyCode.DIGIT3);
+		Button year10Button = createButton(">>>>", "year-10", TimeMode.YEAR_10, KeyCode.DIGIT4);
 
 		Button systemButton = new Button(getMessage("?"));
 		systemButton.setTooltip(new Tooltip("system/development action"));
@@ -106,10 +82,10 @@ public class GsTimeControl extends BorderPane {
 
 		buttons = new ArrayList<>();
 		buttons.add(pauseButton);
-		buttons.add(startButton);
-		buttons.add(startButton_2);
-		buttons.add(startButton_5);
-		buttons.add(startButton_10);
+		buttons.add(weekButton);
+		buttons.add(monthButton);
+		buttons.add(yearButton);
+		buttons.add(year10Button);
 		buttons.add(systemButton);
 
 		HBox hbox = new HBox();
@@ -142,10 +118,35 @@ public class GsTimeControl extends BorderPane {
 		labelPauseBetweenTurn.setDisable(!rbAutoTurn.isSelected());
 	}
 
+	private Button createButton(String messageLabelCode, String turnSubCode, TimeMode timeMode, KeyCode keyCode) {
+		Button button = new Button(getMessage(messageLabelCode));
+		button.setTooltip(new Tooltip(getMessage("info.pane.time.button.start." + turnSubCode) + "\n"
+				+ String.format(getMessage("info.pane.time.tooltip.press-key"), keyCode.getName()) + "\n"
+				+ String.format(getMessage("info.pane.time.tooltip.press-key.ctrl"), "Ctrl+" + keyCode.getName())));
+		button.setOnAction(e -> {
+			pressButton(button, timeMode);
+		});
+		gameScene.putHotKey(new KeyCodeCombination(keyCode), () -> {
+			isCtrlDown = false;
+			button.fire();
+			isCtrlDown = null;
+		});
+		gameScene.putHotKey(new KeyCodeCombination(keyCode, KeyCombination.CONTROL_DOWN), () -> {
+			isCtrlDown = true;
+			button.fire();
+			isCtrlDown = null;
+		});
+		return button;
+	}
+
 	private void pressButton(Button buttonMode, TimeMode timeMode) {
 		if (gameScene.getTimeMode() != timeMode) {
 			buttons.forEach(b -> b.setEffect(null));
 			buttonMode.setEffect(new Lighting());
+			if (isCtrlDown != null) {
+				rbAutoTurn.setSelected(!isCtrlDown);
+				rbAutoTurn.fire();
+			}
 			gameScene.setTimeModeAndRun(timeMode);
 		} else {
 			enablePauseButton();

@@ -9,14 +9,16 @@ import java.util.Locale;
 public class DataFormatter {
 
 	public static String formatLongNumber(Long v) {
+		String prefix = v < 0 ? "-" : "";
+		v = Math.abs(v);
 		if (v > 10000000000L) {
-			return internalFormatLongNumber(v / 1000000000) + " g";
+			return prefix + internalFormatLongNumber(v / 1000000000) + " g";
 		} else if (v > 10000000) {
-			return internalFormatLongNumber(v / 1000000) + " m";
+			return prefix + internalFormatLongNumber(v / 1000000) + " m";
 		} else if (v > 10000) {
-			return internalFormatLongNumber(v / 1000) + " k";
+			return prefix + internalFormatLongNumber(v / 1000) + " k";
 		}
-		return internalFormatLongNumber(v);
+		return prefix + internalFormatLongNumber(v);
 	}
 
 	public static String formatLongNumber(Integer v) {
@@ -48,7 +50,7 @@ public class DataFormatter {
 	public static double doubleWith4points(double d) {
 		return Math.round(d * 10000) / 10000.0;
 	}
-	
+
 	public static double doubleWithPrecison(double d, int precision) {
 		BigDecimal bd = new BigDecimal(d);
 		bd = bd.setScale(precision, RoundingMode.HALF_UP);

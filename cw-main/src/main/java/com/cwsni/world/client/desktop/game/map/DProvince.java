@@ -1,7 +1,9 @@
 package com.cwsni.world.client.desktop.game.map;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.cwsni.world.model.data.DataPopulation;
@@ -12,6 +14,7 @@ import com.cwsni.world.model.engine.GameTransientStats;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.engine.State;
 import com.cwsni.world.model.engine.relationships.RTribute;
+import com.cwsni.world.model.engine.relationships.RWar;
 import com.cwsni.world.model.engine.relationships.RelationshipsCollection;
 import com.cwsni.world.util.ComparisonTool;
 
@@ -258,9 +261,7 @@ class DProvince extends Group {
 	}
 
 	private void drawDiplomacyMode(Polygon polygon) {
-		Country country = province.getCountry();
-		Province selectedProvince = map.getSelectedProvince();
-		if (selectedProvince == null || selectedProvince.getCountry() == null || country == null) {
+		if (province.getCountry() == null) {
 			Color color;
 			if (province.getPopulationAmount() == 0) {
 				color = COLOR_NONE;
@@ -270,7 +271,28 @@ class DProvince extends Group {
 			fillPolygon(polygon, color);
 			return;
 		}
-		Country selectedCountry = selectedProvince.getCountry();
+		Province selectedProvince = map.getSelectedProvince();
+		if (selectedProvince != null && selectedProvince.getCountry() != null) {
+			drawDiplomacyModeForSelectedCountry(polygon, selectedProvince.getCountry());
+		} else {
+			drawDiplomacyModeForWorld(polygon);
+		}
+	}
+
+	private void drawDiplomacyModeForWorld(Polygon polygon) {
+		Integer countryId = province.getCountryId();
+		Collection<RWar> wars = map.getGame().getRelationships().getWars();
+		Optional<RWar> first = wars.stream().filter(war -> ComparisonTool.isEqual(war.getMasterId(), countryId)
+				|| ComparisonTool.isEqual(war.getSlaveId(), countryId)).findFirst();
+		if (first.isPresent()) {
+			fillPolygon(polygon, Color.RED);
+		} else {
+			fillPolygon(polygon, Color.GREY);
+		}
+	}
+
+	private void drawDiplomacyModeForSelectedCountry(Polygon polygon, Country selectedCountry) {
+		Country country = province.getCountry();
 		Color color;
 		if (country.equals(selectedCountry)) {
 			color = Color.GREEN;
@@ -435,7 +457,7 @@ class DProvince extends Group {
 		drawGradientModeForMedian(polygon, stats.getSoilFertilityMax(), stats.getSoilFertilityAvg(),
 				stats.getSoilFertilityMedian(), province.getSoilFertility());
 	}
-	
+
 	private void drawSoilNaturalFertilityMode(Polygon polygon) {
 		GameTransientStats stats = map.getGame().getGameTransientStats();
 		drawGradientModeForMedian(polygon, stats.getSoilNaturalFertilityMax(), stats.getSoilNaturalFertilityAvg(),
@@ -444,8 +466,8 @@ class DProvince extends Group {
 
 	private void drawSoilAreMode(Polygon polygon) {
 		GameTransientStats stats = map.getGame().getGameTransientStats();
-		drawGradientModeForMedian(polygon, stats.getSoilAreaMax(), stats.getSoilAreaAvg(),
-				stats.getSoilAreaMedian(), province.getSoilArea());
+		drawGradientModeForMedian(polygon, stats.getSoilAreaMax(), stats.getSoilAreaAvg(), stats.getSoilAreaMedian(),
+				province.getSoilArea());
 	}
 
 	private void drawGradientMode(Polygon polygon, double maxValue, double provinceValue, boolean mode2) {

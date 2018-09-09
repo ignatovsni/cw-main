@@ -1,5 +1,7 @@
 package com.cwsni.world.model.engine.modifiers;
 
+import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
+import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.engine.Event;
 
 public class Modifier<T> {
@@ -61,6 +63,32 @@ public class Modifier<T> {
 
 	protected void setValue(Double value) {
 		this.value = value;
+	}
+
+	public String createDescription(LocaleMessageSource messageSource, Integer precision) {
+		StringBuilder sb = new StringBuilder();
+		if (ModifierType.ADD.equals(type) || ModifierType.ADD_2.equals(type)) {
+			if (value > 0) {
+				sb.append("+");
+			}
+			if (precision == null) {
+				sb.append(value);
+			} else {
+				sb.append(DataFormatter.doubleWithPrecison(value, precision));
+			}
+			sb.append(" ");
+			sb.append(messageSource.getMessage("data-model.modifiers.add"));
+		} else if (ModifierType.MULTIPLY.equals(type)) {
+			sb.append("*");
+			if (precision == null) {
+				sb.append(value);
+			} else {
+				sb.append(DataFormatter.doubleWithPrecison(value, precision));
+			}
+			sb.append(" ");
+			sb.append(messageSource.getMessage("data-model.modifiers.multiply"));
+		}		
+		return sb.toString();
 	}
 
 	// -------------------------- static section --------------------------------

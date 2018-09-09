@@ -1,5 +1,6 @@
 package com.cwsni.world.model.engine.relationships;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -54,6 +55,10 @@ public class RelationshipsCollection {
 
 	public Map<Integer, RWar> getCountriesWithWar(Integer countryId) {
 		return wars.getCountriesWithAgreement(countryId);
+	}
+
+	public Collection<RWar> getWars() {
+		return wars.getAllAgreements();
 	}
 
 	public void newWar(Integer countryId, int targetCountryId) {

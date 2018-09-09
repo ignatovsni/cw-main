@@ -12,9 +12,7 @@ public class ScienceModificators {
 
 	public double getMaxDistance(Country country) {
 		double science = getScienceAdministrator(country);
-		double maxDistance = science * game.getGameParams().getScienceAdministrationMultiplicatorForMaxDistance()
-				* country.getFocus().getValue() + 1;
-		return maxDistance;
+		return science * game.getGameParams().getScienceAdministrationMultiplicatorForMaxDistance() + 1;
 	}
 
 	public int getMaxWaterDistance(Country country) {

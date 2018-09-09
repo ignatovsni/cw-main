@@ -14,6 +14,7 @@ public class DataCountryFocus {
 	@JsonSerialize(using = DoubleContextualSerializer.class)
 	@Precision(precision = 4)
 	private double focus;
+
 	@JsonSerialize(using = DoubleContextualSerializer.class)
 	@Precision(precision = 4)
 	private double goal;

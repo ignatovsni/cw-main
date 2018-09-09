@@ -18,6 +18,8 @@ import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataScienceBudget;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.HistoryDataCountry;
+import com.cwsni.world.model.engine.modifiers.CountryModifier;
+import com.cwsni.world.model.engine.modifiers.ModifierCollection;
 import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.CwException;
 import com.cwsni.world.util.CwRandom;
@@ -34,6 +36,7 @@ public class Country {
 	private MoneyBudget budget;
 	private ScienceBudget scienceBudget;
 	private CountryFocus focus;
+	private ModifierCollection<CountryModifier> modifiers;
 
 	// ------------- cache -----------------
 	private long populationAmount;
@@ -64,6 +67,7 @@ public class Country {
 		reachableLandProvincesThroughWater = new HashSet<>();
 		reachableWaterProvinces = new HashSet<>();
 		coastProvinces = new HashSet<>();
+		modifiers = new ModifierCollection<>();
 
 		focus.buildFrom(this, dc.getFocus());
 
@@ -131,6 +135,10 @@ public class Country {
 						+ province.getCountryId() + " but country.id = " + getId());
 			}
 		}
+	}
+
+	public ModifierCollection<CountryModifier> getModifiers() {
+		return modifiers;
 	}
 
 	public Integer getCapitalId() {
@@ -312,7 +320,6 @@ public class Country {
 		data.setTurnsOfExistence(data.getTurnsOfExistence() + game.getTurn().getLastStep());
 		budget.processNewTurn();
 		processScienceNewTurn();
-		focus.processNewTurn();
 		refreshWaterMaxDistance();
 		if (isNeedRefreshReachableLandBorderAlienProvs) {
 			refreshLandReachableBorderAlienProvs();
@@ -422,7 +429,7 @@ public class Country {
 		// it can depend on country science development
 		return game.getGameParams().getArmySoldiersToPopulationForSubjugation();
 	}
-	
+
 	public double getArmySoldiersToPopulationForSubjugationLeaveInProvince() {
 		// it can depend on country science development
 		return game.getGameParams().getArmySoldiersToPopulationForSubjugationLeaveInProvince();

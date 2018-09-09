@@ -2,6 +2,7 @@ package com.cwsni.world.model.engine;
 
 import com.cwsni.world.model.data.DataCountryFocus;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.model.engine.modifiers.CountryModifier;
 import com.cwsni.world.util.CwRandom;
 
 public class CountryFocus {
@@ -15,39 +16,11 @@ public class CountryFocus {
 	}
 
 	public double getValue() {
-		return data.getFocus();
+		return country.getModifiers().getModifiedValue(CountryModifier.POWER_FOCUS, data.getFocus());
 	}
 
-	private double getFlatBonus() {
-		double value = getValue();
-		if (value <= DataCountryFocus.BASE_VALUE) {
-			return value / DataCountryFocus.BASE_VALUE - 1;
-		} else {
-			return (value - DataCountryFocus.BASE_VALUE) / DataCountryFocus.MAX_VALUE;
-		}
-	}
-
-	public double getArmyStrengthInfluence() {
-		return (getValue() - DataCountryFocus.BASE_VALUE) / 2 + DataCountryFocus.BASE_VALUE;
-	}
-
-	public double getGovernmentInfluenceOnDistance() {
-		return getValue();
-	}
-
-	public double getGovernmentFlatBonus() {
-		return getFlatBonus();
-	}
-
-	public double getLoyaltyFlatBonus() {
-		return getFlatBonus() / 2;
-	}
-
-	public double getTaxInfluence() {
-		return getValue();
-	}
-
-	public void processNewTurn() {
+	// TODO remove
+	private void processNewTurnOld() {
 		GameParams gParams = country.getGame().getGameParams();
 		CwRandom rnd = gParams.getRandom();
 		double chance = rnd.nextDouble();
@@ -104,6 +77,12 @@ public class CountryFocus {
 	// -------------------------- static section ----------------------
 
 	public static DataCountryFocus createFocusForNewCountry(Game game) {
+		DataCountryFocus dcf = new DataCountryFocus();
+		dcf.setFocus(1);
+		return dcf;
+	}
+
+	private static DataCountryFocus createFocusForNewCountryOld(Game game) {
 		DataCountryFocus dcf = new DataCountryFocus();
 		CwRandom rnd = game.getGameParams().getRandom();
 		double chance = rnd.nextDouble();

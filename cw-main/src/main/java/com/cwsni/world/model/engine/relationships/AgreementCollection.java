@@ -1,5 +1,6 @@
 package com.cwsni.world.model.engine.relationships;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -59,6 +60,10 @@ public class AgreementCollection<DT extends DataRBaseAgreement, ET extends RBase
 		} else {
 			return Collections.emptyMap();
 		}
+	}
+
+	public Collection<ET> getAllAgreements() {
+		return Collections.unmodifiableCollection(agreements);
 	}
 
 	public ET newAgreement(Integer countryId, int targetCountryId) {

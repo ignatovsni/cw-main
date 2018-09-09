@@ -78,10 +78,9 @@ public class MoneyBudget {
 	}
 
 	public void processNewTurn() {
-		double armyCostPerTurn = getTurn()
-				.addPerYear(country.getArmies().stream().mapToDouble(a -> a.getCostPerYear()).sum());
-		data.setMoney(data.getMoney() + incomePerTurn - armyCostPerTurn);
-		// TODO spend money for regular needs like to support government work (to pay salary) 
+		double armyCostPerTurn = getTurn().addPerYear(getExpensesForArmyCost());
+		double governmentCostPerTurn = getTurn().addPerYear(getExpensesForSupportGovernment());
+		data.setMoney(data.getMoney() + incomePerTurn - armyCostPerTurn - governmentCostPerTurn);
 	}
 
 	public double getTotalWeight() {
@@ -119,6 +118,14 @@ public class MoneyBudget {
 
 	protected Turn getTurn() {
 		return country.getGame().getTurn();
+	}
+
+	public double getExpensesForSupportGovernment() {
+		return country.getPopulationAmount() * country.getGame().getGameParams().getBudgetBaseExpensePerPerson();
+	}
+
+	public double getExpensesForArmyCost() {
+		return country.getArmies().stream().mapToDouble(a -> a.getCostPerYear()).sum();
 	}
 
 }

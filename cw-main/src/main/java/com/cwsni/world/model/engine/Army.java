@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import com.cwsni.world.model.data.DataArmy;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.util.DataNormalizer;
+import com.cwsni.world.model.engine.modifiers.CountryModifier;
 import com.cwsni.world.util.ComparisonTool;
 
 public class Army {
@@ -139,7 +140,8 @@ public class Army {
 	}
 
 	public double getEffectiveness() {
-		return data.getOrganisation() * data.getTraining() * country.getFocus().getArmyStrengthInfluence();
+		return country.getModifiers().getModifiedValue(CountryModifier.ARMY_EFFECTIVENESS,
+				data.getOrganisation() * data.getTraining());
 	}
 
 	public double getStrength() {

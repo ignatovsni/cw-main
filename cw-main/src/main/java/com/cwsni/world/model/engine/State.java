@@ -181,7 +181,7 @@ public class State {
 			return;
 		}
 
-		double rebelChanceCoeff = getTurn().probablilityPerWeek(gParams.getPopulationLoyaltyRebelChanceCoeffPerWeek());
+		double rebelChanceCoeff = getTurn().probablilityPerYear(gParams.getPopulationLoyaltyRebelChanceCoeff());
 		rebelChanceCoeff *= (1 + originaltCountry.getRebelAddChances());
 		double loyaltyToOriginalCountry = getLoayltyToCountry(originaltCountry.getId(), statePopulation);
 		Set<Integer> countriesIds = getCountriesWithLoyalty();

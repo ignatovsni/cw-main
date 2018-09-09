@@ -17,6 +17,7 @@ import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.GameParams;
 import com.cwsni.world.model.data.Point;
 import com.cwsni.world.model.data.TerrainType;
+import com.cwsni.world.model.engine.modifiers.CountryModifier;
 import com.cwsni.world.model.engine.modifiers.ModifierCollection;
 import com.cwsni.world.model.engine.modifiers.ProvinceModifier;
 import com.cwsni.world.util.ComparisonTool;
@@ -425,6 +426,8 @@ public class Province {
 		} else {
 			double distToCapital = getDistanceToCapital();
 			double maxDistance = map.getGame().getScienceModificators().getMaxDistance(country);
+			maxDistance = country.getModifiers().getModifiedValue(CountryModifier.GOVERNMENT_INFLUENCE_DISTANCE,
+					maxDistance);
 			if (distToCapital <= maxDistance) {
 				influence = Math.max((maxDistance - distToCapital) / maxDistance,
 						gParams.getProvinceInfluenceFromCapitalWithoutCapital());
@@ -432,8 +435,8 @@ public class Province {
 				influence = gParams.getProvinceInfluenceFromCapitalWithoutCapital();
 			}
 		}
-		return Math.max(influence + country.getFocus().getGovernmentFlatBonus(),
-				gParams.getProvinceInfluenceFromCapitalWithoutCapital());
+		influence = country.getModifiers().getModifiedValue(CountryModifier.PROVINCE_GOVERNMENT_INFLUENCE, influence);
+		return Math.max(influence, gParams.getProvinceInfluenceFromCapitalWithoutCapital());
 	}
 
 	public double getDistanceToCapital() {
@@ -507,7 +510,7 @@ public class Province {
 				* (gParams.getBudgetBaseTaxPerWealthPerson() - gParams.getBudgetBaseTaxPerPerson());
 		Country country = getCountry();
 		if (country != null) {
-			income *= country.getFocus().getTaxInfluence();
+			income = country.getModifiers().getModifiedValue(CountryModifier.PROVINCE_TAX_EFFECTIVENESS, income);
 		}
 		return income;
 	}
@@ -658,9 +661,9 @@ public class Province {
 		double loyalty = getPopulation().stream()
 				.mapToDouble(pop -> pop.getAmount() * pop.getLoyaltyToCountry(countryId)).sum() / provincePopulation;
 		if (ComparisonTool.isEqual(countryId, getCountryId())) {
-			loyalty += country.getFocus().getLoyaltyFlatBonus();
 			loyalty += getLoyaltyToCountryFromLocalCasualties();
 			loyalty += country.getLoyaltyToCountryFromCountryCasualties();
+			loyalty = country.getModifiers().getModifiedValue(CountryModifier.PROVINCE_LOYALTY, loyalty);
 			double countryLoyaltyFromArmy = getLoyaltyToCountryFromArmy();
 			if (countryLoyaltyFromArmy != 0) {
 				loyalty = Math.max(loyalty, Math.min(loyalty + countryLoyaltyFromArmy,

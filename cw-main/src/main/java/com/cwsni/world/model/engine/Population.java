@@ -21,6 +21,9 @@ import com.cwsni.world.model.data.DataPopulation;
 import com.cwsni.world.model.data.DataScience;
 import com.cwsni.world.model.data.DataScienceCollection;
 import com.cwsni.world.model.data.GameParams;
+import com.cwsni.world.model.engine.modifiers.CountryModifier;
+import com.cwsni.world.model.engine.modifiers.Modifier;
+import com.cwsni.world.model.engine.modifiers.ModifierType;
 import com.cwsni.world.model.engine.modifiers.ProvinceModifier;
 import com.cwsni.world.util.ComparisonTool;
 import com.cwsni.world.util.CwException;
@@ -544,7 +547,7 @@ public class Population {
 		// increasing - government influence
 		p.addLoyaltyToCountry(country.getId(), p.getGovernmentInfluence()
 				* turn.addPerYear(gParams.getPopulationLoyaltyIncreasingGovernmnentCoeffPerYear()));
-		// increasing - capital influence
+		// increasing - capital
 		if (p.equals(country.getCapital())) {
 			p.addLoyaltyToCountry(country.getId(),
 					turn.addPerYear(gParams.getPopulationLoyaltyIncreasingCapitalPerYear()));
@@ -657,16 +660,6 @@ public class Population {
 					.append("\n");
 		}
 
-		// increasing - temporary from focus
-		double countryFocus = country.getFocus().getLoyaltyFlatBonus();
-		if (countryFocus != 0) {
-			if (countryFocus > 0) {
-				sb.append("+");
-			}
-			sb.append(DataFormatter.doubleWith2points(countryFocus * 100) + " "
-					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.focus")).append("\n");
-		}
-
 		// decreasing - temporary from casualties
 		double localCasualtiesLoyalty = p.getLoyaltyToCountryFromLocalCasualties();
 		if (localCasualtiesLoyalty != 0) {
@@ -679,6 +672,19 @@ public class Population {
 			sb.append(DataFormatter.doubleWith2points(countryCasualtiesLoyalty * 100) + " "
 					+ messageSource.getMessage("info.pane.prov.country.loyalty.description.casualties-country"))
 					.append("\n");
+		}
+
+		// modifiers - temporary
+		Map<ModifierType, Set<Modifier<CountryModifier>>> modifiers = country.getModifiers()
+				.findByFeature(CountryModifier.PROVINCE_LOYALTY);
+		if (!modifiers.isEmpty()) {
+			sb.append("---------------\n");
+			for (Set<Modifier<CountryModifier>> ms : modifiers.values()) {
+				for (Modifier<CountryModifier> m : ms) {
+					sb.append(m.createDescription(messageSource, 3));
+					sb.append("\n");
+				}
+			}
 		}
 
 		return sb.toString();

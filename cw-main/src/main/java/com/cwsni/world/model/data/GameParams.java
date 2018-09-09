@@ -49,13 +49,13 @@ public class GameParams {
 	private double populationLoyaltyDecreasingOverpopulationPerYear = -0.001;
 	private double populationLoyaltyIncreasingGovernmnentCoeffPerYear = 0.01;
 	private double populationLoyaltyIncreasingCapitalPerYear = 0.005;
-	private double populationLoyaltyIncreasingForLifeInTheCountryPerYear = 0.001;
+	private double populationLoyaltyIncreasingForLifeInTheCountryPerYear = 0.0005;
 	private double populationLoyaltyIncreasingForStatePerYear = 0.02;
 	private double populationLoyaltyWealthThreshold = 0.5;
 	private double populationLoyaltyWealthThresholdCoeffPerYear = 0.01;
 	private double populationLoyaltyArmySoldiersToPopulationThreshold = 0.1;
 	private double populationLoyaltyArmyMax = 0.8;
-	private double populationLoyaltyRebelChanceCoeffPerWeek = 0.005;
+	private double populationLoyaltyRebelChanceCoeff = 0.05;
 	private double populationLoyaltyRebelToStateThreshold = 0.2;
 	private double populationLoyaltyRebelToCountryThreshold = 0.2;
 	private double populationLoyaltyRebelChainAdditionalLoyalty = 0.5;
@@ -73,7 +73,7 @@ public class GameParams {
 	private int newCountryPopulationMin = 10000;
 	private int newCountryScienceAdministrationMin = 100;
 	private double newCountryProbabilityPerWeek = 0.0001;
-	
+
 	private double scienceBaseIncreasePerPersonPerWeek = 0.005;
 	private double scienceNaturalGrowthLimitPerPerson = 0.01;
 	private double scienceExchangeWithMaxPerTurn = 0.02;
@@ -81,8 +81,8 @@ public class GameParams {
 
 	private double scienceAgricultureMultiplicatorForFertility = 0.00001;
 	private double scienceAgricultureMultiplicatorForArea = 0.00005;
-	
-	private double scienceAdministrationMultiplicatorForMaxDistance = 0.0005;
+
+	private double scienceAdministrationMultiplicatorForMaxDistance = 0.0003;
 
 	private double infrastructureNaturalLimitFromPopulation = 0.8;
 	private double infrastructureNaturalLimitWithLocalGovernment = 1.0;
@@ -99,8 +99,16 @@ public class GameParams {
 	private double provinceInfluenceFromCapitalWithoutCapital = 0.1;
 	private double provinceEffectivenessWithoutGoverment = 0.1;
 
+	/**
+	 * Each person requires money for management (government organizations)
+	 */
+	private double budgetBaseExpensePerPerson = 0.3;
 	private double budgetBaseTaxPerPerson = 1;
 	private double budgetBaseTaxPerWealthPerson = 3;
+	/**
+	 * Each person requires money for himself. If he/she doesn't have enough, wealth
+	 * will be decreased.
+	 */
 	private double budgetSpendMoneyPerPerson = 0.7;
 	private double budgetMaxWealthPerPerson = 10;
 	private double budgetBaseCostPerSoldier = 10;
@@ -509,14 +517,6 @@ public class GameParams {
 		this.populationLoyaltyArmyMax = populationLoyaltyArmyMax;
 	}
 
-	public double getPopulationLoyaltyRebelChanceCoeffPerWeek() {
-		return populationLoyaltyRebelChanceCoeffPerWeek;
-	}
-
-	public void setPopulationLoyaltyRebelChanceCoeffPerWeek(double populationLoyaltyRebelChanceCoeff) {
-		this.populationLoyaltyRebelChanceCoeffPerWeek = populationLoyaltyRebelChanceCoeff;
-	}
-
 	public double getPopulationLoyaltyRebelToStateThreshold() {
 		return populationLoyaltyRebelToStateThreshold;
 	}
@@ -776,6 +776,22 @@ public class GameParams {
 	public void setScienceAdministrationMultiplicatorForMaxDistance(
 			double scienceAdministrationMultiplicatorForMaxDistance) {
 		this.scienceAdministrationMultiplicatorForMaxDistance = scienceAdministrationMultiplicatorForMaxDistance;
+	}
+
+	public double getPopulationLoyaltyRebelChanceCoeff() {
+		return populationLoyaltyRebelChanceCoeff;
+	}
+
+	public void setPopulationLoyaltyRebelChanceCoeff(double populationLoyaltyRebelChanceCoeff) {
+		this.populationLoyaltyRebelChanceCoeff = populationLoyaltyRebelChanceCoeff;
+	}
+
+	public double getBudgetBaseExpensePerPerson() {
+		return budgetBaseExpensePerPerson;
+	}
+
+	public void setBudgetBaseExpensePerPerson(double budgetBaseExpensePerPerson) {
+		this.budgetBaseExpensePerPerson = budgetBaseExpensePerPerson;
 	}
 
 }
