@@ -66,9 +66,9 @@ public class CreateGameWindow extends Dialog<ButtonType> {
 		cbOceanFraction.setValue("40");
 
 		ObservableList<String> mountainFractionList = FXCollections.observableArrayList("0", "0.001", "0.003", "0.005",
-				"0.010");
+				"0.010", "0.015", "0.020");
 		cbMountainFraction = new ComboBox<String>(mountainFractionList);
-		cbMountainFraction.setValue("0.003");
+		cbMountainFraction.setValue("0.005");
 
 		tfRandomSeed = new TextField();
 		tfRandomSeed.setText(String.valueOf(System.currentTimeMillis()));

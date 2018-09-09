@@ -11,8 +11,8 @@ import com.cwsni.world.model.engine.modifiers.*
 @Field final double CLIMATE_CHANGE_BAD_PROBABILITY = 0.7;
 @Field final double CLIMATE_CHANGE_STEP = 0.01;
 @Field final double CLIMATE_CHANGE_MIN_STEP = 0.001;
-@Field final double CLIMATE_IMPACT_MAX = 1.3;
-@Field final double CLIMATE_IMPACT_MIN = 0.8;
+@Field final double CLIMATE_IMPACT_MAX = 2;
+@Field final double CLIMATE_IMPACT_MIN = 0.5;
 
 // The application invokes this method each turn. 
 def processNewTurn() {
@@ -70,7 +70,7 @@ def createRandomStep() {
 def activateEvent(event) {
 	def currentEffect = event.info.effect;
 	data.game.map.provinces.stream().filter({p -> p.getTerrainType().isSoilPossible()}).forEach({p -> 
-		data.events.addModifier(p, ProvinceModifier.SOIL_FERTILITY, ModifierType.MULTIPLY, 
+		data.events.addModifier(p, ProvinceModifier.SOIL_AREA, ModifierType.MULTIPLY, 
 								currentEffect, event)});
 }
 

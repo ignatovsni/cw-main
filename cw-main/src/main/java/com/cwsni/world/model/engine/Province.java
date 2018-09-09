@@ -127,7 +127,6 @@ public class Province {
 
 	public double getSoilFertility() {
 		// science
-		// double v = getSoilFertilityBasePlusAgriculture(getScienceAgriculture());
 		double v = map.getGame().getScienceModificators().getSoilFertilityBasePlusAgriculture(this);
 		// infrastructure
 		if (getPopulationAmount() > 0) {
@@ -142,6 +141,20 @@ public class Province {
 
 	public double getSoilNaturalFertility() {
 		return modifiers.getModifiedValue(ProvinceModifier.SOIL_FERTILITY, foodResources.get(0).getQuality());
+	}
+
+	public double getSoilArea() {
+		// science
+		double v = map.getGame().getScienceModificators().getSoilAreaBasePlusAgriculture(this);
+		// infrastructure
+		if (getPopulationAmount() > 0) {
+			v = v * 0.5 * (1 + getInfrastructurePercent());
+		}
+		return v;
+	}
+
+	public double getSoilNaturalArea() {
+		return modifiers.getModifiedValue(ProvinceModifier.SOIL_AREA, foodResources.get(0).getAmount());
 	}
 
 	public double getScienceAgriculture() {
@@ -165,10 +178,6 @@ public class Province {
 				.mapToDouble(pop -> pop.getAmount() * getter4Science.apply(pop.getScience()).getAmount()).sum()
 				/ populationAmount);
 		return scienceValue;
-	}
-
-	public double getSoilArea() {
-		return foodResources.get(0).getAmount();
 	}
 
 	public int getInfrastructure() {

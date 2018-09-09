@@ -53,6 +53,15 @@ public class ScienceModificators {
 				* (1 + agriculture * game.getGameParams().getScienceAgricultureMultiplicatorForFertility());
 	}
 
+	public double getSoilAreaBasePlusAgriculture(Province province) {
+		return getSoilAreaBasePlusAgriculture(province, province.getScienceAgriculture());
+	}
+	
+	private double getSoilAreaBasePlusAgriculture(Province province, double agriculture) {
+		return province.getSoilNaturalArea()
+				* (1 + agriculture * game.getGameParams().getScienceAgricultureMultiplicatorForArea());
+	}
+
 	public double getEffectiveDistanceFromProvinceToCountryCapital(Country country, Province province,
 			double distToCapital) {
 		double adminScience = 10 + province.getScienceAdministration()
@@ -94,5 +103,7 @@ public class ScienceModificators {
 		return DataNormalizer.minMax(getDiseaseResistanceLevel(p) / 600, 0,
 				game.getGameParams().getPopulationBaseGrowthPerYear());
 	}
+
+	
 
 }

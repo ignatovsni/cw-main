@@ -15,7 +15,7 @@ public class GameParams {
 	private int provinceRadius = 10;
 	private int terrainCorePoints = 10;
 	private double oceanPercent = 0.4;
-	private double mountainsPerMapProvinces = 0.003;
+	private double mountainsPerMapProvinces = 0.005;
 
 	private double soilAreaCorePointsPerProvinces = 0.01;
 	private int soilAreaPerSize = 1000;
@@ -79,7 +79,8 @@ public class GameParams {
 	private double scienceExchangeWithMaxPerTurn = 0.02;
 	private double scienceExchangeFromNeighborsFractionFromMax = 0.9;
 
-	private double scienceAgricultureMultiplicatorForFertility = (double) 1 / 4000;
+	private double scienceAgricultureMultiplicatorForFertility = 0.00001;
+	private double scienceAgricultureMultiplicatorForArea = 0.00005;
 
 	private double infrastructureNaturalLimitFromPopulation = 0.8;
 	private double infrastructureNaturalLimitWithLocalGovernment = 1.0;
@@ -776,6 +777,14 @@ public class GameParams {
 
 	public void setMinSoilFertilityToCreatePopulaton(double minSoilFertilityToCreatePopulaton) {
 		this.minSoilFertilityToCreatePopulaton = minSoilFertilityToCreatePopulaton;
+	}
+
+	public double getScienceAgricultureMultiplicatorForArea() {
+		return scienceAgricultureMultiplicatorForArea;
+	}
+
+	public void setScienceAgricultureMultiplicatorForArea(double scienceAgricultureMultiplicatorForArea) {
+		this.scienceAgricultureMultiplicatorForArea = scienceAgricultureMultiplicatorForArea;
 	}
 
 }

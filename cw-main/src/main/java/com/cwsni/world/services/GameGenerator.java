@@ -11,6 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +32,8 @@ import com.cwsni.world.util.CwRandom;
 
 @Component
 public class GameGenerator {
+	
+	private static final Log logger = LogFactory.getLog(GameGenerator.class);
 
 	@Autowired
 	private PlayerEventListener gameEventListener;
@@ -163,9 +167,10 @@ public class GameGenerator {
 		createChainMountains(tData, gParams, needMountains, 1);
 
 		int tryMakeReachable = 0;
-		while (tryMakeReachable++ < game.getMap().getProvinces().size() / 100
+		while (tryMakeReachable++ < game.getMap().getProvinces().size() / 10
 				&& makeAllProvinceReachable(game, tData)) {
 		}
+		logger.trace("createMountains.tryMakeReachable = " + tryMakeReachable);
 	}
 
 	/**
