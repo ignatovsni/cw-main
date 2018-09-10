@@ -3,12 +3,12 @@ import com.cwsni.world.model.engine.modifiers.*
 
 @Field final String EVENT_TYPE = 'RISE_AND_FALL';
 @Field final double BASE_PROBABILITY = 0.0001;
-@Field final double NEW_COUNTRY_PROBABILITY = 0.01;
-@Field final double RESTORED_COUNTRY_PROBABILITY = 0.02;
-@Field final double STOP_PROBABILITY = 0.001;
-@Field final double MIN_GOAL = 0.8;
+@Field final double NEW_COUNTRY_PROBABILITY = 0.1;
+@Field final double RESTORED_COUNTRY_PROBABILITY = 0.2;
+@Field final double STOP_PROBABILITY = 0.0005;
+@Field final double MIN_GOAL = 0.5;
 @Field final double MAX_GOAL = 3;
-@Field final double MIN_STEP = 0.0001;
+@Field final double MIN_STEP = 0.001;
 @Field final double MAX_STEP = 0.01;
 
 def processNewTurn() {
@@ -42,8 +42,8 @@ def checkNewEvents(usedCountriesIds) {
 	log 'checkNewEvent';
 	//return;
 	double baseProbability = data.game.turn.probablilityPerYear(BASE_PROBABILITY);
-	double newCountryProbability = data.game.turn.probablilityPerYear(NEW_COUNTRY_PROBABILITY);
-	double restoredCountryProbability = data.game.turn.probablilityPerYear(RESTORED_COUNTRY_PROBABILITY);
+	double newCountryProbability = NEW_COUNTRY_PROBABILITY;
+	double restoredCountryProbability = RESTORED_COUNTRY_PROBABILITY;
 	data.game.countries.stream().filter({c -> !usedCountriesIds.contains(c.id)}).forEach({ country ->		
 		if(country.turnOfCreation >= data.game.turn.dateTurn-1 && data.rnd.nextDouble() < newCountryProbability) {
 			log "newCountryProbability ${newCountryProbability}";
@@ -77,6 +77,13 @@ def createNewBaseEvent(country) {
 	event.info.government_influence = event.info.effect;
 	event.info.loyalty = event.info.effect;
 	event.info.tax_effectiveness = event.info.effect;	
+	
+	event.info.focus_step_mod = 1;
+	event.info.army_step_mod = data.rnd.nextDouble(0.1, 1);
+	event.info.government_influence_distance_step_mod = data.rnd.nextDouble(0.1, 1);
+	event.info.government_influence_step_mod = data.rnd.nextDouble(0.1, 1);
+	event.info.loyalty_step_mod = data.rnd.nextDouble(0.1, 1);
+	event.info.tax_effectiveness_step_mod = data.rnd.nextDouble(0.1, 1);
 
 	activateEvent(event);
 	log 'created new event ' + event;
@@ -171,22 +178,22 @@ def processExistingEvent(event) {
 			step = 0;
 		}
 		if (event.info.focus != null) {	
-			event.info.focus += step;
+			event.info.focus += step * event.info.focus_step_mod;
 		}
 		if (event.info.army != null) {	
-			event.info.army += step;
+			event.info.army += step * event.info.army_step_mod;
 		}
 		if (event.info.government_influence_distance != null) {	
-			event.info.government_influence_distance += step;
+			event.info.government_influence_distance += step * event.info.government_influence_distance_step_mod;
 		}
 		if (event.info.government_influence != null) {	
-			event.info.government_influence += step;
+			event.info.government_influence += step * event.info.government_influence_step_mod;
 		}
 		if (event.info.loyalty != null) {	
-			event.info.loyalty += step;
+			event.info.loyalty += step * event.info.loyalty_step_mod;
 		}
 		if (event.info.tax_effectiveness != null) {	
-			event.info.tax_effectiveness += step;
+			event.info.tax_effectiveness += step * event.info.tax_effectiveness_step_mod;
 		}
 		updateModifiers(event, country);
 	}
