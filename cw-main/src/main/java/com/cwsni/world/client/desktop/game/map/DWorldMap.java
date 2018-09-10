@@ -175,7 +175,7 @@ public class DWorldMap {
 			if (line == null) {
 				DProvince p1 = provincesById.get(border.getFirst());
 				DProvince p2 = provincesById.get(border.getSecond());
-				line = p1.createBorderLine(p2.getProvince());
+				line = p2.createBorderLine(p1.getProvince());
 				cacheBorderLines.put(border, line);
 			}
 			newLines.put(border, line);

@@ -48,14 +48,14 @@ public class JavaAIHandler {
 		IPMoneyBudget budget = data.getCountry().getMoneyBudget();
 		if (data.isWar()) {
 			budget.setProvinceTax(0.6);
-			budget.setArmyWeight(3);
-			budget.setScienceWeight(1);
-			budget.setSavingWeight(1);
+			budget.setArmyWeight(6);
+			budget.setScienceWeight(2);
+			budget.setSavingWeight(2);
 		} else {
 			budget.setProvinceTax(0.3);
 			budget.setArmyWeight(1);
-			budget.setScienceWeight(1);
-			budget.setSavingWeight(1);
+			budget.setScienceWeight(7);
+			budget.setSavingWeight(2);
 		}
 	}
 
@@ -282,7 +282,7 @@ public class JavaAIHandler {
 			}
 		}
 
-		if (armies.size() >= MAX_ARMIES || (!data.isWar() && armies.size() < 3) || budget.getMoney() < armyBudget * 20
+		if (armies.size() >= MAX_ARMIES || (!data.isWar() && armies.size() > 2) || budget.getMoney() < armyBudget * 20
 				|| availableMoneyForArmy < (-armyBudget / 2)) {
 			return;
 		}

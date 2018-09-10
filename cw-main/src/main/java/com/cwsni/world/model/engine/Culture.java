@@ -35,7 +35,7 @@ public class Culture {
 		data.cloneFrom(from.getCultureData());
 	}
 
-	DataCulture getCultureData() {
+	protected DataCulture getCultureData() {
 		return data;
 	}
 

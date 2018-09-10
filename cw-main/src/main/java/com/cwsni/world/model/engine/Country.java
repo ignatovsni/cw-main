@@ -533,6 +533,12 @@ public class Country {
 		DataCountry dc = createDefaultDataCountry(game);
 		dc.setId(game.nextCountryId());
 		dc.setName("#" + String.valueOf(dc.getId()));
+		if (p.getCountryId() == null && p.getPopulationAmount() > 0) {
+			Culture culture = p.getPopulation().get(0).getCulture();
+			culture.getCultureData().setRed(dc.getColor().getR());
+			culture.getCultureData().setGreen(dc.getColor().getG());
+			culture.getCultureData().setBlue(dc.getColor().getB());
+		}
 
 		Country c = new Country();
 		c.buildFrom(game, dc);
