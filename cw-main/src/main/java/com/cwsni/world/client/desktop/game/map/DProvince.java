@@ -69,7 +69,7 @@ class DProvince extends Group {
 		this.province = province;
 		this.center = new Point2D(province.getCenter().getX(), province.getCenter().getY());
 		this.radius = provinceRadius;
-		updatePoints();
+		updatePoints(points, radius);
 		createVisualElements();
 	}
 
@@ -179,18 +179,14 @@ class DProvince extends Group {
 				&& ComparisonTool.isEqual(province.getCountry().getCapital().getId(), province.getId());
 		if (isCapital) {
 			if (capitalPolygon == null) {
-				Double[] capitalPoints = new Double[] { 0.0, 0.0, 10.0, 0.0, 10.0, 10.0, 0.0, 10.0 };
-				for (int i = 0; i < capitalPoints.length - 1; i = i + 2) {
-					capitalPoints[i] = capitalPoints[i] / radius * 7 + province.getCenter().getX() - radius * 0.35;
-					capitalPoints[i + 1] = capitalPoints[i + 1] / radius * 7 + province.getCenter().getY()
-							- radius * 0.35;
-				}
-				Polygon p = new Polygon();
-				p.getPoints().addAll(capitalPoints);
-				p.setStrokeWidth(2);
-				p.setStroke(Color.BLACK);
-				p.setFill(province.getCountry().getColor().getJavaFxColor());
-				capitalPolygon = p;
+				Point2D[] points = new Point2D[SIDES];
+				updatePoints(points, radius * 0.6);
+				Polygon pol = new Polygon();				
+				Stream.of(points).forEach(p -> pol.getPoints().addAll(p.getX(), p.getY()));
+				pol.setStrokeWidth(3);
+				pol.setStroke(Color.BLACK);
+				pol.setFill(province.getCountry().getColor().getJavaFxColor());
+				capitalPolygon = pol;
 				getChildren().add(capitalPolygon);
 				capitalPolygon.setOnMouseClicked(e -> {
 					map.mouseClickOnProvince(this, e);
@@ -209,12 +205,12 @@ class DProvince extends Group {
 			if (armyPolygon == null) {
 				Double[] armyPoints = new Double[] { 0.0, 0.0, 10.0, 0.0, 10.0, 10.0, 5.0, 13.0, 0.0, 10.0 };
 				for (int i = 0; i < armyPoints.length - 1; i = i + 2) {
-					armyPoints[i] = armyPoints[i] / radius * 5 + province.getCenter().getX() - radius * 0.25;
-					armyPoints[i + 1] = armyPoints[i + 1] / radius * 5 + province.getCenter().getY() - radius * 0.25;
+					armyPoints[i] = armyPoints[i] * radius * 0.05 + province.getCenter().getX() - radius * 0.25;
+					armyPoints[i + 1] = armyPoints[i + 1] * radius * 0.05 + province.getCenter().getY() - radius * 0.25;
 				}
 				Polygon p = new Polygon();
 				p.getPoints().addAll(armyPoints);
-				p.setStrokeWidth(1);
+				p.setStrokeWidth(2);
 				p.setStroke(Color.BLACK);
 				armyPolygon = p;
 				getChildren().add(armyPolygon);
@@ -510,7 +506,7 @@ class DProvince extends Group {
 		fillPolygon(polygon, pValue);
 	}
 
-	private void updatePoints() {
+	private void updatePoints(Point2D[] points, double radius) {
 		for (int i = 0; i < SIDES; i++) {
 			int angle_deg = 60 * i + 30;
 			double angle_rad = Math.PI / 180 * angle_deg;
