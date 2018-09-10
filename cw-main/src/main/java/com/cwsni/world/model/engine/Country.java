@@ -510,6 +510,20 @@ public class Country {
 		data.setRebelAddChances(rebelAddChances);
 	}
 
+	public int getTurnOfCreation() {
+		return data.getTurnOfCreation();
+	}
+
+	public int getTurnOfRestoring() {
+		return data.getTurnOfRestoring();
+	}
+
+	public double getMaxReachableDistance() {
+		double maxDistance = getGame().getScienceModificators().getMaxDistance(this);
+		maxDistance = getModifiers().getModifiedValue(CountryModifier.GOVERNMENT_INFLUENCE_DISTANCE, maxDistance);
+		return maxDistance;
+	}
+
 	// --------------------- static -------------------------------
 
 	public static Country createNewCountry(Game game, Province p) {
@@ -541,6 +555,7 @@ public class Country {
 		}
 		DataCountry dc = createDefaultDataCountry(game);
 		hdc.copyTo(dc);
+		dc.setTurnOfRestoring(game.getTurn().getDateTurn());
 
 		Country c = new Country();
 		c.buildFrom(game, dc);
@@ -580,7 +595,7 @@ public class Country {
 			int r = minValue + random.nextInt(255 - minValue);
 			int g = minValue + random.nextInt(255 - minValue);
 			int b = minValue + random.nextInt(255 - minValue);
-			// TODO match with colors of others countries
+			// TODO ? match with colors of others countries
 			if (Math.abs(r - g) >= minDiff && Math.abs(r - b) >= minDiff && Math.abs(b - g) >= minDiff) {
 				color = new Color(r, g, b);
 			}

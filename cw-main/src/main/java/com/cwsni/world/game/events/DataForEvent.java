@@ -3,9 +3,11 @@ package com.cwsni.world.game.events;
 import java.util.Collection;
 
 import com.cwsni.world.game.scripts.AbstractScriptHandler.ScriptHandlerWrapper;
+import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Event;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.Province;
+import com.cwsni.world.model.engine.modifiers.CountryModifier;
 import com.cwsni.world.model.engine.modifiers.Modifier;
 import com.cwsni.world.model.engine.modifiers.ModifierType;
 import com.cwsni.world.model.engine.modifiers.ProvinceModifier;
@@ -24,11 +26,20 @@ public class DataForEvent {
 		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		public Modifier addModifier(Province p, Object feature, ModifierType type, Double value, Event event) {
+		public Modifier addModifier(Province target, Object feature, ModifierType type, Double value, Event event) {
 			Modifier<ProvinceModifier> modifier = Modifier
-					.createModifierByEvent(p.getClass().getSimpleName() + ":" + p.getId(), feature, type, value, event);
-			p.getModifiers().add(modifier);
-			event.addProvinceModifier(p, modifier);
+					.createModifierByEvent(target.getClass().getSimpleName() + ":" + target.getId(), feature, type, value, event);
+			target.getModifiers().add(modifier);
+			event.addProvinceModifier(target, modifier);
+			return modifier;
+		}
+		
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		public Modifier addModifier(Country target, Object feature, ModifierType type, Double value, Event event) {
+			Modifier<CountryModifier> modifier = Modifier
+					.createModifierByEvent(target.getClass().getSimpleName() + ":" + target.getId(), feature, type, value, event);
+			target.getModifiers().add(modifier);
+			event.addCountryModifier(target, modifier);
 			return modifier;
 		}
 

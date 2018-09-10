@@ -329,7 +329,7 @@ class DProvince extends Group {
 		if (selectedCountry.getCapital() != null) {
 			double distance = map.getGame().getMap()
 					.findDistanceApproximateCountOfProvinces(selectedCountry.getCapital(), getProvince());
-			double maxDistance = map.getGame().getScienceModificators().getMaxDistance(selectedCountry);
+			double maxDistance = selectedCountry.getMaxReachableDistance();
 			if (distance > maxDistance) {
 				drawGeoMode(polygon);
 				return;

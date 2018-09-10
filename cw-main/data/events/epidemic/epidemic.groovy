@@ -84,7 +84,7 @@ def activateEventForProvinces(event, provinces) {
 
 def updateModifiers(event) {
 	event.provinceModifiers.entrySet().forEach({entry ->
-			def province = entry.key;
+			def province = data.game.map.findProvinceById(entry.key);
 			def modifiers = entry.value;
 			modifiers.forEach({modifier -> 
 				province.modifiers.update(modifier, 

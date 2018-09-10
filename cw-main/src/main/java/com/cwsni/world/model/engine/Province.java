@@ -425,9 +425,7 @@ public class Province {
 			influence = gParams.getProvinceInfluenceFromCapitalWithoutCapital();
 		} else {
 			double distToCapital = getDistanceToCapital();
-			double maxDistance = map.getGame().getScienceModificators().getMaxDistance(country);
-			maxDistance = country.getModifiers().getModifiedValue(CountryModifier.GOVERNMENT_INFLUENCE_DISTANCE,
-					maxDistance);
+			double maxDistance = country.getMaxReachableDistance();
 			if (distToCapital <= maxDistance) {
 				influence = Math.max((maxDistance - distToCapital) / maxDistance,
 						gParams.getProvinceInfluenceFromCapitalWithoutCapital());

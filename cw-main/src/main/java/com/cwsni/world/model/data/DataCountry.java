@@ -29,6 +29,7 @@ public class DataCountry {
 	private boolean isAI = true;
 	private String aiScriptName = ScriptAIHandler.DEFAULT_SCRIPT;
 	private int turnOfCreation;
+	private int turnOfRestoring;
 	private int turnsOfExistence;
 	/**
 	 * died people by different reasons (mostly fights and diseases)
@@ -193,6 +194,14 @@ public class DataCountry {
 
 	public void setRebelAddChances(double rebelAddChances) {
 		this.rebelAddChances = rebelAddChances;
+	}
+
+	public int getTurnOfRestoring() {
+		return turnOfRestoring;
+	}
+
+	public void setTurnOfRestoring(int turnOfRestoring) {
+		this.turnOfRestoring = turnOfRestoring;
 	}
 
 }

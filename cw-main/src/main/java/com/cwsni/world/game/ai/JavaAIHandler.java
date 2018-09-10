@@ -199,6 +199,13 @@ public class JavaAIHandler {
 	}
 
 	private double getPureWarStrength(IData4Country data, IPCountry country) {
+//		TODO focus is not enough:
+//		POWER_FOCUS,
+//		ARMY_EFFECTIVENESS,
+//		GOVERNMENT_INFLUENCE_DISTANCE,
+//		PROVINCE_GOVERNMENT_INFLUENCE,
+//		PROVINCE_LOYALTY,
+//		PROVINCE_TAX_EFFECTIVENESS
 		return country.getFocusLevel() * country.getPopulationAmount();
 	}
 
@@ -248,6 +255,9 @@ public class JavaAIHandler {
 		if (data.isWar()) {
 			availableMoneyForArmy += Math.min(budget.getMoney() * 0.05, armyBudget * 2);
 		}
+		if (budget.getMoney() < 0) {
+			availableMoneyForArmy -= - budget.getMoney() / 10;
+		}
 
 		if (availableMoneyForArmy < -armyBudget && !armies.isEmpty()) {
 			// we spend all money for existing armies
@@ -272,7 +282,7 @@ public class JavaAIHandler {
 			}
 		}
 
-		if (armies.size() >= MAX_ARMIES || (!data.isWar() && !armies.isEmpty()) || budget.getMoney() < armyBudget * 20
+		if (armies.size() >= MAX_ARMIES || (!data.isWar() && armies.size() < 3) || budget.getMoney() < armyBudget * 20
 				|| availableMoneyForArmy < (-armyBudget / 2)) {
 			return;
 		}

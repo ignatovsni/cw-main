@@ -44,9 +44,9 @@ def getProvinceColor(province, mode) {
 def checkStatus(province, event) {
 	if (event == null) {
 		return 0;
-	} else if(event.info.provinces.contains(province.id)) {
+	} else if (event.info.provinces.contains(province.id)) {
 	    return 1;
-	} else if(event.info.resistant.contains(province.id)) {
+	} else if (event.info.resistant.contains(province.id)) {
 	    return 2;
 	} else {
 		return 0;

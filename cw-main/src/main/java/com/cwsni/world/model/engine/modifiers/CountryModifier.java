@@ -2,7 +2,7 @@ package com.cwsni.world.model.engine.modifiers;
 
 public enum CountryModifier {
 	
-	POWER_FOCUS,
+	FOCUS,
 	ARMY_EFFECTIVENESS,
 	GOVERNMENT_INFLUENCE_DISTANCE,
 	PROVINCE_GOVERNMENT_INFLUENCE,

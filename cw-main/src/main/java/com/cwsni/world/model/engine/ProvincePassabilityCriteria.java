@@ -31,7 +31,7 @@ public class ProvincePassabilityCriteria {
 			// it is a bad country :)
 			return false;
 		}
-		double maxDistance = game.getScienceModificators().getMaxDistance(country);
+		double maxDistance = country.getMaxReachableDistance();
 		double distance = game.getMap().findDistanceApproximateCountOfProvinces(capital, p);
 		if (distance > maxDistance) {
 			return false;

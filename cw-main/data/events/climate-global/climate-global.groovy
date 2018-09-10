@@ -77,7 +77,7 @@ def activateEvent(event) {
 def updateModifiers(event) {
 	def currentEffect = event.info.effect;
 	event.provinceModifiers.entrySet().forEach({entry ->
-			def province = entry.key;
+			def province = data.game.map.findProvinceById(entry.key);
 			def modifiers = entry.value;
 			modifiers.forEach({modifier -> province.modifiers.update(modifier, currentEffect)});
 		});
@@ -94,9 +94,10 @@ def processExistingEvent(event) {
 			event.info.step = - event.info.step;
 		}
 	}		
-	event.info.effect = event.info.effect + data.game.turn.addPerYear(event.info.step);
-	if (!event.info.evolve && (event.info.effect >= 1 && event.info.step >= 0 
-							|| event.info.effect <= 1 && event.info.step <= 0 || event.info.step == 0 ) ) {
+	double step = data.game.turn.addPerYear(event.info.step);
+	event.info.effect += step;
+	if (!event.info.evolve && (event.info.effect >= 1 && step >= 0 
+							|| event.info.effect <= 1 && step <= 0 || step == 0 ) ) {
 		removeEvent(event);
 	} else {
 		if (event.info.effect > CLIMATE_IMPACT_MAX) {
