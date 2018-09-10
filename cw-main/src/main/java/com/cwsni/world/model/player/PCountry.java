@@ -13,6 +13,7 @@ import com.cwsni.world.model.engine.Country;
 import com.cwsni.world.model.engine.Province;
 import com.cwsni.world.model.player.interfaces.IPArmy;
 import com.cwsni.world.model.player.interfaces.IPCountry;
+import com.cwsni.world.model.player.interfaces.IPCountryPreferences;
 import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.model.player.interfaces.IPMoneyBudget;
 import com.cwsni.world.model.player.interfaces.IPProvince;
@@ -201,6 +202,11 @@ public class PCountry implements IPCountry {
 	@Override
 	public double getLoyaltyToCountryFromCountryCasualties() {
 		return country.getLoyaltyToCountryFromCountryCasualties();
+	}
+	
+	@Override
+	public IPCountryPreferences getPreferences() {
+		return new PCountryPreferences(country.getPreferences());
 	}
 
 	// --------------- client model change ----------------------

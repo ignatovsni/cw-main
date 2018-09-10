@@ -22,6 +22,7 @@ public class DataCountry {
 	private Integer capital;
 	private Integer firstCapital;
 	private DataCountryFocus focus;
+	private DataCountryPreferences preferences;
 	private Set<Integer> provinces = new HashSet<>();
 	private List<DataArmy> armies = new ArrayList<>();
 	private DataMoneyBudget budget;
@@ -202,6 +203,14 @@ public class DataCountry {
 
 	public void setTurnOfRestoring(int turnOfRestoring) {
 		this.turnOfRestoring = turnOfRestoring;
+	}
+
+	public DataCountryPreferences getPreferences() {
+		return preferences;
+	}
+
+	public void setPreferences(DataCountryPreferences preferences) {
+		this.preferences = preferences;
 	}
 
 }

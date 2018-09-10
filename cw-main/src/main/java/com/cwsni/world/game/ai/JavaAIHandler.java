@@ -81,11 +81,12 @@ public class JavaAIHandler {
 		double loyaltyToCountryFromCountryCasualties = country.getLoyaltyToCountryFromCountryCasualties();
 
 		// check war
-		// double rndNumber = rnd.nextDouble() * rnd.nextDouble() * rnd.nextDouble() *
-		// rnd.nextDouble() * rnd.nextDouble();
-		double rndNumber = rnd.nextDouble() * rnd.nextDouble();
+		double agressiveness = game.getTurn()
+				.probablilityPerYear(data.getCountry().getPreferences().getAggressiveness());
+		double chanceBecauseCountOfWars = game.getTurn()
+				.probablilityPerYear(1 - (countriesWithWar.size() + 5) / (maxDesiredWars + 5));
 		if (loyaltyToCountryFromCountryCasualties > -0.05 && thisCountryStrength >= thisCountryPureWarStrength * 0.5
-				&& 1.0 * (countriesWithWar.size() + 5) / (maxDesiredWars + 5) < rndNumber) {
+				&& rnd.nextDouble() < chanceBecauseCountOfWars && rnd.nextDouble() < agressiveness) {
 			Integer weakestEnemyCountryId = null;
 			double weakestEnemyStrength = Double.MAX_VALUE;
 			for (Entry<Integer, Double> e : countriesCurrentWarStrength.entrySet()) {
@@ -199,13 +200,13 @@ public class JavaAIHandler {
 	}
 
 	private double getPureWarStrength(IData4Country data, IPCountry country) {
-//		TODO focus is not enough:
-//		POWER_FOCUS,
-//		ARMY_EFFECTIVENESS,
-//		GOVERNMENT_INFLUENCE_DISTANCE,
-//		PROVINCE_GOVERNMENT_INFLUENCE,
-//		PROVINCE_LOYALTY,
-//		PROVINCE_TAX_EFFECTIVENESS
+		// TODO focus is not enough:
+		// POWER_FOCUS,
+		// ARMY_EFFECTIVENESS,
+		// GOVERNMENT_INFLUENCE_DISTANCE,
+		// PROVINCE_GOVERNMENT_INFLUENCE,
+		// PROVINCE_LOYALTY,
+		// PROVINCE_TAX_EFFECTIVENESS
 		return country.getFocusLevel() * country.getPopulationAmount();
 	}
 
@@ -256,7 +257,7 @@ public class JavaAIHandler {
 			availableMoneyForArmy += Math.min(budget.getMoney() * 0.05, armyBudget * 2);
 		}
 		if (budget.getMoney() < 0) {
-			availableMoneyForArmy -= - budget.getMoney() / 10;
+			availableMoneyForArmy -= -budget.getMoney() / 10;
 		}
 
 		if (availableMoneyForArmy < -armyBudget && !armies.isEmpty()) {

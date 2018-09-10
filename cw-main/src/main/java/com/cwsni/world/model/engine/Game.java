@@ -353,6 +353,10 @@ public class Game {
 		this.lastAutoSaveTurn = lastAutoSaveTurn;
 	}
 
+	public CwBaseRandom getRandom() {
+		return getGameParams().getRandom();
+	}
+	
 	public CwBaseRandom getRandomForCurrentTurn(Long externalSeed) {
 		long seed = (long) (getTurn().getDateTurn() + 1) * (getCountries().size() + 1)
 				+ (externalSeed != null ? externalSeed : 1);

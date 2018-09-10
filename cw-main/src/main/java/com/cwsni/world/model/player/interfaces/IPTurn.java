@@ -6,8 +6,14 @@ public interface IPTurn {
 
 	int getYearsAfter(int turn);
 
-	int getCurrentTurn();
+	int getDateTurn();
 	
 	TimeMode getCurrentTimeMode();
+
+	double multiplyPerYear(double value);
+
+	double addPerYear(double value);
+
+	double probablilityPerYear(double value);
 
 }

@@ -50,6 +50,8 @@ public interface IPCountry {
 	public double getLoyaltyToCountryFromCountryCasualties();
 
 	double getArmySoldiersToPopulationForSubjugationLeaveInProvince();
+
+	IPCountryPreferences getPreferences();
 	
 
 }

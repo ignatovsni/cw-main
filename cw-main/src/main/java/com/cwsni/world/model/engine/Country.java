@@ -37,6 +37,7 @@ public class Country {
 	private ScienceBudget scienceBudget;
 	private CountryFocus focus;
 	private ModifierCollection<CountryModifier> modifiers;
+	private CountryPreferences preferences;
 
 	// ------------- cache -----------------
 	private long populationAmount;
@@ -70,6 +71,9 @@ public class Country {
 		modifiers = new ModifierCollection<>();
 
 		focus.buildFrom(this, dc.getFocus());
+		
+		preferences = new CountryPreferences();
+		preferences.buildFrom(this, dc.getPreferences());
 
 		data.getProvinces().forEach(pId -> {
 			Province province = game.getMap().findProvinceById(pId);
@@ -164,8 +168,12 @@ public class Country {
 	public CountryFocus getFocus() {
 		return focus;
 	}
+	
+	public CountryPreferences getPreferences() {
+		return preferences;
+	}
 
-	DataCountry getCountryData() {
+	protected DataCountry getCountryData() {
 		return data;
 	}
 
@@ -579,6 +587,7 @@ public class Country {
 		dc.setColor(createNewColorForCountry(game));
 		dc.setTurnOfCreation(game.getTurn().getDateTurn());
 		dc.setFocus(CountryFocus.createFocusForNewCountry(game));
+		dc.setPreferences(CountryPreferences.createPreferencesForNewCountry(game));
 		dc.setBudget(new DataMoneyBudget());
 		dc.setScienceBudget(new DataScienceBudget());
 		// randomize parameters

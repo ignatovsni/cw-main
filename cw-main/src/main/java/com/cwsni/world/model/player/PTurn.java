@@ -13,7 +13,7 @@ public class PTurn implements IPTurn {
 	}
 	
 	@Override
-	public int getCurrentTurn() {
+	public int getDateTurn() {
 		return turn.getDateTurn();
 	}
 	
@@ -25,6 +25,21 @@ public class PTurn implements IPTurn {
 	@Override
 	public TimeMode getCurrentTimeMode() {
 		return this.turn.getTimeMode();
+	}
+	
+	@Override
+	public double probablilityPerYear(double value) {
+		return turn.probablilityPerYear(value);
+	}
+	
+	@Override
+	public double addPerYear(double value) {
+		return turn.addPerYear(value);
+	}
+
+	@Override
+	public double multiplyPerYear(double value) {
+		return turn.multiplyPerYear(value);
 	}
 
 }
