@@ -1,7 +1,7 @@
 package com.cwsni.world.model.engine;
 
 public enum TimeMode {
-	PAUSE(0), WEEK(1), MONTH(4), YEAR(50), YEAR_10(500);
+	PAUSE(0), WEEK(1), MONTH(4), YEAR(48), YEAR_10(480);
 	
 	private int dateTurnPerTime;
 	TimeMode(int dateTurnPerTime) {

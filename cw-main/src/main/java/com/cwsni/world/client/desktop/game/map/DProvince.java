@@ -183,7 +183,7 @@ class DProvince extends Group {
 				updatePoints(points, radius * 0.6);
 				Polygon pol = new Polygon();				
 				Stream.of(points).forEach(p -> pol.getPoints().addAll(p.getX(), p.getY()));
-				pol.setStrokeWidth(3);
+				pol.setStrokeWidth(radius / 10);
 				pol.setStroke(Color.BLACK);
 				pol.setFill(province.getCountry().getColor().getJavaFxColor());
 				capitalPolygon = pol;
@@ -210,7 +210,7 @@ class DProvince extends Group {
 				}
 				Polygon p = new Polygon();
 				p.getPoints().addAll(armyPoints);
-				p.setStrokeWidth(2);
+				p.setStrokeWidth(radius / 15 );
 				p.setStroke(Color.BLACK);
 				armyPolygon = p;
 				getChildren().add(armyPolygon);
