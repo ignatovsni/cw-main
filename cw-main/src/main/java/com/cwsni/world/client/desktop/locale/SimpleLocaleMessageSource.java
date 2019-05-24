@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.cwsni.world.client.desktop.ApplicationSettings;
+import com.cwsni.world.settings.ApplicationSettings;
 import com.cwsni.world.tools.LanguageHelper;
 
 public class SimpleLocaleMessageSource implements LocaleMessageSource {

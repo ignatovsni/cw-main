@@ -1,4 +1,4 @@
-package com.cwsni.world.client.desktop;
+package com.cwsni.world.settings;
 
 import javax.annotation.PostConstruct;
 

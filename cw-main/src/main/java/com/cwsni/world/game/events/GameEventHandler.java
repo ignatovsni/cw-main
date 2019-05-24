@@ -15,13 +15,13 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.client.desktop.game.map.MapMode;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.locale.SimpleLocaleMessageSource;
 import com.cwsni.world.model.engine.Event;
 import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.Province;
+import com.cwsni.world.settings.ApplicationSettings;
 import com.cwsni.world.util.CwBaseRandom;
 
 @Component

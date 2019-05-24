@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-import com.cwsni.world.client.desktop.UserUIPreferences;
 import com.cwsni.world.client.desktop.game.GameScene;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.model.engine.Game;
+import com.cwsni.world.settings.UserUIPreferences;
 
 import javafx.application.Application;
 import javafx.application.Platform;

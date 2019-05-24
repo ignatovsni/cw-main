@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.UserUIPreferences;
 import com.cwsni.world.client.desktop.locale.LocaleMessageSource;
 import com.cwsni.world.client.desktop.util.DataFormatter;
 import com.cwsni.world.model.engine.TimeMode;
+import com.cwsni.world.settings.UserUIPreferences;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

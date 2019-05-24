@@ -3,8 +3,8 @@ package com.cwsni.world.game.events;
 import java.io.File;
 import java.util.Map;
 
-import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.game.scripts.AbstractScriptHandler;
+import com.cwsni.world.settings.ApplicationSettings;
 
 public class ScriptEventHandler extends AbstractScriptHandler {
 

@@ -47,27 +47,31 @@ def checkNewEvents(usedCountriesIds) {
 	data.game.countries.stream().filter({c -> !usedCountriesIds.contains(c.id)}).forEach({ country ->		
 		if(country.turnOfCreation >= data.game.turn.dateTurn-1 && data.rnd.nextDouble() < newCountryProbability) {
 			log "newCountryProbability ${newCountryProbability}";
-			createNewBaseEvent(country);
+			createNewBaseEvent(country, true);
 		} else if(country.turnOfRestoring >= data.game.turn.dateTurn-1 && data.rnd.nextDouble() < restoredCountryProbability) {
 			log "restoredCountryProbability ${restoredCountryProbability}";
-			createNewBaseEvent(country);
+			createNewBaseEvent(country, true);
 		} else if(data.rnd.nextDouble() < baseProbability) {
 			log "baseProbability ${baseProbability}";
-			createNewBaseEvent(country);
+			createNewBaseEvent(country, false);
 		}
 	});
 }
 
-def createNewBaseEvent(country) {
+def createNewBaseEvent(country, startWithHighPower) {
 	log 'creating new event';
 	def event = data.events.createAndAddNewEvent();
 
 	event.info.country = country.id;
 	event.info.evolve = true;
-	event.info.effect = 1;
+	if (startWithHighPower) {
+		event.info.effect = data.rnd.nextDouble(MIN_GOAL, MAX_GOAL);
+	} else {
+		event.info.effect = 1;
+	}
 	event.info.goal = data.rnd.nextDouble(MIN_GOAL, MAX_GOAL);
 	event.info.step = createRandomStep();
-	if (event.info.goal < 1) {
+	if (event.info.goal < event.info.effect) {
 		event.info.step = - event.info.step;  
 	}	
 	

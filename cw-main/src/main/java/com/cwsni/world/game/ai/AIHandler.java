@@ -11,11 +11,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.model.player.PGame;
 import com.cwsni.world.model.player.interfaces.IData4Country;
 import com.cwsni.world.model.player.interfaces.IPGame;
 import com.cwsni.world.services.GameExecutorService;
+import com.cwsni.world.settings.ApplicationSettings;
 
 @Component
 public class AIHandler {

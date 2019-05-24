@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.cwsni.world.MainWindow;
-import com.cwsni.world.client.desktop.UserUIPreferences;
 import com.cwsni.world.client.desktop.game.CountriesPropertiesWindow.RowCountry;
 import com.cwsni.world.client.desktop.game.SearchOnMapWindow.SearchResult;
 import com.cwsni.world.client.desktop.game.infopanels.GsCountryInfoPane;
@@ -38,6 +37,7 @@ import com.cwsni.world.services.GameDataModelLocker;
 import com.cwsni.world.services.GameGenerator;
 import com.cwsni.world.services.GameHandler;
 import com.cwsni.world.services.GameRepository;
+import com.cwsni.world.settings.UserUIPreferences;
 
 import javafx.application.Platform;
 import javafx.geometry.Bounds;

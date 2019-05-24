@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.ApplicationSettings;
+import com.cwsni.world.settings.ApplicationSettings;
 
 @Component
 public class GlobalLocaleMessageSource extends SimpleLocaleMessageSource {

@@ -13,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.cwsni.world.client.desktop.ApplicationSettings;
 import com.cwsni.world.game.ai.AIHandler;
 import com.cwsni.world.game.commands.Command;
 import com.cwsni.world.game.commands.CommandArmyCreate;
@@ -29,6 +28,7 @@ import com.cwsni.world.model.engine.Game;
 import com.cwsni.world.model.engine.ProvinceBorder;
 import com.cwsni.world.model.engine.TimeMode;
 import com.cwsni.world.model.player.PGame;
+import com.cwsni.world.settings.ApplicationSettings;
 import com.cwsni.world.util.ComparisonTool;
 
 @Component
