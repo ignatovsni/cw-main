@@ -1,13 +1,14 @@
-package com.cwsni.cw.matrix;
+package com.cwsni.pe.matrix.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CwMatrixApplication {
+public class PeMatrixApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CwMatrixApplication.class, args);
+		SpringApplication.run(PeMatrixApplication.class, args);
 	}
+	
 
 }
