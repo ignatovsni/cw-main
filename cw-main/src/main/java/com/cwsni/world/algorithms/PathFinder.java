@@ -92,6 +92,7 @@ public class PathFinder<ObjectType, KeyType> {
 		return new Node<ObjectType, KeyType>(node, keySupplier, neigborsSupplier);
 	}
 
+	@SuppressWarnings("unused")
 	private List<KeyType> findShortestPathInternalOneDirection(Node<ObjectType, KeyType> nodeFrom,
 			Node<ObjectType, KeyType> nodeTo) {
 		HeapComparable<Pair<Node<ObjectType, KeyType>, Double>> fromArea = new HeapComparable<>();
