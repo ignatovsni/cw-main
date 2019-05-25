@@ -1,4 +1,4 @@
-package com.cwsni.pe.matrix.app;
+package com.cwsni.pe.matrix;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

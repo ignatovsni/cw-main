@@ -1,4 +1,4 @@
-package com.cwsni.pe.matrix.app;
+package com.cwsni.pe.matrix.app.exp;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
